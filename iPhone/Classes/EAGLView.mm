@@ -38,12 +38,8 @@
 
 
 -(void)build {
-	
-	
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
-
-
 	
 	// Get the layer
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
@@ -60,7 +56,6 @@
 		//return nil;
 	}
 	
-	
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
 	glGenFramebuffersOES(1, &defaultFramebuffer);
 	glGenRenderbuffersOES(1, &colorRenderbuffer);
@@ -68,13 +63,11 @@
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer);
 	
-	
 	//Bind framebuffers to the context and this layer
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 	[context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:eaglLayer];
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
-
 	
 	glGenRenderbuffersOES(1, &depthRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
@@ -85,20 +78,6 @@
 		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
 		//return NO;
 	}
-	
-	/*
-	//setup culling and what have you
-	const GLfloat zNear = 0.1, zFar = 600.0, fovy = 40.0, aspect = eaglLayer.frame.size.width / eaglLayer.frame.size.height;
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	double xmin, xmax, ymin, ymax;
-	ymax = zNear * tan(fovy * M_PI / 360.0);
-	ymin = -ymax;
-	xmin = ymin * aspect;
-	xmax = ymax * aspect;
-	glFrustumf(xmin, xmax, ymin, ymax, zNear, zFar);		
-	glViewport(0, 0, eaglLayer.frame.size.width, eaglLayer.frame.size.height);
-	*/
 	
 	[self startGame];
 	
@@ -129,7 +108,6 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//[gameController playerStartedJumping];
 		gameController->playerStartedJumping();
 	}
 }
@@ -141,7 +119,6 @@
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//[gameController playerStoppedJumping];
 		gameController->playerStoppedJumping();
 	}
 }
@@ -149,86 +126,29 @@
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//[gameController playerStoppedJumping];
 		gameController->playerStoppedJumping();
 	}
 }
 
 
 -(void)drawView:(id)sender {
+	int gameState;
 	if (animating) {
-		@synchronized(self) {
-
 		[EAGLContext setCurrentContext:context];
-		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-		myFrameRequested = YES;
-		gameController->draw(90);
+		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);		
+		
+		gameState = gameController->tick(1.0 / 150.0);
+		gameState = gameController->tick(1.0 / 150.0);
+		
+		if (gameState) {
+		} else {
+			[self startGame];
+		}
+		
+		gameController->draw(0);
 		glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
-			
-		}
 	}
-}
-
-
-/*
--(void)resetEntireGame {
-	[glView removeFromSuperview];
-	[glView release];
-	glView = nil;
-	[self performSelector:@selector(startGame) withObject:nil afterDelay:0.0];	
-}
-
-
--(void)startGame {
-	glView = [[EAGLView alloc] initWithFrame:[window frame]];
-	[window addSubview:glView];
-	[glView startAnimation];
-}
-
-*/
-
--(void)tickView:(id)sender {
-	
-	//Create the autorelease pool.
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	
-	int gameState = 1;
-	
-	//Start the game loop.
-	while (animating) {		
-		if (myFrameRequested) {
-			@synchronized(self) {
-				myFrameRequested = NO;
-				
-
-
-				
-				//[gameController tick:1.0 / 120.0];
-				//gameState = [gameController tick:1.0 / 120.0];
-				//gameState = gameController->tick(1.0 / 120.0);
-				gameState = gameController->tick(1.0 / 150.0);
-				gameState = gameController->tick(1.0 / 150.0);
-
-				if (gameState) {
-				} else {
-					//[self performSelectorOnMainThread:@selector(reset) withObject:nil waitUntilDone:YES];
-					[self startGame];
-				}
-
-			}
-		} else {
-			//while( CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.002, FALSE) == kCFRunLoopRunHandledSource);
-			[NSThread sleepForTimeInterval:1.0 / 120.0];
-		}
-		
-
-		
-
-	}
-	
-	[pool release];
-
 }
 
 
@@ -284,8 +204,12 @@
 -(void)startGame {
 	if (gameController) {
 		delete gameController;
-	} else {	
+	} else {
+		//player
 		textures[0] = [self loadTexture:@"faerie"];
+		
+		//ground
+		
 		textures[1] = [self loadTexture:@"ground_texture"];
 		//top
 		textures[2] = [self loadTexture:@"entropic_up"];
@@ -305,6 +229,7 @@
 		//south
 		textures[7] = [self loadTexture:@"entropic_south"];
 		
+		//font
 		textures[8] = [self loadTexture:@"font_texture"];
 	}
 	
@@ -318,9 +243,7 @@
 
 
 -(void)reset {
-	[self stopAnimation];
-	//[(MemoryLeakAppDelegate *)[[UIApplication sharedApplication] delegate] resetEntireGame];
-	
+	[self stopAnimation];	
 }
 
 
@@ -353,14 +276,11 @@
 -(void)startAnimation {
     if (!animating) {
 		animating = TRUE;
-
         if (displayLinkSupported) {
             displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];
             [displayLink setFrameInterval:animationFrameInterval];
             [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        }
-		
-		[self performSelectorInBackground:@selector(tickView:) withObject:nil];
+        }		
     }
 }
 
@@ -390,8 +310,7 @@
         colorRenderbuffer = 0;
     }
 	
-	if(depthRenderbuffer) 
-    {
+	if(depthRenderbuffer) {
         glDeleteRenderbuffersOES(1, &depthRenderbuffer);
         depthRenderbuffer = 0;
     }
@@ -403,9 +322,6 @@
 	
     [context release];
     context = nil;
-	
-	//[gameController release];
-	//gameController = nil;
 	
     [super dealloc];
 }

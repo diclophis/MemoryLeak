@@ -268,8 +268,6 @@
 							<array>
 								<string>29B97314FDCFA39411CA2CEA</string>
 								<string>FCFD43EE121BBF4F00A65BCF</string>
-								<string>FC21C8F5121AA9D1006B5015</string>
-								<string>FC68BA4812291F9100825AEA</string>
 								<string>FC21C8BD121AA24D006B5015</string>
 								<string>FCBE418D1216835400A60972</string>
 								<string>FCBE41401216807900A60972</string>
@@ -280,13 +278,13 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>20</integer>
-									<integer>18</integer>
+									<integer>26</integer>
+									<integer>24</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 75}, {266, 722}}</string>
+							<string>{{0, 0}, {266, 722}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -321,7 +319,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>FCF839E711E6F4C6002E21F8</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Engine.cpp</string>
+								<string>EAGLView.mm</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -329,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>FCF839E811E6F4C6002E21F8</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>Engine.cpp</string>
+										<string>EAGLView.mm</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>FCE2DBBB122BD907005D610E</string>
+										<string>FCE2DBDB122BE11B005D610E</string>
 										<key>history</key>
 										<array>
 											<string>FC7C4F22121F7611003C7C89</string>
@@ -355,9 +353,10 @@
 											<string>FCE2D934122BBD06005D610E</string>
 											<string>FCE2D943122BBD92005D610E</string>
 											<string>FCE2D989122BC124005D610E</string>
-											<string>FCE2D998122BC182005D610E</string>
 											<string>FCE2DA7F122BCBBF005D610E</string>
-											<string>FCE2DBBA122BD8FF005D610E</string>
+											<string>FCE2DBC2122BDCE1005D610E</string>
+											<string>FCE2DBCF122BDD9D005D610E</string>
+											<string>FCE2DBD0122BDD9D005D610E</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>

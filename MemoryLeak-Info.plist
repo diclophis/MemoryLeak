@@ -7,7 +7,7 @@
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UIInterfaceOrientation</key>
-	<string>UIInterfaceOrientationLandscapeLeft</string>
+	<string>UIInterfaceOrientationPortrait</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

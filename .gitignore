@@ -1,0 +1,10 @@
+bin/DemoActivity-debug-unaligned.apk
+bin/DemoActivity-debug.apk
+bin/DemoActivity.ap_
+bin/classes.dex
+bin/classes/
+build/Debug-iphonesimulator/
+build/MemoryLeak.build/
+gen/
+libs/armeabi/
+obj/local/

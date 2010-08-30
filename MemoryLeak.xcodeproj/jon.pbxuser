@@ -540,6 +540,15 @@
 			FCE2DBB9122BD8BF005D610E /* PBXTextBookmark */ = FCE2DBB9122BD8BF005D610E /* PBXTextBookmark */;
 			FCE2DBBA122BD8FF005D610E /* PBXTextBookmark */ = FCE2DBBA122BD8FF005D610E /* PBXTextBookmark */;
 			FCE2DBBB122BD907005D610E /* PBXTextBookmark */ = FCE2DBBB122BD907005D610E /* PBXTextBookmark */;
+			FCE2DBC2122BDCE1005D610E /* PBXTextBookmark */ = FCE2DBC2122BDCE1005D610E /* PBXTextBookmark */;
+			FCE2DBC3122BDCE1005D610E /* PlistBookmark */ = FCE2DBC3122BDCE1005D610E /* PlistBookmark */;
+			FCE2DBC4122BDCE1005D610E /* PBXTextBookmark */ = FCE2DBC4122BDCE1005D610E /* PBXTextBookmark */;
+			FCE2DBC5122BDCE1005D610E /* PBXTextBookmark */ = FCE2DBC5122BDCE1005D610E /* PBXTextBookmark */;
+			FCE2DBCF122BDD9D005D610E /* PlistBookmark */ = FCE2DBCF122BDD9D005D610E /* PlistBookmark */;
+			FCE2DBD0122BDD9D005D610E /* PBXTextBookmark */ = FCE2DBD0122BDD9D005D610E /* PBXTextBookmark */;
+			FCE2DBD1122BDD9D005D610E /* PBXTextBookmark */ = FCE2DBD1122BDD9D005D610E /* PBXTextBookmark */;
+			FCE2DBD7122BE0BF005D610E /* PBXTextBookmark */ = FCE2DBD7122BE0BF005D610E /* PBXTextBookmark */;
+			FCE2DBDB122BE11B005D610E /* PBXTextBookmark */ = FCE2DBDB122BE11B005D610E /* PBXTextBookmark */;
 		};
 		sourceControlManager = FCF839F511E6F4C6002E21F8 /* Source Control */;
 		userBuildSettings = {
@@ -697,7 +706,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 301";
 		rLen = 0;
-		rLoc = 8489;
+		rLoc = 6807;
 		rType = 0;
 		vrLen = 1008;
 		vrLoc = 8123;
@@ -770,7 +779,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		location = libSystem.B.dylib;
-		modificationTime = 304863372.439044;
+		modificationTime = 304865472.852772;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 		symbolName = malloc_error_break;
@@ -784,9 +793,9 @@
 	};
 	FCBE41421216807900A60972 /* EAGLView.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1379, 4667}}";
-			sepNavSelRange = "{2251, 0}";
-			sepNavVisRange = "{2356, 766}";
+			sepNavIntBoundsRect = "{{0, 0}, {1195, 4615}}";
+			sepNavSelRange = "{179, 0}";
+			sepNavVisRange = "{0, 565}";
 		};
 	};
 	FCBE41431216807900A60972 /* importgl.h */ = {
@@ -819,9 +828,9 @@
 	};
 	FCBE41611216811B00A60972 /* Engine.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1091, 16172}}";
-			sepNavSelRange = "{23176, 0}";
-			sepNavVisRange = "{22641, 1104}";
+			sepNavIntBoundsRect = "{{0, 0}, {1091, 16263}}";
+			sepNavSelRange = "{26471, 0}";
+			sepNavVisRange = "{26287, 641}";
 			sepNavWindowFrame = "{{1, 42}, {1439, 836}}";
 		};
 	};
@@ -2387,7 +2396,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 301";
 		rLen = 0;
-		rLoc = 8489;
+		rLoc = 6807;
 		rType = 0;
 		vrLen = 1007;
 		vrLoc = 8123;
@@ -2397,7 +2406,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8674;
+		rLoc = 7001;
 		rType = 0;
 		vrLen = 1047;
 		vrLoc = 8134;
@@ -2432,7 +2441,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8674;
+		rLoc = 7001;
 		rType = 0;
 		vrLen = 1262;
 		vrLoc = 6713;
@@ -2447,7 +2456,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 260";
 		rLen = 0;
-		rLoc = 7154;
+		rLoc = 5445;
 		rType = 0;
 		vrLen = 1635;
 		vrLoc = 6436;
@@ -2457,7 +2466,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 260";
 		rLen = 0;
-		rLoc = 7155;
+		rLoc = 5446;
 		rType = 0;
 		vrLen = 1525;
 		vrLoc = 6546;
@@ -2467,7 +2476,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 260";
 		rLen = 0;
-		rLoc = 7155;
+		rLoc = 5446;
 		rType = 0;
 		vrLen = 1548;
 		vrLoc = 6546;
@@ -3095,7 +3104,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 260";
 		rLen = 0;
-		rLoc = 7155;
+		rLoc = 5446;
 		rType = 0;
 		vrLen = 1548;
 		vrLoc = 6546;
@@ -3105,7 +3114,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8671;
+		rLoc = 6998;
 		rType = 0;
 		vrLen = 930;
 		vrLoc = 8292;
@@ -3115,7 +3124,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8671;
+		rLoc = 6998;
 		rType = 0;
 		vrLen = 906;
 		vrLoc = 8034;
@@ -3233,7 +3242,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8671;
+		rLoc = 6998;
 		rType = 0;
 		vrLen = 906;
 		vrLoc = 8034;
@@ -3243,7 +3252,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8663;
+		rLoc = 6990;
 		rType = 0;
 		vrLen = 888;
 		vrLoc = 8050;
@@ -3253,7 +3262,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8663;
+		rLoc = 6990;
 		rType = 0;
 		vrLen = 1573;
 		vrLoc = 6546;
@@ -3293,7 +3302,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8663;
+		rLoc = 6990;
 		rType = 0;
 		vrLen = 1549;
 		vrLoc = 6570;
@@ -3353,7 +3362,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 308";
 		rLen = 0;
-		rLoc = 8663;
+		rLoc = 6990;
 		rType = 0;
 		vrLen = 1549;
 		vrLoc = 6570;
@@ -3363,7 +3372,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 264";
 		rLen = 0;
-		rLoc = 7313;
+		rLoc = 5604;
 		rType = 0;
 		vrLen = 1461;
 		vrLoc = 6669;
@@ -3373,7 +3382,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 264";
 		rLen = 0;
-		rLoc = 7313;
+		rLoc = 5604;
 		rType = 0;
 		vrLen = 1507;
 		vrLoc = 6669;
@@ -3483,7 +3492,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 82";
 		rLen = 0;
-		rLoc = 2251;
+		rLoc = 2240;
 		rType = 0;
 		vrLen = 1487;
 		vrLoc = 1635;
@@ -3493,7 +3502,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 82";
 		rLen = 0;
-		rLoc = 2251;
+		rLoc = 2240;
 		rType = 0;
 		vrLen = 1487;
 		vrLoc = 1635;
@@ -3503,7 +3512,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 82";
 		rLen = 0;
-		rLoc = 2251;
+		rLoc = 2240;
 		rType = 0;
 		vrLen = 766;
 		vrLoc = 2356;
@@ -3513,7 +3522,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 82";
 		rLen = 0;
-		rLoc = 2251;
+		rLoc = 2240;
 		rType = 0;
 		vrLen = 1516;
 		vrLoc = 1635;
@@ -4650,7 +4659,7 @@
 		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
 		name = "EAGLView.mm: 82";
 		rLen = 0;
-		rLoc = 2251;
+		rLoc = 2240;
 		rType = 0;
 		vrLen = 766;
 		vrLoc = 2356;
@@ -5054,6 +5063,100 @@
 		rType = 0;
 		vrLen = 1104;
 		vrLoc = 22641;
+	};
+	FCE2DBC2122BDCE1005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41611216811B00A60972 /* Engine.cpp */;
+		name = "Engine.cpp: 1056";
+		rLen = 0;
+		rLoc = 26471;
+		rType = 0;
+		vrLen = 641;
+		vrLoc = 26287;
+	};
+	FCE2DBC3122BDCE1005D610E /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = FCFD43DF121BBEFD00A65BCF /* MemoryLeak-Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			UIInterfaceOrientation,
+		);
+		name = "/Users/jon/iPhone/MemoryLeak/MemoryLeak-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775807;
+	};
+	FCE2DBC4122BDCE1005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
+		name = "EAGLView.mm: 82";
+		rLen = 0;
+		rLoc = 2240;
+		rType = 0;
+		vrLen = 1516;
+		vrLoc = 1635;
+	};
+	FCE2DBC5122BDCE1005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
+		name = "EAGLView.mm: 165";
+		rLen = 0;
+		rLoc = 4023;
+		rType = 0;
+		vrLen = 721;
+		vrLoc = 4102;
+	};
+	FCE2DBCF122BDD9D005D610E /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = FCFD43DF121BBEFD00A65BCF /* MemoryLeak-Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+			UIInterfaceOrientation,
+		);
+		name = "/Users/jon/iPhone/MemoryLeak/MemoryLeak-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775807;
+	};
+	FCE2DBD0122BDD9D005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
+		name = "EAGLView.mm: 165";
+		rLen = 0;
+		rLoc = 4023;
+		rType = 0;
+		vrLen = 725;
+		vrLoc = 4097;
+	};
+	FCE2DBD1122BDD9D005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
+		name = "EAGLView.mm: 160";
+		rLen = 0;
+		rLoc = 3709;
+		rType = 0;
+		vrLen = 756;
+		vrLoc = 4174;
+	};
+	FCE2DBD7122BE0BF005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
+		name = "EAGLView.mm: 349";
+		rLen = 0;
+		rLoc = 9491;
+		rType = 0;
+		vrLen = 643;
+		vrLoc = 9502;
+	};
+	FCE2DBDB122BE11B005D610E /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = FCBE41421216807900A60972 /* EAGLView.mm */;
+		name = "EAGLView.mm: 11";
+		rLen = 0;
+		rLoc = 179;
+		rType = 0;
+		vrLen = 565;
+		vrLoc = 0;
 	};
 	FCF839D511E6F491002E21F8 /* MemoryLeak */ = {
 		isa = PBXExecutable;
