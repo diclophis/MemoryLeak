@@ -1,0 +1,266 @@
+//
+//  GLViewController.m
+//  MemoryLeak
+//
+//  Created by Jon Bardin on 9/7/09.
+//  Copyright __MyCompanyName__ 2009. All rights reserved.
+//
+
+#import "GLView.h"
+#import "GLViewController.h"
+#import "ConstantsAndMacros.h"
+#import "OpenGLCommon.h"
+
+#import "Platform.h"
+#import "Player.h"
+
+
+@implementation GLViewController
+
+
+@synthesize myPlatforms;
+@synthesize myPlayer;
+
+
+-(void)dealloc {
+	[myPlatforms removeAllObjects];
+	[myPlatforms release];
+	[myPlayer release];
+    [super dealloc];
+}
+
+
+-(id)initWithCoder:(NSCoder *)theCoder {
+	if (self = [super initWithCoder:theCoder]) {
+		myPlatformHeight = 0.0;
+		[self setMyPlatforms:[NSMutableArray arrayWithCapacity:0]];
+		
+
+	}
+	return self;
+}
+
+
+-(void)createPlatformAtPoint:(Vertex3D)thePoint {
+	Platform *platform = [[Platform alloc] initWithPosition:thePoint];
+	[myPlatforms addObject:platform];
+	[platform release];
+}
+
+
+-(void)drawView:(UIView *)theView {
+    glColor4f(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glLoadIdentity();
+	myCameraPosition = Vector3DAdd(myCameraPosition, myCameraSpeed);
+	myCameraTarget = Vector3DAdd(myCameraTarget, myCameraSpeed);
+
+	/*
+	gluLookAt(myCameraPosition.x, myCameraPosition.y, myCameraPosition.z,
+			  myCameraTarget.x, myCameraTarget.y, myCameraTarget.z,
+			  0.0, 1.0, 0.0);
+	 */
+	
+	gluLookAt(myCameraPosition.x, myCameraPosition.y, myCameraPosition.z,
+			  myPlayer.myPosition.x, myPlayer.myPosition.y, myPlayer.myPosition.z,
+			  0.0, 1.0, 0.0);
+
+
+	onPlatform = NO;
+	CGRect hitRect;
+	CGRect collidingPlatformFrame;
+	Vertex3D lastPlatformPosition;
+	for (NSInteger i=0; i<[myPlatforms count]; i++) {
+		Platform *platform = [myPlatforms objectAtIndex:i];
+		lastPlatformPosition = platform.myPosition;
+		[platform draw];
+		
+		if (!onPlatform) {
+			hitRect = CGRectIntersection([platform myFrame], [myPlayer myFrame]);
+			if (!CGRectIsEmpty(hitRect)) {
+				collidingPlatformFrame = platform.myFrame;
+				onPlatform = YES;
+			}
+		}
+		
+		if (platform.myPosition.x < myCameraTarget.x - 50.0) {
+			//[myPlatforms removeObjectAtIndex:i];
+		}
+	}
+	
+	if (!CGRectIsEmpty(hitRect)) {
+		if (hitRect.size.width >= hitRect.size.height && myPlayer.myFrame.origin.y > collidingPlatformFrame.origin.y) {
+			myPlayer.myVector = Vector3DMake(myPlayer.myVector.x, 0.0, myPlayer.myVector.z);
+		} else if (myPlayer.myFrame.origin.x < collidingPlatformFrame.origin.x) {
+			myPlayer.myVector = Vector3DMake(-0.1, myPlayer.myVector.y + myGravity.y, 0.0);
+			onPlatform = NO;
+		}
+	} else {
+		myPlayer.myVector = Vector3DAdd(myPlayer.myVector, myGravity);
+	}
+	
+	if (jumping) {
+		CGFloat distance = myPlayer.myPosition.x - jumpStart.x;
+		if ((distance) > 3.5) {
+			jumping = NO;
+		} else {
+			myPlayer.myVector = Vector3DMake(myPlayer.myVector.x, myAntiGravity.y, myPlayer.myVector.z);
+		}
+	}
+	
+	[myPlayer tick];
+	[myPlayer draw];
+	
+	if (lastPlatformPosition.x < myCameraTarget.x + 50.0) {
+		//[self createPlatformAtPoint:Vertex3DMake(lastPlatformPosition.x + 40.0, fastSinf(lastPlatformPosition.x) * 0.75, 0.0)];
+	}
+	
+	if (onPlatform || jumping) {
+		myPlayer.myVector = Vector3DAdd(myPlayer.myVector, myCameraAcceleration);
+		myCameraSpeed = Vector3DAdd(myCameraSpeed, myCameraAcceleration);
+		myCameraTarget = Vector3DAdd(myCameraTarget, myCameraTargetAcceleration);
+		myCameraPosition = Vector3DAdd(myCameraPosition, myCameraPositionAcceleration);	
+	}
+}
+
+
+-(void)setupView:(UIView *)theView {
+	const GLfloat zNear = 0.01, zFar = 1000.0, fieldOfView = 45.0; 
+	GLfloat size;
+	glMatrixMode(GL_PROJECTION); 
+	size = zNear * tanf(DEGREES_TO_RADIANS(fieldOfView) / 2.0); 
+	CGRect rect = theView.bounds; 
+	glFrustumf(-size, size, -size / (rect.size.width / rect.size.height), size / 
+			   (rect.size.width / rect.size.height), zNear, zFar); 
+	glViewport(0, 0, rect.size.width, rect.size.height);  
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	myCameraPosition = Vector3DMake(-21.0, 5.0, 1.0);
+	myCameraTarget = Vector3DMake(0.0, 0.0, 5.0);
+	//myCameraSpeed = Vector3DMake(0.45, 0.0, 0.0);
+	//myCameraAcceleration = Vector3DMake(0.0005, 0.0, 0.0);
+	myCameraTargetAcceleration = Vector3DMake(0.005, 0.0, 0.0);
+	myCameraPositionAcceleration = Vector3DMake(-0.020, 0.001, 0.01);
+	myGravity = Vector3DMake(0.0, -0.020, 0.0);
+	myAntiGravity = Vector3DMake(0.0, 0.3, 0.0);
+	
+	for (NSInteger i=0; i<100; i++) {
+		[self createPlatformAtPoint:Vertex3DMake(i * 40.0, fastSinf(i) * 1.5, 0.0)];
+	}
+	
+	myPlayer = [[Player alloc] initWithPosition:Vector3DMake(-10.0, 4.5, 0.0)];
+	myPlayer.myVector = myCameraSpeed;
+	
+	
+	//myCameraTarget = Vector3DMake(0.0, 0.0, 0.0);
+	//myCameraPosition = Vector3DMake(10.0, 0.0, 10.0);
+	/*
+	float lightAmbient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float lightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float matAmbient[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	float matDiffuse[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+	float lightPosition[] = { 2.0f, 2.0f, 0.0f, 0.0f };
+	float lightDirection[] = { 10.0f, 0.0f, 0.0f };
+	
+	//glShadeModel(GL_SMOOTH);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);  
+	glEnable(GL_COLOR_MATERIAL);
+	
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, matAmbient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, matDiffuse);
+	
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDirection);
+	 */
+}
+
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	//UITouch *touch = [touches anyObject];
+	if (!jumping && onPlatform) {
+		jumpStart = myPlayer.myPosition;
+		jumping = YES;
+	}
+}
+
+
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	//UITouch *touch = [touches anyObject];
+	//CGPoint currentPosition = [touch locationInView:[self view]];	
+}
+
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	jumping = NO;
+}
+
+
+-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+}
+
+
+
+
+@end
+
+
+/*
+ float lightPosition[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+ float lightDirection[] = { 10.0f, 0.0f, 0.0f };	
+ const float lightAmbient[] = { 0.2f, 0.1f, 0.1f, 1.0f };
+ const float lightDiffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+ const float matAmbient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+ const float matDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+ 
+ 
+ glEnable(GL_LIGHTING);
+ glEnable(GL_LIGHT0);
+ glEnable(GL_COLOR_MATERIAL);
+ 
+ 
+ glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, matAmbient);
+ glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, matDiffuse);
+ glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 1.0f);
+ 
+ 
+ glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+ glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+ 
+ glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+ glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightDirection);
+ */
+
+//GLfloat emission[] = {0.5, 0.0, 0.0, 1.0};
+//glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emission);
+//GLfloat specular[] = {0.3, 0.3, 0.3, 1.0};
+//glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+//glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 25.0);	
+
+
+/*
+ typedef float vec3_t[3];
+ 
+ 
+ float magnitude (vec3_t v)				// Calculate The Length Of The Vector
+ {
+ return sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);	// Return The Length Of The Vector
+ }
+ 
+ void normalize (vec3_t v)					// Creates A Vector With A Unit Length Of 1
+ {
+ float m = magnitude (v);				// Calculate The Length Of The Vector 
+ 
+ if (m != 0.0f)						// Make Sure We Don't Divide By 0 
+ {
+ v[0] /= m;					// Normalize The 3 Components 
+ v[1] /= m;
+ v[2] /= m;
+ }
+ }
+ */

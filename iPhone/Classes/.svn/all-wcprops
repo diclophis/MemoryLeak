@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/funji/!svn/ver/1805/trunk/MemoryLeak/Classes
+END
+Platform.m
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/funji/!svn/ver/1803/trunk/MemoryLeak/Classes/Platform.m
+END
+Player.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/Player.h
+END
+OpenGLTexture3D.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/funji/!svn/ver/1797/trunk/MemoryLeak/Classes/OpenGLTexture3D.h
+END
+OpenGLCommon.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/funji/!svn/ver/1797/trunk/MemoryLeak/Classes/OpenGLCommon.h
+END
+GLView.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/funji/!svn/ver/1797/trunk/MemoryLeak/Classes/GLView.h
+END
+CreateSuperEllipse.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/CreateSuperEllipse.h
+END
+Player.m
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/funji/!svn/ver/1805/trunk/MemoryLeak/Classes/Player.m
+END
+OpenGLTexture3D.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/funji/!svn/ver/1797/trunk/MemoryLeak/Classes/OpenGLTexture3D.m
+END
+MemoryLeakAppDelegate.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/funji/!svn/ver/1797/trunk/MemoryLeak/Classes/MemoryLeakAppDelegate.h
+END
+GLViewController.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/funji/!svn/ver/1798/trunk/MemoryLeak/Classes/GLViewController.h
+END
+GLView.m
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/funji/!svn/ver/1797/trunk/MemoryLeak/Classes/GLView.m
+END
+ConstantsAndMacros.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/ConstantsAndMacros.h
+END
+CreateSuperEllipse.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/CreateSuperEllipse.m
+END
+MemoryLeakAppDelegate.m
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/MemoryLeakAppDelegate.m
+END
+GLViewController.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/funji/!svn/ver/1805/trunk/MemoryLeak/Classes/GLViewController.m
+END
+paulslib.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/paulslib.c
+END
+paulslib.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/funji/!svn/ver/1804/trunk/MemoryLeak/Classes/paulslib.h
+END
+Platform.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/funji/!svn/ver/1803/trunk/MemoryLeak/Classes/Platform.h
+END

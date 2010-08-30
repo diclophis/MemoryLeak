@@ -1,0 +1,32 @@
+//
+//  Platform.h
+//  MemoryLeak
+//
+//  Created by Jon Bardin on 9/7/09.
+//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "OpenGLCommon.h"
+
+
+@class MD2Model;
+
+
+@interface Platform : NSObject {
+	Rotation3D myRotation;
+	Color3D myColor;
+	Vertex3D myPosition;
+	CGRect myFrame;
+}
+
+
+@property Vertex3D myPosition;
+@property CGRect myFrame;
+
+
+-(id)initWithPosition:(Vertex3D)thePosition;
+-(void)draw;
+
+
+@end

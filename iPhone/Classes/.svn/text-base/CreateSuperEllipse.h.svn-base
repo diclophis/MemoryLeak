@@ -1,0 +1,16 @@
+//
+//  CreateSuperEllipse.h
+//  AppleCoder-OpenGLES-00
+//
+//  Created by Jon Bardin on 9/4/09.
+//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//
+
+
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
+
+
+void EvalSuperEllipse(double t1,double t2,double p1,double p2,XYZ *p);
+void CreateSuperEllipse(double power1,double power2,int n,int method);

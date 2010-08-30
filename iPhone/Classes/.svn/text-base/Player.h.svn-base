@@ -1,0 +1,33 @@
+//
+//  Player.h
+//  MemoryLeak
+//
+//  Created by Jon Bardin on 9/7/09.
+//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "OpenGLCommon.h"
+
+
+@interface Player : NSObject {
+	Vector3D myVector;
+	Vector3D myPosition;
+	CGRect myFrame;
+	CGFloat myRotation;
+	NSInteger animationIndex;
+	NSInteger animationDirection;
+}
+
+
+@property Vector3D myVector;
+@property Vector3D myPosition;
+@property CGRect myFrame;
+
+
+-(id)initWithPosition:(Vector3D)thePosition;
+-(void)draw;
+-(void)tick;
+
+
+@end

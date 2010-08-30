@@ -1,0 +1,13 @@
+//
+// Prefix header for all source files of the 'MemoryLeak' target in the 'MemoryLeak' project
+//
+
+#define EV_STANDALONE 1
+#define EV_USE_SELECT 1
+#define EV_SELECT_USE_FD_SET 1
+
+
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#endif
