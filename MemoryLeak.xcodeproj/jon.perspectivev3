@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ActivePerspectiveName</key>
-	<string>Project</string>
+	<string>Debug</string>
 	<key>AllowedModules</key>
 	<array>
 		<dict>
@@ -268,6 +268,10 @@
 							<array>
 								<string>29B97314FDCFA39411CA2CEA</string>
 								<string>FCFD43EE121BBF4F00A65BCF</string>
+								<string>FC21C8F5121AA9D1006B5015</string>
+								<string>FC68BA3A12291F9100825AEA</string>
+								<string>FC68BA4812291F9100825AEA</string>
+								<string>FC68BA5412291F9100825AEA</string>
 								<string>FC21C8BD121AA24D006B5015</string>
 								<string>FCBE418D1216835400A60972</string>
 								<string>FCBE41401216807900A60972</string>
@@ -278,13 +282,13 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>26</integer>
-									<integer>24</integer>
+									<integer>43</integer>
+									<integer>41</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {266, 722}}</string>
+							<string>{{0, 487}, {266, 722}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -300,8 +304,6 @@
 							<string>MainColumn</string>
 							<real>266</real>
 						</array>
-						<key>RubberWindowFrame</key>
-						<string>0 97 1440 781 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -312,14 +314,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>FCF839E711E6F4C6002E21F8</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>EAGLView.mm</string>
+								<string>Engine.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>FCF839E811E6F4C6002E21F8</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>EAGLView.mm</string>
+										<string>Engine.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>FCE2DBDB122BE11B005D610E</string>
+										<string>FCE2DDEF122BFC56005D610E</string>
 										<key>history</key>
 										<array>
 											<string>FC7C4F22121F7611003C7C89</string>
@@ -343,7 +343,6 @@
 											<string>FC450E9C1225222A0040D9CD</string>
 											<string>FC450E9D1225222A0040D9CD</string>
 											<string>FC450F1A122526950040D9CD</string>
-											<string>FC450F35122527840040D9CD</string>
 											<string>FC450F68122528050040D9CD</string>
 											<string>FC68BB3B1229298100825AEA</string>
 											<string>FC68BB4012292A1000825AEA</string>
@@ -352,11 +351,13 @@
 											<string>FCE2D932122BBD06005D610E</string>
 											<string>FCE2D934122BBD06005D610E</string>
 											<string>FCE2D943122BBD92005D610E</string>
-											<string>FCE2D989122BC124005D610E</string>
-											<string>FCE2DA7F122BCBBF005D610E</string>
-											<string>FCE2DBC2122BDCE1005D610E</string>
 											<string>FCE2DBCF122BDD9D005D610E</string>
-											<string>FCE2DBD0122BDD9D005D610E</string>
+											<string>FCE2DBF8122BE535005D610E</string>
+											<string>FCE2DC86122BE9D9005D610E</string>
+											<string>FCE2DD46122BF4EB005D610E</string>
+											<string>FCE2DD59122BF578005D610E</string>
+											<string>FCE2DD6A122BF851005D610E</string>
+											<string>FCE2DD6B122BF851005D610E</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -371,8 +372,6 @@
 							<dict>
 								<key>Frame</key>
 								<string>{{0, 0}, {1152, 519}}</string>
-								<key>RubberWindowFrame</key>
-								<string>0 97 1440 781 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -412,8 +411,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1152, 189}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 97 1440 781 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXProjectFindModule</string>
@@ -535,6 +532,8 @@
 					<dict>
 						<key>Frame</key>
 						<string>{{0, 0}, {1440, 261}}</string>
+						<key>RubberWindowFrame</key>
+						<string>0 97 1440 781 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -609,7 +608,11 @@
 							</array>
 							<key>Frame</key>
 							<string>{{697, 0}, {743, 144}}</string>
+							<key>RubberWindowFrame</key>
+							<string>0 97 1440 781 0 0 1440 878 </string>
 						</dict>
+						<key>RubberWindowFrame</key>
+						<string>0 97 1440 781 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -673,6 +676,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>FCE2DDF0122BFC56005D610E</string>
 		<string>FCE2D62D122B955B005D610E</string>
 		<string>FCE2D62F122B955B005D610E</string>
 		<string>/Users/jon/iPhone/MemoryLeak/MemoryLeak.xcodeproj</string>

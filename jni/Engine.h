@@ -41,8 +41,6 @@
 
 
 
-
-
 class GLViewController {
 	
 public:
@@ -75,7 +73,7 @@ public:
 	//World
 	//GLViewController *states[MAX_STATES];
 	
-	#define NUM_PARTICLES 100
+	#define NUM_PARTICLES 200
 	
 	GLfloat vertices[NUM_PARTICLES * 3];
 	GLfloat colors[NUM_PARTICLES * 4];
@@ -277,7 +275,7 @@ public:
 	int myPlayerIsTransformed;
 	int myPlayerNeedsTransform;
 	
-	
+	inline std::string stringify(double x);
 	
 	
 };

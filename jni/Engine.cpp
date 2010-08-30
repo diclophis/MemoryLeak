@@ -29,7 +29,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <stdexcept>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -44,18 +43,13 @@
 #include "Engine.h"
 
 
-class BadConversion : public std::runtime_error {
-public:
-	BadConversion(std::string const& s)
-	: std::runtime_error(s)
-	{ }
-};
 
-inline std::string stringify(double x)
+
+inline std::string GLViewController::stringify(double x)
 {
 	std::ostringstream o;
 	if (!(o << x))
-		throw BadConversion("stringify(double)");
+		throw 987;
 	return o.str();
 }
 
@@ -81,6 +75,8 @@ GLViewController::~GLViewController() {
 
 
 void GLViewController::playerStartedJumping() {
+	if (mySimulationTime > 1.0) {
+		
 	if (myPlayerCanDoubleJump) {
 		myPlayerCanDoubleJump = false;
 		myPlayerLastJump = mySimulationTime;
@@ -90,6 +86,8 @@ void GLViewController::playerStartedJumping() {
 	
 	if (myPlayerOnPlatform) {
 		myPlayerLastJump = mySimulationTime;
+	}
+		
 	}
 	
 	//myPlayerSpeed.x = 0;
@@ -147,7 +145,7 @@ int GLViewController::tick(float delta) {
 		tickCamera();
 	}
 	
-	if (myPlayerPosition.y < -100.0) {
+	if (myPlayerPosition.y < -200.0) {
 		return 0;
 	} else {
 		return 1;
@@ -207,8 +205,10 @@ void GLViewController::draw(float rotation) {
 			drawCamera();
 			drawPlayer();
 			drawPlatform();
-			drawFountain();
-			//drawSkyBox();
+			drawSkyBox();
+			if (myPlayerSpeed.x < 600.0) {
+				drawFountain();
+			}
 			drawSpiral();
 			drawFont();
 			glDisable(GL_BLEND);
@@ -249,7 +249,7 @@ void GLViewController::tickFont() {
 
 
 void GLViewController::drawFont() {
-	std::string fps = stringify(myPlayerSpeed.x);
+	std::string fps = stringify((int)myPlayerSpeed.x);
 		
 	float _scaleX = 1.0;
 	float _scaleY = 1.0;
@@ -292,7 +292,7 @@ void GLViewController::drawFont() {
 		int c = fps.at(i) - ' ';
 
 
-		float y = 0.5;
+		float y = 0.9;
 
 
 		m_nCurrentChar = 0;
@@ -417,20 +417,22 @@ void GLViewController::buildPlayer(FILE *playerFilename, unsigned int off, unsig
 	myPlayerAnimationIndex = 0;
 	
 	myPlayerRunCycle = 1;
-	myPlayerJumpCycle = 6;
-	myPlayerTransformedCycle = 7;
-	myPlayerTransformUpCycle = 9;
-	myPlayerTransformDownCycle = 11;
+	
+	//15 //14 //13         //16 //17 //25
+	myPlayerJumpCycle = (int)(randf() * 3.0) + 13;
+	myPlayerTransformedCycle = 17;
+	myPlayerTransformUpCycle = 25;
+	myPlayerTransformDownCycle = 16;
 	myPlayerIsTransformed = false;
-	myPlayerNeedsTransform = false;
+	myPlayerNeedsTransform = true;
 	
-	myMd2 = Md2Manager::Load(playerFilename, 15, off, len);
+	myMd2 = Md2Manager::Load(playerFilename, 25, off, len);
 	
-	//for (int cycle = 0; cycle < myMd2->GetNumCycles(); cycle++) {
-	//	LOGV("%d %d %s\n", myMd2->GetNumCycles(), cycle,myMd2->GetCycleName(cycle));
-	//}
+	for (int cycle = 0; cycle < myMd2->GetNumCycles(); cycle++) {
+		LOGV("%d %d %s\n", myMd2->GetNumCycles(), cycle,myMd2->GetCycleName(cycle));
+	}
 	
-	myMd2->SwitchCycle(myPlayerRunCycle, 0.0, true, -1);
+	//myMd2->SwitchCycle(myPlayerRunCycle, 0.0, true, -1);
 }
 
 
@@ -464,7 +466,7 @@ void GLViewController::tickPlayer() {
 	
 	if (timeSinceStarted < 0.02 && timeSinceStarted > 0.0) {
 		//myMd2->SwitchCycle(6, 0.001, false);
-		//myMd2->SwitchCycle(myPlayerJumpCycle, 0.1, false);
+		myMd2->SwitchCycle(myPlayerJumpCycle, 0.01, false, -1, myPlayerRunCycle);
 		myPlayerFalling = false;
 		if (myPlayerJumping) {
 
@@ -475,8 +477,8 @@ void GLViewController::tickPlayer() {
 				myPlayerFalling = true;
 			}
 		} else {
-			myPlayerAcceleration.x = 1000.0;
-			myPlayerSpeed.y = 600.0;
+			myPlayerAcceleration.x = 2500.0;
+			myPlayerSpeed.y = 800.0;
 			myPlayerJumping = true;
 		}
 	}
@@ -512,18 +514,23 @@ void GLViewController::tickPlayer() {
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x * myDeltaTime, myPlayerAcceleration.y * myDeltaTime, myPlayerAcceleration.z * myDeltaTime));
 	
 	//NSLog("%f\n", myPlayerSpeed.y);
-	if (myPlayerSpeed.y < -300.0) {
-		myPlayerSpeed.y = -300.0;
+	if (myPlayerSpeed.y < -400.0) {
+		myPlayerSpeed.y = -400.0;
 	}
 	
 	Vector3D oldPosition = myPlayerPosition;
 	
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
 	
-	if (!myPlayerOnPlatform) {
-		float slope = (myPlayerPosition.y - oldPosition.y) / (myPlayerPosition.x - oldPosition.x);
-		myPlayerRotation = slope * 30.0;
+	
+	if (myPlayerPlatformIntersection.y - myPlayerPosition.y > 50.0) {
+		myPlayerNeedsTransform = true;
 	}
+	
+	//if (!myPlayerOnPlatform) {
+	//	float slope = (myPlayerPosition.y - oldPosition.y) / (myPlayerPosition.x - oldPosition.x);
+	//	myPlayerRotation = slope * 20.0;
+	//}
 }
 
 void GLViewController::drawPlayer() {
@@ -536,9 +543,9 @@ void GLViewController::drawPlayer() {
 		//glRotatef(myPlayerRotation, 0.0, 0.0, 1.0);
 		//float scale = 0.15;
 		
-		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 10, myPlayerPosition.z);
+		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 5, myPlayerPosition.z);
 		glRotatef(myPlayerRotation, 0.0, 0.0, 1.0);
-		float scale = 0.5;
+		float scale = 0.75;
 		
 		glScalef(scale, scale, scale);
 		bindTexture(myPlayerTexture);
@@ -593,7 +600,7 @@ void GLViewController::buildPlatforms() {
 		myPlatforms[i].angular_frequency = 0.030; //1 / (i + 0.000001) + 1.0;
 		myPlatforms[i].phase = 0.0;
 		lastPlatformPosition = myPlatforms[i].position;
-		LOGV("%f\n", logf((float)i + 1.1) * 20.0);
+		//LOGV("%f\n", logf((float)i + 1.1) * 20.0);
 		lastPlatformPosition.x += length + (logf((float)i + 1.1) * 50.0);
 	}
 }
@@ -618,7 +625,7 @@ void GLViewController::iteratePlatform(int operation) {
 		Platform platform = myPlatforms[j];
 		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
 			for (float i = platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
-				if ((i < (myPlayerPosition.x + 400.0)) && (i > (myPlayerPosition.x - 100.0))) {
+				if ((i < (myPlayerPosition.x + 400.0)) && (i > (myPlayerPosition.x - 200.0))) {
 					float beginX = i;
 					float endX = i + platform.step;
 					
@@ -738,7 +745,7 @@ void GLViewController::tickSpiral() {
 
 
 void GLViewController::buildSpiral() {
-	int dots = 4;
+	int dots = 0;
 	int lines_from_dot = 0;
 	
 	mySpiralArrays = (dots * 3) + ((dots * lines_from_dot) * 3);
@@ -746,7 +753,7 @@ void GLViewController::buildSpiral() {
 	
     GLfloat x,y,z,angle,incline,interval;
     int c = 0;
-	float r = 4.0;
+	float r = 10.0;
     z = 0;
 	interval = 1.0 / 4.0 * (2 * M_PI);
 	incline = -0.0;
@@ -903,9 +910,9 @@ void GLViewController::random_velocity(int idx) {
 	//velocity[idx].y = 0.25 - (randf() * 0.5);
     //velocity[idx].z = 0.25 - (randf() * 0.5);
 	
-	velocity[idx].x = -0.35 + (0.01);
+	velocity[idx].x = -0.50 + (randf() * 2.1);
 	velocity[idx].y = 0.25 - (0.5);
-    velocity[idx].z = 0.25 - (0.5);
+    velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
 }
 
 void GLViewController::reset_particle(int idx) {
@@ -917,7 +924,7 @@ void GLViewController::reset_particle(int idx) {
 	} else {
 		
 		generator[idx].x = myPlayerPosition.x;
-		generator[idx].y = myPlayerPosition.y;
+		generator[idx].y = myPlayerPosition.y + 8.5;
 		generator[idx].z = myPlayerPosition.z;
 		
 		//generator[idx].x = myPlayerPosition.x + (randf() * 4.0) - 2.0;
@@ -942,16 +949,25 @@ void GLViewController::update_vertex(int idx) {
     vertices[i] += velocity[idx].x;
     vertices[i+1] += velocity[idx].y;
     vertices[i+2] += velocity[idx].z;
+	velocity[idx].y -= 0.0002 * fabs(myPlayerSpeed.y);
 	//LOGV("%d %f %f %f\n", idx, vertices[idx * 3], life[idx], myPlayerPosition.x);
 }
 
+/*
 static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 {
 	{1.0f,0.5f,0.5f},{1.0f,0.75f,0.5f},{1.0f,1.0f,0.5f},{0.75f,1.0f,0.5f},
 	{0.5f,1.0f,0.5f},{0.5f,1.0f,0.75f},{0.5f,1.0f,1.0f},{0.5f,0.75f,1.0f},
 	{0.5f,0.5f,1.0f},{0.75f,0.5f,1.0f},{1.0f,0.5f,1.0f},{1.0f,0.5f,0.75f}
 };
+ */
 
+static GLfloat ccolors[12][3]=				// Rainbow Of Colors
+{
+	{1.0f,1.0f,1.0f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},
+	{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},
+	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
+};
 
 void GLViewController::update_color(int idx) {
     int i = idx * 4;
@@ -965,7 +981,7 @@ void GLViewController::update_color(int idx) {
 	colors[i+0] = ccolors[ii][0];
     colors[i+1] = ccolors[ii][1];
     colors[i+2] = ccolors[ii][2];
-	colors[i+3] = 1.0;	
+	colors[i+3] = i / (float)11.0;	
 }
 
 void GLViewController::reset_life(int i) {

@@ -51,6 +51,7 @@ typedef struct GLViewController GLViewController;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
 -(void)startGame;
+-(GLuint)loadTexture:(NSString *)filename ofType:(NSString *)type;
 
 
 @end

@@ -152,7 +152,7 @@
 }
 
 
--(GLuint)loadTexture:(NSString *)filename {
+-(GLuint)loadTexture:(NSString *)filename ofType:(NSString *)type {
 	GLuint text = 0;
 	
 	//Texture loading is done here
@@ -164,7 +164,8 @@
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@"png"];
+	
+	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type];
 	NSString *extension = [path pathExtension];
 	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
 	float inWidth = 512.0;
@@ -206,35 +207,35 @@
 		delete gameController;
 	} else {
 		//player
-		textures[0] = [self loadTexture:@"faerie"];
+		textures[0] = [self loadTexture:@"vincent_texture" ofType:@"png"];
 		
 		//ground
+		textures[1] = [self loadTexture:@"ground_texture" ofType:@"png"];
 		
-		textures[1] = [self loadTexture:@"ground_texture"];
 		//top
-		textures[2] = [self loadTexture:@"entropic_up"];
+		textures[2] = [self loadTexture:@"noonclouds_up" ofType:@"jpg"];
 		
 		//east
-		textures[3] = [self loadTexture:@"entropic_east"];
+		textures[3] = [self loadTexture:@"noonclouds_east" ofType:@"jpg"];
 		
 		//bottom
-		textures[4] = [self loadTexture:@"entropic_down"];
+		textures[4] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
 		
 		//north
-		textures[5] = [self loadTexture:@"entropic_west"];
+		textures[5] = [self loadTexture:@"noonclouds_west" ofType:@"jpg"];
 		
 		//west
-		textures[6] = [self loadTexture:@"entropic_north"];
+		textures[6] = [self loadTexture:@"noonclouds_north" ofType:@"jpg"];
 		
 		//south
-		textures[7] = [self loadTexture:@"entropic_south"];
+		textures[7] = [self loadTexture:@"noonclouds_south" ofType:@"jpg"];
 		
 		//font
-		textures[8] = [self loadTexture:@"font_texture"];
+		textures[8] = [self loadTexture:@"font_texture" ofType:@"png"];
 	}
 	
 	gameController = new GLViewController();
-	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"faerie" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"vincent" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 	fseek(fd, 0, SEEK_END);
 	unsigned int len = ftell(fd);
 	rewind(fd);

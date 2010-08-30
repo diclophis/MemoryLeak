@@ -72,7 +72,7 @@ public class DemoActivity extends Activity {
 
         android.content.res.AssetFileDescriptor afd;
         try {
-          afd = getAssets().openFd("models/faerie.wav");
+          afd = getAssets().openFd("models/vincent.wav");
         } catch(java.io.IOException e) {
           System.out.println(e);
           afd = null;
@@ -139,24 +139,23 @@ class DemoRenderer implements GLSurfaceView.Renderer {
       try {
         AssetManager am = mContext.getAssets();
         String[] texture_file_names = {
-          "textures/faerie.png",
+          "textures/vincent_texture.png",
           "textures/ground_texture.png",
-          "textures/skyboxes/testcube_-x.png",
-
+          "textures/skyboxes/noonclouds_up.jpg",
 
           //#1
-          "textures/skyboxes/entropic_east.png",
+          "textures/skyboxes/noonclouds_east.jpg",
 
-          "textures/skyboxes/testcube_-z.png",
+          "textures/skyboxes/noonclouds_down.jpg",
 
           //#3
-          "textures/skyboxes/entropic_west.png",
+          "textures/skyboxes/noonclouds_west.jpg",
 
           //#2
-          "textures/skyboxes/entropic_north.png",
+          "textures/skyboxes/noonclouds_north.jpg",
 
           //#4
-          "textures/skyboxes/entropic_south.png",
+          "textures/skyboxes/noonclouds_south.jpg",
 
           "textures/font_texture.png"
         };
