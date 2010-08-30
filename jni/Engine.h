@@ -20,8 +20,8 @@
 #define CHAR_HEIGHT 0.1
 
 // Initial setup only.
-#define CHAR_PIXEL_W 40 // 8
-#define CHAR_PIXEL_H 40 // 9
+#define CHAR_PIXEL_W 25 // 8
+#define CHAR_PIXEL_H 30 // 9
 
 #define MAX_CHAR_BUFFER 256
 
@@ -36,10 +36,6 @@
 #endif
 
 //@interface GLViewController : NSObject {
-
-
-
-
 
 class GLViewController {
 	
@@ -151,6 +147,7 @@ public:
 	bool myPlayerJumping;
 	bool myPlayerCanDoubleJump;
 	bool myPlayerOnPlatform;
+	bool myPlayerBelowPlatform;
 	
 	int myState;
 	int myStatesToShow;
@@ -277,5 +274,6 @@ public:
 	
 	inline std::string stringify(double x);
 	
+	bool myGameStarted;
 	
 };

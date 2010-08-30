@@ -71,22 +71,27 @@ GLViewController::~GLViewController() {
 	if (myPlatforms) {
 		free(myPlatforms);
 	}
+	
+	if (mySkyBoxTextures) {
+		free(mySkyBoxTextures);
+	}
 }
 
 
 void GLViewController::playerStartedJumping() {
-	if (mySimulationTime > 1.0) {
+	if (myGameStarted) {
 		
-	if (myPlayerCanDoubleJump) {
-		myPlayerCanDoubleJump = false;
-		myPlayerLastJump = mySimulationTime;
-	} else {
-		//myPlayerNeedsTransform = true;
-	}
-	
-	if (myPlayerOnPlatform) {
-		myPlayerLastJump = mySimulationTime;
-	}
+		
+		if (myPlayerCanDoubleJump) {
+			myPlayerCanDoubleJump = false;
+			myPlayerLastJump = mySimulationTime;
+		} else {
+			//myPlayerNeedsTransform = true;
+		}
+		
+		if (myPlayerOnPlatform) {
+			myPlayerLastJump = mySimulationTime;
+		}
 		
 	}
 	
@@ -106,9 +111,10 @@ void GLViewController::build(int width, int height, GLuint *textures, FILE *play
 	screenHeight = height;
 	
 	//World
-	myGravity = -4000.0; //-500
+	myGravity = -4300.0; //-500
 	myState = 0;
 	mySimulationTime = 0.0;
+	myGameStarted = false;
 	
 	myBuildSkyBoxDuration = 60.0;
 	
@@ -128,7 +134,7 @@ void GLViewController::build(int width, int height, GLuint *textures, FILE *play
 	buildPlayer(playerFilename, off, len);
 	buildPlatforms();
 	buildCamera();
-	buildSpiral();
+	//buildSpiral();
 	buildFountain();
 	mySceneBuilt = true;
 }
@@ -140,9 +146,13 @@ int GLViewController::tick(float delta) {
 		//tickFont();
 		tickPlatform();
 		tickPlayer();
-		tickSpiral();
+		//tickSpiral();
 		tickFountain();
 		tickCamera();
+	}
+	
+	if (mySimulationTime > 1.0) {
+		myGameStarted = true;
 	}
 	
 	if (myPlayerPosition.y < -200.0) {
@@ -173,6 +183,7 @@ void GLViewController::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNea
 
 void GLViewController::prepareFrame(int width, int height) {
     glViewport(0, 0, width, height);
+	glClearColor(0.5, 0.6, 0.85, 1.0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -206,10 +217,10 @@ void GLViewController::draw(float rotation) {
 			drawPlayer();
 			drawPlatform();
 			drawSkyBox();
-			if (myPlayerSpeed.x < 600.0) {
+			if (myPlayerBelowPlatform) {
 				drawFountain();
 			}
-			drawSpiral();
+			//drawSpiral();
 			drawFont();
 			glDisable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
@@ -249,7 +260,6 @@ void GLViewController::tickFont() {
 
 
 void GLViewController::drawFont() {
-	std::string fps = stringify((int)myPlayerSpeed.x);
 		
 	float _scaleX = 1.0;
 	float _scaleY = 1.0;
@@ -284,16 +294,32 @@ void GLViewController::drawFont() {
 	glPushMatrix();
 	glLoadIdentity();
 
-	float x = 0.0;
+	float x;
+	std::string fps;
+
+	if (myGameStarted) {
+		x = 0.05;
+		fps = "S:" + stringify((int)myPlayerSpeed.x) + " D:" + stringify((int)myPlayerPosition.x);
+	} else {
+		x = 0.1 + m_fCharacterWidth * fastSinf(mySimulationTime);
+		fps = "Robot Rainbow Racer";
+	}
+	 
+	float y = 0.875;
 
 	for (int i=0; i<fps.length(); i++) {
+		int c = fps.at(i);
 
+		if (c == ' ') {
+			if (myGameStarted) {
+				x = 0.0;
+			} else {
+				x = -m_fCharacterWidth * fastSinf(mySimulationTime + (float)i);
+			}
+			y -= 0.075;
+		}
 		
-		int c = fps.at(i) - ' ';
-
-
-		float y = 0.9;
-
+		c -= ' ';
 
 		m_nCurrentChar = 0;
 
@@ -315,6 +341,8 @@ void GLViewController::drawFont() {
 		glVertexPointer(3, GL_FLOAT, 0, &charGeomV);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		x += m_fCharacterWidth;
+		LOGV("%f\n", x);
+
 	}
 	 
 	unbindTexture(myFontTexture);
@@ -514,8 +542,8 @@ void GLViewController::tickPlayer() {
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x * myDeltaTime, myPlayerAcceleration.y * myDeltaTime, myPlayerAcceleration.z * myDeltaTime));
 	
 	//NSLog("%f\n", myPlayerSpeed.y);
-	if (myPlayerSpeed.y < -400.0) {
-		myPlayerSpeed.y = -400.0;
+	if (myPlayerSpeed.y < -450.0) {
+		myPlayerSpeed.y = -450.0;
 	}
 	
 	Vector3D oldPosition = myPlayerPosition;
@@ -524,7 +552,10 @@ void GLViewController::tickPlayer() {
 	
 	
 	if (myPlayerPlatformIntersection.y - myPlayerPosition.y > 50.0) {
+		myPlayerBelowPlatform = true;
 		myPlayerNeedsTransform = true;
+	} else {
+		myPlayerBelowPlatform = false;
 	}
 	
 	//if (!myPlayerOnPlatform) {
@@ -534,24 +565,15 @@ void GLViewController::tickPlayer() {
 }
 
 void GLViewController::drawPlayer() {
-	
-	
 	glPushMatrix();
 	{
-		//horse
-		//glTranslatef(myPlayerPosition.x, myPlayerPosition.y - 1.75, myPlayerPosition.z);
-		//glRotatef(myPlayerRotation, 0.0, 0.0, 1.0);
-		//float scale = 0.15;
-		
 		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 5, myPlayerPosition.z);
 		glRotatef(myPlayerRotation, 0.0, 0.0, 1.0);
 		float scale = 0.75;
-		
 		glScalef(scale, scale, scale);
 		bindTexture(myPlayerTexture);
 		Md2Manager::Render();
 		unbindTexture(myPlayerTexture);
-
 	}
 	glPopMatrix();
 }
@@ -574,9 +596,8 @@ void GLViewController::buildPlatforms() {
 		while (fabs(lastPlatformPosition.y - randomY) < 10.0) {
 			randomY = ((random() / (float)RAND_MAX) * 50.0);
 		}
-		
-		randomA = ((random() / (float)RAND_MAX) * 5.0);
-		randomL = 40.0; //50.0 - (i * randf());
+		randomA = ((random() / (float)RAND_MAX) * 6.0);
+		randomL = 40.0 - (i * randf());
 		
 		if (randomA > 5.0) {
 			step = 28;
@@ -667,8 +688,8 @@ const GLfloat GLViewController::myPlatformTextureCoords[12] = {
 
 
 void GLViewController::drawPlatformSegment(float beginX, float beginY, float endX, float endY) {
-	glPushMatrix();
-	{		
+	//glPushMatrix();
+	//{		
 		float platformRadius = 10.0;
 		
 		GLfloat platformVertices[18] = {
@@ -687,8 +708,8 @@ void GLViewController::drawPlatformSegment(float beginX, float beginY, float end
 		glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableClientState(GL_VERTEX_ARRAY);
-	}
-	glPopMatrix();
+	//}
+	//glPopMatrix();
 }
 
 
@@ -910,8 +931,8 @@ void GLViewController::random_velocity(int idx) {
 	//velocity[idx].y = 0.25 - (randf() * 0.5);
     //velocity[idx].z = 0.25 - (randf() * 0.5);
 	
-	velocity[idx].x = -0.50 + (randf() * 2.1);
-	velocity[idx].y = 0.25 - (0.5);
+	velocity[idx].x = -0.35 + (randf() * 0.01);
+	velocity[idx].y = 0.25 - (randf() * 0.5);
     velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
 }
 
@@ -924,7 +945,7 @@ void GLViewController::reset_particle(int idx) {
 	} else {
 		
 		generator[idx].x = myPlayerPosition.x;
-		generator[idx].y = myPlayerPosition.y + 8.5;
+		generator[idx].y = myPlayerPosition.y + 5.5;
 		generator[idx].z = myPlayerPosition.z;
 		
 		//generator[idx].x = myPlayerPosition.x + (randf() * 4.0) - 2.0;
@@ -1158,32 +1179,25 @@ void GLViewController::unbindTexture(GLuint texture) {
 
 
 void GLViewController::drawSkyBox() {
-	glPushMatrix();
-	{
+	//glPushMatrix();
+	//{
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, mySkyBoxTexture[0]);
-		
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		
 		glTranslatef(myPlayerPosition.x, 0.0, 0.0);
-				
-		mySkyBoxRotation += 1.0;
-		
-		glScalef(400.0, 400.0, 400.0);
+		mySkyBoxRotation += 0.11;
+		glScalef(500.0, 500.0, 500.0);
 		glRotatef(mySkyBoxRotation, 0.0, 1.0, 0.0);
-				
 		glVertexPointer(3, GL_FLOAT, 0, mySkyBoxVertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureCoords);
 		for (int i=0; i<6; i++) {
-			bindTexture(mySkyBoxTextures[i]);
-			glDrawArrays(GL_TRIANGLES, i * 6, 6);	
-			unbindTexture(mySkyBoxTextures[i]);
+			glBindTexture(GL_TEXTURE_2D, mySkyBoxTextures[i]);
+			glDrawArrays(GL_TRIANGLES, i * 6, 6);
 		}
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisable(GL_TEXTURE_2D);
 		
-	}
-	glPopMatrix();
+	//}
+	//glPopMatrix();
 }
