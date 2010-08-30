@@ -5,6 +5,8 @@ bin/classes.dex
 bin/classes/
 build/Debug-iphonesimulator/
 build/MemoryLeak.build/
+build/Debug-iphoneos/
 gen/
 libs/armeabi/
 obj/local/
+assets/.DS_Store
