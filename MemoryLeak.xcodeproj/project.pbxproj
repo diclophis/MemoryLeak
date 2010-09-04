@@ -23,6 +23,7 @@
 		FCBE416F1216811B00A60972 /* MD2_File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41651216811B00A60972 /* MD2_File.cpp */; };
 		FCBE41701216811B00A60972 /* MD2_Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41671216811B00A60972 /* MD2_Manager.cpp */; };
 		FCBE41711216811B00A60972 /* MD2_Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41691216811B00A60972 /* MD2_Model.cpp */; };
+		FCCA1E1A1231B83900BB8DE8 /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = FCCA1E191231B83900BB8DE8 /* tree.png */; };
 		FCE2D85A122BB80C005D610E /* font_texture.png in Resources */ = {isa = PBXBuildFile; fileRef = FCE2D859122BB80C005D610E /* font_texture.png */; };
 		FCE2DD3E122BF4B3005D610E /* noonclouds_down.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FCE2DD38122BF4B3005D610E /* noonclouds_down.jpg */; };
 		FCE2DD3F122BF4B3005D610E /* noonclouds_east.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FCE2DD39122BF4B3005D610E /* noonclouds_east.jpg */; };
@@ -66,6 +67,7 @@
 		FCBE416C1216811B00A60972 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = jni/Platform.h; sourceTree = "<group>"; };
 		FCBE416D1216811B00A60972 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = jni/Player.h; sourceTree = "<group>"; };
 		FCBE417C121681C600A60972 /* importgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = importgl.h; path = jni/importgl.h; sourceTree = "<group>"; };
+		FCCA1E191231B83900BB8DE8 /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
 		FCE2D859122BB80C005D610E /* font_texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = font_texture.png; sourceTree = "<group>"; };
 		FCE2DD38122BF4B3005D610E /* noonclouds_down.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = noonclouds_down.jpg; sourceTree = "<group>"; };
 		FCE2DD39122BF4B3005D610E /* noonclouds_east.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = noonclouds_east.jpg; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 		FC68BA4812291F9100825AEA /* textures */ = {
 			isa = PBXGroup;
 			children = (
+				FCCA1E191231B83900BB8DE8 /* tree.png */,
 				FCE2D859122BB80C005D610E /* font_texture.png */,
 				FC68BA4C12291F9100825AEA /* ground_texture.png */,
 				FC68BA5412291F9100825AEA /* skyboxes */,
@@ -300,6 +303,7 @@
 				FCE2DD42122BF4B3005D610E /* noonclouds_up.jpg in Resources */,
 				FCE2DD43122BF4B3005D610E /* noonclouds_west.jpg in Resources */,
 				FCE2DF10122C09AB005D610E /* Default.png in Resources */,
+				FCCA1E1A1231B83900BB8DE8 /* tree.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -271,7 +271,6 @@
 								<string>FC21C8F5121AA9D1006B5015</string>
 								<string>FC68BA3A12291F9100825AEA</string>
 								<string>FC68BA4812291F9100825AEA</string>
-								<string>FC68BA5412291F9100825AEA</string>
 								<string>FC21C8BD121AA24D006B5015</string>
 								<string>FCBE418D1216835400A60972</string>
 								<string>FCBE41401216807900A60972</string>
@@ -282,12 +281,13 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>1</integer>
+									<integer>21</integer>
+									<integer>19</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 0}, {266, 722}}</string>
+							<string>{{0, 98}, {266, 722}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -334,31 +334,29 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>FCE2DF65122C0EB2005D610E</string>
+										<string>FCB3B47F1231F86700F0403F</string>
 										<key>history</key>
 										<array>
 											<string>FC7C4F22121F7611003C7C89</string>
 											<string>FC7C4F74121F7D22003C7C89</string>
 											<string>FC8E6F6412225D45006C80C6</string>
-											<string>FC450E7512251F060040D9CD</string>
 											<string>FC450E94122521A70040D9CD</string>
 											<string>FC450E95122521A70040D9CD</string>
 											<string>FC450E9C1225222A0040D9CD</string>
 											<string>FC450E9D1225222A0040D9CD</string>
 											<string>FC450F1A122526950040D9CD</string>
 											<string>FC450F68122528050040D9CD</string>
-											<string>FC68BB3B1229298100825AEA</string>
-											<string>FC68BB4012292A1000825AEA</string>
 											<string>FCE2D91F122BBC97005D610E</string>
 											<string>FCE2D934122BBD06005D610E</string>
 											<string>FCE2D943122BBD92005D610E</string>
 											<string>FCE2DBCF122BDD9D005D610E</string>
-											<string>FCE2DBF8122BE535005D610E</string>
 											<string>FCE2DC86122BE9D9005D610E</string>
-											<string>FCE2DD59122BF578005D610E</string>
-											<string>FCE2DD6A122BF851005D610E</string>
-											<string>FCE2DEF6122C0717005D610E</string>
-											<string>FCE2DF5D122C0E16005D610E</string>
+											<string>FCDED432122DDE1100CDEB16</string>
+											<string>FC1C1D621231A4CD001FBD05</string>
+											<string>FCCA1E121231B82500BB8DE8</string>
+											<string>FCCA1E421231F85200BB8DE8</string>
+											<string>FCCA1E431231F85200BB8DE8</string>
+											<string>FCCA1E451231F85200BB8DE8</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -372,18 +370,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1152, 519}}</string>
+								<string>{{0, 0}, {1152, 472}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 97 1440 781 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>519pt</string>
+							<string>472pt</string>
 						</dict>
 						<dict>
 							<key>Proportion</key>
-							<string>216pt</string>
+							<string>263pt</string>
 							<key>Tabs</key>
 							<array>
 								<dict>
@@ -397,7 +395,9 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1152, 185}}</string>
+										<string>{{10, 27}, {1152, 236}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 97 1440 781 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>XCDetailModule</string>
@@ -413,9 +413,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1152, 189}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 97 1440 781 0 0 1440 878 </string>
+										<string>{{10, 27}, {1152, 222}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXProjectFindModule</string>
@@ -453,7 +451,7 @@
 									<key>GeometryConfiguration</key>
 									<dict>
 										<key>Frame</key>
-										<string>{{10, 27}, {1152, 189}}</string>
+										<string>{{10, 27}, {1152, 229}}</string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -481,11 +479,11 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>FCE2D624122B955B005D610E</string>
+				<string>FCB3B4801231F86700F0403F</string>
 				<string>1CA23ED40692098700951B8B</string>
-				<string>FCE2D625122B955B005D610E</string>
+				<string>FCB3B4811231F86700F0403F</string>
 				<string>FCF839E711E6F4C6002E21F8</string>
-				<string>FCE2D626122B955B005D610E</string>
+				<string>FCB3B4821231F86700F0403F</string>
 				<string>1CA23EDF0692099D00951B8B</string>
 				<string>1CA23EE00692099D00951B8B</string>
 				<string>1CA23EE10692099D00951B8B</string>
@@ -634,14 +632,14 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>FCE2D627122B955B005D610E</string>
+				<string>FCCA1DC41231AFEC00BB8DE8</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>FCE2D628122B955B005D610E</string>
-				<string>FCE2D629122B955B005D610E</string>
-				<string>FCE2D62A122B955B005D610E</string>
-				<string>FCE2D62B122B955B005D610E</string>
-				<string>FCE2D62C122B955B005D610E</string>
+				<string>FCCA1DC51231AFEC00BB8DE8</string>
+				<string>FCCA1DC61231AFEC00BB8DE8</string>
+				<string>FCCA1DC71231AFEC00BB8DE8</string>
+				<string>FCCA1DC81231AFEC00BB8DE8</string>
+				<string>FCCA1DC91231AFEC00BB8DE8</string>
 			</array>
 			<key>ToolbarConfigUserDefaultsMinorVersion</key>
 			<string>2</string>
@@ -675,8 +673,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>FCE2D62D122B955B005D610E</string>
-		<string>FCE2D62F122B955B005D610E</string>
 		<string>/Users/jon/iPhone/MemoryLeak/MemoryLeak.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

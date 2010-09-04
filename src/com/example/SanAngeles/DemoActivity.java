@@ -157,7 +157,9 @@ class DemoRenderer implements GLSurfaceView.Renderer {
           //#4
           "textures/skyboxes/noonclouds_south.jpg",
 
-          "textures/font_texture.png"
+          "textures/font_texture.png",
+
+          "textures/tree.png"
         };
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];

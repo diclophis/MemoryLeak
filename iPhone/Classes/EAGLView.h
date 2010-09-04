@@ -38,7 +38,8 @@ typedef struct GLViewController GLViewController;
     GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
 	GLViewController *gameController;
 	BOOL myFrameRequested;
-	GLuint		textures[9];	
+	GLuint		textures[10];
+	int gameState;
 }
 
 

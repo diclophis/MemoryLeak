@@ -132,15 +132,16 @@
 
 
 -(void)drawView:(id)sender {
-	int gameState;
 	if (animating) {
 		[EAGLContext setCurrentContext:context];
-		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);		
-		
-		gameState = gameController->tick(1.0 / 150.0);
-		gameState = gameController->tick(1.0 / 150.0);
-		
+		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
+			for (int i=0; i<=gameState; i++) {
+				gameState = gameController->tick(1.0 / 500.0);
+				gameState = gameController->tick(1.0 / 500.0);
+				gameState = gameController->tick(1.0 / 500.0);
+				gameState = gameController->tick(1.0 / 500.0);
+			}
 		} else {
 			[self startGame];
 		}
@@ -212,14 +213,14 @@
 		//ground
 		textures[1] = [self loadTexture:@"ground_texture" ofType:@"png"];
 		
-		//top
-		textures[2] = [self loadTexture:@"noonclouds_up" ofType:@"jpg"];
+		//bottom
+		textures[2] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
 		
 		//east
 		textures[3] = [self loadTexture:@"noonclouds_east" ofType:@"jpg"];
 		
-		//bottom
-		textures[4] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
+		//top
+		textures[4] = [self loadTexture:@"noonclouds_up" ofType:@"jpg"];
 		
 		//north
 		textures[5] = [self loadTexture:@"noonclouds_west" ofType:@"jpg"];
@@ -232,6 +233,10 @@
 		
 		//font
 		textures[8] = [self loadTexture:@"font_texture" ofType:@"png"];
+		
+		//tree
+		textures[9] = [self loadTexture:@"tree" ofType:@"png"];
+
 	}
 	
 	gameController = new GLViewController();
@@ -240,6 +245,8 @@
 	unsigned int len = ftell(fd);
 	rewind(fd);
 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, fd, 0, len);
+	gameState = gameController->tick(1.0 / 200.0);
+
 }
 
 

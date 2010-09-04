@@ -20,8 +20,8 @@
 #define CHAR_HEIGHT 0.1
 
 // Initial setup only.
-#define CHAR_PIXEL_W 25 // 8
-#define CHAR_PIXEL_H 30 // 9
+#define CHAR_PIXEL_W 20 // 8
+#define CHAR_PIXEL_H 23 // 9
 
 #define MAX_CHAR_BUFFER 256
 
@@ -35,7 +35,6 @@
 #define LOGV printf
 #endif
 
-//@interface GLViewController : NSObject {
 
 class GLViewController {
 	
@@ -59,17 +58,7 @@ public:
 		GLfloat rotation;
 	} PlayerState;
 	
-	
-	/// ctor
-	//GLViewController() ;
-	
-	/// dtor
-	//~GLViewController() ;
-	
-	//World
-	//GLViewController *states[MAX_STATES];
-	
-	#define NUM_PARTICLES 200
+	#define NUM_PARTICLES 10
 	
 	GLfloat vertices[NUM_PARTICLES * 3];
 	GLfloat colors[NUM_PARTICLES * 4];
@@ -101,10 +90,6 @@ public:
 	GLfloat		charGeomV[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_V)];
 	GLfloat		charGeomT[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_T)];
 	GLint		viewport[4];	
-	
-	
-	
-	
 	
 	GLfloat *mySomethingVertices;
 	GLfloat *myGarbageCollectorVertices;
@@ -275,5 +260,10 @@ public:
 	inline std::string stringify(double x);
 	
 	bool myGameStarted;
+	int myGameSpeed;
+	
+	GLuint myTreeTextures[1];
+	
+	void camera_directions(float * out_rgt, float * out_up , float * out_look);
 	
 };

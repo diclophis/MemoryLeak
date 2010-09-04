@@ -63,6 +63,7 @@ static int  sTimeOffsetInit = 0;
 static long sTimeStopped  = 0;
 static int  sWindowWidth  = 320;
 static int  sWindowHeight = 480;
+static int gameState;
 
 
 JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
@@ -91,6 +92,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   sPlayerTextures = (GLuint *) env->GetIntArrayElements(arr, 0);
   gameController = new GLViewController();
   gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, myFile, fileOffset, fileLength);
+  gameState = gameController->tick(1.0 / 200.0);
   gAppAlive    = 1;
   sDemoStopped = 0;
   sTimeOffsetInit = 0;
@@ -127,25 +129,26 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
 
 /* Call to render the next GL frame */
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
-  long curTime;
-  int gameState;
 
   /* NOTE: if sDemoStopped is TRUE, then we re-render the same frame
    *       on each iteration.
    */
   if (sDemoStopped) {
   } else {
-    gameState = gameController->tick(1.0 / 150.0);
-    gameState = gameController->tick(1.0 / 150.0);
-
     if (gameState) {
+      for (int i=0; i<=gameState; i++) {
+        gameState = gameController->tick(1.0 / 500.0);
+        gameState = gameController->tick(1.0 / 500.0);
+        gameState = gameController->tick(1.0 / 500.0);
+        gameState = gameController->tick(1.0 / 500.0);
+      }
     } else {
-      LOGV("restart!!!!!!!!!!!");
       if (gameController) {
         delete gameController;
       }
       gameController = new GLViewController();
       gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, myFile, fileOffset, fileLength);
+      gameState = gameController->tick(1.0 / 200.0);
     }
   }
 
