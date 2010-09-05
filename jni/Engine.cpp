@@ -564,7 +564,7 @@ void GLViewController::buildPlayer(FILE *playerFilename, unsigned int off, unsig
 	myPlayerJumpSpeed = 60.0;
 	
 	myPlayerPosition = Vector3DMake(0.0, 300.0, 0.0);
-	myPlayerSpeed = Vector3DMake(00.0, 0.0, 0.0);
+	myPlayerSpeed = Vector3DMake(100.0, 0.0, 0.0);
 	myPlayerAcceleration = Vector3DMake(0.0, 0.0, 0.0);
 	myPlayerAnimationIndex = 0;
 	
@@ -664,7 +664,7 @@ void GLViewController::tickPlayer() {
 		myPlayerCanDoubleJump = true;
 		
 		if (!myGameStarted) {
-			myPlayerSpeed.x = 0.0;
+			//myPlayerSpeed.x = 0.0;
 		}
 	}
 	
@@ -725,7 +725,7 @@ void GLViewController::buildPlatforms() {
 		while (fabs(lastPlatformPosition.y - randomY) < 70.0) {
 			randomY = ((random() / (float)RAND_MAX) * 150.0);
 		}
-		randomA = ((random() / (float)RAND_MAX) * 6.0);
+		randomA = ((random() / (float)RAND_MAX) * 10.0);
 		randomL = 40.0 - (i * randf());
 		
 		if (randomA > 5.0) {
@@ -797,7 +797,7 @@ void GLViewController::iteratePlatform(int operation) {
 							tickPlatformSegment(beginX, beginY, endX, endY);
 							break;
 						case 1:
-							drawPlatformSegment(beginX, beginY, endX, endY);
+							drawPlatformSegment(platform.position.y, beginX, beginY, endX, endY);
 							break;
 					}
 				}
@@ -807,39 +807,125 @@ void GLViewController::iteratePlatform(int operation) {
 }
 
 
-const GLfloat GLViewController::myPlatformTextureCoords[12] = {
+/*
+const GLfloat GLViewController::myPlatformTextureCoords[6] = {
 	0.0, 0.0, // top-upper-right
 	1.0, 0.0,
 	1.0, 1.0,
-	1.0, 1.0, // top-lower-left
-	0.0, 1.0,
-	0.0, 0.0,
+	//1.0, 1.0, // top-lower-left
+	//0.0, 1.0,
+	//0.0, 0.0,
 };
+ */
 
 
-void GLViewController::drawPlatformSegment(float beginX, float beginY, float endX, float endY) {
-	//glPushMatrix();
-	//{		
-		float platformRadius = 10.0;
+void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
+	float beginX; float beginY; float endX; float endY;
+	
+	float platformRadius = 20.0;
+
+	int total = 3;
+
+	float deep = -((platformRadius * (float)total) * 0.5);
+	
+	int number = 6 * 3 * total;
+	
+	GLfloat platformVertices[number];
+	GLfloat myPlatformTextureCoords[2 * 3 * 2 * total];
+	
+	int index = 0;
+	int tindex = 0;
+
+	float lift = 0.0;
 		
-		GLfloat platformVertices[18] = {
-			beginX, beginY, -platformRadius, // top-upper-right
-			beginX, beginY, platformRadius,
-			endX, endY, platformRadius,
-			
-			endX, endY, platformRadius, // top-lower-left
-			endX, endY, -platformRadius,
-			beginX, beginY, -platformRadius
-		};
+	int middle = (total / 2);
+	
+	float y3;
+	float y4;
+	
+	float tex = 1.0 / (float)total;
+	
+	for (int i=0; i<total; i++ ) {
+		if (i == middle) {
+			lift = 0.0;
+			beginY = y1;
+			endY = y2;
+			y3 = beginY;
+			y4 = endY;
+		} else if (i < middle) {
+			beginY = baseY + (float)i / (float)middle * (y1 - baseY);
+			endY = baseY + (float)i / (float)middle * (y2 - baseY);
+			y3 = baseY + (float)(i + 1) / (float)middle * (y1 - baseY);
+			y4 = baseY + (float)(i + 1) / (float)middle * (y2 - baseY);
+		} else {
+			beginY = y1 - (float)(i - (float)middle - 1) / (float)middle * (y1 - baseY);
+			endY = y2 - (float)(i - (float)middle - 1) / (float)middle * (y2 - baseY);
+			y3 = y1 - (float)((i - (float)middle)) / (float)middle * (y1 - baseY);
+			y4 = y2 - (float)((i - (float)middle)) / (float)middle * (y2 - baseY);
+		}
 		
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_FLOAT, 0, platformVertices);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDisableClientState(GL_VERTEX_ARRAY);
-	//}
-	//glPopMatrix();
+		
+		beginX = x1;
+		endX = x2;
+		
+		//1
+		platformVertices[index++] = beginX;
+		platformVertices[index++] = beginY;
+		platformVertices[index++] = (deep); //-10 - 0
+		
+		//2
+		platformVertices[index++] = beginX;
+		platformVertices[index++] = y3;//beginY + lift;
+		platformVertices[index++] = (deep + platformRadius); //0 - 10
+		
+		//3
+		platformVertices[index++] = endX;
+		platformVertices[index++] = y4; //endY + lift;
+		platformVertices[index++] = (deep + platformRadius);
+		
+		//4
+		platformVertices[index++] = endX;
+		platformVertices[index++] = y4; //endY + lift;
+		platformVertices[index++] = (deep + platformRadius);
+		
+		//5
+		platformVertices[index++] = endX;
+		platformVertices[index++] = endY;
+		platformVertices[index++] = (deep);
+		
+		//6
+		platformVertices[index++] = beginX;
+		platformVertices[index++] = beginY;
+		platformVertices[index++] = (deep);
+				
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex;
+		myPlatformTextureCoords[tindex++] = 0.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex + tex;
+		myPlatformTextureCoords[tindex++] = 0.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex + tex;
+		myPlatformTextureCoords[tindex++] = 1.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex + tex;
+		myPlatformTextureCoords[tindex++] = 1.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex;
+		myPlatformTextureCoords[tindex++] = 1.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex;
+		myPlatformTextureCoords[tindex++] = 0.0;
+		
+		deep += platformRadius;
+	}
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, platformVertices);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * total);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 
@@ -1096,7 +1182,7 @@ void GLViewController::reset_particle(int idx) {
     random_velocity(idx);
 	reset_life(idx);
 	
-	LOGV("RESET: %d %f %f\n", idx, vertices[idx * 3], myPlayerPosition.x);
+	//LOGV("RESET: %d %f %f\n", idx, vertices[idx * 3], myPlayerPosition.x);
 
 }
 

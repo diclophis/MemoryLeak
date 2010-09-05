@@ -211,7 +211,7 @@
 		textures[0] = [self loadTexture:@"vincent_texture" ofType:@"png"];
 		
 		//ground
-		textures[1] = [self loadTexture:@"ground_texture" ofType:@"png"];
+		textures[1] = [self loadTexture:@"road_texture" ofType:@"jpg"];
 		
 		//bottom
 		textures[2] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];

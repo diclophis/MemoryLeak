@@ -15,6 +15,7 @@
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
+		FCB3B6E812321FFF00F0403F /* road_texture.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FCB3B6E712321FFF00F0403F /* road_texture.jpg */; };
 		FCBE414A1216807A00A60972 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41421216807900A60972 /* EAGLView.mm */; };
 		FCBE414B1216807A00A60972 /* MemoryLeakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41451216807900A60972 /* MemoryLeakAppDelegate.m */; };
 		FCBE414C1216807A00A60972 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41461216807900A60972 /* main.m */; };
@@ -47,6 +48,7 @@
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FCB3B6E712321FFF00F0403F /* road_texture.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = road_texture.jpg; sourceTree = "<group>"; };
 		FCBE41411216807900A60972 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		FCBE41421216807900A60972 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		FCBE41431216807900A60972 /* importgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = importgl.h; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 		FC68BA4812291F9100825AEA /* textures */ = {
 			isa = PBXGroup;
 			children = (
+				FCB3B6E712321FFF00F0403F /* road_texture.jpg */,
 				FCCA1E191231B83900BB8DE8 /* tree.png */,
 				FCE2D859122BB80C005D610E /* font_texture.png */,
 				FC68BA4C12291F9100825AEA /* ground_texture.png */,
@@ -304,6 +307,7 @@
 				FCE2DD43122BF4B3005D610E /* noonclouds_west.jpg in Resources */,
 				FCE2DF10122C09AB005D610E /* Default.png in Resources */,
 				FCCA1E1A1231B83900BB8DE8 /* tree.png in Resources */,
+				FCB3B6E812321FFF00F0403F /* road_texture.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

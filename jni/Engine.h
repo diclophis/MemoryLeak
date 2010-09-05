@@ -97,7 +97,7 @@ public:
 	
 	
 	Platform *myPlatforms;
-	static const GLfloat myPlatformTextureCoords[];
+	//static const GLfloat myPlatformTextureCoords[];
 	
 	
 	PlayerState *myPlayerStates;
@@ -191,7 +191,7 @@ public:
 
 	void iteratePlatform(int operation);
 	void tickPlatformSegment(float beginX, float beginY, float endX, float endY);
-	void drawPlatformSegment(float beginX, float beginY, float endX, float endY);
+	void drawPlatformSegment(float baseY, float beginX, float beginY, float endX, float endY);
 
 
 	void buildSpiral();
