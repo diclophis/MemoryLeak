@@ -208,7 +208,7 @@
 		delete gameController;
 	} else {
 		//player
-		textures[0] = [self loadTexture:@"vincent_texture" ofType:@"png"];
+		textures[0] = [self loadTexture:@"foo" ofType:@"png"];
 		
 		//ground
 		textures[1] = [self loadTexture:@"road_texture" ofType:@"jpg"];
@@ -240,7 +240,7 @@
 	}
 	
 	gameController = new GLViewController();
-	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"vincent" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"foo" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 	fseek(fd, 0, SEEK_END);
 	unsigned int len = ftell(fd);
 	rewind(fd);

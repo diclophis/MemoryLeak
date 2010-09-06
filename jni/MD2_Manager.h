@@ -51,21 +51,21 @@ public:
 	//---------------------------------------------------------------------------------
 	/// \brief	releases all models, textures and kills itself...
 	/// 
-	static void Release();
+	void Release();
 
 	//---------------------------------------------------------------------------------
 	/// \brief	returns true if the specified instance is valid
 	/// \param	instance	-	the instance to query if valid
 	///	\return	true if OK
 	/// 
-	static bool IsValid(const Md2Instance*);
+	bool IsValid(const Md2Instance*);
 
 	//---------------------------------------------------------------------------------
 	/// \brief	used to return info about the amount of memory used by all the MD2 files.
 	/// \param	type	-	the memory to request
 	/// \return	the number of bytes for the memory type
 	///
-	static unsigned int GetMemoryUsage(Md2MemoryType);
+	unsigned int GetMemoryUsage(Md2MemoryType);
 
 	//---------------------------------------------------------------------------------
 	/// \brief	This function returns a new instance of the specified Md2 file. Internally

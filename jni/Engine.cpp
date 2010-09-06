@@ -158,7 +158,7 @@ int GLViewController::tick(float delta) {
 		myGameStarted = true;
 	}
 	
-	if (myPlayerPosition.y < -450.0) {
+	if (myPlayerPosition.y < -1500.0) {
 		return 0;
 	} else {
 		return myGameSpeed;
@@ -190,7 +190,7 @@ void GLViewController::prepareFrame(int width, int height) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(40.0, (float) width / (float) height, 5.0, 2000.0);
+    gluPerspective(40.0, (float) width / (float) height, 5.0, 10000.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -212,84 +212,19 @@ void GLViewController::draw(float rotation) {
 		{			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			//glEnable(GL_BLEND);
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_DEPTH_TEST);
 			glRotatef(rotation, 0.0, 0.0, 1.0);
 			
 			drawCamera();
-
-			//drawPlayer();
+			drawFountain();
+			drawPlayer();
 			drawPlatform();
 			drawSkyBox();
-
+			drawFont();
 			
-			//glPushMatrix();
-			//{
-				//glLoadIdentity();
-				
-				//glColor4f(1.0, 0.0, 0.0, 1.0);
-			
-				GLfloat points [ ] = { myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z };
-			
-				bindTexture(myTreeTextures[0]);
-				glEnable(GL_POINT_SPRITE_OES);
-				glPointSize(100.0);
-
-				glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
-				//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
-				
-				glEnableClientState(GL_VERTEX_ARRAY); 
-				glVertexPointer(3, GL_FLOAT, 0, points); 
-				glDrawArrays(GL_POINTS, 0, 1);
-				
-				//glColor4f(1.0, 1.0, 1.0, 1.0);
-
-				glDisable(GL_POINT_SPRITE_OES);
-				unbindTexture(myGroundTexture);
-			//}
-			//glPopMatrix();
-			
-
-
-			
-			//if (myPlayerBelowPlatform) {
-			//	drawFountain();
-			//}
-			//drawSpiral();
-			//if (myPlayerSpeed.y > 0.0) {
-			//drawFountain();
-			//}
-			
-			/*
-			float x = myPlayerPosition.x;
-			float y = myPlayerPosition.y;
-			float z = myPlayerPosition.z;
-
-			float r[3], u[3];
-			camera_directions(r,u,NULL);
-			
-			float foo[12] = {
-			x-r[0]-u[0], y-r[1]-u[1], z-r[2]-u[2],
-			x+r[0]-u[0], y+r[1]-u[1], z+r[2]-u[2],
-			x+r[0]+u[0], y+r[1]+u[1], z+r[2]+u[2],
-			x-r[0]+u[0], y-r[1]+u[1], z-r[2]+u[2]
-			};
-			 
-			
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(3, GL_FLOAT, 0, foo);
-			//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			//glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
-			glDrawArrays(GL_LINE_LOOP, 0, 6);
-			glDisableClientState(GL_VERTEX_ARRAY);
-			
-			*/
-			
-			
-			//drawFont();
-			glDisable(GL_BLEND);
+			//glDisable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
 		}
 		glPopMatrix();
@@ -408,8 +343,6 @@ void GLViewController::drawFont() {
 		glVertexPointer(3, GL_FLOAT, 0, &charGeomV);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		x += m_fCharacterWidth;
-		//LOGV("%f\n", x);
-
 	}
 	 
 	unbindTexture(myFontTexture);
@@ -418,51 +351,6 @@ void GLViewController::drawFont() {
 	glPopMatrix();		
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
-}
-
-
-// This routine returns up to 3 camera directions: which way is "right", "up" and which way is the camera pointing ("look") 
-// in OpenGL coordinates.  In other words, this is which way the user's SCREEN is pointing in OpenGL "local" coordinates.
-// (If the user is facing true north at the origin and is not rolled, these functiosn would be trivially easy because 
-// right would be 1,0,0, up would be 0,1,0 and look would be 0,0,1.  (NOTE: the look vector points TO the user, not 
-// FROM the user.)  
-// 
-// To draw a billboard centered at C, you would use these coordinates:
-//
-// c-rgt+up---c+rgt+up
-// |                 |
-// |        C        |
-// c-rgt-up---c+rgt-up
-//
-// Any can be NULL
-
-void GLViewController::camera_directions(float * out_rgt, float * out_up , float * out_look) {
-	float m[16];
-	glGetFloatv(GL_MODELVIEW_MATRIX, m);
-	
-	// Roughly speaking, a modelview matrix is made up more or less like this:
-	// [ EyeX_x EyeX_y EyeX_z    a
-	//   EyeY_x EyeY_y EyeY_z    b
-	//   EyeZ_x EyeZ_y EyeZ_z    c
-	//   um don't look down here ]
-	// where a, b, c are translations in _eye_ space.  (For this reason, a,b,c is not
-	// the camera location - sorry!)
-	
-	if(out_rgt) {
-		out_rgt[0] = m[0];
-		out_rgt[1] = m[4];
-		out_rgt[2] = m[8];
-	}
-	if(out_up) {
-		out_up[0] = m[1];
-		out_up[1] = m[5];
-		out_up[2] = m[9];
-	}
-	if(out_look) {
-		out_up[0] = m[2];
-		out_up[1] = m[6];
-		out_up[2] = m[10];
-	}
 }
 
 
@@ -564,7 +452,7 @@ void GLViewController::buildPlayer(FILE *playerFilename, unsigned int off, unsig
 	myPlayerJumpSpeed = 60.0;
 	
 	myPlayerPosition = Vector3DMake(0.0, 300.0, 0.0);
-	myPlayerSpeed = Vector3DMake(100.0, 0.0, 0.0);
+	myPlayerSpeed = Vector3DMake(400.0, 0.0, 0.0);
 	myPlayerAcceleration = Vector3DMake(0.0, 0.0, 0.0);
 	myPlayerAnimationIndex = 0;
 	
@@ -698,7 +586,7 @@ void GLViewController::drawPlayer() {
 	{
 		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 1.5, myPlayerPosition.z);
 		glRotatef(myPlayerRotation, 0.0, 0.0, 1.0);
-		float scale = 0.5;
+		float scale = 6.0;
 		glScalef(scale, scale, scale);
 		bindTexture(myPlayerTexture);
 		Md2Manager::Render();
@@ -718,7 +606,7 @@ void GLViewController::buildPlatforms() {
 	float randomL;
 	int length;
 
-	lastPlatformPosition.x = -100.0;
+	lastPlatformPosition.x = -250.0;
 	
 	for (int i=0; i<myPlatformCount; i++) {
 		randomY = lastPlatformPosition.y;
@@ -729,7 +617,7 @@ void GLViewController::buildPlatforms() {
 		randomL = 40.0 - (i * randf());
 		
 		if (randomA > 5.0) {
-			step = 20;
+			step = 5;
 		} else if (randomA > 3.0) {
 			step = 25;
 		} else if (randomA > 1.0) {
@@ -822,7 +710,9 @@ const GLfloat GLViewController::myPlatformTextureCoords[6] = {
 void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
 	float beginX; float beginY; float endX; float endY;
 	
-	float platformRadius = 20.0;
+	baseY -= 0.0;
+	
+	float platformRadius = 1.0;
 
 	int total = 3;
 
@@ -846,6 +736,7 @@ void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, floa
 	float tex = 1.0 / (float)total;
 	
 	for (int i=0; i<total; i++ ) {
+		platformRadius += 0.0;
 		if (i == middle) {
 			lift = 0.0;
 			beginY = y1;
@@ -1261,11 +1152,28 @@ void GLViewController::tickFountain() {
 
 
 void GLViewController::drawFountain() {
-	//if (!myPlayerOnPlatform) {
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		//glEnable(GL_BLEND);
-	//glPushMatrix();
-	//{
+
+	if (false) {
+	
+		//GLfloat points [ ] = { myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z };
+
+		bindTexture(myTreeTextures[0]);
+		glEnable(GL_POINT_SPRITE_OES);
+		glPointSize(100.0);
+
+		glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
+		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
+
+		glEnableClientState(GL_VERTEX_ARRAY); 
+		glVertexPointer(3, GL_FLOAT, 0, vertices); 
+		glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
+
+		//glColor4f(1.0, 1.0, 1.0, 1.0);
+
+		glDisable(GL_POINT_SPRITE_OES);
+		unbindTexture(myGroundTexture);
+	 
+	} else {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, vertices);
@@ -1274,9 +1182,7 @@ void GLViewController::drawFountain() {
 		glDrawElements(GL_POINTS, NUM_PARTICLES, GL_UNSIGNED_SHORT, elements);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
-		//glDisable(GL_BLEND);
-	//}
-	//glPopMatrix();
+	}
 }
 
 
@@ -1411,7 +1317,7 @@ void GLViewController::drawSkyBox() {
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTranslatef(myPlayerPosition.x, 0.0, 0.0);
 		mySkyBoxRotation += 0.11;
-		glScalef(1000.0, 1000.0, 1000.0);
+		glScalef(4000.0, 4000.0, 4000.0);
 		glRotatef(mySkyBoxRotation, 0.0, 1.0, 0.0);
 		glVertexPointer(3, GL_FLOAT, 0, mySkyBoxVertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureCoords);
