@@ -76,7 +76,7 @@ public:
 	/// \param	fps			-	the frames per second for the model
 	/// \return	a pointer to the model instance or NULL
 	/// 
-	static Md2Instance* Load(FILE* filename, unsigned short fps, int off, int len);
+	Md2Instance* Load(foo *bar, unsigned short fps);
 
 	//---------------------------------------------------------------------------------
 	/// \brief	This function deletes the specified model instance. If no instances remain
@@ -84,40 +84,32 @@ public:
 	/// \param	ptr	-	the instance to delete
 	/// \return	true if OK
 	/// 
-	static bool Delete(Md2Instance* ptr);
+	bool Delete(Md2Instance* ptr);
 	
 	//---------------------------------------------------------------------------------
 	/// \brief	This function updates all current model instances
 	/// \param	dt	-	the time increment
 	///
-	static void Update(float dt);
+	void Update(float dt);
 	
 	//---------------------------------------------------------------------------------
 	/// \brief	This function updates all current model instances
 	///
-	static void Render();
-
-	//---------------------------------------------------------------------------------
-	/// \brief	use to register file format support for the skins
-	/// \param	ext		-	the file extension supported by this loader
-	/// \param	func	-	pointer to the loader function
-	/// \return	true if OK
-	/// 
-	//static bool RegisterTexLoader(const char*,Md2TexLoadFunc);
+	void Render();
 	
 	//---------------------------------------------------------------------------------
 	/// this function allows you to stagger the updates for the models. ie, 2 would 
 	///	indicate that it should update every other frame, thus only half the models are
 	/// updated each frame.
 	///
-	static void SetStagger(unsigned char num) ;
+	void SetStagger(unsigned char num) ;
 
 	//---------------------------------------------------------------------------------
 	/// \brief	this function allows you to return the update stagger amount 
 	/// \return	the stagger amount, ie, how many frames between updates. 1 indicates
 	///			update every frame, 2 indicates update every other frame
 	/// 
-	static unsigned char GetStagger() ;
+	unsigned char GetStagger() ;
 
 	//---------------------------------------------------------------------------------
 	/// \brief	This function returns the current frame rate at which the model instances
@@ -129,12 +121,7 @@ public:
 	/// \endcode
 	/// \return	the current frame per second at which the model is updating.
 	/// 
-	static float CurrentModelFps() ;
-
-//private:
-
-	/// do not instantiate!
-	Md2Manager() {}
+	float CurrentModelFps() ;
 
 	/// internal reference for a loadede model
 	struct ModelRef {
@@ -145,47 +132,47 @@ public:
 		/// pointer to the model data
 		Md2Model* pModel;
 	};
-/*
-	/// internal refernce for a loaded texture
-	struct TextureRef {
-		
-		/// the filename of the texture loaded
-		std::string Filename;
 
-		/// the ID number of the texture
-		unsigned int TexID;
-
-		/// the size in bytes of the texture data when loaded to OpenGL
-		unsigned int Size;
-		
-	};
-
-	/// a lookup table for texture loaders and the extensions they support
-	typedef std::map<std::string,Md2TexLoadFunc> Md2TexLoadMap;
-*/
-	/*
-	/// the supported texture formats
-	static Md2TexLoadMap m_SupportedTexFormats;
-*/
+	std::vector<ModelRef*> m_LoadedModels;
 	
-	/// an array of currently loaded Md2 models
-	static std::vector<ModelRef*> m_LoadedModels;
-	
-	/*
-	/// an array of currently loaded Md2 models
-	static std::vector<TextureRef*> m_LoadedTextures;
-*/
-	
-	
-	/// how many staggers we should use. 1 to 8
-	static unsigned char m_UpdateStagger;
+	unsigned char m_UpdateStagger;
 	
 	/// the current instance to update
-	static unsigned char m_UpdateCurrent;
+	unsigned char m_UpdateCurrent;
 	
 	/// we can stagger updates to the array of instances so we store the last few updates.
 	/// we can thereofre accumulate the time from the last n frames.
-	static float m_LastUpdates[8];
+	float m_LastUpdates[8];
+	
+	
+	
+	
+	
+	
+	//std::vector<Md2Manager::ModelRef*> m_LoadedModels;
+
+	Md2Manager() {
+		m_UpdateStagger=1;
+		m_UpdateCurrent=0;
+		for (int i=0; i<=8; i++) {
+			m_LastUpdates[i] = 0.0f;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 };
 
 #endif

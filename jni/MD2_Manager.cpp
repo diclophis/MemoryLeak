@@ -35,18 +35,8 @@
 
 #include "MD2_Manager.h"
 
-extern unsigned int g_LastBound;
 
-//-----------------------------------------------------------------------------------------------	class Md2Manager
-//###############################################################################################
-//-----------------------------------------------------------------------------------------------
 
-//Md2Manager::Md2TexLoadMap Md2Manager::m_SupportedTexFormats;
-std::vector<Md2Manager::ModelRef*> Md2Manager::m_LoadedModels;
-//std::vector<Md2Manager::TextureRef*> Md2Manager::m_LoadedTextures;
-unsigned char Md2Manager::m_UpdateStagger=1;
-unsigned char Md2Manager::m_UpdateCurrent=0;
-float Md2Manager::m_LastUpdates[8]={0.0f};
 
 //-----------------------------------------------------------------------------------------------	Md2Manager :: CurrentModelFps
 //
@@ -66,31 +56,6 @@ unsigned char Md2Manager::GetStagger() {
 //-----------------------------------------------------------------------------------------------	Md2Manager :: GetMemoryUsage
 //
 unsigned int Md2Manager::GetMemoryUsage(Md2MemoryType type) {
-	/*
-	unsigned int sz=0;
-	if(type == MEM_GLOBAL || type == MEM_ALL )
-	{
-		sz += (MD2_BUFFER_SIZE+2048)*sizeof(Md2VertexNormal) +
-				sizeof(float)*8 +	2 +
-				(sizeof(ModelRef)+sizeof(ModelRef*))*m_LoadedModels.size()  + 
-				(sizeof(TextureRef)+sizeof(TextureRef*))*m_LoadedTextures.size() +
-				sizeof(std::vector<ModelRef*>) + 
-				sizeof(std::vector<TextureRef*>) +
-				sizeof(Md2TexLoadMap);
-	}
-	if(type == MEM_TEXTURES || type == MEM_ALL ) {
-		std::vector<Md2Manager::TextureRef*>::iterator it = Md2Manager::m_LoadedTextures.begin();
-		for( ; it != Md2Manager::m_LoadedTextures.end(); ++it ) {
-			sz += (*it)->Size;
-		}
-	}
-	std::vector<Md2Manager::ModelRef*>::iterator it = m_LoadedModels.begin();
-	for( ; it != m_LoadedModels.end(); ++it ) {
-		sz += (*it)->pModel->GetDataSize(type);
-	}
-	 
-	return sz;
-	 */
 	return 1;
 }
 
@@ -112,12 +77,12 @@ bool Md2Manager::IsValid(const Md2Instance* ptr) {
 
 //-----------------------------------------------------------------------------------------------	Md2Manager :: Load
 //
-Md2Instance* Md2Manager::Load(FILE* filename, unsigned short fps, int off, int len) {
+Md2Instance* Md2Manager::Load(foo *bar, unsigned short fps) {
 	
 	std::vector<ModelRef*>::iterator it = m_LoadedModels.begin();
 	for( ; it != m_LoadedModels.end(); ++it )
 	{
-		if( (*it)->Filename == filename ) {
+		if( (*it)->Filename == bar->fp ) {
 			return (*it)->pModel->CreateInstance();
 		}
 	}
@@ -125,9 +90,9 @@ Md2Instance* Md2Manager::Load(FILE* filename, unsigned short fps, int off, int l
 	assert(pmref);
 	pmref->pModel = new Md2Model;
 	assert(pmref->pModel);
-	pmref->Filename = filename;
+	pmref->Filename = bar->fp;
 	
-	if(!pmref->pModel->Load(filename, off, len)) {
+	if(!pmref->pModel->Load(bar)) {
 		throw 123;
 		delete pmref->pModel;
 		delete pmref;
@@ -142,18 +107,6 @@ Md2Instance* Md2Manager::Load(FILE* filename, unsigned short fps, int off, int l
 
 }
 
-//-----------------------------------------------------------------------------------------------	Md2Manager :: RegisterTexLoader
-//
-/*
-bool Md2Manager::RegisterTexLoader(const char* ext,Md2TexLoadFunc func) {
-	if( m_SupportedTexFormats.find(ext) == m_SupportedTexFormats.end() )
-	{
-		m_SupportedTexFormats.insert( std::make_pair( std::string(ext),func) );
-		return true;
-	}
-	return false;
-}
- */
 
 //-----------------------------------------------------------------------------------------------	Md2Manager :: Release
 //
@@ -170,14 +123,6 @@ void Md2Manager::Release() {
 //
 void Md2Manager::Render() {
 
-//	glEnable(GL_TEXTURE_2D);
-/*
-	#if MD2_USE_NORMALS
-		glEnable(GL_NORMALIZE);
-		glEnableClientState(GL_NORMAL_ARRAY);
-	#endif
-*/
-
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -188,34 +133,23 @@ void Md2Manager::Render() {
 		(*it)->pModel->Render();
 	}
 
-/*
-	#if MD2_USE_NORMALS
-		glDisable(GL_NORMALIZE);
-		glDisableClientState(GL_NORMAL_ARRAY);
-	#endif
-*/
-
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	// set the last bound texture to invalid. Should prevent errors between frames
-	// if someone binds a different texture for say the level
-	//g_LastBound = 0;
 }
 
 
-	//---------------------------------------------------------------------------------
-	/// this function allows you to stagger the updates for the models. ie, 2 would 
-	///	indicate that it should update every other frame, thus only half the models are
-	/// updated each frame.
-	///
-	void Md2Manager::SetStagger(unsigned char num) {
-		if(num>8)
-			num = 8;
-		if(!num)
-			num=1;
-		m_UpdateStagger = num;
-	}
+//---------------------------------------------------------------------------------
+/// this function allows you to stagger the updates for the models. ie, 2 would 
+///	indicate that it should update every other frame, thus only half the models are
+/// updated each frame.
+///
+void Md2Manager::SetStagger(unsigned char num) {
+	if(num>8)
+		num = 8;
+	if(!num)
+		num=1;
+	m_UpdateStagger = num;
+}
 
 
 void Md2Manager::Update(float dt) {
@@ -233,4 +167,3 @@ void Md2Manager::Update(float dt) {
 	if( (++m_UpdateCurrent) >= m_UpdateStagger )
 		m_UpdateCurrent = 0;
 }
-

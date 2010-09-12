@@ -164,12 +164,14 @@ public:
 	
 	GLuint myGroundTexture;
 	
-	Md2Instance *myMd2;
+	Md2Instance *myPlayerMd2;
+	Md2Manager *myPlayerManager;
+	
 	
 	GLViewController();
 	~GLViewController();
 	
-	void build(int width, int height, GLuint *textures, FILE *playerFilename, unsigned int off, unsigned int len);
+	void build(int width, int height, GLuint *textures, foo *playerFoo);
 	int tick(float delta);
 	void draw(float rotation);
 
@@ -178,7 +180,7 @@ public:
 	void drawCamera();
 
 
-	void buildPlayer(FILE *playerFilename, unsigned int off, unsigned int len);
+	void buildPlayer(foo *playerFoo);
 
 	void tickPlayer();
 	void drawPlayer();

@@ -1,6 +1,7 @@
 
 
 #include "MD2_File.h"
+
 #include <stdio.h>
 
 
@@ -46,19 +47,20 @@ namespace MD2 {
 		return reinterpret_cast<char*>(p);
 	}
 
+	
 	// this loads an MD2 into a single buffer
-	bool Load(FILE *fp, unsigned int off, unsigned int len) {		
+	bool Load(foo *bar) {
+		FILE *fp = bar->fp;
+		unsigned int off = bar->off;
+		unsigned int len = bar->len;
 		fseek(fp, off, SEEK_SET);
 		g_data = new unsigned char[len];
 		fread(g_data, sizeof(unsigned char), len ,fp);
-		//fclose(fp);
-		//LOGV("wtf %ld %d == 412520? %d == 0 WTF::: %d %d", ftell(fp), len, off, GetModel()->magic, 0x32504449);
 		if( GetModel()->magic != 0x32504449 || GetModel()->version != 8 ) {
 			LOGV("MD2::Load fp is NOT a md2");
 			Release();
 			return false;
 		}
-
 		return true;	
 	}
 

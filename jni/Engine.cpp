@@ -61,14 +61,14 @@ static GLuint myFontTexture;
 
 
 GLViewController::GLViewController() {
-	Md2Manager::Release();
+	//myPlayerManager->Release();
 	myGameSpeed = 1;
 }
 
 
 GLViewController::~GLViewController() {
 	LOGV("dealloc GameController\n");
-	Md2Manager::Release();
+	myPlayerManager->Release();
 	if (myPlatforms) {
 		free(myPlatforms);
 	}
@@ -107,7 +107,7 @@ void GLViewController::playerStoppedJumping() {
 }
 
 
-void GLViewController::build(int width, int height, GLuint *textures, FILE *playerFilename, unsigned int off, unsigned int len) {
+void GLViewController::build(int width, int height, GLuint *textures, foo *playerFoo) {
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
@@ -134,10 +134,10 @@ void GLViewController::build(int width, int height, GLuint *textures, FILE *play
 	
 	buildFont();
 	buildSkyBox();
-	buildPlayer(playerFilename, off, len);
+	buildPlayer(playerFoo);
 	buildPlatforms();
 	buildCamera();
-	buildSpiral();
+	//buildSpiral();
 	buildFountain();
 	mySceneBuilt = true;
 }
@@ -146,10 +146,10 @@ int GLViewController::tick(float delta) {
 	mySimulationTime += (myDeltaTime = delta);
 	
 	if (mySceneBuilt) {
-		//tickFont();
+		tickFont();
 		tickPlatform();
 		tickPlayer();
-		tickSpiral();
+		//tickSpiral();
 		tickFountain();
 		tickCamera();
 	}
@@ -444,7 +444,7 @@ void GLViewController::drawCamera() {
 }
 
 
-void GLViewController::buildPlayer(FILE *playerFilename, unsigned int off, unsigned int len) {
+void GLViewController::buildPlayer(foo *playerFoo) {
 	//Player
 	myPlayerAnimationIndex = 0;
 	myPlayerAnimationDirection = 1;
@@ -466,9 +466,11 @@ void GLViewController::buildPlayer(FILE *playerFilename, unsigned int off, unsig
 	myPlayerIsTransformed = false;
 	myPlayerNeedsTransform = true;
 	
-	myMd2 = Md2Manager::Load(playerFilename, 25, off, len);
+	myPlayerManager = new Md2Manager();
 	
-	for (int cycle = 0; cycle < myMd2->GetNumCycles(); cycle++) {
+	myPlayerMd2 = myPlayerManager->Load(playerFoo, 25);
+	
+	for (int cycle = 0; cycle < myPlayerMd2->GetNumCycles(); cycle++) {
 		//LOGV("%d %d %s\n", myMd2->GetNumCycles(), cycle,myMd2->GetCycleName(cycle));
 	}
 	
@@ -495,19 +497,19 @@ void GLViewController::tickPlayer() {
 	if (myPlayerNeedsTransform) {
 		myPlayerNeedsTransform = false;
 		if (myPlayerIsTransformed) {
-			myMd2->SwitchCycle(myPlayerTransformUpCycle, 0.1, false, -1, myPlayerRunCycle);
+			myPlayerMd2->SwitchCycle(myPlayerTransformUpCycle, 0.1, false, -1, myPlayerRunCycle);
 		} else {
-			myMd2->SwitchCycle(myPlayerTransformDownCycle, 0.1, false, 1, myPlayerTransformedCycle);
+			myPlayerMd2->SwitchCycle(myPlayerTransformDownCycle, 0.1, false, 1, myPlayerTransformedCycle);
 		}
 		myPlayerIsTransformed = !myPlayerIsTransformed;
 	} else {
 	}
 
-	Md2Manager::Update(myDeltaTime);
+	myPlayerManager->Update(myDeltaTime);
 	
 	if (timeSinceStarted < 0.02 && timeSinceStarted > 0.0) {
 		//myMd2->SwitchCycle(6, 0.001, false);
-		myMd2->SwitchCycle(myPlayerJumpCycle, 0.01, false, -1, myPlayerRunCycle);
+		myPlayerMd2->SwitchCycle(myPlayerJumpCycle, 0.01, false, -1, myPlayerRunCycle);
 		myPlayerFalling = false;
 		if (myPlayerJumping) {
 
@@ -586,10 +588,11 @@ void GLViewController::drawPlayer() {
 	{
 		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 1.5, myPlayerPosition.z);
 		glRotatef(myPlayerRotation, 0.0, 0.0, 1.0);
-		float scale = 6.0;
+		float scale = 0.5;
 		glScalef(scale, scale, scale);
 		bindTexture(myPlayerTexture);
-		Md2Manager::Render();
+		//Md2Manager::Render();
+		myPlayerManager->Render();
 		unbindTexture(myPlayerTexture);
 	}
 	glPopMatrix();
@@ -712,9 +715,9 @@ void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, floa
 	
 	baseY -= 0.0;
 	
-	float platformRadius = 1.0;
+	float platformRadius = 10.0;
 
-	int total = 3;
+	int total = 10;
 
 	float deep = -((platformRadius * (float)total) * 0.5);
 	

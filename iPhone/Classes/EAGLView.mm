@@ -208,7 +208,7 @@
 		delete gameController;
 	} else {
 		//player
-		textures[0] = [self loadTexture:@"foo" ofType:@"png"];
+		textures[0] = [self loadTexture:@"vincent_texture" ofType:@"png"];
 		
 		//ground
 		textures[1] = [self loadTexture:@"road_texture" ofType:@"jpg"];
@@ -235,16 +235,25 @@
 		textures[8] = [self loadTexture:@"font_texture" ofType:@"png"];
 		
 		//tree
-		textures[9] = [self loadTexture:@"tree" ofType:@"png"];
+		textures[9] = [self loadTexture:@"vincent_texture" ofType:@"png"];
 
 	}
 	
 	gameController = new GLViewController();
-	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"foo" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"vincent" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 	fseek(fd, 0, SEEK_END);
 	unsigned int len = ftell(fd);
 	rewind(fd);
-	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, fd, 0, len);
+	
+	foo *playerFoo = new foo;
+	playerFoo->fp = fd;
+	playerFoo->off = 0;
+	playerFoo->len = len;
+	
+	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, playerFoo);
+	
+	delete playerFoo;
+	
 	gameState = gameController->tick(1.0 / 200.0);
 
 }

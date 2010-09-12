@@ -432,8 +432,8 @@ unsigned int Md2Model::GetDataSize(Md2MemoryType type) const {
 
 //-----------------------------------------------------------------------------------------------	Md2Model :: Load
 //
-bool Md2Model::Load(FILE* filename, int off, int leng) {
-	if(!MD2::Load(filename, off, leng)) {
+bool Md2Model::Load(foo *bar) {
+	if(!MD2::Load(bar)) {
 		LOGV("failed to MD2::Load file");
 		return false;
 	}

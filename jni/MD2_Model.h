@@ -694,7 +694,7 @@ class Md2Model {
 	/// \return	true if OK
 	/// \note	This calls MD2::Load and MD2::Release
 	///
-	bool Load(FILE* filename, int off, int len);
+	bool Load(foo *bar);
 
 	#if !MD2_ALWAYS_TRIANGLES
 	void MakeStrippedArray();

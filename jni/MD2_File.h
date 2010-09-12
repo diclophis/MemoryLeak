@@ -24,10 +24,6 @@
 /// 
 //------------------------------------------------------------------------------------
 
-#ifdef WIN32
-	#pragma once
-#endif
-
 #ifndef MD2__FILE__H__
 #define MD2__FILE__H__
 
@@ -35,7 +31,7 @@
 
 #include <stdio.h>
 
-
+#include "foo.h"
 
 
 
@@ -73,8 +69,9 @@ namespace MD2 {
 	// 
 
 	/// this loads an MD2 into a single buffer
-	bool Load(FILE* filename, unsigned int off, unsigned int len);
-
+	//bool Load(FILE* filename, unsigned int off, unsigned int len);
+	bool Load(foo *bar);
+	
 	/// the releases the data when we are done with it
 	void Release();	
 
