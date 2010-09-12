@@ -810,6 +810,7 @@ void Md2Model::MakeVertexArray() {
 	#if MD2_USE_NORMALS
 		m_OriginalIndices = new unsigned short [ m_NumTris*3 ];
 	#endif
+	
 	m_Indices		  = new unsigned short [ m_NumTris*3 ];
 
 	// iterators for index lists
@@ -886,9 +887,7 @@ void Md2Model::Render() {
 
 	// uv coord data from the model
 
-		glTexCoordPointer(2,GL_FLOAT,0, m_TexCoords );
-
-
+	glTexCoordPointer(2,GL_FLOAT,0, m_TexCoords);
 
 	for( unsigned int i=0 ; i != m_Instances.size(); ++i )
 	{
@@ -1106,10 +1105,10 @@ void Md2Instance::Render() {
 	if(!m_Visible)
 		return;
 	
-	if(g_LastBound != m_CurrentSkin) {
-		//glBindTexture(GL_TEXTURE_2D,m_CurrentSkin);
-		g_LastBound = m_CurrentSkin;
-	}
+	//if(g_LastBound != m_CurrentSkin) {
+	//	//glBindTexture(GL_TEXTURE_2D,m_CurrentSkin);
+	//	g_LastBound = m_CurrentSkin;
+	//}
 
 	glPushMatrix();
 
@@ -1161,6 +1160,7 @@ void Md2Instance::Render() {
 				else
 			#endif
 				{
+					//LOGV("%d\n", *m_pModel->m_Indices);
 						glDrawElements(GL_TRIANGLES,m_pModel->m_NumTris*3,GL_UNSIGNED_SHORT,m_pModel->m_Indices);
 				}
 

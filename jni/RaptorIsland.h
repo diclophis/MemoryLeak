@@ -11,7 +11,12 @@ class RaptorIsland : public Engine {
 
 public:
 	
-	void build(int width, int height, GLuint *textures, foo *playerFoo);
+
+	std::vector<Md2Instance *> myRaptors;
+	Md2Manager *myRaptorManager;
+	
+	
+	void build(int width, int height, GLuint *textures, std::vector<foo*> models);
 	int simulate();
 	void render();
 	void tickCamera();

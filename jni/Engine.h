@@ -187,9 +187,10 @@ public:
 	int myGameSpeed;
 	int screenWidth;
 	int screenHeight;
+	GLuint *myTextures;
 	Engine();
 	virtual ~Engine();
-	virtual void build(int width, int height, GLuint *textures, foo *playerFoo) = 0;
+	virtual void build(int width, int height, GLuint *textures, std::vector<foo*> models) = 0;
 	int tick();
 	virtual int simulate() = 0;
 	virtual void render() = 0;

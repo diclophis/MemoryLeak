@@ -230,8 +230,9 @@ void Engine::drawFont() {
 		x = 0.05;
 		fps = "S:" + stringify((int)myPlayerSpeed.x) + " D:" + stringify((int)myPlayerPosition.x);
 	} else {
-		x = 0.1 + m_fCharacterWidth * fastSinf(mySimulationTime);
-		fps = "Robot Rainbow Racer";
+		//x = 0.1 + m_fCharacterWidth * fastSinf(mySimulationTime);
+		x = 0.0;
+		fps = "Escape from Raptor Island";
 	}
 	 
 	float y = 0.875;
@@ -241,9 +242,12 @@ void Engine::drawFont() {
 
 		if (c == ' ') {
 			if (myGameStarted) {
-				x = -0.025;
+				//x = -0.025;
+				x = 0.0;
 			} else {
-				x = -m_fCharacterWidth * fastSinf(mySimulationTime + (float)i);
+				//x = -m_fCharacterWidth * fastSinf(mySimulationTime + (float)i);
+				x = -m_fCharacterWidth;
+				
 			}
 			y -= 0.075;
 		}
@@ -562,11 +566,12 @@ void Engine::iteratePlatform(int operation) {
 void Engine::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
 	float beginX; float beginY; float endX; float endY;
 	
-	baseY -= 0.0;
+	//baseY -= 0.0;
+	//baseY = fastSinf(baseY) * randf() * 1000.0;
 	
-	float platformRadius = 10.0;
+	float platformRadius = 1.0;
 
-	int total = 10;
+	int total = 100.0; //randf() * 10.0;
 
 	float deep = -((platformRadius * (float)total) * 0.5);
 	
@@ -667,7 +672,8 @@ void Engine::drawPlatformSegment(float baseY, float x1, float y1, float x2, floa
 	glVertexPointer(3, GL_FLOAT, 0, platformVertices);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
-	glDrawArrays(GL_TRIANGLES, 0, 6 * total);
+	glDrawArrays(GL_LINES, 0, 6 * total);
+	//glDrawArrays(GL_TRIANGLES, 0, 6 * total);
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 

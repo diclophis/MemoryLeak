@@ -136,7 +136,7 @@
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
-
+			gameState = gameController->tick();
 		} else {
 			[self startGame];
 		}
@@ -203,10 +203,10 @@
 		delete gameController;
 	} else {
 		//player
-		textures[0] = [self loadTexture:@"vincent_texture" ofType:@"png"];
+		textures[0] = [self loadTexture:@"raptor" ofType:@"png"];
 		
 		//ground
-		textures[1] = [self loadTexture:@"road_texture" ofType:@"jpg"];
+		textures[1] = [self loadTexture:@"beach" ofType:@"jpg"];
 		
 		//bottom
 		textures[2] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
@@ -234,23 +234,27 @@
 
 	}
 	
-	gameController = new RaptorIsland();
-	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"vincent" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	
+	std::vector<foo*> models;
+	
+	
+	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 	fseek(fd, 0, SEEK_END);
 	unsigned int len = ftell(fd);
 	rewind(fd);
 	
-	foo *playerFoo = new foo;
-	playerFoo->fp = fd;
-	playerFoo->off = 0;
-	playerFoo->len = len;
+	foo playerFoo; // = new foo;
+	playerFoo.fp = fd;
+	playerFoo.off = 0;
+	playerFoo.len = len;
 	
-	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, playerFoo);
+	models.push_back(&playerFoo);
 	
-	delete playerFoo;
-	
+	gameController = new RaptorIsland();
+	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
 	gameState = gameController->tick();
 
+	//delete playerFoo;
 }
 
 
