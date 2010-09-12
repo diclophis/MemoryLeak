@@ -11,8 +11,8 @@
 
 #include "importgl.h"
 
-struct GLViewController;
-typedef struct GLViewController GLViewController;
+struct RaptorIsland;
+typedef struct RaptorIsland RaptorIsland;
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
@@ -36,7 +36,7 @@ typedef struct GLViewController GLViewController;
     GLint backingHeight;
     // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
     GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
-	GLViewController *gameController;
+	RaptorIsland *gameController;
 	BOOL myFrameRequested;
 	GLuint		textures[10];
 	int gameState;

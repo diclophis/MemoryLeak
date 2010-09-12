@@ -23,6 +23,7 @@
 		FC0588A21234D7040038202C /* tree.jpg in Resources */ = {isa = PBXBuildFile; fileRef = FC0588921234D7040038202C /* tree.jpg */; };
 		FC0588A31234D7040038202C /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = FC0588931234D7040038202C /* tree.png */; };
 		FC0588A41234D7040038202C /* vincent_texture.png in Resources */ = {isa = PBXBuildFile; fileRef = FC0588941234D7040038202C /* vincent_texture.png */; };
+		FC10A9C4123C5F6A002A6142 /* RaptorIsland.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */; };
 		FC21C8C8121AA24D006B5015 /* main.xml in Resources */ = {isa = PBXBuildFile; fileRef = FC21C8BF121AA24D006B5015 /* main.xml */; };
 		FC21C8CE121AA24D006B5015 /* strings.xml in Resources */ = {isa = PBXBuildFile; fileRef = FC21C8C7121AA24D006B5015 /* strings.xml */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
@@ -61,6 +62,8 @@
 		FC0588931234D7040038202C /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
 		FC0588941234D7040038202C /* vincent_texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vincent_texture.png; sourceTree = "<group>"; };
 		FC10A985123C502F002A6142 /* foo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = foo.h; path = jni/foo.h; sourceTree = "<group>"; };
+		FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RaptorIsland.cpp; path = jni/RaptorIsland.cpp; sourceTree = "<group>"; };
+		FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RaptorIsland.h; path = jni/RaptorIsland.h; sourceTree = "<group>"; };
 		FC21C8BF121AA24D006B5015 /* main.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = main.xml; sourceTree = "<group>"; };
 		FC21C8C7121AA24D006B5015 /* strings.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = strings.xml; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -234,6 +237,8 @@
 		FCBE418D1216835400A60972 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */,
+				FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */,
 				FC10A985123C502F002A6142 /* foo.h */,
 				FCBE417C121681C600A60972 /* importgl.h */,
 				FCBE41611216811B00A60972 /* Engine.cpp */,
@@ -343,6 +348,7 @@
 				FCBE416F1216811B00A60972 /* MD2_File.cpp in Sources */,
 				FCBE41701216811B00A60972 /* MD2_Manager.cpp in Sources */,
 				FCBE41711216811B00A60972 /* MD2_Model.cpp in Sources */,
+				FC10A9C4123C5F6A002A6142 /* RaptorIsland.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

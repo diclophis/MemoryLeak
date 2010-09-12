@@ -8,7 +8,7 @@
 
 #import "EAGLView.h"
 
-#include "Engine.h"
+#include "RaptorIsland.h"
 
 #import "MemoryLeakAppDelegate.h"
 
@@ -108,7 +108,7 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		gameController->playerStartedJumping();
+		//gameController->playerStartedJumping();
 	}
 }
 
@@ -119,14 +119,14 @@
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		gameController->playerStoppedJumping();
+		//gameController->playerStoppedJumping();
 	}
 }
 
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		gameController->playerStoppedJumping();
+		//gameController->playerStoppedJumping();
 	}
 }
 
@@ -136,12 +136,7 @@
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
-			for (int i=0; i<=gameState; i++) {
-				gameState = gameController->tick(1.0 / 500.0);
-				gameState = gameController->tick(1.0 / 500.0);
-				gameState = gameController->tick(1.0 / 500.0);
-				gameState = gameController->tick(1.0 / 500.0);
-			}
+
 		} else {
 			[self startGame];
 		}
@@ -239,7 +234,7 @@
 
 	}
 	
-	gameController = new GLViewController();
+	gameController = new RaptorIsland();
 	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"vincent" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 	fseek(fd, 0, SEEK_END);
 	unsigned int len = ftell(fd);
@@ -254,7 +249,7 @@
 	
 	delete playerFoo;
 	
-	gameState = gameController->tick(1.0 / 200.0);
+	gameState = gameController->tick();
 
 }
 

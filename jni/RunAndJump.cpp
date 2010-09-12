@@ -1,16 +1,52 @@
 //
-//  Engine.m
+//  GLViewController.m
 //  MemoryLeak
 //
 //  Created by Jon Bardin on 9/7/09.
+//  Copyright __MyCompanyName__ 2009. All rights reserved.
 //
+/*
+  class generic_category : public boost::system::error_category
+  {
+  public:
+    generic_category();
+    const char *name() { return "wtf"; }
+    std::string message(int ev) const;
+  };
+
+  class system_category : public boost::system::error_category
+  {
+  public:
+    system_category();
+    const char *name() { return "wtf"; }
+    std::string message(int ev) const;
+  };
+  */
 
 
+#include <pthread.h>
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+// a single header file is required
+//#include <ev.c>
+
+#include <stdio.h> // for puts
+
+
+#include "importgl.h"
 #include "Engine.h"
 
 
-inline std::string Engine::stringify(double x) {
+
+
+inline std::string GLViewController::stringify(double x)
+{
 	std::ostringstream o;
 	if (!(o << x))
 		throw 987;
@@ -18,16 +54,20 @@ inline std::string Engine::stringify(double x) {
 }
 
 
-Engine::Engine() {
-	LOGV("alloc/init GameController\n");
+static GLuint myFontTexture;
+
+
+
+
+
+GLViewController::GLViewController() {
+	//myPlayerManager->Release();
 	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 500.0;
 }
 
 
-Engine::~Engine() {
+GLViewController::~GLViewController() {
 	LOGV("dealloc GameController\n");
-  /*
 	myPlayerManager->Release();
 	if (myPlatforms) {
 		free(myPlatforms);
@@ -36,12 +76,10 @@ Engine::~Engine() {
 	if (mySkyBoxTextures) {
 		free(mySkyBoxTextures);
 	}
-  */
 }
 
 
-/*
-void Engine::playerStartedJumping() {
+void GLViewController::playerStartedJumping() {
 	if (myGameStarted) {
 		
 		
@@ -62,80 +100,112 @@ void Engine::playerStartedJumping() {
 	//myPlayerSpeed.x = 0;
 
 }
-*/
 
-/*
-void Engine::playerStoppedJumping() {
+
+void GLViewController::playerStoppedJumping() {
 	myPlayerLastEnd = mySimulationTime;
 }
-*/
 
 
-
-
-int Engine::tick() {
+void GLViewController::build(int width, int height, GLuint *textures, foo *playerFoo) {
+	//Screen
+	screenWidth = width;
+	screenHeight = height;
 	
-	int gameState;
+	//World
+	myGravity = -3500.0; //-500
+	myState = 0;
+	mySimulationTime = 0.0;
+	myGameStarted = false;
 	
-	for (int i=0; i<=myGameSpeed; i++) {
-		mySimulationTime += myDeltaTime;
-		if (mySceneBuilt) {
-			gameState = simulate();
-		}
-		if (gameState == 0) {
-			break;
-		}
+	myBuildSkyBoxDuration = 60.0;
+	
+	myPlayerTexture = textures[0];
+	myGroundTexture = textures[1];
+	mySkyBoxTextures = (GLuint *) malloc(6 * sizeof(GLuint));
+	mySkyBoxTextures[0] = textures[2];
+	mySkyBoxTextures[1] = textures[3];
+	mySkyBoxTextures[2] = textures[4];
+	mySkyBoxTextures[3] = textures[5];
+	mySkyBoxTextures[4] = textures[6];
+	mySkyBoxTextures[5] = textures[7];
+	myFontTexture = textures[8];
+	myTreeTextures[0] = textures[9];
+	
+	buildFont();
+	buildSkyBox();
+	buildPlayer(playerFoo);
+	buildPlatforms();
+	buildCamera();
+	//buildSpiral();
+	buildFountain();
+	mySceneBuilt = true;
+}
+
+int GLViewController::tick(float delta) {
+	mySimulationTime += (myDeltaTime = delta);
+	
+	if (mySceneBuilt) {
+		tickFont();
+		tickPlatform();
+		tickPlayer();
+		//tickSpiral();
+		tickFountain();
+		tickCamera();
 	}
 	
-	return gameState;
+	if (mySimulationTime > 2.0) {
+		myGameStarted = true;
+	}
 	
-}
-
-/*
-int Engine::simulate() {
-	return 0;
-}
- */
-
-
-void Engine::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
-	GLfloat xmin, xmax, ymin, ymax;
-
-	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-	ymin = -ymax;
-	xmin = ymin * aspect;
-	xmax = ymax * aspect;
-
-	glFrustumx(
-		(GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-		(GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-		(GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
-	);
+	if (myPlayerPosition.y < -1500.0) {
+		return 0;
+	} else {
+		return myGameSpeed;
+	}	
 }
 
 
-void Engine::prepareFrame(int width, int height) {
-	glViewport(0, 0, width, height);
+
+
+
+void GLViewController::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar)
+{
+    GLfloat xmin, xmax, ymin, ymax;
+	
+    ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+    ymin = -ymax;
+    xmin = ymin * aspect;
+    xmax = ymax * aspect;
+	
+    glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
+               (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
+               (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
+}
+
+
+void GLViewController::prepareFrame(int width, int height) {
+    glViewport(0, 0, width, height);
 	glClearColor(0.5, 0.6, 0.85, 1.0);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(40.0, (float) width / (float) height, 5.0, 10000.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(40.0, (float) width / (float) height, 5.0, 10000.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 
-void Engine::resizeScreen(int width, int height) {
+void GLViewController::resizeScreen(int width, int height) {
 	screenWidth = width;
 	screenHeight = height;
 }
 
 
-void Engine::draw(float rotation) {
-
+void GLViewController::draw(float rotation) {
+	
 	if (mySceneBuilt) {
-
+		
 		prepareFrame(screenWidth, screenHeight);
 		
 		glPushMatrix();
@@ -147,9 +217,12 @@ void Engine::draw(float rotation) {
 			glEnable(GL_DEPTH_TEST);
 			glRotatef(rotation, 0.0, 0.0, 1.0);
 			
-			
-			render();
-
+			drawCamera();
+			drawFountain();
+			drawPlayer();
+			drawPlatform();
+			drawSkyBox();
+			drawFont();
 			
 			//glDisable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
@@ -159,7 +232,7 @@ void Engine::draw(float rotation) {
 }
 
 
-void Engine::buildFont() {	
+void GLViewController::buildFont() {	
 	
 	m_charPixelWidth = m_animPixelWidth = CHAR_PIXEL_W;
 	m_charPixelHeight = m_animPixelWidth = CHAR_PIXEL_H;
@@ -184,11 +257,11 @@ void Engine::buildFont() {
 }
 
 
-void Engine::tickFont() {
+void GLViewController::tickFont() {
 }
 
 
-void Engine::drawFont() {
+void GLViewController::drawFont() {
 		
 	float _scaleX = 1.0;
 	float _scaleY = 1.0;
@@ -281,7 +354,7 @@ void Engine::drawFont() {
 }
 
 
-void Engine::buildCamera() {
+void GLViewController::buildCamera() {
 	//Camera
 	myCameraTarget = Vector3DMake(35.0, 0.0, 0.0);
 	myCameraPosition = Vector3DMake(-45.0, 20.0, 80.0);
@@ -289,7 +362,7 @@ void Engine::buildCamera() {
 }
 
 
-void Engine::tickCamera() {
+void GLViewController::tickCamera() {
 	Vector3D cameraPosition;
 	Vector3D cameraTarget;
 	float limitP;
@@ -364,17 +437,14 @@ void Engine::tickCamera() {
 }
 
 
-void Engine::drawCamera() {	
-	gluLookAt(
-		myCameraPosition.x, myCameraPosition.y, myCameraPosition.z,
-		myCameraTarget.x, myCameraTarget.y, myCameraTarget.z,
-		0.0, 1.0, 0.0
-	);
+void GLViewController::drawCamera() {	
+	gluLookAt(myCameraPosition.x, myCameraPosition.y, myCameraPosition.z,
+			  myCameraTarget.x, myCameraTarget.y, myCameraTarget.z,
+			  0.0, 1.0, 0.0);
 }
 
 
-/*
-void Engine::buildPlayer(foo *playerFoo) {
+void GLViewController::buildPlayer(foo *playerFoo) {
 	//Player
 	myPlayerAnimationIndex = 0;
 	myPlayerAnimationDirection = 1;
@@ -406,10 +476,9 @@ void Engine::buildPlayer(foo *playerFoo) {
 	
 	//myMd2->SwitchCycle(myPlayerRunCycle, 0.0, true, -1);
 }
-*/
 
-/*
-void Engine::tickPlayer() {
+
+void GLViewController::tickPlayer() {
 	myPlayerJumpCycle = (int)(randf() * 3.0) + 13;
 	
 	//float timeSinceStarted = -[myPlayerLastJump timeIntervalSinceNow];
@@ -513,10 +582,8 @@ void Engine::tickPlayer() {
 	//	myPlayerRotation = slope * 20.0;
 	//}
 }
-*/
 
-
-void Engine::drawPlayer() {
+void GLViewController::drawPlayer() {
 	glPushMatrix();
 	{
 		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 1.5, myPlayerPosition.z);
@@ -524,6 +591,7 @@ void Engine::drawPlayer() {
 		float scale = 0.5;
 		glScalef(scale, scale, scale);
 		bindTexture(myPlayerTexture);
+		//Md2Manager::Render();
 		myPlayerManager->Render();
 		unbindTexture(myPlayerTexture);
 	}
@@ -531,7 +599,7 @@ void Engine::drawPlayer() {
 }
 
 
-void Engine::buildPlatforms() {	
+void GLViewController::buildPlatforms() {	
 	myPlatformCount = 100;
 	Vector3D lastPlatformPosition = Vector3DMake(0.0, 0.0, 0.0);
 	myPlatforms = (Platform *)malloc(myPlatformCount * sizeof(Platform));
@@ -580,21 +648,21 @@ void Engine::buildPlatforms() {
 }
 
 
-void Engine::tickPlatform() {
+void GLViewController::tickPlatform() {
 	myPlayerOnPlatform = false;
 	myPlayerPlatformCorrection = Vector3DMake(0.0, 0.0, 0.0);
 	iteratePlatform(0);
 }
 
 
-void Engine::drawPlatform() {
+void GLViewController::drawPlatform() {
 	bindTexture(myGroundTexture);
 	iteratePlatform(1);
 	unbindTexture(myGroundTexture);
 }
 
 
-void Engine::iteratePlatform(int operation) {
+void GLViewController::iteratePlatform(int operation) {
 	for (int j=0; j<myPlatformCount; j++) {
 		Platform platform = myPlatforms[j];
 		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
@@ -630,7 +698,19 @@ void Engine::iteratePlatform(int operation) {
 }
 
 
-void Engine::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
+/*
+const GLfloat GLViewController::myPlatformTextureCoords[6] = {
+	0.0, 0.0, // top-upper-right
+	1.0, 0.0,
+	1.0, 1.0,
+	//1.0, 1.0, // top-lower-left
+	//0.0, 1.0,
+	//0.0, 0.0,
+};
+ */
+
+
+void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
 	float beginX; float beginY; float endX; float endY;
 	
 	baseY -= 0.0;
@@ -743,118 +823,281 @@ void Engine::drawPlatformSegment(float baseY, float x1, float y1, float x2, floa
 }
 
 
-void Engine::tickPlatformSegment(float beginX, float beginY, float endX, float endY) {
+void GLViewController::tickPlatformSegment(float beginX, float beginY, float endX, float endY) {
 	if (!myPlayerJumping && !(myPlayerSpeed.y > 250.0)) {
-		Vector3D p1 = Vector3DMake(beginX, beginY, 0.0);
-		Vector3D p2 = Vector3DMake(endX, endY, 0.0);
-		
-		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(-0.0, 0.0, 0.0));
-		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(-0.0, -7.5, 0.0));
-		
-		Vector3D p = p1;
-		
-		Vector3DFlip(&p1);
-		Vector3D r = Vector3DAdd(p2, p1);
-		Vector3DFlip(&p1);
-		
-		Vector3D q = pp1;
-		
-		Vector3DFlip(&pp1);
-		Vector3D s = Vector3DAdd(pp2, pp1);
-		Vector3DFlip(&pp1);
-		
-		float rCrossS = Vector3DCrossProduct(r, s).z;
-		
-		Vector3DFlip(&p);
-		float t = Vector3DCrossProduct(Vector3DAdd(q, p), s).z / rCrossS;
-		Vector3DFlip(&p);
-		
-		Vector3DFlip(&p);
-		float u = Vector3DCrossProduct(Vector3DAdd(q, p), r).z / rCrossS;
-		Vector3DFlip(&p);
+	Vector3D p1 = Vector3DMake(beginX, beginY, 0.0);
+	Vector3D p2 = Vector3DMake(endX, endY, 0.0);
 	
-		if (0 <= u && u <= 1 && 0 <= t && t <= 1) {
-			Vector3D timesT = Vector3DMake(r.x * t, r.y * t, r.z * t);
-			myPlayerPlatformIntersection = Vector3DAdd(p, timesT);
-			float slope = (endY - beginY) / (endX - beginX);
-			//if (slope > 0) {
-				myPlayerRotation = slope * 70.0;
-			//} else {
-			//	myPlayerRotation = slope;
-			//}
-			float distanceFromIntersection = myPlayerPosition.y - 1.25 - myPlayerPlatformIntersection.y;
-			myPlayerPlatformCorrection.y = -(distanceFromIntersection / myDeltaTime) - (myPlayerAcceleration.y * myDeltaTime);
-			myPlayerOnPlatform = true;
-			myGameSpeed = 1;
-		}
+	Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(-0.0, 0.0, 0.0));
+	Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(-0.0, -7.5, 0.0));
+	
+	Vector3D p = p1;
+	
+	Vector3DFlip(&p1);
+	Vector3D r = Vector3DAdd(p2, p1);
+	Vector3DFlip(&p1);
+	
+	Vector3D q = pp1;
+	
+	Vector3DFlip(&pp1);
+	Vector3D s = Vector3DAdd(pp2, pp1);
+	Vector3DFlip(&pp1);
+	
+	float rCrossS = Vector3DCrossProduct(r, s).z;
+	
+	Vector3DFlip(&p);
+	float t = Vector3DCrossProduct(Vector3DAdd(q, p), s).z / rCrossS;
+	Vector3DFlip(&p);
+	
+	Vector3DFlip(&p);
+	float u = Vector3DCrossProduct(Vector3DAdd(q, p), r).z / rCrossS;
+	Vector3DFlip(&p);
+	
+	if (0 <= u && u <= 1 && 0 <= t && t <= 1) {
+		Vector3D timesT = Vector3DMake(r.x * t, r.y * t, r.z * t);
+		myPlayerPlatformIntersection = Vector3DAdd(p, timesT);
+		float slope = (endY - beginY) / (endX - beginX);
+		//if (slope > 0) {
+			myPlayerRotation = slope * 70.0;
+		//} else {
+		//	myPlayerRotation = slope;
+		//}
+		float distanceFromIntersection = myPlayerPosition.y - 1.25 - myPlayerPlatformIntersection.y;
+		myPlayerPlatformCorrection.y = -(distanceFromIntersection / myDeltaTime) - (myPlayerAcceleration.y * myDeltaTime);
+		myPlayerOnPlatform = true;
+		myGameSpeed = 1;
+	}
 	}
 }
 
 
+void GLViewController::tickSpiral() {
+	myGarbageCollectorPosition = myPlayerPosition;
+}
+
+
+void GLViewController::buildSpiral() {
+	int dots = 0;
+	int lines_from_dot = 0;
+	
+	mySpiralArrays = (dots * 3) + ((dots * lines_from_dot) * 3);
+	mySpiralVertices = (GLfloat *)malloc(mySpiralArrays * sizeof(GLfloat));
+	
+    GLfloat x,y,z,angle,incline,interval;
+    int c = 0;
+	float r = 10.0;
+    z = 0;
+	interval = 1.0 / 4.0 * (2 * M_PI);
+	incline = -0.0;
+	angle = 0.0;
+	while (c < mySpiralArrays) {
+		angle += interval;
+		x = r * sin(angle);
+		y = r * cos(angle);
+		mySpiralVertices[c++] = x;
+		mySpiralVertices[c++] = y;
+		mySpiralVertices[c++] = z; 
+		z += incline;
+	}
+}
+
+
+void GLViewController::drawSpiral() {
+	glPushMatrix();
+	{
+		float rotation = mySimulationTime * 360.0;
+		glTranslatef(myGarbageCollectorPosition.x, myGarbageCollectorPosition.y, myGarbageCollectorPosition.z);	
+		glRotatef(90.0, 0.0f, 1.0f, 0.0f);
+		//glScalef(1.0, fastSinf(mySimulationTime) + 1.0, fastSinf(mySimulationTime) + 1.0);
+		glRotatef(rotation, 1.0, -fastSinf(mySimulationTime), fastSinf(mySimulationTime));
+		/*
+		 for (int i=0; i<mySpiralArrays; i+=6) {
+		 glEnableClientState(GL_VERTEX_ARRAY);
+		 glVertexPointer(3, GL_FLOAT, 0, mySpiralVertices);
+		 glDrawArrays(GL_LINE_STRIP, i, 3);
+		 glDrawArrays(GL_POINTS, i, 1);
+		 glDisableClientState(GL_VERTEX_ARRAY);
+		 }
+		 */
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, mySpiralVertices);
+		glDrawArrays(GL_POINTS, 0, mySpiralArrays / 3);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		
+	}
+	glPopMatrix();
+}
+
+
+void GLViewController::tickGarbageCollector() {
+	//float percentOfMaxSpeed = myPlayerSpeed.x / myPlayerMaxSpeed;
+	//float distanceFromPlayer = percentOfMaxSpeed * 20.0;
+	//myGarbageCollectorPosition = Vector3DMake(myPlayerPosition.x - distanceFromPlayer, 0.0, 0.0);	 
+	//myGarbageCollectorPosition = myPlayerPosition;
+}
+
+
+void GLViewController::buildGarbageCollector() {
+	/*
+	 float linesPerHalf = 12.0f;
+	 
+	 myGarbageCollectorArrays = linesPerHalf * 2;
+	 
+	 myGarbageCollectorVertices = malloc(myGarbageCollectorArrays * sizeof(GLfloat) * 3);
+	 
+	 GLfloat x,y,z,angle,r;
+	 int c;
+	 z = 0.0f;
+	 c = 0;
+	 r = 5.0;
+	 
+	 while (c < (myGarbageCollectorArrays)) {
+	 angle += (M_PI / linesPerHalf);
+	 x = r * sin(angle);
+	 y = r * cos(angle);
+	 myGarbageCollectorVertices[c++] = x;
+	 myGarbageCollectorVertices[c++] = y;
+	 myGarbageCollectorVertices[c++] = z;
+	 x = r * sin(angle + M_PI);
+	 y = r * cos(angle + M_PI);		
+	 myGarbageCollectorVertices[c++] = x;
+	 myGarbageCollectorVertices[c++] = y;
+	 myGarbageCollectorVertices[c++] = z;
+	 }
+	 */
+}
+
+
+void GLViewController::drawGarbageCollector() {	
+	glPushMatrix();
+	{
+		glTranslatef(myGarbageCollectorPosition.x, myGarbageCollectorPosition.y, myGarbageCollectorPosition.z);
+		//glRotatef(90.0, 0.0f, 1.0f, 0.0f);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, myGarbageCollectorVertices);
+		glDrawArrays(GL_LINES, 0, myGarbageCollectorArrays);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		
+	}
+	glPopMatrix();
+}
+
+
+void GLViewController::tickSomething() {
+}
+
+
+void GLViewController::buildSomething() {
+	/*
+	 int segments = 6;
+	 GLfloat width = 10;
+	 GLfloat height = 10;
+	 
+	 mySomethingArrays = segments;
+	 mySomethingVertices = malloc(mySomethingArrays * sizeof(GLfloat) * 2);
+	 
+	 int count=0;
+	 for (GLfloat i = 0; i < 360.0f; i+=(360.0f/segments))
+	 {
+	 mySomethingVertices[count++] = (cos(DEGREES_TO_RADIANS(i))*width);
+	 mySomethingVertices[count++] = (sin(DEGREES_TO_RADIANS(i))*height);
+	 }
+	 */
+}
+
+
+void GLViewController::drawSomething() {
+	/*
+	 glPushMatrix();
+	 {
+	 glRotatef(90.0, 0.0, 1.0, 0.0);
+	 glEnableClientState(GL_VERTEX_ARRAY);
+	 glVertexPointer (2, GL_FLOAT , 0, mySomethingVertices);
+	 glDrawArrays (GL_LINE_LOOP, 0, mySomethingArrays);
+	 }
+	 glPopMatrix();
+	 */
+}
+
+
 //returns a random float between 0 and 1
-float Engine::randf() {
-	//random hack since no floating point random function
-	//optimize later
-	return (lrand48() % 255) / 255.f;
+float GLViewController::randf()
+{
+    //random hack since no floating point random function
+    //optimize later
+    return (lrand48() % 255) / 255.f;
 }
 
 
-void Engine::reset_vertex(int idx) {
-	int i = idx * 3;
-	vertices[i + 0] = generator[idx].x;
-	vertices[i + 1] = generator[idx].y;
-	vertices[i + 2] = generator[idx].z;
+void GLViewController::reset_vertex(int idx) {
+    int i = idx * 3;
+    vertices[i + 0] = generator[idx].x;
+    vertices[i + 1] = generator[idx].y;
+    vertices[i + 2] = generator[idx].z;
 }
 
 
-void Engine::random_velocity(int idx) {
-	//velocity[idx].x = -0.35 + (randf() * 0.01);
+void GLViewController::random_velocity(int idx) {
+    //velocity[idx].x = -0.35 + (randf() * 0.01);
 	//velocity[idx].y = 0.25 - (randf() * 0.5);
-	//velocity[idx].z = 0.25 - (randf() * 0.5);
+    //velocity[idx].z = 0.25 - (randf() * 0.5);
 	/*
 	velocity[idx].x = -0.35 + (randf() * 0.01);
 	velocity[idx].y = 0.25 - (randf() * 0.5);
-	velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
-	*/
-
+    velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
+	 */
+	
 	velocity[idx].x = 0.5 - randf();
 	velocity[idx].y = -(randf() * 5.0);
-	velocity[idx].z = 0.5 - randf();
+    velocity[idx].z = 0.5 - randf();
 }
 
-void Engine::reset_particle(int idx) {
+void GLViewController::reset_particle(int idx) {
 
 	if (false) {
 		generator[idx].x = myPlayerPlatformIntersection.x;
 		generator[idx].y = myPlayerPlatformIntersection.y;
 		generator[idx].z = myPlayerPlatformIntersection.z;
 	} else {
+		
 		generator[idx].x = myPlayerPosition.x;
 		generator[idx].y = myPlayerPosition.y;
 		generator[idx].z = myPlayerPosition.z;
+		
 		//generator[idx].x = myPlayerPosition.x + (randf() * 4.0) - 2.0;
 		//generator[idx].y = myPlayerPosition.y + (randf() * 4.0) - 2.0;
 		//generator[idx].z = myPlayerPosition.z + (randf() * 4.0) - 2.0;
+		
 		//LOGV("RES 1: %f %f %f\n", mySpiralVertices[0], mySpiralVertices[1], mySpiralVertices[2]);
+
 	}
 	
-	reset_vertex(idx);
-	random_velocity(idx);
+    reset_vertex(idx);
+    random_velocity(idx);
 	reset_life(idx);
 	
 	//LOGV("RESET: %d %f %f\n", idx, vertices[idx * 3], myPlayerPosition.x);
 
 }
 
-void Engine::update_vertex(int idx) {
-	int i = idx * 3;
-	vertices[i] += velocity[idx].x;
-	vertices[i+1] += velocity[idx].y;
-	vertices[i+2] += velocity[idx].z;
+void GLViewController::update_vertex(int idx) {
+	
+    int i = idx * 3;
+    vertices[i] += velocity[idx].x;
+    vertices[i+1] += velocity[idx].y;
+    vertices[i+2] += velocity[idx].z;
 	//velocity[idx].y -= 0.0002 * fabs(myPlayerSpeed.y);
 	//LOGV("%d %f %f %f\n", idx, vertices[idx * 3], life[idx], myPlayerPosition.x);
 }
 
+/*
+static GLfloat ccolors[12][3]=				// Rainbow Of Colors
+{
+	{1.0f,0.5f,0.5f},{1.0f,0.75f,0.5f},{1.0f,1.0f,0.5f},{0.75f,1.0f,0.5f},
+	{0.5f,1.0f,0.5f},{0.5f,1.0f,0.75f},{0.5f,1.0f,1.0f},{0.5f,0.75f,1.0f},
+	{0.5f,0.5f,1.0f},{0.75f,0.5f,1.0f},{1.0f,0.5f,1.0f},{1.0f,0.5f,0.75f}
+};
+ */
 
 static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 {
@@ -863,9 +1106,9 @@ static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
 };
 
-
-void Engine::update_color(int idx) {
-	int i = idx * 4;
+void GLViewController::update_color(int idx) {
+    int i = idx * 4;
+	
 	float distanceFromPlayer = myPlayerPosition.x - vertices[idx * 3];
 	float percentOf = (distanceFromPlayer) / 40.0;
 	int ii = (int)(percentOf * 12);
@@ -873,24 +1116,22 @@ void Engine::update_color(int idx) {
 		ii = 11;
 	}
 	colors[i+0] = ccolors[ii][0];
-	colors[i+1] = ccolors[ii][1];
-	colors[i+2] = ccolors[ii][2];
+    colors[i+1] = ccolors[ii][1];
+    colors[i+2] = ccolors[ii][2];
 	colors[i+3] = 1.0; //i / (float)11.0;	
 }
 
-
-void Engine::reset_life(int i) {
+void GLViewController::reset_life(int i) {
 	life[i] = 1.0;
 }
 
-
-void Engine::buildFountain() {	
+void GLViewController::buildFountain() {	
 	srand48(time(NULL));
 	
 	int i = 0;
-	for(i=0;i<NUM_PARTICLES;i++) {
-		elements[i] = i;
-	}
+    for(i=0;i<NUM_PARTICLES;i++) {
+        elements[i] = i;
+    }
 	
 	for(i=0;i<NUM_PARTICLES;i++) {
 		reset_particle(i);
@@ -899,34 +1140,42 @@ void Engine::buildFountain() {
 }
 
 
-void Engine::tickFountain() {	
+void GLViewController::tickFountain() {	
 	int i = 0; //particle index
-	for(i=0;i<NUM_PARTICLES;i++) {
-		life[i] -= 0.1;
-		if(life[i] <= 0.0) {
-			reset_particle(i);
-		} else {
+    for(i=0;i<NUM_PARTICLES;i++) {
+        life[i] -= 0.1;
+        if(life[i] <= 0.0) {
+            reset_particle(i);
+        } else {
 			update_color(i);
 			update_vertex(i);
 		}
-	}
+    }
 }
 
 
-void Engine::drawFountain() {
+void GLViewController::drawFountain() {
+
 	if (false) {
+	
 		//GLfloat points [ ] = { myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z };
-		bindTexture(myFountainTextures[0]);
+
+		bindTexture(myTreeTextures[0]);
 		glEnable(GL_POINT_SPRITE_OES);
 		glPointSize(100.0);
+
 		glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
 		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
+
 		glEnableClientState(GL_VERTEX_ARRAY); 
 		glVertexPointer(3, GL_FLOAT, 0, vertices); 
 		glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
+
 		//glColor4f(1.0, 1.0, 1.0, 1.0);
+
 		glDisable(GL_POINT_SPRITE_OES);
 		unbindTexture(myGroundTexture);
+	 
 	} else {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
@@ -940,7 +1189,7 @@ void Engine::drawFountain() {
 }
 
 
-const GLfloat Engine::mySkyBoxVertices[108] = {
+const GLfloat GLViewController::mySkyBoxVertices[108] = {
 	-1.0, 1.0, -1.0, // top-upper-right
 	1.0, 1.0, 1.0,
 	1.0, 1.0, -1.0,
@@ -991,7 +1240,7 @@ const GLfloat Engine::mySkyBoxVertices[108] = {
 };
 
 
-const GLfloat Engine::cubeTextureCoords[72] = {
+const GLfloat GLViewController::cubeTextureCoords[72] = {
 	0.0f, 1.0, // top-upper-right
 	1.0, 0.0f,
 	0.0f, 0.0f,
@@ -1042,28 +1291,28 @@ const GLfloat Engine::cubeTextureCoords[72] = {
 };
 
 
-void Engine::buildSkyBox() {
+void GLViewController::buildSkyBox() {
 	mySkyBoxRotation = 0.0;
 }
 
 
-void Engine::tickSkyBox() {
+void GLViewController::tickSkyBox() {
 }
 
 
-void Engine::bindTexture(GLuint texture) {
+void GLViewController::bindTexture(GLuint texture) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
 
-void Engine::unbindTexture(GLuint texture) {
+void GLViewController::unbindTexture(GLuint texture) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
 
 
-void Engine::drawSkyBox() {
+void GLViewController::drawSkyBox() {
 	glPushMatrix();
 	{
 		glEnable(GL_TEXTURE_2D);
