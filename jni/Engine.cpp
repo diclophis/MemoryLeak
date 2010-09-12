@@ -289,79 +289,6 @@ void Engine::buildCamera() {
 }
 
 
-void Engine::tickCamera() {
-	Vector3D cameraPosition;
-	Vector3D cameraTarget;
-	float limitP;
-	float limitT;
-	/*
-	if (mySimulationTime < 0.5) {
-		//close up sideways
-		cameraPosition = Vector3DMake(20.0, 0.0, 100.0);
-		cameraTarget = Vector3DMake(20.0, 0.0, 0.0);
-		limit = 0.02;
-		
-	} else if (mySimulationTime < 1.0) {
-		//far out sideways
-		cameraPosition = Vector3DMake(50.0, 0.0, 300.0);
-		cameraTarget = Vector3DMake(50.0, 0.0, 0.0);
-		limit = 0.02;
-
-	} else 
-		*/
-	//if (mySimulationTime < 2.5) {
-	if (false) {//(!myPlayerOnPlatform) {
-		//on top of
-		//cameraPosition = Vector3DMake(-20.0, 15.0, 0.0);
-		//cameraTarget = Vector3DMake(80.0, 8.0, 0.0);
-		
-		//mid out sideways
-		cameraPosition = Vector3DMake(-140.0, 15.0, 30.0);
-		cameraTarget = Vector3DMake(90.0, 8.0, 0.0);
-		
-
-	} else {
-		cameraPosition = Vector3DMake(-100.0, 15.0, 30.0);
-		cameraTarget = Vector3DMake(0.0, 0.0, 0.0);
-
-		//far out sideways
-		//cameraPosition = Vector3DMake(50.0, 0.0, 250.0);
-		//cameraTarget = Vector3DMake(50.0, 0.0, 0.0);
-		//limit = 0.02;
-	}
-	
-	//cameraPosition = Vector3DMake(0.0, 200.0, 200.0);
-	//cameraTarget = Vector3DMake(0.0, 0.0, 0.0);
-	
-	
-	//LOGV("%f\n", myDeltaTime);
-	limitP = 1.07 * myDeltaTime;//0.0020;
-	limitT = 1.1 * myDeltaTime;//0.0020;
-	
-	Vector3D desiredPosition = Vector3DAdd(myPlayerPosition, cameraPosition);
-	Vector3D desiredTarget = Vector3DAdd(myPlayerPosition, cameraTarget);
-
-	/*
-	Vector3DFlip(&desiredPosition);
-	Vector3D deltaP = Vector3DAdd(desiredPosition, myCameraPosition);
-	deltaP = Vector3DLimit(deltaP, myPlayerSpeed.x * limitP);
-	Vector3DFlip(&deltaP);
-	
-	myCameraPosition = Vector3DAdd(myCameraPosition, deltaP);
-	
-	
-	Vector3DFlip(&desiredTarget);
-	Vector3D deltaT = Vector3DAdd(desiredTarget, myCameraTarget);
-	deltaT = Vector3DLimit(deltaT, myPlayerSpeed.x * limitT);
-	Vector3DFlip(&deltaT);
-	
-	myCameraTarget = Vector3DAdd(myCameraTarget, deltaT);
-	 */
-	
-	myCameraTarget = desiredTarget;
-	myCameraPosition = desiredPosition;
-	
-}
 
 
 void Engine::drawCamera() {	
@@ -531,7 +458,8 @@ void Engine::drawPlayer() {
 }
 
 
-void Engine::buildPlatforms() {	
+void Engine::buildPlatforms() {
+	/*
 	myPlatformCount = 100;
 	Vector3D lastPlatformPosition = Vector3DMake(0.0, 0.0, 0.0);
 	myPlatforms = (Platform *)malloc(myPlatformCount * sizeof(Platform));
@@ -577,6 +505,7 @@ void Engine::buildPlatforms() {
 		//lastPlatformPosition.x += length + (logf((float)i + 1.1) * 50.0);
 		lastPlatformPosition.x += (0.5 * length) + randf() * 600.0;
 	}
+	 */
 }
 
 
@@ -599,7 +528,7 @@ void Engine::iteratePlatform(int operation) {
 		Platform platform = myPlatforms[j];
 		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
 			for (float i = platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
-				if ((i < (myPlayerPosition.x + 1200.0)) && (i > (myPlayerPosition.x - 150.0))) {
+				//if ((i < (myPlayerPosition.x + 1200.0)) && (i > (myPlayerPosition.x - 150.0))) {
 					float beginX = i;
 					float endX = i + platform.step;
 					
@@ -623,7 +552,7 @@ void Engine::iteratePlatform(int operation) {
 							drawPlatformSegment(platform.position.y, beginX, beginY, endX, endY);
 							break;
 					}
-				}
+				//}
 			}
 		//}
 	}

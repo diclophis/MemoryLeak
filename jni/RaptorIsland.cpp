@@ -34,27 +34,29 @@ void RaptorIsland::build(int width, int height, GLuint *textures, foo *playerFoo
 
 	buildFont();
 	buildSkyBox();
-	buildPlatforms();
-	buildCamera();
 	
-	//buildPlayer(playerFoo);
-	//buildSpiral();
-	//buildFountain();
+	myPlatformCount = 1;
+	int i = 0;
+	
+	myPlatforms = (Platform *)malloc(myPlatformCount * sizeof(Platform));
+
+	myPlatforms[i].position = Vector3DMake(-50.0, 0.0, -50.0);
+	myPlatforms[i].length = 100.0;
+	myPlatforms[i].amplitude = 0.0;
+	myPlatforms[i].step = 100.0;
+	myPlatforms[i].angular_frequency = 0.0;
+	myPlatforms[i].phase = 0.0;
+	
+	buildCamera();
 	
 	mySceneBuilt = true;
 }
 
 void RaptorIsland::render() {
-
 	drawCamera();
-
-
 	drawPlatform();
 	drawSkyBox();
 	drawFont();
-	 
-	//drawFountain();
-	//drawPlayer();
 }
 
 
@@ -62,25 +64,46 @@ int RaptorIsland::simulate() {
 	
 	tickPlatform();
 	tickCamera();
-
-/*
-tickFont();
-tickPlayer();
-//tickSpiral();
-tickFountain();
-}
-
-if (mySimulationTime > 2.0) {
-myGameStarted = true;
-}
-
-if (myPlayerPosition.y < -1500.0) {
-return 0;
-} else {
-return myGameSpeed;
-}	
-*/
 	
 	return 1;
+	
+}
+
+void RaptorIsland::tickCamera() {
+	//Vector3D cameraPosition;
+	//Vector3D cameraTarget;
+	
+	//float limitP;
+	//float limitT;
+
+	//cameraPosition = Vector3DMake(0.0, 10.0, 0.0);
+	//cameraTarget = Vector3DMake(0.0, 0.0, 0.0);
+		
+
+	//limitP = 1.07 * myDeltaTime;//0.0020;
+	//limitT = 1.1 * myDeltaTime;//0.0020;
+	
+	Vector3D desiredPosition = Vector3DMake(0.0, 5.0, 0.0);
+	Vector3D desiredTarget = Vector3DMake(1000.0, 1.0, 0.0);
+	
+	/*
+	 Vector3DFlip(&desiredPosition);
+	 Vector3D deltaP = Vector3DAdd(desiredPosition, myCameraPosition);
+	 deltaP = Vector3DLimit(deltaP, myPlayerSpeed.x * limitP);
+	 Vector3DFlip(&deltaP);
+	 
+	 myCameraPosition = Vector3DAdd(myCameraPosition, deltaP);
+	 
+	 
+	 Vector3DFlip(&desiredTarget);
+	 Vector3D deltaT = Vector3DAdd(desiredTarget, myCameraTarget);
+	 deltaT = Vector3DLimit(deltaT, myPlayerSpeed.x * limitT);
+	 Vector3DFlip(&deltaT);
+	 
+	 myCameraTarget = Vector3DAdd(myCameraTarget, deltaT);
+	 */
+	
+	myCameraTarget = desiredTarget;
+	myCameraPosition = desiredPosition;
 	
 }

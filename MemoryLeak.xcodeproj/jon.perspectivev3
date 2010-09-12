@@ -231,8 +231,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -280,7 +278,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>19</integer>
+									<integer>18</integer>
 									<integer>17</integer>
 									<integer>0</integer>
 								</array>
@@ -314,12 +312,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>FCF839E711E6F4C6002E21F8</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>RaptorIsland.h</string>
+								<string>RaptorIsland.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,11 +327,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>FCF839E811E6F4C6002E21F8</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>RaptorIsland.h</string>
+										<string>RaptorIsland.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>FC10AA66123C659A002A6142</string>
+										<string>FC10AAFD123C6CA6002A6142</string>
 										<key>history</key>
 										<array>
 											<string>FC7C4F74121F7D22003C7C89</string>
@@ -356,10 +356,10 @@
 											<string>FC10A9DE123C614A002A6142</string>
 											<string>FC10AA11123C629B002A6142</string>
 											<string>FC10AA12123C629B002A6142</string>
-											<string>FC10AA62123C659A002A6142</string>
-											<string>FC10AA63123C659A002A6142</string>
-											<string>FC10AA64123C659A002A6142</string>
-											<string>FC10AA65123C659A002A6142</string>
+											<string>FC10AA7D123C6939002A6142</string>
+											<string>FC10AA93123C6A75002A6142</string>
+											<string>FC10AAB5123C6B27002A6142</string>
+											<string>FC10AAB6123C6B27002A6142</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -415,8 +415,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1152, 268}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 97 1440 781 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXProjectFindModule</string>
@@ -455,6 +453,8 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1152, 268}}</string>
+										<key>RubberWindowFrame</key>
+										<string>0 97 1440 781 0 0 1440 878 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -676,7 +676,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>FC10AA67123C659A002A6142</string>
 		<string>FC10A9ED123C614A002A6142</string>
 		<string>FC10A9EE123C614A002A6142</string>
 		<string>/Users/jon/iPhone/MemoryLeak/MemoryLeak.xcodeproj</string>
