@@ -6,8 +6,12 @@ bin/classes/
 build/Debug-iphonesimulator/
 build/MemoryLeak.build/
 build/Debug-iphoneos/
+build/Release-iphoneos/
 gen/
 bin/
 libs/armeabi/
 obj/local/
 assets/.DS_Store
+MemoryLeak.xcodeproj/*.pbxuser
+MemoryLeak.xcodeproj/*.perspectivev3
+
