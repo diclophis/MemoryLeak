@@ -242,24 +242,24 @@ static std::vector<foo*> models;
 		textures.push_back([self loadTexture:@"road_texture" ofType:@"jpg"]);
 
 		//bottom
-		textures.push_back([self loadTexture:@"noonclouds_down" ofType:@"jpg"]);
-
-		//east
 		textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
 
-		//top
-		textures.push_back([self loadTexture:@"noonclouds_up" ofType:@"jpg"]);
-
-		//north
+		// WEST
 		textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
 
-		//west
+		//top
+		textures.push_back([self loadTexture:@"tree" ofType:@"jpg"]);
+
+		// north
+		textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
+
+		// NORTH
 		textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
 
-		//south
+		// SOUTH
 		textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
 
-		//font
+		// font
 		textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
 
 		//tree

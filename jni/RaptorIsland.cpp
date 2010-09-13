@@ -101,11 +101,11 @@ void RaptorIsland::render() {
 	
 	glPushMatrix();
 	{
-		bindTexture(myTextures[12]);
+		bindTexture(myTextures[11]);
 		float scale = 0.05;
 		glScalef(scale, scale, scale);
 		myBarrelManager.Render();
-		unbindTexture(myTextures[12]);
+		unbindTexture(myTextures[11]);
 	}
 	glPopMatrix();
 	

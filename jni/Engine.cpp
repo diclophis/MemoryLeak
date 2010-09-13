@@ -22,7 +22,7 @@ inline std::string Engine::stringify(double x) {
 Engine::Engine() {
 	LOGV("alloc/init GameController\n");
 	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 500.0;
+	myDeltaTime = 1.0 / 400.0;
 }
 
 
@@ -1014,8 +1014,8 @@ void Engine::drawSkyBox() {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTranslatef(myPlayerPosition.x, 0.0, 0.0);
-		mySkyBoxRotation += 0.11;
-		glScalef(100.0, 100.0, 100.0);
+		mySkyBoxRotation += 0.1;
+		glScalef(125.0, 125.0, 125.0);
 		glRotatef(mySkyBoxRotation, 0.0, 1.0, 0.0);
 		glVertexPointer(3, GL_FLOAT, 0, mySkyBoxVertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureCoords);
