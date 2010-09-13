@@ -30,7 +30,7 @@
 
 
 -(id)initWithFrame:(CGRect)theFrame {
-	if (self = [super initWithFrame:theFrame]) {
+	if ((self = [super initWithFrame:theFrame])) {
 		[self build];
 	}
 	return self;
@@ -83,7 +83,7 @@
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 2;
+	animationFrameInterval = 1;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -137,11 +137,11 @@
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
 			gameState = gameController->tick();
+			gameController->draw(0);
 		} else {
 			[self startGame];
 		}
 		
-		gameController->draw(0);
 		glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
 	}
@@ -162,17 +162,16 @@
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	
 	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"assets/textures"];
-	NSLog(@"%@", path);
-	NSString *extension = [path pathExtension];
+	//NSString *extension = [path pathExtension];
 	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
 	float inWidth = 512.0;
 	float inHeight = 512.0;
 	// Assumes pvr4 is RGB not RGBA, which is how texturetool generates them
-	if ([extension isEqualToString:@"pvr4"]) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
-	} else if ([extension isEqualToString:@"pvr2"]) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
-	} else {
+	//if ([extension isEqualToString:@"pvr4"]) {
+	//	glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
+	//} else if ([extension isEqualToString:@"pvr2"]) {
+	//	glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
+	//} else {
 		UIImage *image = [[UIImage alloc] initWithData:texData];
 		if (image == nil) {
 			throw 1;
@@ -190,7 +189,7 @@
 		CGContextRelease(context2);
 		free(imageData);
 		[image release];
-	}
+	//}
 	[texData release];
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
@@ -200,12 +199,13 @@
 
 
 -(void)startGame {
-	//if (gameController) {
-	//	delete gameController;
-	//} else {
-
+	
+	if (gameController != NULL) {
+		delete gameController;
+	}
 	
 	
+	std::vector<GLuint> textures;
 	std::vector<foo*> models;
 		
 	FILE *fd1 = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
@@ -234,45 +234,52 @@
 	models.push_back(&secondModel);
 
 	//raptor
-	textures[0] = [self loadTexture:@"raptor" ofType:@"png"];
+	textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
 	
 	//ground
-	textures[1] = [self loadTexture:@"beach" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"beach" ofType:@"jpg"]);
 	
 	//bottom
-	textures[2] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"noonclouds_down" ofType:@"jpg"]);
 	
 	//east
-	textures[3] = [self loadTexture:@"noonclouds_east" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
 	
 	//top
-	textures[4] = [self loadTexture:@"noonclouds_up" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"noonclouds_up" ofType:@"jpg"]);
 	
 	//north
-	textures[5] = [self loadTexture:@"noonclouds_west" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
 	
 	//west
-	textures[6] = [self loadTexture:@"noonclouds_north" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
 	
 	//south
-	textures[7] = [self loadTexture:@"noonclouds_south" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
 	
 	//font
-	textures[8] = [self loadTexture:@"font_texture" ofType:@"png"];
+	textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
 	
 	//tree
-	textures[9] = [self loadTexture:@"vincent_texture" ofType:@"png"];
+	textures.push_back([self loadTexture:@"vincent_texture" ofType:@"png"]);
 
 	//barrel
-	textures[10] = [self loadTexture:@"barrel_01" ofType:@"jpg"];
-	textures[11] = [self loadTexture:@"barrel_02" ofType:@"jpg"];
-	textures[12] = [self loadTexture:@"barrel_03" ofType:@"jpg"];
+	textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
+	textures.push_back([self loadTexture:@"barrel_02" ofType:@"jpg"]);
+	textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
+	 
+	
+
+	gameController = new RaptorIsland();
+	
+
+	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+	gameState = 1;
 
 	
-	gameController = new RaptorIsland();
-	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
-	gameState = gameController->tick();
-
+	models.clear();
+	textures.clear();
+	
 }
 
 

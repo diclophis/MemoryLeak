@@ -7,7 +7,13 @@
 
 #include "RaptorIsland.h"
 
-void RaptorIsland::build(int width, int height, GLuint *textures, std::vector<foo*> models) {
+RaptorIsland::~RaptorIsland() {
+	LOGV("dealloc RaptorIsland\n");
+	myRaptors.clear();
+	myRaptorManager.Release();
+}
+
+void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
 	
 	
 	//Screen
@@ -21,42 +27,31 @@ void RaptorIsland::build(int width, int height, GLuint *textures, std::vector<fo
 
 	myTextures = textures;
 	
-	/*
-	myPlayerTexture = textures[0];
-	myGroundTexture = textures[1];
-	mySkyBoxTextures = (GLuint *) malloc(6 * sizeof(GLuint));
-	 
-	 mySkyBoxTextures[0] = textures[2];
-	 mySkyBoxTextures[1] = textures[3];
-	 mySkyBoxTextures[2] = textures[4];
-	 mySkyBoxTextures[3] = textures[5];
-	 mySkyBoxTextures[4] = textures[6];
-	 mySkyBoxTextures[5] = textures[7];
-	 
-	
-	myFontTexture = textures[8];
-	myFountainTextures[0] = textures[9];
-	*/
-	
-	buildFont();
 	buildCamera();
+
 	
-	
-	
+	 
 	myRaptorHeight = 22.0;	
-	myRaptorManager = new Md2Manager();
-	myRaptorManager->SetStagger(2.0);
+	//myRaptorManager = new Md2Manager();
+	myRaptorManager.SetStagger(2.0);
+	
+	
 	
 	for (int i=0; i<1; i++) {
-		Md2Instance *raptor = myRaptorManager->Load(models[0], 29);
+		Md2Instance *raptor = myRaptorManager.Load(models[0], 29);
 		myRaptors.push_back(raptor);
 		raptor->SwitchCycle(1, 0.0, true, -1, 0);
 		raptor->SetPosition(randf() * 1000.0, myRaptorHeight, (randf() * 1000.0) - 500.0);
+		//raptor->SetPosition(0.0, myRaptorHeight, (randf() * 1000.0) - 500.0);
 		raptor->SetRotation(90.0);
 	}
 	
 	
+	 
 	
+	/*	
+	 buildFont();
+
 	
 	myBarrelHeight = 42.0;
 	myBarrelManager = new Md2Manager();
@@ -94,13 +89,17 @@ void RaptorIsland::build(int width, int height, GLuint *textures, std::vector<fo
 	myPlatforms[i].angular_frequency = 0.0;
 	myPlatforms[i].phase = 0.0;
 	
+ */
+	
 	mySceneBuilt = true;
 	
 }
 
 void RaptorIsland::render() {
 
+	
 	drawCamera();
+	
 	
 	
 	glPushMatrix();
@@ -108,12 +107,13 @@ void RaptorIsland::render() {
 		bindTexture(myTextures[0]);
 		float scale = 0.1;
 		glScalef(scale, scale, scale);
-		myRaptorManager->Render();
+		myRaptorManager.Render();
 		unbindTexture(myTextures[0]);
 	}
 	glPopMatrix();
-	
 	 
+	
+	/*
 	 
 	 
 	glPushMatrix();
@@ -130,15 +130,18 @@ void RaptorIsland::render() {
 
 	
 	drawFont();
+	 */
 }
 
 
 int RaptorIsland::simulate() {
+	
 	tickCamera();
 	
 	
-	myRaptorManager->Update(myDeltaTime);
-	myBarrelManager->Update(myDeltaTime);
+	 
+	myRaptorManager.Update(myDeltaTime);
+	//myBarrelManager->Update(myDeltaTime);
 
 	
 	for(std::vector<Md2Instance *>::const_iterator it = myRaptors.begin(); it != myRaptors.end(); ++it)
@@ -146,37 +149,25 @@ int RaptorIsland::simulate() {
 		Md2Instance *raptor = (Md2Instance *)(*it);
 		if (raptor->GetPosition()[2] < -150.0) {
 			raptor->SetPosition(randf() * 1000.0, myRaptorHeight, 150.0);
+			//raptor->SetPosition(0.0, myRaptorHeight, 150.0);
+
 		}
 
 		raptor->Move(0.9, 0.0, 0.0);
-		raptor->SetRotation(90.0 + (fastSinf(mySimulationTime * 50.0) * 2.0));
+		raptor->SetRotation(90.0 + (fastSinf(mySimulationTime * 50.0) * 5.0));
 	}
 	
-	/*
-	if (randf() > 0.90) {
-		Md2Instance *raptor = myRaptorManager->Load(models[0], 29);
-		myRaptors.push_back(raptor);
-		raptor->SwitchCycle(1, 0.0, true, -1, 0);
-		raptor->SetPosition(randf() * 1000.0, myRaptorHeight, (randf() * 1000.0) - 500.0);
-		raptor->SetRotation(90.0);
-	}
-	*/
-	
-	/*
-	if (randf() > 0.25) {
-		myRaptors[0]->SetCycle(3);
+	if (mySimulationTime > 2.0) {
+		return 0;
 	} else {
-		myRaptors[0]->SetCycle(1);
+		return 1;
 	}
-	 */
-	
-	return 1;
 }
 
 void RaptorIsland::tickCamera() {
 	
-	Vector3D desiredPosition = Vector3DMake(-20.0, 5.0, 0.0);
-	Vector3D desiredTarget = Vector3DMake(100.0, 0.0, 0.0);
+	Vector3D desiredPosition = Vector3DMake(-15.0, 4.0, 0.0);
+	Vector3D desiredTarget = Vector3DMake(150.0, 4.0, 0.0);
 
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;

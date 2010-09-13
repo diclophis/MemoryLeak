@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		FC10A9C4123C5F6A002A6142 /* RaptorIsland.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */; };
-		FC21C8C8121AA24D006B5015 /* main.xml in Resources */ = {isa = PBXBuildFile; fileRef = FC21C8BF121AA24D006B5015 /* main.xml */; };
-		FC21C8CE121AA24D006B5015 /* strings.xml in Resources */ = {isa = PBXBuildFile; fileRef = FC21C8C7121AA24D006B5015 /* strings.xml */; };
 		FC38F783123DABB50036678B /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC38F766123DABB50036678B /* assets */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
@@ -29,12 +27,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1D6058910D05DD3D006BFB54 /* MemoryLeak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemoryLeak.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC10A985123C502F002A6142 /* foo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = foo.h; path = jni/foo.h; sourceTree = "<group>"; };
 		FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RaptorIsland.cpp; path = jni/RaptorIsland.cpp; sourceTree = "<group>"; };
 		FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RaptorIsland.h; path = jni/RaptorIsland.h; sourceTree = "<group>"; };
-		FC21C8BF121AA24D006B5015 /* main.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = main.xml; sourceTree = "<group>"; };
-		FC21C8C7121AA24D006B5015 /* strings.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = strings.xml; sourceTree = "<group>"; };
 		FC38F766123DABB50036678B /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -87,7 +83,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* MemoryLeak.app */,
+				1D6058910D05DD3D006BFB54 /* RaptorIsland.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,7 +93,6 @@
 			children = (
 				FC38F766123DABB50036678B /* assets */,
 				FCFD43EE121BBF4F00A65BCF /* Etc */,
-				FC21C8BD121AA24D006B5015 /* res */,
 				FCBE418D1216835400A60972 /* Game */,
 				FCBE41401216807900A60972 /* Classes */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -117,31 +112,6 @@
 				FCFD71AE121E95C800C8F382 /* libpthread.dylib */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		FC21C8BD121AA24D006B5015 /* res */ = {
-			isa = PBXGroup;
-			children = (
-				FC21C8BE121AA24D006B5015 /* layout */,
-				FC21C8C6121AA24D006B5015 /* values */,
-			);
-			path = res;
-			sourceTree = "<group>";
-		};
-		FC21C8BE121AA24D006B5015 /* layout */ = {
-			isa = PBXGroup;
-			children = (
-				FC21C8BF121AA24D006B5015 /* main.xml */,
-			);
-			path = layout;
-			sourceTree = "<group>";
-		};
-		FC21C8C6121AA24D006B5015 /* values */ = {
-			isa = PBXGroup;
-			children = (
-				FC21C8C7121AA24D006B5015 /* strings.xml */,
-			);
-			path = values;
 			sourceTree = "<group>";
 		};
 		FCBE41401216807900A60972 /* Classes */ = {
@@ -209,7 +179,7 @@
 			);
 			name = MemoryLeak;
 			productName = MemoryLeak;
-			productReference = 1D6058910D05DD3D006BFB54 /* MemoryLeak.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* RaptorIsland.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -235,8 +205,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FCBE414D1216807A00A60972 /* MainWindow.xib in Resources */,
-				FC21C8C8121AA24D006B5015 /* main.xml in Resources */,
-				FC21C8CE121AA24D006B5015 /* strings.xml in Resources */,
 				FCE2DF10122C09AB005D610E /* Default.png in Resources */,
 				FC38F783123DABB50036678B /* assets in Resources */,
 			);
@@ -267,6 +235,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -274,15 +243,26 @@
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				GCC_VERSION = 4.2;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = NO;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/jni/libev";
+				GCC_WARN_UNUSED_PARAMETER = NO;
+				GCC_WARN_UNUSED_VALUE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				PRODUCT_NAME = MemoryLeak;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				PRODUCT_NAME = RaptorIsland;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -290,13 +270,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
+				COMPRESS_PNG_FILES = NO;
+				COPY_PHASE_STRIP = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				PRODUCT_NAME = MemoryLeak;
+				PRODUCT_NAME = RaptorIsland;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

@@ -48,6 +48,9 @@ class Engine {
 	
 public:
 	
+	Engine(const Engine&);
+	Engine& operator=(const Engine&);
+	
 	// Fountain Engine
 	#define NUM_PARTICLES 10
 	GLfloat vertices[NUM_PARTICLES * 3];
@@ -187,10 +190,10 @@ public:
 	int myGameSpeed;
 	int screenWidth;
 	int screenHeight;
-	GLuint *myTextures;
+	std::vector<GLuint> myTextures;
 	Engine();
 	virtual ~Engine();
-	virtual void build(int width, int height, GLuint *textures, std::vector<foo*> models) = 0;
+	virtual void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) = 0;
 	int tick();
 	virtual int simulate() = 0;
 	virtual void render() = 0;

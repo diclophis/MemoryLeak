@@ -11,10 +11,12 @@ class RaptorIsland : public Engine {
 
 public:
 	
+	~RaptorIsland();
+	
 	// Raptor Engine
 	float myRaptorHeight;
 	std::vector<Md2Instance *> myRaptors;
-	Md2Manager *myRaptorManager;
+	Md2Manager myRaptorManager;
 	
 	// Barrel Engine
 	float myBarrelHeight;
@@ -22,7 +24,7 @@ public:
 	Md2Manager *myBarrelManager;
 	
 	// Game Engine
-	void build(int width, int height, GLuint *textures, std::vector<foo*> models);
+	void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
 	int simulate();
 	void render();
 	void tickCamera();

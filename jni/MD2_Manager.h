@@ -151,7 +151,7 @@ public:
 	
 	//std::vector<Md2Manager::ModelRef*> m_LoadedModels;
 
-	Md2Manager() {
+	Md2Manager() : m_LoadedModels(), m_UpdateStagger(), m_UpdateCurrent() {
 		m_UpdateStagger=1;
 		m_UpdateCurrent=0;
 		for (int i=0; i<=8; i++) {

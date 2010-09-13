@@ -212,7 +212,7 @@ struct Md2VertexNormal {
 struct Md2VertexArrayIndex {
 	
 	/// ctor
-	inline Md2VertexArrayIndex(){}
+	inline Md2VertexArrayIndex() : v(), t() {}
 
 	/// copy ctor
 	inline Md2VertexArrayIndex(const Md2VertexArrayIndex& i) : v(i.v), t(i.t) {}
@@ -230,8 +230,7 @@ struct Md2VertexArrayIndex {
 /// a list of tex coord and vertex indices. Used only as a lookup when converting the
 /// data to vertex arrays. 
 ///
-struct Md2VertexArrayIndexList 
-	: public std::vector<Md2VertexArrayIndex> {
+struct Md2VertexArrayIndexList : public std::vector<Md2VertexArrayIndex> {
 
 	unsigned short Insert(Md2VertexArrayIndex& index);
 };
@@ -289,6 +288,9 @@ struct Md2StripInfo {
 class Md2AnimCycle {
 	friend class Md2Model;
 public:
+	
+	Md2AnimCycle(const Md2AnimCycle&);
+	Md2AnimCycle& operator=(const Md2AnimCycle&);
 
 	/// ctor
 	Md2AnimCycle() ;
@@ -385,10 +387,14 @@ class Md2Model;
 ///	models data - ie, not duplicating it
 ///
 class Md2Instance {
+	
 	friend class Md2Model;
 	//friend void Md2ReleaseTex(unsigned int);
 public:
 
+	Md2Instance(const Md2Instance&);
+	Md2Instance& operator=(const Md2Instance&);
+	
 	//-------------------------------------------------------------------------------------------	Visibility
 
 	
@@ -644,11 +650,16 @@ class Md2Model {
 	friend void Md2ReleaseTex(unsigned int);
 //private:
 
+	Md2Model(const Md2Model&);
+	Md2Model& operator=(const Md2Model&);
+	
 	/// ctor
 	Md2Model();
 
 	/// dtor
-	~Md2Model() ;
+	~Md2Model();
+	
+	
 
 	#if MD2_USE_NORMALS
 		void CalcNormals();

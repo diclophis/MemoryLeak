@@ -27,16 +27,7 @@ Engine::Engine() {
 
 Engine::~Engine() {
 	LOGV("dealloc GameController\n");
-  /*
-	myPlayerManager->Release();
-	if (myPlatforms) {
-		free(myPlatforms);
-	}
-	
-	if (mySkyBoxTextures) {
-		free(mySkyBoxTextures);
-	}
-  */
+	myTextures.clear();
 }
 
 
@@ -120,7 +111,8 @@ void Engine::prepareFrame(int width, int height) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(20.0, (float) width / (float) height, 5.0, 10000.0);
+	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 1000.0);
+	gluPerspective(25.0, (float) width / (float) height, 0.1, 100.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
