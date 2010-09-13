@@ -120,7 +120,7 @@ void Engine::prepareFrame(int width, int height) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(40.0, (float) width / (float) height, 5.0, 10000.0);
+	gluPerspective(20.0, (float) width / (float) height, 5.0, 10000.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -211,7 +211,7 @@ void Engine::drawFont() {
 	m_fCharacterHeight = 1.0 / m_ntextHeight;
 
 
-	bindTexture(myFontTexture);
+	bindTexture(myTextures[8]);
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();	
@@ -222,6 +222,7 @@ void Engine::drawFont() {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+
 
 	float x;
 	std::string fps;
@@ -236,8 +237,9 @@ void Engine::drawFont() {
 	}
 	 
 	float y = 0.875;
-
+	
 	for (int i=0; i<fps.length(); i++) {
+		
 		int c = fps.at(i);
 
 		if (c == ' ') {
@@ -256,10 +258,12 @@ void Engine::drawFont() {
 
 		m_nCurrentChar = 0;
 
+		
 		// TexCoords
 		int offsetT = m_nCurrentChar - (m_nCurrentChar / 3);	// 12 / 3 = 4 So 12 - 4 = 8
 		memcpy(&charGeomT[offsetT], &charTexCoords[c * ONE_CHAR_SIZE_T], ONE_CHAR_SIZE_T * sizeof(GLfloat));
 
+		
 		// Vertex Xs
 		charGeomV[m_nCurrentChar + 0] = charGeomV[m_nCurrentChar + 6] = x;
 		charGeomV[m_nCurrentChar + 3] = charGeomV[m_nCurrentChar + 9] = x + m_fCharacterWidth;
@@ -268,15 +272,27 @@ void Engine::drawFont() {
 		charGeomV[m_nCurrentChar + 1] = charGeomV[m_nCurrentChar + 4] = y;
 		charGeomV[m_nCurrentChar + 10] = charGeomV[m_nCurrentChar + 7] = y + m_fCharacterHeight;
 
+		
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT,0, &charGeomT);
+
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, &charGeomV);
+
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		
 		x += m_fCharacterWidth;
+		
 	}
 	 
-	unbindTexture(myFontTexture);
+
+
+	
+	unbindTexture(myTextures[8]);
 	
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();		
@@ -291,8 +307,6 @@ void Engine::buildCamera() {
 	myCameraPosition = Vector3DMake(-45.0, 20.0, 80.0);
 	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
 }
-
-
 
 
 void Engine::drawCamera() {	

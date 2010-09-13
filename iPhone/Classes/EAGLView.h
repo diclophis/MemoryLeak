@@ -38,7 +38,7 @@ typedef struct RaptorIsland RaptorIsland;
     GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
 	RaptorIsland *gameController;
 	BOOL myFrameRequested;
-	GLuint		textures[10];
+	GLuint		textures[13];
 	int gameState;
 }
 

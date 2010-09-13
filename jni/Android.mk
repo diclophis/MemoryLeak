@@ -28,6 +28,7 @@ LOCAL_SRC_FILES := \
     importgl.c \
     android.cpp \
     Engine.cpp \
+    RaptorIsland.cpp \
     MD2_File.cpp \
     MD2_Manager.cpp \
     MD2_Model.cpp \

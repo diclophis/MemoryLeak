@@ -62,33 +62,40 @@ import java.io.IOException;
 
 public class DemoActivity extends Activity {
 
-    private GLSurfaceView mGLView;
+	private GLSurfaceView mGLView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mGLView = new DemoGLSurfaceView(this);
-        setContentView(mGLView);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		mGLView = new DemoGLSurfaceView(this);
+		setContentView(mGLView);
 
-        android.content.res.AssetFileDescriptor afd;
-        try {
-          afd = getAssets().openFd("models/vincent.wav");
-        } catch(java.io.IOException e) {
-          System.out.println(e);
-          afd = null;
-        }
+		android.content.res.AssetFileDescriptor afd1;
+		android.content.res.AssetFileDescriptor afd2;
+		try {
+			afd1 = getAssets().openFd("models/raptor.wav");
+			afd2 = getAssets().openFd("models/barrel.wav");
+		} catch(java.io.IOException e) {
+			System.out.println(e);
+			afd1 = null;
+			afd2 = null;
+		}
 
-        int res = 0;
-        if (afd != null) {
-            java.io.FileDescriptor fd = afd.getFileDescriptor();
-                int off = (int)afd.getStartOffset();
-                int len = (int)afd.getLength();
-                res = initNative(fd, off, len);
-        }
+		int res = 0;
+		if (afd1 != null && afd2 != null) {
+			java.io.FileDescriptor fd1 = afd1.getFileDescriptor();
+			int off1 = (int)afd1.getStartOffset();
+			int len1 = (int)afd1.getLength();
 
-    }
+			java.io.FileDescriptor fd2 = afd2.getFileDescriptor();
+			int off2 = (int)afd2.getStartOffset();
+			int len2 = (int)afd2.getLength();
 
-    private static native int initNative(java.io.FileDescriptor fd, int off, int len); 
+			res = initNative(fd1, off1, len1, fd2, off2, len2);
+		}
+	}
+
+	private static native int initNative(java.io.FileDescriptor fd1, int off1, int len1, java.io.FileDescriptor fd2, int off2, int len2); 
 
     @Override
     protected void onPause() {
@@ -139,27 +146,36 @@ class DemoRenderer implements GLSurfaceView.Renderer {
       try {
         AssetManager am = mContext.getAssets();
         String[] texture_file_names = {
-          "textures/vincent_texture.png",
-          "textures/ground_texture.png",
-          "textures/skyboxes/noonclouds_up.jpg",
+
+          "textures/raptor.png",
+
+          "textures/beach.jpg",
+
+          "textures/noonclouds_up.jpg",
 
           //#1
-          "textures/skyboxes/noonclouds_east.jpg",
+          "textures/noonclouds_east.jpg",
 
-          "textures/skyboxes/noonclouds_down.jpg",
+          "textures/noonclouds_down.jpg",
 
           //#3
-          "textures/skyboxes/noonclouds_west.jpg",
+          "textures/noonclouds_west.jpg",
 
           //#2
-          "textures/skyboxes/noonclouds_north.jpg",
+          "textures/noonclouds_north.jpg",
 
           //#4
-          "textures/skyboxes/noonclouds_south.jpg",
+          "textures/noonclouds_south.jpg",
 
           "textures/font_texture.png",
 
-          "textures/tree.png"
+          "textures/vincent_texture.png",
+
+          "textures/barrel_01.jpg",
+
+          "textures/barrel_02.jpg",
+
+          "textures/barrel_03.jpg"
         };
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];

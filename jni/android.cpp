@@ -35,11 +35,11 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , "libnav", __VA_ARGS__) 
 
 #include "importgl.h"
-#include "Engine.h"
+#include "RaptorIsland.h"
 
 
 extern "C" {
-  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys, unsigned int off, unsigned int len);
+  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2);
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
@@ -49,13 +49,18 @@ extern "C" {
 }
 
 
-static FILE *myFile;
-static unsigned int fileOffset;
-static unsigned int fileLength;
+static FILE *myFile1;
+static unsigned int fileOffset1;
+static unsigned int fileLength1;
+
+static FILE *myFile2;
+static unsigned int fileOffset2;
+static unsigned int fileLength2;
+
 static GLuint *sPlayerTextures;
 static long sStartTick = 0;
 static long sTick = 0;
-static GLViewController *gameController;
+static RaptorIsland *gameController;
 int gAppAlive   = 1;
 static int  sDemoStopped  = 0;
 static long sTimeOffset   = 0;
@@ -71,28 +76,52 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 }
 
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys, unsigned int off, unsigned int len) {
-  importGLInit();
-  jclass fdClass = env->FindClass("java/io/FileDescriptor");
-  if (fdClass != NULL) {
-    jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
-    jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
-    if (fdClassDescriptorFieldID != NULL && fd_sys != NULL) {
-      jint fd = env->GetIntField(fd_sys, fdClassDescriptorFieldID);
-      int myfd = dup(fd);
-      myFile = fdopen(myfd, "rb");
-      fileOffset = off;
-      fileLength = len;
-    }
-  } 
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2) {
+	importGLInit();
+	jclass fdClass = env->FindClass("java/io/FileDescriptor");
+	if (fdClass != NULL) {
+		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
+		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
+		if (fdClassDescriptorFieldID != NULL && fd_sys1 != NULL && fd_sys2 != NULL) {
+			jint fd1 = env->GetIntField(fd_sys1, fdClassDescriptorFieldID);
+			int myfd1 = dup(fd1);
+			myFile1 = fdopen(myfd1, "rb");
+			fileOffset1 = off1;
+			fileLength1 = len1;
+
+			jint fd2 = env->GetIntField(fd_sys2, fdClassDescriptorFieldID);
+			int myfd2 = dup(fd2);
+			myFile2 = fdopen(myfd2, "rb");
+			fileOffset2 = off2;
+			fileLength2 = len2;
+		}
+	} 
 } 
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
   sPlayerTextures = (GLuint *) env->GetIntArrayElements(arr, 0);
-  gameController = new GLViewController();
-  gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, myFile, fileOffset, fileLength);
-  gameState = gameController->tick(1.0 / 200.0);
+
+
+	std::vector<foo*> models;
+		
+	foo firstModel; // = new foo;
+	firstModel.fp = myFile1;
+	firstModel.off = fileOffset1;
+	firstModel.len = fileLength1;
+	
+	models.push_back(&firstModel);
+
+	foo secondModel; // = new foo;
+	secondModel.fp = myFile2;
+	secondModel.off = fileOffset2;
+	secondModel.len = fileLength2;
+	
+	models.push_back(&secondModel);
+
+  gameController = new RaptorIsland();
+  gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+  gameState = gameController->tick();
   gAppAlive    = 1;
   sDemoStopped = 0;
   sTimeOffsetInit = 0;
@@ -123,7 +152,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
   LOGV("nativeTouch");
-  gameController->playerStartedJumping();
+  //gameController->playerStartedJumping();
 }
 
 
@@ -136,19 +165,20 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
   if (sDemoStopped) {
   } else {
     if (gameState) {
-      for (int i=0; i<=gameState; i++) {
-        gameState = gameController->tick(1.0 / 500.0);
-        gameState = gameController->tick(1.0 / 500.0);
-        gameState = gameController->tick(1.0 / 500.0);
-        gameState = gameController->tick(1.0 / 500.0);
-      }
+      //for (int i=0; i<=gameState; i++) {
+      //  gameState = gameController->tick(1.0 / 500.0);
+      //  gameState = gameController->tick(1.0 / 500.0);
+      //	gameState = gameController->tick(1.0 / 500.0);
+      //  gameState = gameController->tick(1.0 / 500.0);
+      //}
+      gameState = gameController->tick();
     } else {
-      if (gameController) {
-        delete gameController;
-      }
-      gameController = new GLViewController();
-      gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, myFile, fileOffset, fileLength);
-      gameState = gameController->tick(1.0 / 200.0);
+      //if (gameController) {
+      //  delete gameController;
+      //}
+      //gameController = new GLViewController();
+      //gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, myFile, fileOffset, fileLength);
+      //gameState = gameController->tick(1.0 / 200.0);
     }
   }
 

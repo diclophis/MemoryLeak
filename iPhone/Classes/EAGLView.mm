@@ -161,7 +161,8 @@
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	
-	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type];
+	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"assets/textures"];
+	NSLog(@"%@", path);
 	NSString *extension = [path pathExtension];
 	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
 	float inWidth = 512.0;
@@ -199,62 +200,79 @@
 
 
 -(void)startGame {
-	if (gameController) {
-		delete gameController;
-	} else {
-		//player
-		textures[0] = [self loadTexture:@"raptor" ofType:@"png"];
-		
-		//ground
-		textures[1] = [self loadTexture:@"beach" ofType:@"jpg"];
-		
-		//bottom
-		textures[2] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
-		
-		//east
-		textures[3] = [self loadTexture:@"noonclouds_east" ofType:@"jpg"];
-		
-		//top
-		textures[4] = [self loadTexture:@"noonclouds_up" ofType:@"jpg"];
-		
-		//north
-		textures[5] = [self loadTexture:@"noonclouds_west" ofType:@"jpg"];
-		
-		//west
-		textures[6] = [self loadTexture:@"noonclouds_north" ofType:@"jpg"];
-		
-		//south
-		textures[7] = [self loadTexture:@"noonclouds_south" ofType:@"jpg"];
-		
-		//font
-		textures[8] = [self loadTexture:@"font_texture" ofType:@"png"];
-		
-		//tree
-		textures[9] = [self loadTexture:@"vincent_texture" ofType:@"png"];
+	//if (gameController) {
+	//	delete gameController;
+	//} else {
 
-	}
 	
 	
 	std::vector<foo*> models;
+		
+	FILE *fd1 = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	fseek(fd1, 0, SEEK_END);
+	unsigned int len1 = ftell(fd1);
+	rewind(fd1);
+	
+	foo firstModel; // = new foo;
+	firstModel.fp = fd1;
+	firstModel.off = 0;
+	firstModel.len = len1;
+	
+	models.push_back(&firstModel);
 	
 	
-	FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-	fseek(fd, 0, SEEK_END);
-	unsigned int len = ftell(fd);
-	rewind(fd);
+	FILE *fd2 = fopen([[[NSBundle mainBundle] pathForResource:@"barrel" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	fseek(fd2, 0, SEEK_END);
+	unsigned int len2 = ftell(fd2);
+	rewind(fd2);
 	
-	foo playerFoo; // = new foo;
-	playerFoo.fp = fd;
-	playerFoo.off = 0;
-	playerFoo.len = len;
+	foo secondModel; // = new foo;
+	secondModel.fp = fd2;
+	secondModel.off = 0;
+	secondModel.len = len2;
 	
-	models.push_back(&playerFoo);
+	models.push_back(&secondModel);
+
+	//raptor
+	textures[0] = [self loadTexture:@"raptor" ofType:@"png"];
+	
+	//ground
+	textures[1] = [self loadTexture:@"beach" ofType:@"jpg"];
+	
+	//bottom
+	textures[2] = [self loadTexture:@"noonclouds_down" ofType:@"jpg"];
+	
+	//east
+	textures[3] = [self loadTexture:@"noonclouds_east" ofType:@"jpg"];
+	
+	//top
+	textures[4] = [self loadTexture:@"noonclouds_up" ofType:@"jpg"];
+	
+	//north
+	textures[5] = [self loadTexture:@"noonclouds_west" ofType:@"jpg"];
+	
+	//west
+	textures[6] = [self loadTexture:@"noonclouds_north" ofType:@"jpg"];
+	
+	//south
+	textures[7] = [self loadTexture:@"noonclouds_south" ofType:@"jpg"];
+	
+	//font
+	textures[8] = [self loadTexture:@"font_texture" ofType:@"png"];
+	
+	//tree
+	textures[9] = [self loadTexture:@"vincent_texture" ofType:@"png"];
+
+	//barrel
+	textures[10] = [self loadTexture:@"barrel_01" ofType:@"jpg"];
+	textures[11] = [self loadTexture:@"barrel_02" ofType:@"jpg"];
+	textures[12] = [self loadTexture:@"barrel_03" ofType:@"jpg"];
+
 	
 	gameController = new RaptorIsland();
 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
 	gameState = gameController->tick();
 
-	//delete playerFoo;
 }
 
 
