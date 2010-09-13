@@ -161,9 +161,14 @@ void Engine::buildFont() {
 	//
 	// Zero Z Coords in Geomtery Array.
 	//
-	for(int i=0; i<(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_V); i+=ONE_CHAR_SIZE_V)
+	//for(int i=0; i<(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_V); i+=ONE_CHAR_SIZE_V)
+	//{
+	//	charGeomV[i+2] = charGeomV[i+5] = charGeomV[i+8] = charGeomV[i+11] = 0.0;
+	//}
+	
+	for(int i=0; i<12; i++)
 	{
-		charGeomV[i+2] = charGeomV[i+5] = charGeomV[i+8] = charGeomV[i+11] = 0.0;
+		charGeomV[i] = 0.0;
 	}
 	
 	// Pre-generate all possible texture coords

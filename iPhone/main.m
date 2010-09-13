@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     
 	#define VALGRIND "/usr/local/bin/valgrind"
 	
-	if (YES) {
+	if (NO) {
 		/* Using the valgrind build config, rexec ourself
 		 * in valgrind */
 		if (argc < 2 || (argc >= 2 && strcmp(argv[1], "-valgrind") != 0)) {

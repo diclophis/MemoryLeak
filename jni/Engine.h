@@ -83,7 +83,7 @@ public:
 	GLfloat m_fCharacterWidth, m_fCharacterHeight;
 	GLfloat		charTexCoords[FONT_TEXTURE_ATLAS_WIDTH*FONT_TEXTURE_ATLAS_LINES*8]; // Predefined texture coords
 	int m_nCurrentChar;					// Position in current line.
-	GLfloat charGeomV[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_V)];
+	GLfloat charGeomV[12];
 	GLfloat charGeomT[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_T)];
 	GLuint myFontTexture;
 	//GLint viewport[4];	
