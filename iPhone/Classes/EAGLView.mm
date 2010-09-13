@@ -14,7 +14,10 @@
 
 #import <mach/mach_time.h>
 
-#include <unistd.h> 
+#include <unistd.h>
+
+static std::vector<GLuint> textures;
+static std::vector<foo*> models;
 
 @implementation EAGLView
 
@@ -205,69 +208,68 @@
 	}
 	
 	
-	std::vector<GLuint> textures;
-	std::vector<foo*> models;
+
 		
-	FILE *fd1 = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-	fseek(fd1, 0, SEEK_END);
-	unsigned int len1 = ftell(fd1);
-	rewind(fd1);
-	
-	foo firstModel; // = new foo;
-	firstModel.fp = fd1;
-	firstModel.off = 0;
-	firstModel.len = len1;
-	
-	models.push_back(&firstModel);
-	
-	
-	FILE *fd2 = fopen([[[NSBundle mainBundle] pathForResource:@"barrel" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-	fseek(fd2, 0, SEEK_END);
-	unsigned int len2 = ftell(fd2);
-	rewind(fd2);
-	
-	foo secondModel; // = new foo;
-	secondModel.fp = fd2;
-	secondModel.off = 0;
-	secondModel.len = len2;
-	
-	models.push_back(&secondModel);
+		FILE *fd1 = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd1, 0, SEEK_END);
+		unsigned int len1 = ftell(fd1);
+		rewind(fd1);
 
-	//raptor
-	textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
-	
-	//ground
-	textures.push_back([self loadTexture:@"beach" ofType:@"jpg"]);
-	
-	//bottom
-	textures.push_back([self loadTexture:@"noonclouds_down" ofType:@"jpg"]);
-	
-	//east
-	textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
-	
-	//top
-	textures.push_back([self loadTexture:@"noonclouds_up" ofType:@"jpg"]);
-	
-	//north
-	textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
-	
-	//west
-	textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
-	
-	//south
-	textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
-	
-	//font
-	textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
-	
-	//tree
-	textures.push_back([self loadTexture:@"vincent_texture" ofType:@"png"]);
+		foo firstModel; // = new foo;
+		firstModel.fp = fd1;
+		firstModel.off = 0;
+		firstModel.len = len1;
 
-	//barrel
-	textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
-	textures.push_back([self loadTexture:@"barrel_02" ofType:@"jpg"]);
-	textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
-	 
+		models.push_back(&firstModel);
+
+
+		FILE *fd2 = fopen([[[NSBundle mainBundle] pathForResource:@"barrel" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd2, 0, SEEK_END);
+		unsigned int len2 = ftell(fd2);
+		rewind(fd2);
+
+		foo secondModel; // = new foo;
+		secondModel.fp = fd2;
+		secondModel.off = 0;
+		secondModel.len = len2;
+
+		models.push_back(&secondModel);
+
+		//raptor
+		textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
+
+		//ground
+		textures.push_back([self loadTexture:@"road_texture" ofType:@"jpg"]);
+
+		//bottom
+		textures.push_back([self loadTexture:@"noonclouds_down" ofType:@"jpg"]);
+
+		//east
+		textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
+
+		//top
+		textures.push_back([self loadTexture:@"noonclouds_up" ofType:@"jpg"]);
+
+		//north
+		textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
+
+		//west
+		textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
+
+		//south
+		textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
+
+		//font
+		textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
+
+		//tree
+		textures.push_back([self loadTexture:@"vincent_texture" ofType:@"png"]);
+
+		//barrel
+		textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
+		textures.push_back([self loadTexture:@"barrel_02" ofType:@"jpg"]);
+		textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
+	
 	
 
 	gameController = new RaptorIsland();
@@ -277,9 +279,9 @@
 	gameState = 1;
 
 	
+
 	models.clear();
 	textures.clear();
-	
 }
 
 
@@ -360,6 +362,8 @@
     if ([EAGLContext currentContext] == context) {
         [EAGLContext setCurrentContext:nil];
 	}
+	
+
 	
     [context release];
     context = nil;

@@ -39,6 +39,7 @@ typedef struct RaptorIsland RaptorIsland;
 	RaptorIsland *gameController;
 	BOOL myFrameRequested;
 	int gameState;
+
 }
 
 

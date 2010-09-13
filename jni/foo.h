@@ -13,4 +13,3 @@ struct foo {
 	unsigned int off;
 	unsigned int len;
 };
-

@@ -11,10 +11,6 @@
 #ifndef MD2__CONFIG__H__
 #define MD2__CONFIG__H__
 
-	#ifdef WIN32
-		#pragma once
-	#endif
-
 	//---------------------------------------------------------------------------------	Md2 Compile Flags
 
 	/// set this flag to zero if you dont want to use normals. The downsides to normals

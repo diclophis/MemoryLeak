@@ -57,7 +57,7 @@ static FILE *myFile2;
 static unsigned int fileOffset2;
 static unsigned int fileLength2;
 
-static GLuint *sPlayerTextures;
+static std::vector<GLuint> sPlayerTextures;
 static long sStartTick = 0;
 static long sTick = 0;
 static RaptorIsland *gameController;
@@ -100,8 +100,14 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
-  sPlayerTextures = (GLuint *) env->GetIntArrayElements(arr, 0);
+  //sPlayerTextures = (GLuint *) env->GetIntArrayElements(arr, 0);
 
+
+	//std::vector<GLuint> textures;
+
+	for (int i=0; i<13; i++) {
+		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
+	}
 
 	std::vector<foo*> models;
 		
@@ -122,6 +128,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   gameController = new RaptorIsland();
   gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, models);
   gameState = gameController->tick();
+	models.clear();
+	sPlayerTextures.clear();
   gAppAlive    = 1;
   sDemoStopped = 0;
   sTimeOffsetInit = 0;

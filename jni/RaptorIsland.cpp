@@ -11,10 +11,12 @@ RaptorIsland::~RaptorIsland() {
 	LOGV("dealloc RaptorIsland\n");
 	myRaptors.clear();
 	myRaptorManager.Release();
+	
+	myBarrels.clear();
+	myBarrelManager.Release();
 }
 
 void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
-	
 	
 	//Screen
 	screenWidth = width;
@@ -27,13 +29,15 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 
 	myTextures = textures;
 	
+	myGroundTexture = textures[1];
+	
 	buildCamera();
 	 
 	myRaptorHeight = 22.0;	
-	//myRaptorManager.SetStagger(2.0);
+	myRaptorManager.SetStagger(2.0);
 	
-	for (int i=0; i<15; i++) {
-		Md2Instance *raptor = myRaptorManager.Load(models[0], 29);
+	for (int i=0; i<20; i++) {
+		Md2Instance *raptor = myRaptorManager.Load(models[0], 24);
 		myRaptors.push_back(raptor);
 		raptor->SwitchCycle(1, 0.0, true, -1, 0);
 		raptor->SetPosition(randf() * 300.0, myRaptorHeight, (randf() * 500.0) - 250.0);
@@ -44,7 +48,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myBarrelHeight = 0.0;
 	
 	for (int i=0; i<1; i++) {
-		Md2Instance *barrel = myBarrelManager.Load(models[1], 24);
+		Md2Instance *barrel = myBarrelManager.Load(models[1], 0);
 		myBarrels.push_back(barrel);
 		barrel->SwitchCycle(0, 0.0, true, -1, 0);
 		barrel->SetPosition(0.0, 0.0, 0.0);
@@ -69,11 +73,13 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myPlatforms[i].position = Vector3DMake(0.0, 0.0, 0.0);
 	myPlatforms[i].length = 100.0;
 	myPlatforms[i].amplitude = 0.0; //randf();
-	myPlatforms[i].step = 1.0;
+	myPlatforms[i].step = 100.0;
 	myPlatforms[i].angular_frequency = 0.0;
 	myPlatforms[i].phase = 0.0;
 	
  
+	
+	buildSkyBox();
 	
 	mySceneBuilt = true;
 	
@@ -81,10 +87,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 
 void RaptorIsland::render() {
 
-	
 	drawCamera();
-	
-	
 	
 	glPushMatrix();
 	{
@@ -109,6 +112,8 @@ void RaptorIsland::render() {
 	drawPlatform();
 	
 	drawFont();
+	
+	drawSkyBox();
 }
 
 
@@ -139,7 +144,9 @@ int RaptorIsland::simulate() {
 		barrel->SetRotation(mySimulationTime * 50.0);
 	}
 	
-	if (mySimulationTime > 10.0) {
+	tickSkyBox();
+	
+	if (mySimulationTime > 30.0) {
 		return 0;
 	} else {
 		return 1;

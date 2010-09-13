@@ -6,6 +6,7 @@
 //
 
 
+#include <sstream>
 
 #include "Engine.h"
 
@@ -113,7 +114,7 @@ void Engine::prepareFrame(int width, int height) {
 	glLoadIdentity();
 	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 1000.0);
 	//gluPerspective(25.0, (float) width / (float) height, 0.1, 100.0);
-	gluPerspective(45.0, (float) width / (float) height, 0.1, 100.0);
+	gluPerspective(45.0, (float) width / (float) height, 0.1, 200.0);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -577,9 +578,9 @@ void Engine::drawPlatformSegment(float baseY, float x1, float y1, float x2, floa
 	//baseY -= 0.0;
 	//baseY = fastSinf(baseY) * randf() * 1000.0;
 	
-	float platformRadius = 1.0;
+	float platformRadius = 50.0;
 
-	int total = 100.0; //randf() * 10.0;
+	int total = 2.0; //randf() * 10.0;
 
 	float deep = -((platformRadius * (float)total) * 0.5);
 	
@@ -680,8 +681,8 @@ void Engine::drawPlatformSegment(float baseY, float x1, float y1, float x2, floa
 	glVertexPointer(3, GL_FLOAT, 0, platformVertices);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
-	glDrawArrays(GL_LINES, 0, 6 * total);
-	//glDrawArrays(GL_TRIANGLES, 0, 6 * total);
+	//glDrawArrays(GL_LINES, 0, 6 * total);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * total);
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
@@ -1014,12 +1015,12 @@ void Engine::drawSkyBox() {
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTranslatef(myPlayerPosition.x, 0.0, 0.0);
 		mySkyBoxRotation += 0.11;
-		glScalef(4000.0, 4000.0, 4000.0);
+		glScalef(100.0, 100.0, 100.0);
 		glRotatef(mySkyBoxRotation, 0.0, 1.0, 0.0);
 		glVertexPointer(3, GL_FLOAT, 0, mySkyBoxVertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureCoords);
 		for (int i=0; i<6; i++) {
-			glBindTexture(GL_TEXTURE_2D, mySkyBoxTextures[i]);
+			glBindTexture(GL_TEXTURE_2D, myTextures[i] + 2);
 			glDrawArrays(GL_TRIANGLES, i * 6, 6);
 		}
 		glDisableClientState(GL_VERTEX_ARRAY);
