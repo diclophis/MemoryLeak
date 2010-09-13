@@ -112,7 +112,9 @@ void Engine::prepareFrame(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 1000.0);
-	gluPerspective(25.0, (float) width / (float) height, 0.1, 100.0);
+	//gluPerspective(25.0, (float) width / (float) height, 0.1, 100.0);
+	gluPerspective(45.0, (float) width / (float) height, 0.1, 100.0);
+	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -243,7 +245,7 @@ void Engine::drawFont() {
 				x = -m_fCharacterWidth;
 				
 			}
-			y -= 0.075;
+			y -= 0.055;
 		}
 		
 		c -= ' ';
@@ -293,12 +295,7 @@ void Engine::drawFont() {
 }
 
 
-void Engine::buildCamera() {
-	//Camera
-	myCameraTarget = Vector3DMake(35.0, 0.0, 0.0);
-	myCameraPosition = Vector3DMake(-45.0, 20.0, 80.0);
-	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
-}
+
 
 
 void Engine::drawCamera() {	

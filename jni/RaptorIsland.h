@@ -21,11 +21,12 @@ public:
 	// Barrel Engine
 	float myBarrelHeight;
 	std::vector<Md2Instance *> myBarrels;
-	Md2Manager *myBarrelManager;
+	Md2Manager myBarrelManager;
 	
 	// Game Engine
 	void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
 	int simulate();
 	void render();
+	void buildCamera();
 	void tickCamera();
 };

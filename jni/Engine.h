@@ -209,7 +209,7 @@ public:
 	Vector3D myCameraPosition;
 	Vector3D myCameraSpeed;
 	Vector3D myCameraTarget;
-	void buildCamera();
+	virtual void buildCamera() = 0;
 	virtual void tickCamera() = 0;
 	void drawCamera();
 	
