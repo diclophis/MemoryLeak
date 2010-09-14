@@ -207,69 +207,60 @@ static std::vector<foo*> models;
 		delete gameController;
 	}
 	
+	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"crate", nil];
 	
-
+	for (NSString *model_name in model_names) {
 		
-		FILE *fd1 = fopen([[[NSBundle mainBundle] pathForResource:@"raptor" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd1, 0, SEEK_END);
-		unsigned int len1 = ftell(fd1);
-		rewind(fd1);
+		FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:model_name ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
 
-		foo firstModel; // = new foo;
-		firstModel.fp = fd1;
-		firstModel.off = 0;
-		firstModel.len = len1;
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
+		
+		models.push_back(firstModel);
+		
+	}
 
-		models.push_back(&firstModel);
+	//raptor
+	textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
 
+	//ground
+	textures.push_back([self loadTexture:@"road_texture" ofType:@"jpg"]);
 
-		FILE *fd2 = fopen([[[NSBundle mainBundle] pathForResource:@"barrel" ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd2, 0, SEEK_END);
-		unsigned int len2 = ftell(fd2);
-		rewind(fd2);
+	//bottom
+	textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
 
-		foo secondModel; // = new foo;
-		secondModel.fp = fd2;
-		secondModel.off = 0;
-		secondModel.len = len2;
+	// WEST
+	textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
 
-		models.push_back(&secondModel);
+	// top
+	textures.push_back([self loadTexture:@"tree" ofType:@"jpg"]);
 
-		//raptor
-		textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
+	// north
+	textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
 
-		//ground
-		textures.push_back([self loadTexture:@"road_texture" ofType:@"jpg"]);
+	// NORTH
+	textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
 
-		//bottom
-		textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
+	// SOUTH
+	textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
 
-		// WEST
-		textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
+	// font
+	textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
 
-		//top
-		textures.push_back([self loadTexture:@"tree" ofType:@"jpg"]);
+	//tree
+	textures.push_back([self loadTexture:@"vincent_texture" ofType:@"png"]);
 
-		// north
-		textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
+	//barrel
+	textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
 
-		// NORTH
-		textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
+	//crate
+	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
 
-		// SOUTH
-		textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
-
-		// font
-		textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
-
-		//tree
-		textures.push_back([self loadTexture:@"vincent_texture" ofType:@"png"]);
-
-		//barrel
-		textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
-		textures.push_back([self loadTexture:@"barrel_02" ofType:@"jpg"]);
-		textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
-	
 	
 
 	gameController = new RaptorIsland();

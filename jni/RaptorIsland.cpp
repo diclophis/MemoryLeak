@@ -37,7 +37,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myRaptorManager.SetStagger(2.0);
 	
 	for (int i=0; i<20; i++) {
-		Md2Instance *raptor = myRaptorManager.Load(models[0], 24);
+		Md2Instance *raptor = myRaptorManager.Load(models[0], 24, myTextures[0]);
 		myRaptors.push_back(raptor);
 		raptor->SwitchCycle(1, 0.0, true, -1, 0);
 		raptor->SetPosition(randf() * 300.0, myRaptorHeight, (randf() * 500.0) - 250.0);
@@ -47,12 +47,17 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	myBarrelHeight = 0.0;
 	
-	for (int i=0; i<1; i++) {
-		Md2Instance *barrel = myBarrelManager.Load(models[1], 0);
+	for (int i=0; i<10; i++) {
+		Md2Instance *barrel;
+		if (randf() > 0.5) {
+			barrel = myBarrelManager.Load(models[1], 0, myTextures[10]);
+		} else {
+			barrel = myBarrelManager.Load(models[2], 0, myTextures[11]);
+		}
+		
 		myBarrels.push_back(barrel);
-		barrel->SwitchCycle(0, 0.0, true, -1, 0);
-		barrel->SetPosition(0.0, 0.0, 0.0);
-		//barrel->SetRotation(90.0);
+		barrel->SetPosition(i * 150.0, 0.0, i * 10.0);
+		barrel->SetRotation(90.0);
 	}
 	
 	/*
@@ -91,21 +96,21 @@ void RaptorIsland::render() {
 	
 	glPushMatrix();
 	{
-		bindTexture(myTextures[0]);
+		bindTexture(0);
 		float scale = 0.20;
 		glScalef(scale, scale, scale);
 		myRaptorManager.Render();
-		unbindTexture(myTextures[0]);
+		unbindTexture(0);
 	}
 	glPopMatrix();
 	
 	glPushMatrix();
 	{
-		bindTexture(myTextures[11]);
+		bindTexture(0);
 		float scale = 0.05;
 		glScalef(scale, scale, scale);
 		myBarrelManager.Render();
-		unbindTexture(myTextures[11]);
+		unbindTexture(0);
 	}
 	glPopMatrix();
 	
@@ -138,11 +143,13 @@ int RaptorIsland::simulate() {
 		raptor->SetRotation(90.0 + (fastSinf(mySimulationTime * 50.0) * (10.0)));
 	}
 	
+	/*
 	for(std::vector<Md2Instance *>::const_iterator it = myBarrels.begin(); it != myBarrels.end(); ++it)
 	{
 		Md2Instance *barrel = (Md2Instance *)(*it);
 		barrel->SetRotation(mySimulationTime * 50.0);
 	}
+	 */
 	
 	tickSkyBox();
 	
@@ -165,7 +172,6 @@ void RaptorIsland::tickCamera() {
 	Vector3D desiredTarget;
 	if (myCameraPosition.y < 8.0) {
 		myCameraSpeed = Vector3DMake(0.0, 10.0, 0.0);
-		desiredTarget = Vector3DMake(150.0, 0.0, 0.0);
 
 	} else {
 		myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
@@ -181,11 +187,11 @@ void RaptorIsland::tickCamera() {
 		float averageZ = totalZ / (float)myRaptors.size();
 		desiredTarget = Vector3DMake(100.0, 0.0, averageZ);
 		 */
-		desiredTarget = Vector3DMake(200.0, 0.0, 0.0);
 	}
 	
-	Vector3D desiredPosition = Vector3DAdd(myCameraPosition, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
-
+	//Vector3D desiredPosition = Vector3DAdd(myCameraPosition, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
+	desiredTarget = Vector3DMake(50.0, 1.0, 0.0);
+	Vector3D desiredPosition = Vector3DMake(-40.0, 10.0, 0.0);
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;
 	

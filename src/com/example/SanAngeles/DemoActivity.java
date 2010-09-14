@@ -149,17 +149,17 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
           "textures/raptor.png",
 
-          "textures/beach.jpg",
+          "textures/road_texture.jpg",
 
-          "textures/noonclouds_up.jpg",
-
-          //#1
           "textures/noonclouds_east.jpg",
 
-          "textures/noonclouds_down.jpg",
+          //#1
+          "textures/noonclouds_west.jpg",
+
+          "textures/tree.jpg",
 
           //#3
-          "textures/noonclouds_west.jpg",
+          "textures/noonclouds_east.jpg",
 
           //#2
           "textures/noonclouds_north.jpg",

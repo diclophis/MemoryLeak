@@ -76,7 +76,7 @@ public:
 	/// \param	fps			-	the frames per second for the model
 	/// \return	a pointer to the model instance or NULL
 	/// 
-	Md2Instance* Load(foo *bar, unsigned short fps);
+	Md2Instance* Load(foo *bar, unsigned short fps, GLuint texture);
 
 	//---------------------------------------------------------------------------------
 	/// \brief	This function deletes the specified model instance. If no instances remain

@@ -69,9 +69,9 @@ Md2AnimCycle::Md2AnimCycle()
 //-----------------------------------------------------------------------------------------------	Md2AnimCycle :: ~Md2AnimCycle
 //
 Md2AnimCycle::~Md2AnimCycle() {
-	//NSLog(" free anim cycle ");
-	delete m_ScaleKeys;
-	delete m_TranslateKeys;
+	LOGV("free anim cycle\n");
+	//delete m_ScaleKeys;
+	//delete m_TranslateKeys;
 	delete [] m_KeyFrameData;
 }
 
@@ -269,8 +269,8 @@ void Md2Model::CalcNormals() {
 
 //-----------------------------------------------------------------------------------------------	Md2Model :: CreateInstance
 //
-Md2Instance* Md2Model::CreateInstance() {
-	Md2Instance* newInstance = new Md2Instance(this);
+Md2Instance* Md2Model::CreateInstance(GLuint texture) {
+	Md2Instance* newInstance = new Md2Instance(this, texture);
 	m_Instances.push_back(newInstance);
 	return newInstance;
 }
@@ -902,6 +902,7 @@ void Md2Model::SetFps(unsigned int fps){
 	m_FPS = fps;
 }
 
+
 //-----------------------------------------------------------------------------------------------	Md2Model :: Update
 //
 void Md2Model::Update(float dt,unsigned char offset,unsigned char stagger) {
@@ -974,10 +975,11 @@ unsigned short Md2VertexArrayIndexList2::Insert(Md2VertexArrayIndex2& index) {
 
 //-----------------------------------------------------------------------------------------------	Md2Instance :: Md2Instance
 //
-Md2Instance::Md2Instance(Md2Model* mod) {
+Md2Instance::Md2Instance(Md2Model* mod, GLuint texture) {
 	//NSLog("new instance");
 	
 	m_pModel = mod;
+	m_Texture = texture;
 	m_Visible = true;
 
 	#if !MD2_USE_VBO
@@ -1110,6 +1112,8 @@ void Md2Instance::Render() {
 	//	g_LastBound = m_CurrentSkin;
 	//}
 
+	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	
 	glPushMatrix();
 
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
@@ -1167,6 +1171,8 @@ void Md2Instance::Render() {
 		#if !MD2_USE_FLOATS
 			glPopMatrix();
 		#endif
+	
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	glPopMatrix();
 }

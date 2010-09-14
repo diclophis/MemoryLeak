@@ -560,7 +560,7 @@ public:
 	unsigned int GetDataSize(Md2MemoryType type) const ;
 
 	/// only a model can create an instance
-	Md2Instance(Md2Model* mod);
+	Md2Instance(Md2Model* mod, GLuint texture);
 
 	/// dtor
 	~Md2Instance() ;
@@ -629,6 +629,8 @@ public:
 
 	/// is the instance visible
 	bool m_Visible;
+	
+	GLuint m_Texture;
 
 }; // 55 bytes
 
@@ -668,7 +670,7 @@ class Md2Model {
 	/// \brief	used to create a new instance of the model
 	/// \return a pointer to the new instance
 	///
-	Md2Instance* CreateInstance();
+	Md2Instance* CreateInstance(GLuint);
 
 	/// \brief	used to delete an instance of the model
 	/// \param	instance	-	the instance to delete
@@ -724,6 +726,8 @@ class Md2Model {
 	///
 public: 
 	void SetFps(unsigned int);
+	void SetTexture(GLuint);
+
 	
 	/// \brief	this function updates the animation cycle
 	/// \param	dt		-	time increment

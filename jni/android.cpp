@@ -100,10 +100,8 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
-  //sPlayerTextures = (GLuint *) env->GetIntArrayElements(arr, 0);
 
-
-	//std::vector<GLuint> textures;
+  LOGV("nativeInit");
 
 	for (int i=0; i<13; i++) {
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
@@ -118,12 +116,16 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	
 	models.push_back(&firstModel);
 
+  LOGV("nativeInit b");
+
 	foo secondModel; // = new foo;
 	secondModel.fp = myFile2;
 	secondModel.off = fileOffset2;
 	secondModel.len = fileLength2;
 	
 	models.push_back(&secondModel);
+
+  LOGV("nativeInit c");
 
   gameController = new RaptorIsland();
   gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, models);
@@ -133,6 +135,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   gAppAlive    = 1;
   sDemoStopped = 0;
   sTimeOffsetInit = 0;
+
+  LOGV("nativeInit d");
 }
 
 
@@ -151,6 +155,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeDone( JNIEnv*  env ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
+		LOGV("nativePause");
     sDemoStopped = !sDemoStopped;
     if (sDemoStopped) {
     } else {
@@ -166,7 +171,6 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
 
 /* Call to render the next GL frame */
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
-
   /* NOTE: if sDemoStopped is TRUE, then we re-render the same frame
    *       on each iteration.
    */
@@ -180,6 +184,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
       //  gameState = gameController->tick(1.0 / 500.0);
       //}
       gameState = gameController->tick();
+			gameController->draw(0);
     } else {
       //if (gameController) {
       //  delete gameController;
@@ -189,6 +194,4 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
       //gameState = gameController->tick(1.0 / 200.0);
     }
   }
-
-  gameController->draw(0);
 }

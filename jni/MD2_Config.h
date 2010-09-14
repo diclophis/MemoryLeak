@@ -60,7 +60,7 @@
 	/// THERE IS LITTLE POINT IN USING FLOATS. T0ere is a *small* speed increase, however the
 	/// data requirements of the md2 file increases by a factor of 4 (or there abouts)
 	///
-	#define MD2_USE_FLOATS 0
+	#define MD2_USE_FLOATS 1
 
 	/// set this flag to 1 to calculate a bounding box for the model instances. This is
 	/// pretty much free if the MD2_USE_FLOATS flag is set to zero. It takes a little
