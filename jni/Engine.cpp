@@ -112,9 +112,15 @@ void Engine::prepareFrame(int width, int height) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 1000.0);
-	//gluPerspective(25.0, (float) width / (float) height, 0.1, 100.0);
-	gluPerspective(45.0, (float) width / (float) height, 0.1, 200.0);
+	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 200.0);
+	//gluPerspective(25.0, (float) width / (float) height, 0.1, 50.0);
+	//gluPerspective(120.0, (float) width / (float) height, 21.0, 70.0);
+	gluPerspective(120.0, (float) width / (float) height, 0.1, 200.0);
+
+	//lower left corner at (left, bottom, -near) 
+	//upper right corner at (right, top, -near).
+	//glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near, GLdouble far); 
+	//glOrthof(-1.0, 1.0, 0.0, 1.0, -49.0, 49.0);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -211,7 +217,7 @@ void Engine::drawFont() {
 	m_fCharacterHeight = 1.0 / m_ntextHeight;
 
 
-	bindTexture(myTextures[8]);
+	bindTexture(myTextures[1]);
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();	
@@ -292,7 +298,7 @@ void Engine::drawFont() {
 
 
 	
-	unbindTexture(myTextures[8]);
+	unbindTexture(myTextures[1]);
 	
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();		

@@ -39,7 +39,7 @@
 
 
 extern "C" {
-  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2);
+  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3);
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
@@ -56,6 +56,10 @@ static unsigned int fileLength1;
 static FILE *myFile2;
 static unsigned int fileOffset2;
 static unsigned int fileLength2;
+
+static FILE *myFile3;
+static unsigned int fileOffset3;
+static unsigned int fileLength3;
 
 static std::vector<GLuint> sPlayerTextures;
 static long sStartTick = 0;
@@ -76,7 +80,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 }
 
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2) {
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3) {
 	importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
@@ -94,6 +98,12 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 			myFile2 = fdopen(myfd2, "rb");
 			fileOffset2 = off2;
 			fileLength2 = len2;
+
+			jint fd3 = env->GetIntField(fd_sys3, fdClassDescriptorFieldID);
+			int myfd3 = dup(fd3);
+			myFile3 = fdopen(myfd2, "rb");
+			fileOffset3 = off3;
+			fileLength3 = len3;
 		}
 	} 
 } 
@@ -124,6 +134,13 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	secondModel.len = fileLength2;
 	
 	models.push_back(&secondModel);
+
+	foo thirdModel; // = new foo;
+	thirdModel.fp = myFile3;
+	thirdModel.off = fileOffset3;
+	thirdModel.len = fileLength3;
+	
+	models.push_back(&thirdModel);
 
   LOGV("nativeInit c");
 

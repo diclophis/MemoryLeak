@@ -23,6 +23,11 @@ public:
 	std::vector<Md2Instance *> myBarrels;
 	Md2Manager myBarrelManager;
 	
+	// SkyBox Engine
+	float mySkyBoxHeight;
+	Md2Instance *mySkyBox;
+	Md2Manager mySkyBoxManager;
+	
 	// Game Engine
 	void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
 	int simulate();

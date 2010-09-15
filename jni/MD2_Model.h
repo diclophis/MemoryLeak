@@ -495,6 +495,12 @@ public:
 		m_Position[1] = y;
 		m_Position[2] = z;
 	}
+	
+	void SetScale(float x,float y,float z) {
+		m_Scale[0] = x;
+		m_Scale[1] = y;
+		m_Scale[2] = z;
+	}
 
 	/// \brief	This function sets the current rotation value of the model. You 
 	///			probably only want to use this when setting the initial position 
@@ -600,10 +606,11 @@ public:
 	
 	// if unsigned chars are used for data storage, we need to LERP the scale and translation
 	// keys between the keyframes and apply them with glScale & glTranslate
+	float m_Scale[3];
+
 	#if !MD2_USE_FLOATS
 
 		/// the evaluated scale for the model
-		float m_Scale[3];
 
 		/// the evaluated translation for the model
 		float m_Translate[3];

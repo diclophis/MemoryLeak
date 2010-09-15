@@ -752,6 +752,7 @@ void Md2Model::MakeStrippedArray() {
 
 	// copy over indices
 	for(unsigned int i=0;i<Indices.size();++i) {
+		LOGV("copy vertex %d\n");
 		m_Indices[i] = Indices[i];
 	}
 
@@ -1118,8 +1119,8 @@ void Md2Instance::Render() {
 
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
 		glRotatef(m_RotateY,0,1,0);
-
-
+		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
+	
 		#if !MD2_USE_FLOATS
 			glPushMatrix();
 				glTranslatef(m_Translate[0],m_Translate[1],m_Translate[2]);
@@ -1164,8 +1165,10 @@ void Md2Instance::Render() {
 				else
 			#endif
 				{
-					//LOGV("%d\n", *m_pModel->m_Indices);
-						glDrawElements(GL_TRIANGLES,m_pModel->m_NumTris*3,GL_UNSIGNED_SHORT,m_pModel->m_Indices);
+					for (int iii=0; iii<m_pModel->m_NumTris; iii++) {
+						LOGV("%d\n", m_pModel->m_Indices[iii]);
+					}
+						glDrawElements(GL_TRIANGLES, m_pModel->m_NumTris*3, GL_UNSIGNED_SHORT, m_pModel->m_Indices);
 				}
 
 		#if !MD2_USE_FLOATS

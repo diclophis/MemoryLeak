@@ -72,17 +72,20 @@ public class DemoActivity extends Activity {
 
 		android.content.res.AssetFileDescriptor afd1;
 		android.content.res.AssetFileDescriptor afd2;
+		android.content.res.AssetFileDescriptor afd3;
 		try {
 			afd1 = getAssets().openFd("models/raptor.wav");
 			afd2 = getAssets().openFd("models/barrel.wav");
+			afd3 = getAssets().openFd("models/crate.wav");
 		} catch(java.io.IOException e) {
 			System.out.println(e);
 			afd1 = null;
 			afd2 = null;
+			afd3 = null;
 		}
 
 		int res = 0;
-		if (afd1 != null && afd2 != null) {
+		if (afd1 != null && afd2 != null && afd3 != null) {
 			java.io.FileDescriptor fd1 = afd1.getFileDescriptor();
 			int off1 = (int)afd1.getStartOffset();
 			int len1 = (int)afd1.getLength();
@@ -91,11 +94,15 @@ public class DemoActivity extends Activity {
 			int off2 = (int)afd2.getStartOffset();
 			int len2 = (int)afd2.getLength();
 
-			res = initNative(fd1, off1, len1, fd2, off2, len2);
+			java.io.FileDescriptor fd3 = afd3.getFileDescriptor();
+			int off3 = (int)afd3.getStartOffset();
+			int len3 = (int)afd3.getLength();
+
+			res = initNative(fd1, off1, len1, fd2, off2, len2, fd3, off3, len3);
 		}
 	}
 
-	private static native int initNative(java.io.FileDescriptor fd1, int off1, int len1, java.io.FileDescriptor fd2, int off2, int len2); 
+	private static native int initNative(java.io.FileDescriptor fd1, int off1, int len1, java.io.FileDescriptor fd2, int off2, int len2, java.io.FileDescriptor fd3, int off3, int len3); 
 
     @Override
     protected void onPause() {
@@ -146,36 +153,10 @@ class DemoRenderer implements GLSurfaceView.Renderer {
       try {
         AssetManager am = mContext.getAssets();
         String[] texture_file_names = {
-
           "textures/raptor.png",
-
-          "textures/road_texture.jpg",
-
-          "textures/noonclouds_east.jpg",
-
-          //#1
-          "textures/noonclouds_west.jpg",
-
-          "textures/tree.jpg",
-
-          //#3
-          "textures/noonclouds_east.jpg",
-
-          //#2
-          "textures/noonclouds_north.jpg",
-
-          //#4
-          "textures/noonclouds_south.jpg",
-
-          "textures/font_texture.png",
-
-          "textures/vincent_texture.png",
-
+          "textures/font_01.png",
           "textures/barrel_01.jpg",
-
-          "textures/barrel_02.jpg",
-
-          "textures/barrel_03.jpg"
+          "textures/crate_01.jpg"
         };
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];

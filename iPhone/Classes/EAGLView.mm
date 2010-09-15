@@ -86,7 +86,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 1;
+	animationFrameInterval = 2;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -167,8 +167,8 @@ static std::vector<foo*> models;
 	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"assets/textures"];
 	//NSString *extension = [path pathExtension];
 	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-	float inWidth = 512.0;
-	float inHeight = 512.0;
+	//float inWidth = 512.0;
+	//float inHeight = 512.0;
 	// Assumes pvr4 is RGB not RGBA, which is how texturetool generates them
 	//if ([extension isEqualToString:@"pvr4"]) {
 	//	glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
@@ -229,37 +229,40 @@ static std::vector<foo*> models;
 	textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
 
 	//ground
-	textures.push_back([self loadTexture:@"road_texture" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"ground_02" ofType:@"jpg"]);
 
 	//bottom
-	textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
 
 	// WEST
-	textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
 
 	// top
-	textures.push_back([self loadTexture:@"tree" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"noonclouds_up" ofType:@"jpg"]);
 
 	// north
-	textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
 
 	// NORTH
-	textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
 
 	// SOUTH
-	textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
+	//textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
 
 	// font
-	textures.push_back([self loadTexture:@"font_texture" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"font_01" ofType:@"png"]);
 
 	//tree
-	textures.push_back([self loadTexture:@"vincent_texture" ofType:@"png"]);
+	//textures.push_back([self loadTexture:@"vincent" ofType:@"png"]);
 
 	//barrel
 	textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
 
 	//crate
 	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
+
+	//
+	textures.push_back([self loadTexture:@"skybox_01" ofType:@"jpg"]);
 
 	
 
