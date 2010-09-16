@@ -140,7 +140,7 @@ static std::vector<foo*> models;
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
 			gameState = gameController->tick();
-			gameController->draw(0);
+			gameController->draw(90);
 		} else {
 			[self startGame];
 		}
@@ -262,7 +262,7 @@ static std::vector<foo*> models;
 	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
 
 	//
-	textures.push_back([self loadTexture:@"skybox_01" ofType:@"jpg"]);
+	textures.push_back([self loadTexture:@"skybox_02" ofType:@"png"]);
 
 	
 

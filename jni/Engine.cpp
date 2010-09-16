@@ -115,7 +115,7 @@ void Engine::prepareFrame(int width, int height) {
 	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 200.0);
 	//gluPerspective(25.0, (float) width / (float) height, 0.1, 50.0);
 	//gluPerspective(120.0, (float) width / (float) height, 21.0, 70.0);
-	gluPerspective(120.0, (float) width / (float) height, 0.1, 200.0);
+	gluPerspective(90.0, (float) width / (float) height, 0.1, 200.0);
 
 	//lower left corner at (left, bottom, -near) 
 	//upper right corner at (right, top, -near).
@@ -143,16 +143,12 @@ void Engine::draw(float rotation) {
 		{			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			//glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_DEPTH_TEST);
 			glRotatef(rotation, 0.0, 0.0, 1.0);
-			
-			
 			render();
-
-			
-			//glDisable(GL_BLEND);
+			glDisable(GL_BLEND);
 			glDisable(GL_DEPTH_TEST);
 		}
 		glPopMatrix();
@@ -163,7 +159,7 @@ void Engine::draw(float rotation) {
 void Engine::buildFont() {	
 	
 	m_charPixelWidth = m_animPixelWidth = CHAR_PIXEL_W;
-	m_charPixelHeight = m_animPixelWidth = CHAR_PIXEL_H;
+	m_charPixelHeight = m_animPixelHeight = CHAR_PIXEL_H;
 	
 	//
 	// Zero Z Coords in Geomtery Array.
@@ -270,6 +266,7 @@ void Engine::drawFont() {
 		memcpy(&charGeomT[offsetT], &charTexCoords[c * ONE_CHAR_SIZE_T], ONE_CHAR_SIZE_T * sizeof(GLfloat));
 
 		
+		
 		// Vertex Xs
 		charGeomV[m_nCurrentChar + 0] = charGeomV[m_nCurrentChar + 6] = x;
 		charGeomV[m_nCurrentChar + 3] = charGeomV[m_nCurrentChar + 9] = x + m_fCharacterWidth;
@@ -277,7 +274,17 @@ void Engine::drawFont() {
 		// Vertex Ys
 		charGeomV[m_nCurrentChar + 1] = charGeomV[m_nCurrentChar + 4] = y;
 		charGeomV[m_nCurrentChar + 10] = charGeomV[m_nCurrentChar + 7] = y + m_fCharacterHeight;
-
+		charGeomV[m_nCurrentChar + 2] = charGeomV[m_nCurrentChar + 5] = charGeomV[m_nCurrentChar + 8] = charGeomV[m_nCurrentChar + 11] = 0.0;
+		
+		/*
+		// Vertex Xs
+		charGeomV[m_nCurrentChar + 0] = charGeomV[m_nCurrentChar + 2] = x;
+		charGeomV[m_nCurrentChar + 1] = charGeomV[m_nCurrentChar + 3] = x + m_fCharacterWidth;
+		
+		// Vertex Ys
+		charGeomV[m_nCurrentChar + 4] = charGeomV[m_nCurrentChar + 6] = y;
+		charGeomV[m_nCurrentChar + 5] = charGeomV[m_nCurrentChar + 7] = y + m_fCharacterHeight;
+		*/
 		
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT,0, &charGeomT);
@@ -289,7 +296,6 @@ void Engine::drawFont() {
 		
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
 		
 		x += m_fCharacterWidth;
 		

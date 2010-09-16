@@ -173,11 +173,11 @@ Md2Model::Md2Model()
 	//#if MD2_USE_NORMALS
 	//m_OriginalIndices(0),
 	//#endif
-	#if !MD2_ALWAYS_TRIANGLES
-	m_StripCounts(0),
-	m_NumStrips(0),
-	m_NumIndices(0),
-	#endif
+	//#if !MD2_ALWAYS_TRIANGLES
+	//m_StripCounts(0),
+	//m_NumStrips(0),
+	//m_NumIndices(0),
+	//#endif
 	m_AnimCycles(0),
 	m_Instances(0) 
 
@@ -188,9 +188,9 @@ Md2Model::Md2Model()
 // dtor
 Md2Model::~Md2Model() {
 	delete [] m_AnimCycles;
-	#if !MD2_ALWAYS_TRIANGLES
-	delete [] m_StripCounts;
-	#endif
+	//#if !MD2_ALWAYS_TRIANGLES
+	//delete [] m_StripCounts;
+	//#endif
 
 /*
 #if MD2_USE_NORMALS
@@ -320,22 +320,22 @@ void Md2Model::ExpandUvs(Md2VertexArrayIndexList& tempIndices)
 
 //-----------------------------------------------------------------------------------------------	Md2Model :: ExpandUvs
 //
-#if !MD2_ALWAYS_TRIANGLES
-void Md2Model::ExpandUvs(Md2VertexArrayIndexList2& tempIndices)
-{
-	// allocate new texture coord array
-	m_TexCoords = new Md2TexCoord[ tempIndices.size() ];
-	
-	Md2TexCoord* newDataIterator = m_TexCoords;
-
-	// use temp index list to expand the data 
-	Md2VertexArrayIndexList2::iterator indexIterator = tempIndices.begin();
-	for( ; indexIterator != tempIndices.end(); ++indexIterator,++newDataIterator ) {
-		newDataIterator->u = indexIterator->uv[0];
-		newDataIterator->v = indexIterator->uv[1];
-	}
-}
-#endif
+//#if !MD2_ALWAYS_TRIANGLES
+//void Md2Model::ExpandUvs(Md2VertexArrayIndexList2& tempIndices)
+//{
+//	// allocate new texture coord array
+//	m_TexCoords = new Md2TexCoord[ tempIndices.size() ];
+//	
+//	Md2TexCoord* newDataIterator = m_TexCoords;
+//
+//	// use temp index list to expand the data 
+//	Md2VertexArrayIndexList2::iterator indexIterator = tempIndices.begin();
+//	for( ; indexIterator != tempIndices.end(); ++indexIterator,++newDataIterator ) {
+//		newDataIterator->u = indexIterator->uv[0];
+//		newDataIterator->v = indexIterator->uv[1];
+//	}
+//}
+//#endif
 
 //-----------------------------------------------------------------------------------------------	Md2Model :: GetNumCycles
 //
@@ -361,22 +361,22 @@ unsigned int Md2Model::GetDataSize(Md2MemoryType type) const {
 			sz += sizeof(Md2TexCoord)*m_NumElements;
 
 			// if using stripped data, we will have a different size index array
-			#if !MD2_ALWAYS_TRIANGLES
-			if(m_StripCounts) {
-				sz += sizeof(unsigned short)*m_NumIndices;
-			}
-			else
-			#endif
-			{
+//			#if !MD2_ALWAYS_TRIANGLES
+//			if(m_StripCounts) {
+//				sz += sizeof(unsigned short)*m_NumIndices;
+//			}
+//			else
+//			#endif
+//			{
 				sz += sizeof(unsigned short)*3*m_NumTris; // index array
-			}
+//			}
 		#endif
 			
-		#if !MD2_ALWAYS_TRIANGLES
-			if(m_StripCounts) {
-				sz += sizeof(Md2StripInfo)*m_NumStrips;
-			}
-		#endif
+//		#if !MD2_ALWAYS_TRIANGLES
+//			if(m_StripCounts) {
+//				sz += sizeof(Md2StripInfo)*m_NumStrips;
+//			}
+//		#endif
 
 		sz += sizeof(unsigned short)*m_NumElements; // vertex map
 		
@@ -408,13 +408,13 @@ unsigned int Md2Model::GetDataSize(Md2MemoryType type) const {
 		#if MD2_USE_VBO
 			sz += sizeof(Md2TexCoord)*m_NumElements;
 			
-			// include index data size
-			#if !MD2_ALWAYS_TRIANGLES
-				if(m_StripCounts) {
-					sz += sizeof(unsigned short)*m_NumIndices;
-				}
-				else
-			#endif
+//			// include index data size
+//			#if !MD2_ALWAYS_TRIANGLES
+//				if(m_StripCounts) {
+//					sz += sizeof(unsigned short)*m_NumIndices;
+//				}
+//				else
+//			#endif
 				sz += sizeof(unsigned short)*3*m_NumTris;
 
 		#endif
@@ -447,9 +447,9 @@ bool Md2Model::Load(foo *bar) {
 	}
 
 	// copy uv coord data
-	#if !MD2_ALWAYS_TRIANGLES
-	if(MD2::GetModel()->numGlCommands<2)
-	#endif
+//	#if !MD2_ALWAYS_TRIANGLES
+//	if(MD2::GetModel()->numGlCommands<2)
+//	#endif
 	{
 		m_TexCoords = new Md2TexCoord[ MD2::GetModel()->numTexCoords ];
 		assert(m_TexCoords);
@@ -463,13 +463,13 @@ bool Md2Model::Load(foo *bar) {
 		}
 	}
 	
-	#if !MD2_ALWAYS_TRIANGLES
-	if(MD2::GetModel()->numGlCommands >1)
-	{
-		MakeStrippedArray();
-	}
-	else
-	#endif
+//	#if !MD2_ALWAYS_TRIANGLES
+//	if(MD2::GetModel()->numGlCommands >1)
+//	{
+//		MakeStrippedArray();
+//	}
+//	else
+//	#endif
 	{
 		MakeVertexArray();
 	}
@@ -498,12 +498,12 @@ bool Md2Model::Load(foo *bar) {
 
 		unsigned int indexDataSize = 3*m_NumTris;
 		
-		#if !MD2_ALWAYS_TRIANGLES
-		if(MD2::GetModel()->numGlCommands>1)
-		{
-			indexDataSize = m_NumIndices;
-		}
-		#endif
+//		#if !MD2_ALWAYS_TRIANGLES
+//		if(MD2::GetModel()->numGlCommands>1)
+//		{
+//			indexDataSize = m_NumIndices;
+//		}
+//		#endif
 
 		//JAB
 	
@@ -626,177 +626,7 @@ bool Md2Model::Load(foo *bar) {
 }
 
 
-#if !MD2_ALWAYS_TRIANGLES
-void Md2Model::MakeStrippedArray() {
-	Md2VertexArrayIndexList2 tempIndexLookup;
 
-	unsigned char* pGL  = MD2::GetCommandsStart();
-	unsigned char* pGLe = MD2::GetCommandsEnd();
-
-	//
-	std::vector<Md2StripInfo> Counts;
-	std::vector<unsigned short> Indices;
-
-	// for each triangle...
-	for( ; pGL != pGLe;  ) {
-		MD2::glCommandList* pcommandlist = (MD2::glCommandList*)((void*)pGL);
-		pGL += pcommandlist->size();
-
-		Md2StripInfo info;
-		info.isFan = pcommandlist->num < 0;
-		info.num   = pcommandlist->GetNum();
-
-		if(info.num==0)
-			continue;
-
-		Counts.push_back(info);
-
-		#if MD2_USE_FLOATS
-		if(info.isFan) 
-		{
-			MD2::glCommandVertex* cv = pcommandlist->verts + pcommandlist->GetNum();
-			MD2::glCommandVertex* cve = pcommandlist->verts;
-
-			// loop over each index
-			while( cv != cve ) {
-				--cv;
-				
-				Md2VertexArrayIndex2 ind;
-
-				// create index
-				ind.uv[0] = cv->s;
-				ind.uv[1] = cv->t;
-				ind.v = cv->vertexIndex;
-
-				// store vertex array index
-				Indices.push_back( tempIndexLookup.Insert(ind) );
-			}
-		}
-		else
-		{
-			MD2::glCommandVertex* cv = pcommandlist->verts;
-			MD2::glCommandVertex* cve = cv + pcommandlist->GetNum();
-
-			Md2VertexArrayIndex2 ind;
-			
-			// create index
-			ind.uv[0] = cv->s;
-			ind.uv[1] = cv->t;
-			ind.v = cv->vertexIndex;
-
-			// store vertex array index
-			Indices.push_back( tempIndexLookup.Insert(ind) );
-
-			++cv;
-
-			// loop over each index
-			for( ; cv < cve; cv+=2 ) {
-
-
-				if( cv + 1 < cve ) {
-					// create index
-					ind.uv[0] = cv[1].s;
-					ind.uv[1] = cv[1].t;
-					ind.v = cv[1].vertexIndex;
-
-					// store vertex array index
-					Indices.push_back( tempIndexLookup.Insert(ind) );
-				}
-
-				// create index
-				ind.uv[0] = cv->s;
-				ind.uv[1] = cv->t;
-				ind.v = cv->vertexIndex;
-
-				// store vertex array index
-				Indices.push_back( tempIndexLookup.Insert(ind) );
-			}
-		}
-		#else
-		{
-			MD2::glCommandVertex* cv = pcommandlist->verts;
-			MD2::glCommandVertex* cve = cv + pcommandlist->GetNum();
-
-			// loop over each index
-			for( ; cv != cve; ++cv ) {
-				
-				Md2VertexArrayIndex2 ind;
-
-				// create index
-				ind.uv[0] = cv->s;
-				ind.uv[1] = cv->t;
-				ind.v = cv->vertexIndex;
-
-				// store vertex array index
-				Indices.push_back( tempIndexLookup.Insert(ind) );
-			}
-		}
-		#endif
-	}
-
-
-
-	// create a mapping from original points to vertex array points
-	m_VertexMap = new unsigned short[ tempIndexLookup.size() ];
-	unsigned short* pmap = m_VertexMap;
-	Md2VertexArrayIndexList2::iterator it =  tempIndexLookup.begin();
-	for( ; it != tempIndexLookup.end(); ++it,++pmap )
-	{
-		*pmap = it->v;
-	}
-
-	m_NumElements = static_cast<unsigned short>(tempIndexLookup.size());
-	m_Indices	  = new unsigned short [ Indices.size() ];
-
-	m_NumIndices = static_cast<unsigned short>(Indices.size());
-
-	// copy over indices
-	for(unsigned int i=0;i<Indices.size();++i) {
-		LOGV("copy vertex %d\n");
-		m_Indices[i] = Indices[i];
-	}
-
-	m_NumStrips = static_cast<unsigned short>(Counts.size());
-	
-	// allocate strip info
-	m_StripCounts = new Md2StripInfo[ m_NumStrips ];
-	for(unsigned int i=0;i<Counts.size();++i) {
-		m_StripCounts[i] = Counts[i];
-	}
-		
-	m_NumTris = MD2::GetModel()->numTriangles;
-
-	// allocate memory for original indices and vertex array indices
-
-/*
-	#if MD2_USE_NORMALS
-		m_OriginalIndices = new unsigned short [ m_NumTris*3 ];
-		unsigned short* poi = m_OriginalIndices;
-
-		for( unsigned int i=0 ; i != m_NumTris; ++i, poi+=3 ) {
-
-			// get the triangle
-			const MD2::triangle* tri = MD2::GetTriangles()+i;
-
-			#if MD2_USE_FLOATS				
-				poi[0] = tri->vertexIndices[2];
-				poi[1] = tri->vertexIndices[1];
-				poi[2] = tri->vertexIndices[0];
-			#else
-				poi[0] = tri->vertexIndices[0];
-				poi[1] = tri->vertexIndices[1];
-				poi[2] = tri->vertexIndices[2];
-			#endif
-		}
-
-	#endif
-*/
-
-	// convert original uv data into vertex array format
-	ExpandUvs(tempIndexLookup);
-
-}
-#endif
 
 //-----------------------------------------------------------------------------------------------	Md2Model :: MakeVertexArray
 //
@@ -864,8 +694,9 @@ void Md2Model::MakeVertexArray() {
 		}
 	}
 
-
-
+	*m_Indices = 0;
+	
+	
 	// create a mapping from original points to vertex array points
 	m_VertexMap = new unsigned short[ tempIndexLookup.size() ];
 	unsigned short* pmap = m_VertexMap;
@@ -944,28 +775,7 @@ unsigned short Md2VertexArrayIndexList::Insert(Md2VertexArrayIndex& index) {
 //###############################################################################################
 //-----------------------------------------------------------------------------------------------
 
-#if !MD2_ALWAYS_TRIANGLES
-//-----------------------------------------------------------------------------------------------	Md2IndexList :: operator == 
-//
-bool Md2VertexArrayIndex2::operator == (const Md2VertexArrayIndex2& i) const {
-	return v==i.v 
-		&& (uv[0]>(i.uv[0]-0.0001f)) && (uv[0]<(i.uv[0]+0.0001f))
-		&& (uv[1]>(i.uv[1]-0.0001f)) && (uv[1]<(i.uv[1]+0.0001f));
-}
 
-//-----------------------------------------------------------------------------------------------	Md2IndexList :: Insert
-//
-unsigned short Md2VertexArrayIndexList2::Insert(Md2VertexArrayIndex2& index) {
-	unsigned short idx=0;
-	iterator it = begin();
-	for( ; it != end(); ++it, ++idx ) {
-		if( *it == index ) 
-			return idx;
-	}
-	push_back(index);
-	return idx;
-}
-#endif
 
 
 
@@ -1134,39 +944,10 @@ void Md2Instance::Render() {
 				glVertexPointer(3,GL_FLOAT,sizeof(Md2VertexNormal), m_VertexData[0].vertex);
 				
 
-			#if !MD2_ALWAYS_TRIANGLES
-				if(m_pModel->m_StripCounts) {
 
-					/// the original point indices - only needed to calculate the vertex normals
-					Md2StripInfo* strip_start = m_pModel->m_StripCounts;
-					Md2StripInfo* strip_end = strip_start + m_pModel->m_NumStrips;
-
-					unsigned short* data;
-
-					#if MD2_USE_VBO
-						data = 0;
-						//glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_pModel->m_IndexBuffer );
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_pModel->m_IndexBuffer);
-					#else
-						data = m_pModel->m_Indices;
-					#endif
-
-					for( ; strip_start != strip_end; ++strip_start )
-					{
-						GLenum Type = GL_TRIANGLE_STRIP;
-						if(strip_start->isFan)
-							Type = GL_TRIANGLE_FAN;
-
-						glDrawElements(Type,strip_start->num,GL_UNSIGNED_SHORT,data);
-
-						data += strip_start->num;
-					}
-				}
-				else
-			#endif
 				{
 					for (int iii=0; iii<m_pModel->m_NumTris; iii++) {
-						LOGV("%d\n", m_pModel->m_Indices[iii]);
+						//LOGV("%d\n", m_pModel->m_Indices[iii]);
 					}
 						glDrawElements(GL_TRIANGLES, m_pModel->m_NumTris*3, GL_UNSIGNED_SHORT, m_pModel->m_Indices);
 				}

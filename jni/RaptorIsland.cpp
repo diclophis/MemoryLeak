@@ -34,7 +34,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myRaptorHeight = 0.0;	
 	myRaptorManager.SetStagger(3.0);
 	
-	for (int i=0; i<0; i++) {
+	for (int i=0; i<5; i++) {
 		Md2Instance *raptor = myRaptorManager.Load(models[0], 24, myTextures[0]);
 		myRaptors.push_back(raptor);
 		raptor->SwitchCycle(1, 0.0, true, -1, 0);
@@ -106,12 +106,12 @@ void RaptorIsland::render() {
 	drawCamera();
 	
 	bindTexture(0);
-	//myRaptorManager.Render();
+	myRaptorManager.Render();
 	//myBarrelManager.Render();
 	mySkyBoxManager.Render();
 	unbindTexture(0);
 		
-	//drawFont();
+	drawFont();
 }
 
 
@@ -119,7 +119,7 @@ int RaptorIsland::simulate() {
 	
 	tickCamera();
 	
-	//myRaptorManager.Update(myDeltaTime);
+	myRaptorManager.Update(myDeltaTime);
 	//myBarrelManager.Update(myDeltaTime);
 	mySkyBoxManager.Update(myDeltaTime);
 
@@ -184,9 +184,9 @@ void RaptorIsland::tickCamera() {
 	}
 	
 	//Vector3D desiredPosition = Vector3DAdd(myCameraPosition, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
-	desiredTarget = Vector3DMake(0.1, 1.0, 0.0);
+	desiredTarget = Vector3DMake(0.1, 1.0, fastSinf(mySimulationTime * 4.0) * 4.0);
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
-	Vector3D desiredPosition = Vector3DMake(-10.0, 1.0, 0.0);
+	Vector3D desiredPosition = Vector3DMake(-49.0, 1.0, 0.0);
 
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;

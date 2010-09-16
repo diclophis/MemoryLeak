@@ -235,53 +235,6 @@ struct Md2VertexArrayIndexList : public std::vector<Md2VertexArrayIndex> {
 	unsigned short Insert(Md2VertexArrayIndex& index);
 };
 
-#if !MD2_ALWAYS_TRIANGLES
-
-//-----------------------------------------------------------------------------------------------	struct Md2VertexArrayIndex
-/// This structure holds a texture coord and vertex index for lookup when converting
-/// the data to vertex arrays
-/// 
-struct Md2VertexArrayIndex2 {
-	
-	/// ctor
-	inline Md2VertexArrayIndex2(){}
-
-	/// copy ctor
-	inline Md2VertexArrayIndex2(const Md2VertexArrayIndex2& i) : v(i.v) {
-		uv[0] = i.uv[0];
-		uv[1] = i.uv[1];
-	}
-	
-	bool operator == (const Md2VertexArrayIndex2& i) const ;
-
-	/// the vertex index used
-	unsigned short v;
-
-	/// the texture coord index
-	float uv[2];
-};
-
-//-----------------------------------------------------------------------------------------------	struct Md2VertexArrayIndexList
-/// a list of tex coord and vertex indices. Used only as a lookup when converting the
-/// data to vertex arrays. 
-///
-struct Md2VertexArrayIndexList2 
-	: public std::vector<Md2VertexArrayIndex2> {
-
-	unsigned short Insert(Md2VertexArrayIndex2& index);
-};
-
-/// a structure to hold the info about the triangle strips and fans used
-struct Md2StripInfo {
-	// boolean flag. if 0, triangle strip, else triangle fan
-	unsigned short isFan:1;
-
-	// the number of indices in this fan
-	unsigned short num:15;
-};
-
-#endif
-
 
 //-----------------------------------------------------------------------------------------------	class Md2AnimCycle
 //
@@ -690,9 +643,9 @@ class Md2Model {
 	///
 	void ExpandUvs(Md2VertexArrayIndexList& il);
 
-	#if !MD2_ALWAYS_TRIANGLES
-		void ExpandUvs(Md2VertexArrayIndexList2& il);
-	#endif
+//	#if !MD2_ALWAYS_TRIANGLES
+//		void ExpandUvs(Md2VertexArrayIndexList2& il);
+//	#endif
 	
 	/// \brief	returns the size in bytes of the data used
 	/// \param	type	-	what memory type to query
@@ -716,9 +669,9 @@ class Md2Model {
 	///
 	bool Load(foo *bar);
 
-	#if !MD2_ALWAYS_TRIANGLES
-	void MakeStrippedArray();
-	#endif
+//	#if !MD2_ALWAYS_TRIANGLES
+//	void MakeStrippedArray();
+//	#endif
 	
 	/// \brief	makes a vertex array from the data in the md2 file
 	/// 
@@ -780,19 +733,6 @@ public:
 		/// the vertex array indices
 		unsigned short* m_Indices;
 	};
-	
-	#if !MD2_ALWAYS_TRIANGLES
-	
-		/// the original point indices - only needed to calculate the vertex normals
-		Md2StripInfo* m_StripCounts;
-
-		/// 
-		unsigned short m_NumStrips;
-
-		///
-		unsigned short m_NumIndices;
-	
-	#endif
 
 	#if MD2_USE_NORMALS
 		/// the original point indices - only needed to calculate the vertex normals
