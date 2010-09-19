@@ -6,7 +6,7 @@ const OpenSteer::Vec3 gHomeBaseCenter (-50.0, 0, 0.0);
 const float gHomeBaseRadius = 10.0;
 
 //const int CtfBase::maxObstacleCount = 10;
-const float gObstacleRadius = 3.0;
+const float gObstacleRadius = 4.0;
 const float gMinStartRadius = 50;
 const float gMaxStartRadius = 100;
 
@@ -25,7 +25,7 @@ float gAvoidancePredictTime = gAvoidancePredictTimeMin;
 
 CtfSeeker* gSeeker = NULL;
 
-CtfEnemy* ctfEnemies[ctfEnemyCount];
+std::vector<CtfEnemy*> ctfEnemies;
 
 #define testOneObstacleOverlap(radius, center)               \
 {                                                            \

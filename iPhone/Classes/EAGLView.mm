@@ -257,13 +257,13 @@ static std::vector<foo*> models;
 	//textures.push_back([self loadTexture:@"vincent" ofType:@"png"]);
 
 	//barrel
-	textures.push_back([self loadTexture:@"barrel_01" ofType:@"jpg"]);
+	textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
 
 	//crate
 	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
 
 	//
-	textures.push_back([self loadTexture:@"skybox_01" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"skybox_02" ofType:@"png"]);
 
 	
 

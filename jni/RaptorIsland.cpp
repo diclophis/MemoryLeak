@@ -6,16 +6,12 @@
 //
 
 
-
-
-#define ctfEnemyCount 15
-
-
 #include "CaptureTheFlag.h"
 #include "RaptorIsland.h"
 
+//#include "Globals.h"
 
-extern CtfEnemy* ctfEnemies[ctfEnemyCount];
+extern std::vector<CtfEnemy*> ctfEnemies;
 
 // ----------------------------------------------------------------------------
 // dynamic obstacle registry
@@ -63,7 +59,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 		
 	buildCamera();
 	 
-	myRaptorHeight = 4.5;	
+	myRaptorHeight = 2.5;	
 	myRaptorManager.SetStagger(3.0);
 	
 	// create the seeker ("hero"/"attacker")
@@ -72,20 +68,25 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	// create the specified number of enemies, 
 	// storing pointers to them in an array.
-	for (int i = 0; i<ctfEnemyCount; i++)
+	for (int i = 0; i<30; i++)
 	{
-		ctfEnemies[i] = new CtfEnemy;
+		CtfEnemy *enemy = new CtfEnemy;
+		ctfEnemies.push_back(enemy);
 		all.push_back (ctfEnemies[i]);
 	}
 	
 	CtfBase::initializeObstacles();
 	
-	for (int i=0; i<ctfEnemyCount; i++) {
-		Md2Instance *raptor = myRaptorManager.Load(models[0], 5, myTextures[0]);
+	for (int i=0; i<ctfEnemies.size(); i++) {
+		Md2Instance *raptor = myRaptorManager.Load(models[0], 10, myTextures[0]);
 		myRaptors.push_back(raptor);
-		raptor->SwitchCycle(1, 0.0, true, -1, 0);
+		raptor->SetCycle(1);
 		raptor->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
-		raptor->SetScale(0.2, 0.2, 0.2);
+		raptor->SetScale(0.1, 0.1, 0.1);
+	}
+	
+	for (int cycle = 0; cycle < myRaptors[0]->GetNumCycles(); cycle++) {
+		LOGV("%d %d %s\n", myRaptors[0]->GetNumCycles(), cycle, myRaptors[0]->GetCycleName(cycle));
 	}
 	
 	myBarrelHeight = 0.0;
@@ -108,11 +109,11 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	 
 	
 	
-	mySkyBoxHeight = 25.0;
+	mySkyBoxHeight = 12.5;
 	mySkyBox = mySkyBoxManager.Load(models[2], 1, myTextures[4]);
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
 	mySkyBox->SetRotation(90.0);
-	mySkyBox->SetScale(0.5, 0.5, 0.5);
+	mySkyBox->SetScale(0.5, 0.25, 0.5);
 
 	/*
 	myPlayerHeight = 0.0;
@@ -289,9 +290,10 @@ int RaptorIsland::simulate() {
 	ctfSeeker->updateX(mySimulationTime, myDeltaTime, steeringFromInput);
 	
 	// update each enemy
-	for (int i = 0; i < ctfEnemyCount; i++)
+	for (int i = 0; i < ctfEnemies.size(); i++)
 	{
 		ctfEnemies[i]->update(mySimulationTime, myDeltaTime);
+		bool hit = false;
 		
 		pos1a = ctfEnemies[i]->position();
 		vel1a = ctfEnemies[i]->velocity();
@@ -303,6 +305,9 @@ int RaptorIsland::simulate() {
 		myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a));
 		myRaptors[i]->SetPosition(pos1a.x, myRaptorHeight, pos1a.z);
 		
+		if (hit) {
+			myRaptors[i]->SwitchCycle(6, 0.0, true, -1, 0);
+		}
 		//i++;
 	}
 	
@@ -310,13 +315,20 @@ int RaptorIsland::simulate() {
 	for (SOI so = CtfBase::allObstacles.begin(); so != CtfBase::allObstacles.end(); so++)
 	{
 		OpenSteer::Vec3 a = (**so).center;
-		if (a.x > -50.0) {
-			if (a.z > 25.0) {
-				a.z = -25.0;
+		if (a.x == -25.0) {
+			if (a.z < -300.0) {
+				a.z = 300.0;
+			} else {
+				a.z -= 0.1;
+			}
+		} else if (a.x == -15.0) {
+			if (a.z > 300.0) {
+				a.z = -300.0;
 			} else {
 				a.z += 0.1;
 			}
 		}
+		
 		(**so).setCenter(a);
 
 		myBarrels[i]->SetPosition(a.x, a.y, a.z);
@@ -367,7 +379,7 @@ void RaptorIsland::tickCamera() {
 	
 	//Vector3D desiredPosition = Vector3DAdd(myCameraPosition, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
 	//desiredTarget = Vector3DMake(0.1, 0.1, fastSinf(mySimulationTime * 4.0) * 4.0);
-	desiredTarget = Vector3DMake(1.0, 0.0, 0.0);
+	desiredTarget = Vector3DMake(1.0, 2.0, 0.0);
 
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
 	//Vector3D desiredPosition = Vector3DMake(-100.0, 100.0, 0.0);

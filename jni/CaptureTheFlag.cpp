@@ -58,7 +58,6 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/Color.h"
 
-#define ctfEnemyCount 15
 
 #include "CaptureTheFlag.h"
 #include "Globals.h"
@@ -100,7 +99,7 @@ void CtfSeeker::reset (void)
 {
 	CtfBase::reset();
 	setPosition(gHomeBaseCenter);
-	setRadius(10.0);
+	setRadius(12.5);
 	gSeeker = this;
 	state = running;
 	evading = false;
@@ -116,13 +115,15 @@ void CtfEnemy::reset (void)
 	printf("hit");
 	float rz = (lrand48() % 255) / 255.f;
 	float rx = (lrand48() % 255) / 255.f;
-	rz = (rz * 50.0) - 25.0;
-	rx = rx * 100.0;
+	rz = (rz * 20.0) - 10.0;
+	//rz = 0.0;
+	rx = (rx * 200.0) + 50;
+
 	setPosition(rx, 0.0, rz);
-	
-	setSpeed(15.0);
-	setMaxSpeed(20.0);
-	setMaxForce(120.0);
+	setRadius(2.5);
+	setSpeed(25.0);
+	setMaxSpeed(25.0);
+	setMaxForce(600.0);
 }
 
 
@@ -133,17 +134,34 @@ void CtfBase::initializeObstacles (void)
 	Vec3 c;
 	float r = gObstacleRadius;
 	
-	for (int z=-50; z<=50; z+=5) {
-		if (z != 0 && z != -5 && z != 5) {
-			c = Vec3(-50.0, 0, z);
+	/*
+	for (int z=-60; z<=60; z+=4) {
+		if (z > 5 || z < -5) {
+			c = Vec3(-50.0 + (z * z * 0.015), 0, z);
 			allObstacles.push_back (new SphereObstacle (r * 2.1, c));
 			obstacleCount++;
 		}
 	}
+	 */
 	
+	for (int i=0; i<14; i++) {
+		c = Vec3(-30.0 + (i * 4), 0, -26.0 - i);
+		allObstacles.push_back (new SphereObstacle (r * 1.5, c));
+		obstacleCount++;
+	}
 	
-	for (int z=-30; z<=30; z+=10) {
-		c = Vec3(-25.0, 0, z);
+	for (int i=0; i<14; i++) {
+		c = Vec3(-30.0 + (i * 4), 0, 26.0 + i);
+		allObstacles.push_back (new SphereObstacle (r * 1.5, c));
+		obstacleCount++;
+	}
+	
+	//allObstacles.push_back (new PlaneObstacle());
+
+	
+	for (int z=-300; z<=300; z+=10) {
+		float rx = (lrand48() % 255) / 255.f;
+		c = Vec3((rx > 0.5) ? -25.0 : -15, 0, z);
 		allObstacles.push_back (new SphereObstacle (r, c));
 		obstacleCount++;
 	}
@@ -241,7 +259,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
 		avoiding = (avoidance == Vec3::zero);
 		
 		if (avoiding) {
-			steer = steerForPursuit (*gSeeker, maxPredictionTime) + limitMaxDeviationAngle(steerToEvadeAllOtherEnemies(), 0.00001f, forward());
+			steer = steerForPursuit (*gSeeker, maxPredictionTime); // + limitMaxDeviationAngle(steerToEvadeAllOtherEnemies(), 0.00001f, forward());
 		} else {
 			steer = avoidance;
 		}
@@ -261,6 +279,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
 	{
 		if (gSeeker->state == running) {
 			//gSeeker->state = tagged;
+			printf("hit");
 			reset();
 		}
 	}
@@ -270,7 +289,7 @@ Vec3 CtfEnemy::steerToEvadeAllOtherEnemies (void)
 {
 	// sum up weighted evasion
 	Vec3 evade (0, 0, 0);
-	for (int i = 0; i < ctfEnemyCount; i++)
+	for (int i = 0; i < ctfEnemies.size(); i++)
 	{
 		const CtfEnemy& e = *ctfEnemies[i];
 		if (position() != e.position()) {
@@ -320,7 +339,7 @@ bool CtfSeeker::clearPathToGoal (void)
 	bool xxxReturn = true;
 	
 	// loop over enemies
-	for (int i = 0; i < ctfEnemyCount; i++)
+	for (int i = 0; i < ctfEnemies.size(); i++)
 	{
 		// short name for this enemy
 		const CtfEnemy& e = *ctfEnemies[i];
@@ -398,7 +417,7 @@ Vec3 CtfSeeker::steerToEvadeAllDefenders (void)
 	const float goalDistance = Vec3::distance (gHomeBaseCenter, position());
 	
 	// sum up weighted evasion
-	for (int i = 0; i < ctfEnemyCount; i++)
+	for (int i = 0; i < ctfEnemies.size(); i++)
 	{
 		const CtfEnemy& e = *ctfEnemies[i];
 		const Vec3 eOffset = e.position() - position();
@@ -434,7 +453,7 @@ Vec3 CtfSeeker::XXXsteerToEvadeAllDefenders (void)
 {
 	// sum up weighted evasion
 	Vec3 evade (0, 0, 0);
-	for (int i = 0; i < ctfEnemyCount; i++)
+	for (int i = 0; i < ctfEnemies.size(); i++)
 	{
 		const CtfEnemy& e = *ctfEnemies[i];
 		const Vec3 eOffset = e.position() - position();
