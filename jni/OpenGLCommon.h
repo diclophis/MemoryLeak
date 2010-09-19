@@ -13,6 +13,7 @@ extern "C" {
 #endif 
 	
 #define DEGREES_TO_RADIANS(__ANGLE__) ((__ANGLE__) / 180.0 * M_PI)
+static inline float RadiansToDegrees(float radians) {return radians * 180 / M_PI;};
 
 #pragma mark -
 #pragma mark Color3D

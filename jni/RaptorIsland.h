@@ -7,6 +7,8 @@
 
 #include "Engine.h"
 
+
+
 class RaptorIsland : public Engine {
 
 public:
@@ -28,10 +30,23 @@ public:
 	Md2Instance *mySkyBox;
 	Md2Manager mySkyBoxManager;
 	
+	// Player Engine
+	float myPlayerHeight;
+	Md2Instance *myPlayer;
+	Md2Manager myPlayerManager;
+	
 	// Game Engine
 	void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
 	int simulate();
 	void render();
 	void buildCamera();
 	void tickCamera();
+	
+	// Steering Engine
+	// a group (STL vector) of all vehicles in the PlugIn
+	CtfSeeker *ctfSeeker; 
+	std::vector<CtfBase*> all;
+	unsigned int mMode;
+	Vec3 steeringFromInput;
+	
 };

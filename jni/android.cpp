@@ -201,7 +201,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
       //  gameState = gameController->tick(1.0 / 500.0);
       //}
       gameState = gameController->tick();
-			gameController->draw(0);
+			gameController->draw(90);
     } else {
       //if (gameController) {
       //  delete gameController;

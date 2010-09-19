@@ -50,6 +50,8 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.util.Log;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
@@ -67,6 +69,11 @@ public class DemoActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+    //requestWindowFeature(Window.FEATURE_NO_TITLE);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
+
+
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
 
@@ -156,7 +163,8 @@ class DemoRenderer implements GLSurfaceView.Renderer {
           "textures/raptor.png",
           "textures/font_01.png",
           "textures/barrel_01.jpg",
-          "textures/crate_01.jpg"
+          "textures/crate_01.jpg",
+          "textures/skybox_02.png"
         };
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];

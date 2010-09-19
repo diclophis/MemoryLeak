@@ -5,7 +5,7 @@
 #define EV_STANDALONE 1
 #define EV_USE_SELECT 1
 #define EV_SELECT_USE_FD_SET 1
-
+#define _iPhoneVersion 1
 
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>

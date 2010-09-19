@@ -8,6 +8,7 @@
 
 #import "EAGLView.h"
 
+#include "CaptureTheFlag.h"
 #include "RaptorIsland.h"
 
 #import "MemoryLeakAppDelegate.h"
@@ -262,7 +263,7 @@ static std::vector<foo*> models;
 	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
 
 	//
-	textures.push_back([self loadTexture:@"skybox_02" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"skybox_01" ofType:@"png"]);
 
 	
 
@@ -271,7 +272,6 @@ static std::vector<foo*> models;
 
 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
 	gameState = 1;
-
 	
 
 	models.clear();

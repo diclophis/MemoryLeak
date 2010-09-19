@@ -10,6 +10,12 @@
 
 #include "Engine.h"
 
+namespace OpenSteer {
+	bool updatePhaseActive = false;
+	bool drawPhaseActive = false;
+	bool enableAnnotation = false;
+}
+
 
 inline std::string Engine::stringify(double x) {
 	std::ostringstream o;
@@ -21,8 +27,6 @@ inline std::string Engine::stringify(double x) {
 
 Engine::Engine() {
 	LOGV("alloc/init GameController\n");
-	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 400.0;
 }
 
 
