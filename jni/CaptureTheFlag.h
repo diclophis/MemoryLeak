@@ -51,106 +51,85 @@
 // ----------------------------------------------------------------------------
 
 
-#include <iomanip>
-#include <sstream>
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/Color.h"
+
+using namespace OpenSteer;
+
+// ----------------------------------------------------------------------------
+// short names for STL vectors (iterators) of SphereObstacle pointers
+// (obsolete? replace with ObstacleGroup/ObstacleIterator ?)
+
+typedef std::vector<SphereObstacle*> SOG;  // SphereObstacle group
+typedef SOG::const_iterator SOI;           // SphereObstacle iterator
+
+class CtfBase : public SimpleVehicle
+{
+public:
+  // constructor
+  CtfBase();
+
+  // reset state
+  void reset (void);
+
+  void identify();
+
+  void randomizeStartingPositionAndHeading (void);
+  enum seekerState {running, tagged, atGoal};
+
+  // xxx store steer sub-state for anotation
+  bool avoiding;
+
+  // dynamic obstacle registry
+  static void initializeObstacles (void);
+  static void addOneObstacle (void);
+  static void removeOneObstacle (void);
+  float minDistanceToObstacle (const Vec3 point);
+  static int obstacleCount;
+  //static const int maxObstacleCount;
+  static SOG allObstacles;
+};
 
 
+class CtfSeeker : public CtfBase
+{
+public:
 
-    using namespace OpenSteer;
+  // constructor
+  CtfSeeker();
 
+  // reset state
+  void reset (void);
 
-    // ----------------------------------------------------------------------------
-    // short names for STL vectors (iterators) of SphereObstacle pointers
-    // (obsolete? replace with ObstacleGroup/ObstacleIterator ?)
+  void identify();
 
+  // per frame simulation update
+  void update (const float currentTime, const float elapsedTime);
+  void updateX (const float currentTime, const float elapsedTime, Vec3 inputSteering);
 
-	typedef std::vector<SphereObstacle*> SOG;  // SphereObstacle group
-	typedef SOG::const_iterator SOI;           // SphereObstacle iterator
+  // is there a clear path to the goal?
+  bool clearPathToGoal (void);
 
+  Vec3 steeringForSeeker (void);
+  void updateState (const float currentTime);
+  Vec3 steerToEvadeAllDefenders (void);
+  Vec3 XXXsteerToEvadeAllDefenders (void);
+  void adjustObstacleAvoidanceLookAhead (const bool clearPath);
 
-    // ----------------------------------------------------------------------------
-    // This PlugIn uses two vehicle types: CtfSeeker and CtfEnemy.  They have a
-    // common base class: CtfBase which is a specialization of SimpleVehicle.
-
-
-    class CtfBase : public SimpleVehicle
-    {
-    public:
-        // constructor
-        CtfBase();
-
-        // reset state
-        void reset (void);
-		
-		void identify();
-
-        void randomizeStartingPositionAndHeading (void);
-        enum seekerState {running, tagged, atGoal};
-
-        // xxx store steer sub-state for anotation
-        bool avoiding;
-
-        // dynamic obstacle registry
-        static void initializeObstacles (void);
-        static void addOneObstacle (void);
-        static void removeOneObstacle (void);
-        float minDistanceToObstacle (const Vec3 point);
-        static int obstacleCount;
-        //static const int maxObstacleCount;
-        static SOG allObstacles;
-    };
+  seekerState state;
+  bool evading; // xxx store steer sub-state for anotation
+  float lastRunningTime; // for auto-reset
+};
 
 
-    class CtfSeeker : public CtfBase
-    {
-    public:
+class CtfEnemy : public CtfBase
+{
+public:
 
-        // constructor
-        CtfSeeker();
-
-        // reset state
-        void reset (void);
-		
-		void identify();
-
-        // per frame simulation update
-		void update (const float currentTime, const float elapsedTime);
-        void updateX (const float currentTime, const float elapsedTime, Vec3 inputSteering);
-
-        // is there a clear path to the goal?
-        bool clearPathToGoal (void);
-
-        Vec3 steeringForSeeker (void);
-        void updateState (const float currentTime);
-        Vec3 steerToEvadeAllDefenders (void);
-        Vec3 XXXsteerToEvadeAllDefenders (void);
-        void adjustObstacleAvoidanceLookAhead (const bool clearPath);
-
-        seekerState state;
-        bool evading; // xxx store steer sub-state for anotation
-        float lastRunningTime; // for auto-reset
-    };
-
-
-    class CtfEnemy : public CtfBase
-    {
-    public:
-
-        // constructor
-        CtfEnemy();
-		
-		void identify();
-
-        // reset state
-        void reset (void);
-
-        // per frame simulation update
-        void update (const float currentTime, const float elapsedTime);
-		Vec3 steerToEvadeAllOtherEnemies (void);
-    };
-
-
-
-
+  // constructor
+  CtfEnemy();
+  void identify();
+  // reset state
+  void reset (void);
+  // per frame simulation update
+  void update (const float currentTime, const float elapsedTime);
+  Vec3 steerToEvadeAllOtherEnemies (void);
+};

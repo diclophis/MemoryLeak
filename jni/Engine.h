@@ -10,7 +10,7 @@
 #include "OpenGLCommon.h"
 #include "MD2_Model.h"
 #include "MD2_Manager.h"
-#include "Player.h"
+//#include "Player.h"
 
 
 #define CHAR_WIDTH 0.1			/* ogl tex coords :: Based on not quite 42 chars per line! */

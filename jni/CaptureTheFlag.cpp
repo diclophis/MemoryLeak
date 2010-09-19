@@ -51,19 +51,21 @@
 // ----------------------------------------------------------------------------
 
 
+
 #include <iomanip>
 #include <sstream>
-
-
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/Color.h"
-
-
-#include "CaptureTheFlag.h"
 #include "Globals.h"
 
+#include "CaptureTheFlag.h"
+
+extern CtfSeeker* gSeeker;
+extern std::vector<CtfEnemy*> ctfEnemies;
 
 using namespace OpenSteer;
+
+int CtfBase::obstacleCount = 0; // this value means "uninitialized"
 
 // ----------------------------------------------------------------------------
 // reset state
@@ -663,7 +665,7 @@ float CtfBase::minDistanceToObstacle (const Vec3 point)
 	float minClearance = FLT_MAX;
 	for (SOI so = allObstacles.begin(); so != allObstacles.end(); so++)
 	{
-		testOneObstacleOverlap ((**so).radius, (**so).center);
+		//testOneObstacleOverlap ((**so).radius, (**so).center);
 	}
 	return minClearance;
 }

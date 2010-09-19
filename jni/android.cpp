@@ -35,6 +35,13 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , "libnav", __VA_ARGS__) 
 
 #include "importgl.h"
+
+#include "OpenSteer/Vec3.h"
+#include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/Color.h"
+#include "CaptureTheFlag.h"
+//CtfSeeker* gSeeker = NULL;
+//std::vector<CtfEnemy*> ctfEnemies;
 #include "RaptorIsland.h"
 
 

@@ -7,8 +7,6 @@
 
 #include "Engine.h"
 
-
-
 class RaptorIsland : public Engine {
 
 public:

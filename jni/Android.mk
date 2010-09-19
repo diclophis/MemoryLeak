@@ -29,6 +29,7 @@ LOCAL_SRC_FILES := \
     android.cpp \
     Engine.cpp \
     RaptorIsland.cpp \
+    CaptureTheFlag.cpp \
     MD2_File.cpp \
     MD2_Manager.cpp \
     MD2_Model.cpp \
