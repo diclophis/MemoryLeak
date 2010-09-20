@@ -58,6 +58,7 @@ import android.graphics.Bitmap;
 import android.content.res.AssetManager;
 import android.opengl.GLUtils;
 import android.opengl.GLES10;
+import android.content.res.Configuration;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -108,6 +109,12 @@ public class DemoActivity extends Activity {
 			res = initNative(fd1, off1, len1, fd2, off2, len2, fd3, off3, len3);
 		}
 	}
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    //setContentView(R.layout.myLayout);
+  }
+
 
 	private static native int initNative(java.io.FileDescriptor fd1, int off1, int len1, java.io.FileDescriptor fd2, int off2, int len2, java.io.FileDescriptor fd3, int off3, int len3); 
 
@@ -162,7 +169,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
         String[] texture_file_names = {
           "textures/raptor.png",
           "textures/font_01.png",
-          "textures/barrel_01.jpg",
+          "textures/barrel_03.jpg",
           "textures/crate_01.jpg",
           "textures/skybox_02.png"
         };

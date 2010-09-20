@@ -73,7 +73,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	// create the specified number of enemies, 
 	// storing pointers to them in an array.
-	for (int i = 0; i<30; i++)
+	for (int i = 0; i<15; i++)
 	{
 		CtfEnemy *enemy = new CtfEnemy;
 		ctfEnemies.push_back(enemy);
@@ -231,10 +231,12 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	
 	mySimulationTime = 0.0;
-	
-	tick();
-	
+		
 	mySceneBuilt = true;
+	
+	//tick();
+	simulate();
+	go();
 	
 }
 
@@ -290,7 +292,7 @@ int RaptorIsland::simulate() {
 	
 	OpenSteer::Vec3 pos1a, vel1a, pos2a, vel2a;
 	
-	float rot1a, rot2a;
+	float rot1a; //, rot2a;
 	
 	ctfSeeker->updateX(mySimulationTime, myDeltaTime, steeringFromInput);
 	
@@ -321,14 +323,14 @@ int RaptorIsland::simulate() {
 	{
 		OpenSteer::Vec3 a = (**so).center;
 		if (a.x == -25.0) {
-			if (a.z < -300.0) {
-				a.z = 300.0;
+			if (a.z < -100.0) {
+				a.z = 100.0;
 			} else {
 				a.z -= 0.1;
 			}
 		} else if (a.x == -15.0) {
-			if (a.z > 300.0) {
-				a.z = -300.0;
+			if (a.z > 100.0) {
+				a.z = -100.0;
 			} else {
 				a.z += 0.1;
 			}

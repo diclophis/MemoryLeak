@@ -194,6 +194,14 @@ public:
 	void prepareFrame(int width, int height);
 	inline std::string stringify(double x);
 	
+	void go();
+	
+	pthread_mutex_t m_mutex;
+	pthread_t m_thread;
+	static void *start_thread(void *);
+	bool mNeedsTick;
+	
+	
 	// Camera Engine
 	Vector3D myCameraPosition;
 	Vector3D myCameraSpeed;
@@ -215,4 +223,8 @@ public:
 	void drawSkyBox();
 
 	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
+	
+private:
+
+	
 };

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		FC38F783123DABB50036678B /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC38F766123DABB50036678B /* assets */; };
-		FC3997A81242C16E008E614D /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997721242C16E008E614D /* Camera.cpp */; };
 		FC3997A91242C16E008E614D /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997751242C16E008E614D /* Clock.cpp */; };
 		FC3997AA1242C16E008E614D /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997771242C16E008E614D /* Color.cpp */; };
 		FC3997AC1242C16E008E614D /* lq.c in Sources */ = {isa = PBXBuildFile; fileRef = FC39977D1242C16E008E614D /* lq.c */; };
@@ -17,16 +16,12 @@
 		FC3997B01242C16E008E614D /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997851242C16E008E614D /* Path.cpp */; };
 		FC3997B11242C16E008E614D /* Pathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997871242C16E008E614D /* Pathway.cpp */; };
 		FC3997B21242C16E008E614D /* PlugIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997891242C16E008E614D /* PlugIn.cpp */; };
-		FC3997B31242C16E008E614D /* PolylineSegmentedPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC39978B1242C16E008E614D /* PolylineSegmentedPath.cpp */; };
-		FC3997B41242C16E008E614D /* PolylineSegmentedPathwaySegmentRadii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC39978D1242C16E008E614D /* PolylineSegmentedPathwaySegmentRadii.cpp */; };
-		FC3997B51242C16E008E614D /* PolylineSegmentedPathwaySingleRadius.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC39978F1242C16E008E614D /* PolylineSegmentedPathwaySingleRadius.cpp */; };
 		FC3997B61242C16E008E614D /* SegmentedPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997961242C16E008E614D /* SegmentedPath.cpp */; };
 		FC3997B71242C16E008E614D /* SegmentedPathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997991242C16E008E614D /* SegmentedPathway.cpp */; };
 		FC3997B81242C16E008E614D /* SimpleVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC39979C1242C16E008E614D /* SimpleVehicle.cpp */; };
 		FC3997B91242C16E008E614D /* TerrainRayTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A01242C16E008E614D /* TerrainRayTest.cpp */; };
 		FC3997BA1242C16E008E614D /* Vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A41242C16E008E614D /* Vec3.cpp */; };
 		FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A61242C16E008E614D /* Vec3Utilities.cpp */; };
-		FC3998271242C56C008E614D /* Draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3998261242C56C008E614D /* Draw.cpp */; };
 		FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8138B6124413590027435E /* CaptureTheFlag.cpp */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
@@ -275,8 +270,8 @@
 				FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */,
 				FC10A985123C502F002A6142 /* foo.h */,
 				FCBE417C121681C600A60972 /* importgl.h */,
-				FCBE41611216811B00A60972 /* Engine.cpp */,
 				FCBE41621216811B00A60972 /* Engine.h */,
+				FCBE41611216811B00A60972 /* Engine.cpp */,
 				FCBE41641216811B00A60972 /* MD2_Config.h */,
 				FCBE41651216811B00A60972 /* MD2_File.cpp */,
 				FCBE41661216811B00A60972 /* MD2_File.h */,
@@ -373,7 +368,6 @@
 				FCB1F7B1123E412500BA41ED /* RaptorIsland.cpp in Sources */,
 				FCB1F7B2123E412900BA41ED /* main.m in Sources */,
 				FCB1F7B5123E413000BA41ED /* EAGLView.mm in Sources */,
-				FC3997A81242C16E008E614D /* Camera.cpp in Sources */,
 				FC3997A91242C16E008E614D /* Clock.cpp in Sources */,
 				FC3997AA1242C16E008E614D /* Color.cpp in Sources */,
 				FC3997AC1242C16E008E614D /* lq.c in Sources */,
@@ -382,16 +376,12 @@
 				FC3997B01242C16E008E614D /* Path.cpp in Sources */,
 				FC3997B11242C16E008E614D /* Pathway.cpp in Sources */,
 				FC3997B21242C16E008E614D /* PlugIn.cpp in Sources */,
-				FC3997B31242C16E008E614D /* PolylineSegmentedPath.cpp in Sources */,
-				FC3997B41242C16E008E614D /* PolylineSegmentedPathwaySegmentRadii.cpp in Sources */,
-				FC3997B51242C16E008E614D /* PolylineSegmentedPathwaySingleRadius.cpp in Sources */,
 				FC3997B61242C16E008E614D /* SegmentedPath.cpp in Sources */,
 				FC3997B71242C16E008E614D /* SegmentedPathway.cpp in Sources */,
 				FC3997B81242C16E008E614D /* SimpleVehicle.cpp in Sources */,
 				FC3997B91242C16E008E614D /* TerrainRayTest.cpp in Sources */,
 				FC3997BA1242C16E008E614D /* Vec3.cpp in Sources */,
 				FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */,
-				FC3998271242C56C008E614D /* Draw.cpp in Sources */,
 				FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -403,6 +393,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jon Bardin (W6CH2N775F)";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -410,7 +401,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				GCC_THUMB_SUPPORT = NO;
-				"GCC_THUMB_SUPPORT[arch=armv6]" = YES;
+				"GCC_THUMB_SUPPORT[arch=armv6]" = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
@@ -431,6 +422,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = RaptorIsland;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D9B4C504-2C04-4AC8-B456-6644935F0A4D";
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;

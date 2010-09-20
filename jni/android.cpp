@@ -77,8 +77,8 @@ static int  sDemoStopped  = 0;
 static long sTimeOffset   = 0;
 static int  sTimeOffsetInit = 0;
 static long sTimeStopped  = 0;
-static int  sWindowWidth  = 320;
-static int  sWindowHeight = 480;
+static int  sWindowWidth  = 0;
+static int  sWindowHeight = 0;
 static int gameState;
 
 
@@ -153,7 +153,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
   gameController = new RaptorIsland();
   gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, models);
-  gameState = gameController->tick();
+  gameState = 1; //gameController->tick();
 	models.clear();
 	sPlayerTextures.clear();
   gAppAlive    = 1;
@@ -166,8 +166,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
   LOGV("nativeResize %d %d", width, height);
-  sWindowWidth  = width;
-  sWindowHeight = height;
+  gameController->screenWidth = sWindowWidth  = width;
+  gameController->screenHeight = sWindowHeight = height;
 }
 
 
@@ -207,7 +207,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
       //	gameState = gameController->tick(1.0 / 500.0);
       //  gameState = gameController->tick(1.0 / 500.0);
       //}
-      gameState = gameController->tick();
+      //gameState = gameController->tick();
+      //LOGV("tick");
 			gameController->draw(90);
     } else {
       //if (gameController) {

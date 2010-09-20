@@ -4,9 +4,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := sanangeles
 
-#TARGET_ARCH=arm
-#TARGET_ARCH_ABI=arm
-#LOCAL_ARM_MODE=arm
+TARGET_ARCH=arm
+TARGET_ARCH_ABI=arm
+LOCAL_ARM_MODE=arm
 
 LOCAL_CFLAGS := -I/Users/jon/iPhone/MemoryLeak/jni -DANDROID_NDK -DEV_STANDALONE=1 -DEV_USE_SELECT=1 -DEV_SELECT_USE_FD_SET -D_iPhoneVersion=1
 
@@ -33,7 +33,6 @@ LOCAL_SRC_FILES := \
     MD2_File.cpp \
     MD2_Manager.cpp \
     MD2_Model.cpp \
-    OpenSteer/Camera.cpp \
     OpenSteer/Clock.cpp \
     OpenSteer/Color.cpp \
     OpenSteer/Draw.cpp \
@@ -42,9 +41,6 @@ LOCAL_SRC_FILES := \
     OpenSteer/Path.cpp \
     OpenSteer/Pathway.cpp \
     OpenSteer/PlugIn.cpp \
-    OpenSteer/PolylineSegmentedPath.cpp \
-    OpenSteer/PolylineSegmentedPathwaySegmentRadii.cpp \
-    OpenSteer/PolylineSegmentedPathwaySingleRadius.cpp \
     OpenSteer/SegmentedPath.cpp \
     OpenSteer/SegmentedPathway.cpp \
     OpenSteer/SimpleVehicle.cpp \

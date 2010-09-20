@@ -5,10 +5,12 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
-
 #include <sstream>
+#include <sys/time.h>
+#include "pthread.h"
 
 #include "Engine.h"
+
 
 namespace OpenSteer {
 	bool updatePhaseActive = false;
@@ -27,71 +29,111 @@ inline std::string Engine::stringify(double x) {
 
 Engine::Engine() {
 	LOGV("alloc/init GameController\n");
+	LOGV("mutex_init\n");
+	
+	pthread_mutex_init(&m_mutex, 0);
+	mNeedsTick = false;
+}
+
+
+void *Engine::start_thread(void *obj) {
+	//All we do here is call the do_work() function
+	LOGV("go\n");
+	reinterpret_cast<Engine *>(obj)->tick();
+	return 0;
+}
+
+
+void Engine::go() {
+	LOGV("pthread_create\n");
+	pthread_create(&m_thread, 0, Engine::start_thread, this);
 }
 
 
 Engine::~Engine() {
 	LOGV("dealloc GameController\n");
+	pthread_mutex_destroy(&m_mutex);
 	myTextures.clear();
 }
-
-
-/*
-void Engine::playerStartedJumping() {
-	if (myGameStarted) {
-		
-		
-		if (myPlayerCanDoubleJump) {
-			myGameSpeed += 1;
-			myPlayerCanDoubleJump = false;
-			myPlayerLastJump = mySimulationTime;
-		} else {
-			//myPlayerNeedsTransform = true;
-		}
-		
-		if (myPlayerOnPlatform) {
-			myPlayerLastJump = mySimulationTime;
-		}
-		
-	}
-	
-	//myPlayerSpeed.x = 0;
-
-}
-*/
-
-/*
-void Engine::playerStoppedJumping() {
-	myPlayerLastEnd = mySimulationTime;
-}
-*/
-
-
 
 
 int Engine::tick() {
 	
 	int gameState;
 	
-	for (int i=0; i<=myGameSpeed; i++) {
-		mySimulationTime += myDeltaTime;
+	timeval t1, t2;
+    double elapsedTime;
+	
+	gettimeofday(&t1, NULL);
+
+	while (true) {
 		if (mySceneBuilt) {
-			gameState = simulate();
+			//if (pthread_mutex_trylock(&m_mutex) == 0) {
+			// stop timer
+			gettimeofday(&t2, NULL);
+			
+			// compute and print the elapsed time in millisec
+			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
+			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
+			//cout << elapsedTime << " ms.\n";
+			//LOGV("%f", elapsedTime);
+			
+			if (elapsedTime > 32.0) {
+				mySimulationTime += myDeltaTime;
+				gameState = simulate();
+				//mNeedsTick = false;
+				if (gameState == 0) {
+					//break;
+					return gameState;
+				}
+			    gettimeofday(&t1, NULL);
+			} else {
+				//LOGV("waiting");
+				usleep(15.0);
+			}
+			
+			//	pthread_mutex_unlock(&m_mutex);
+			//} else{
+				//LOGV("skip tick\n");
+			//}
+		} else {
+			//LOGV("no need to tick\n");
 		}
-		if (gameState == 0) {
-			break;
-		}
+		//usleep((1.0 / 60.0) * 1000.0);
 	}
 	
 	return gameState;
 	
 }
 
-/*
-int Engine::simulate() {
-	return 0;
+
+void Engine::draw(float rotation) {
+	if (mySceneBuilt) {
+		//if (pthread_mutex_trylock(&m_mutex) == 0) {
+			//LOGV("while locked draw()\n");
+			prepareFrame(screenWidth, screenHeight);
+			glPushMatrix();
+			{
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glEnable(GL_DEPTH_TEST);
+				glRotatef(rotation, 0.0, 0.0, 1.0);
+				render();
+				glDisable(GL_BLEND);
+				glDisable(GL_DEPTH_TEST);
+			}
+			glPopMatrix();
+			//mNeedsTick = true;
+			pthread_mutex_unlock(&m_mutex);
+		//} else {
+			//LOGV("skipping draw\n");
+		//}
+	} else {
+		//LOGV("no need to draw\n");
+	}
 }
- */
 
 
 void Engine::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
@@ -137,27 +179,7 @@ void Engine::resizeScreen(int width, int height) {
 }
 
 
-void Engine::draw(float rotation) {
 
-	if (mySceneBuilt) {
-
-		prepareFrame(screenWidth, screenHeight);
-		
-		glPushMatrix();
-		{			
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glEnable(GL_DEPTH_TEST);
-			glRotatef(rotation, 0.0, 0.0, 1.0);
-			render();
-			glDisable(GL_BLEND);
-			glDisable(GL_DEPTH_TEST);
-		}
-		glPopMatrix();
-	}
-}
 
 
 void Engine::buildFont() {	

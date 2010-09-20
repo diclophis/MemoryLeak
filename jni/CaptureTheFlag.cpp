@@ -101,7 +101,7 @@ void CtfSeeker::reset (void)
 {
 	CtfBase::reset();
 	setPosition(gHomeBaseCenter);
-	setRadius(12.5);
+	setRadius(2.5);
 	gSeeker = this;
 	state = running;
 	evading = false;
@@ -114,7 +114,7 @@ void CtfEnemy::reset (void)
 	//randomizeStartingPositionAndHeading();
 	//setPosition(0.0, 0.0, 0.0);
 	
-	printf("hit");
+	//printf("hit");
 	float rz = (lrand48() % 255) / 255.f;
 	float rx = (lrand48() % 255) / 255.f;
 	rz = (rz * 20.0) - 10.0;
@@ -161,7 +161,7 @@ void CtfBase::initializeObstacles (void)
 	//allObstacles.push_back (new PlaneObstacle());
 
 	
-	for (int z=-300; z<=300; z+=10) {
+	for (int z=-100; z<=100; z+=10) {
 		float rx = (lrand48() % 255) / 255.f;
 		c = Vec3((rx > 0.5) ? -25.0 : -15, 0, z);
 		allObstacles.push_back (new SphereObstacle (r, c));
@@ -281,7 +281,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
 	{
 		if (gSeeker->state == running) {
 			//gSeeker->state = tagged;
-			printf("hit");
+			//printf("hit");
 			reset();
 		}
 	}
@@ -660,7 +660,7 @@ void CtfBase::addOneObstacle (void)
 
 float CtfBase::minDistanceToObstacle (const Vec3 point)
 {
-	float r = 0;
+	//float r = 0;
 	Vec3 c = point;
 	float minClearance = FLT_MAX;
 	for (SOI so = allObstacles.begin(); so != allObstacles.end(); so++)

@@ -90,7 +90,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 2;
+	animationFrameInterval =  2;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -143,7 +143,7 @@ static std::vector<foo*> models;
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
-			gameState = gameController->tick();
+			//gameController->tick();
 			gameController->draw(90);
 		} else {
 			[self startGame];
@@ -232,27 +232,6 @@ static std::vector<foo*> models;
 	//raptor
 	textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
 
-	//ground
-	//textures.push_back([self loadTexture:@"ground_02" ofType:@"jpg"]);
-
-	//bottom
-	//textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
-
-	// WEST
-	//textures.push_back([self loadTexture:@"noonclouds_west" ofType:@"jpg"]);
-
-	// top
-	//textures.push_back([self loadTexture:@"noonclouds_up" ofType:@"jpg"]);
-
-	// north
-	//textures.push_back([self loadTexture:@"noonclouds_east" ofType:@"jpg"]);
-
-	// NORTH
-	//textures.push_back([self loadTexture:@"noonclouds_north" ofType:@"jpg"]);
-
-	// SOUTH
-	//textures.push_back([self loadTexture:@"noonclouds_south" ofType:@"jpg"]);
-
 	// font
 	textures.push_back([self loadTexture:@"font_01" ofType:@"png"]);
 
@@ -265,10 +244,8 @@ static std::vector<foo*> models;
 	//crate
 	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
 
-	//
+	//skybox
 	textures.push_back([self loadTexture:@"skybox_02" ofType:@"png"]);
-
-	
 
 	gameController = new RaptorIsland();
 	

@@ -321,9 +321,9 @@ OpenSteer::SteerLibraryMixin<Super>::
 steerForWander (float dt)
 {
     // random walk WanderSide and WanderUp between -1 and +1
-    const float speed = 12.0f * dt; // maybe this (12) should be an argument?
-    WanderSide = scalarRandomWalk (WanderSide, speed, -1, +1);
-    WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
+    const float speed2 = 12.0f * dt; // maybe this (12) should be an argument?
+    WanderSide = scalarRandomWalk (WanderSide, speed2, -1, +1);
+    WanderUp   = scalarRandomWalk (WanderUp,   speed2, -1, +1);
 
     // return a pure lateral steering vector: (+/-Side) + (+/-Up)
     return (side() * WanderSide) + (up() * WanderUp);

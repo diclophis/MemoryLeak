@@ -390,11 +390,11 @@ OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
     {
         if (drawPhaseActive)
         {
-            drawLine (startPoint, endPoint, color);
+            //drawLine (startPoint, endPoint, color);
         }
         else
         {
-            deferredDrawLine (startPoint, endPoint, color);
+            //deferredDrawLine (startPoint, endPoint, color);
         }
     }
 }
