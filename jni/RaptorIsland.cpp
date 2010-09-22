@@ -11,35 +11,15 @@
 #include "CaptureTheFlag.h"
 #include "RaptorIsland.h"
 
+
 CtfSeeker* gSeeker = NULL;
 std::vector<CtfEnemy*> ctfEnemies;
-
-//#include "Globals.h"
-
 extern std::vector<CtfEnemy*> ctfEnemies;
-
-// ----------------------------------------------------------------------------
-// dynamic obstacle registry
-//
-// xxx need to combine guts of addOneObstacle and minDistanceToObstacle,
-// xxx perhaps by having the former call the latter, or change the latter to
-// xxx be "nearestObstacle": give it a position, it finds the nearest obstacle
-// xxx (but remember: obstacles a not necessarilty spheres!)
-
-
 SOG CtfBase::allObstacles;
 
 
-
-
-
-
-
-
-
-
 RaptorIsland::~RaptorIsland() {
-	LOGV("dealloc RaptorIsland\n");
+	LOGV("dealloc RaptorIsland!!@!@!\n");
 	myRaptors.clear();
 	myRaptorManager.Release();
 	
@@ -47,8 +27,8 @@ RaptorIsland::~RaptorIsland() {
 	myBarrelManager.Release();
 }
 
+
 void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
-	
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
@@ -59,54 +39,46 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myGameStarted = false;
 	myGameSpeed = 1;
 	myDeltaTime = 1.0 / 60.0;
-	
+
 	myTextures = textures;
-		
+
+
 	buildCamera();
-	 
-	myRaptorHeight = 2.5;	
-	myRaptorManager.SetStagger(2.0);
-	
-	// create the seeker ("hero"/"attacker")
+
+
 	ctfSeeker = new CtfSeeker;
 	all.push_back(ctfSeeker);
-	
-	// create the specified number of enemies, 
-	// storing pointers to them in an array.
-	for (int i = 0; i<15; i++)
-	{
+
+
+	for (int i = 0; i<15; i++) {
 		CtfEnemy *enemy = new CtfEnemy;
 		ctfEnemies.push_back(enemy);
 		all.push_back (ctfEnemies[i]);
 	}
+
 	
 	CtfBase::initializeObstacles();
-	
+
+	myRaptorHeight = 2.5;	
+	myRaptorManager.SetStagger(2.0);
 	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
-		//Md2Instance *raptor = ;
 		myRaptors.push_back(myRaptorManager.Load(models[0], 30, myTextures[0]));
 		myRaptors[i]->SetCycle(1);
 		myRaptors[i]->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
 		myRaptors[i]->SetScale(0.1, 0.1, 0.1);
 	}
-	
-	for (int cycle = 0; cycle < myRaptors[0]->GetNumCycles(); cycle++) {
+
+
+	for (unsigned int cycle = 0; cycle < myRaptors[0]->GetNumCycles(); cycle++) {
 		LOGV("%d %d %s\n", myRaptors[0]->GetNumCycles(), cycle, myRaptors[0]->GetCycleName(cycle));
 	}
-	
+
+
 	myBarrelHeight = 0.0;
-	
-	
 	for (int i=0; i<CtfBase::obstacleCount; i++) {
 		Md2Instance *barrel;
-		//if (randf() > 0.5) {
-			barrel = myBarrelManager.Load(models[1], 1, myTextures[2]);
-		//} else {
-		//	barrel = myBarrelManager.Load(models[2], 0, myTextures[3]);
-		//}
-		
+		barrel = myBarrelManager.Load(models[1], 1, myTextures[2]);
 		myBarrels.push_back(barrel);
-		//barrel->SetPosition(i * 150.0, 0.0, i * 10.0);
 		barrel->SetScale(0.05, 0.05, 0.05);
 		barrel->SetPosition(0.0, myBarrelHeight, 0.0);
 		barrel->SetRotation(90.0);
@@ -240,17 +212,15 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 }
 
 void RaptorIsland::render() {
-
 	drawCamera();
-	
-	bindTexture(0);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	myRaptorManager.Render();
 	myBarrelManager.Render();
-	//myPlayerManager.Render();
+	myPlayerManager.Render();
 	mySkyBoxManager.Render();
-	unbindTexture(0);
-		
 	drawFont();
+	glDisable(GL_TEXTURE_2D);
 }
 
 
@@ -263,47 +233,18 @@ int RaptorIsland::simulate() {
 	mySkyBoxManager.Update(myDeltaTime);
 	myPlayerManager.Update(myDeltaTime);
 
-	
-	/*
-	for(std::vector<Md2Instance *>::const_iterator it = myRaptors.begin(); it != myRaptors.end(); ++it)
-	{
-		Md2Instance *raptor = (Md2Instance *)(*it);
-		if (raptor->GetPosition()[2] < -150.0) {
-			raptor->SetPosition(-25.0, myRaptorHeight, 25.0);
-			//raptor->SetPosition(0.0, myRaptorHeight, 150.0);
-
-		}
-
-		raptor->Move(0.4, 0.0, 0.0);
-		raptor->SetRotation(90.0 + (fastSinf(mySimulationTime * 30.0) * (20.0)));
-	}
-	 */
-	
-	/*
-	for(std::vector<Md2Instance *>::const_iterator it = myBarrels.begin(); it != myBarrels.end(); ++it)
-	{
-		Md2Instance *barrel = (Md2Instance *)(*it);
-		barrel->SetRotation(mySimulationTime * 50.0);
-	}
-	 */
-	
-	//tickSkyBox();
-	
 	OpenSteer::Vec3 pos1a, vel1a, pos2a, vel2a;
 	
-	float rot1a; //, rot2a;
+	float rot1a;
 	
 	ctfSeeker->updateX(mySimulationTime, myDeltaTime, steeringFromInput);
 	
 	// update each enemy
-	for (int i = 0; i < ctfEnemies.size(); i++)
-	{
+	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
 		ctfEnemies[i]->update(mySimulationTime, myDeltaTime);
 		bool hit = false;
-		
 		pos1a = ctfEnemies[i]->position();
 		vel1a = ctfEnemies[i]->velocity();
-		//rot2a = ctfEnemies[i]->speed() / ctfEnemies[i]->maxSpeed();
 		if (vel1a.x != 0.0) {
 			rot1a = atan2(vel1a.z, vel1a.x);
 		}
@@ -314,7 +255,6 @@ int RaptorIsland::simulate() {
 		if (hit) {
 			myRaptors[i]->SwitchCycle(6, 0.0, true, -1, 0);
 		}
-		//i++;
 	}
 	
 	int i=0;
@@ -364,34 +304,13 @@ void RaptorIsland::buildCamera() {
 
 void RaptorIsland::tickCamera() {
 	Vector3D desiredTarget;
-	if (myCameraPosition.y < 8.0) {
-		myCameraSpeed = Vector3DMake(0.0, 10.0, 0.0);
+	Vector3D desiredPosition;
 
-	} else {
-		myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
-		
-		/*
-		//desiredTarget = Vector3DMake(myRaptors[0]->GetPosition()[0], 0.0, myRaptors[0]->GetPosition()[2]);
-		float totalZ = 0.0;
-		for(std::vector<Md2Instance *>::const_iterator it = myRaptors.begin(); it != myRaptors.end(); ++it)
-		{
-			Md2Instance *raptor = (Md2Instance *)(*it);
-			totalZ += raptor->GetPosition()[1];
-		}
-		float averageZ = totalZ / (float)myRaptors.size();
-		desiredTarget = Vector3DMake(100.0, 0.0, averageZ);
-		 */
-	}
-	
-	//Vector3D desiredPosition = Vector3DAdd(myCameraPosition, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
-	//desiredTarget = Vector3DMake(0.1, 0.1, fastSinf(mySimulationTime * 4.0) * 4.0);
 	desiredTarget = Vector3DMake(1.0, 2.0, 0.0);
-
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
-	//Vector3D desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
-	Vector3D desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
+	desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
+	//desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
 
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;
-	
 }
