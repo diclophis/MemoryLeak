@@ -16,4 +16,4 @@ assets/models/.DS_Store
 assets/textures/.DS_Store
 MemoryLeak.xcodeproj/*.pbxuser
 MemoryLeak.xcodeproj/*.perspectivev3
-
+osx/*.o
