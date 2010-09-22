@@ -607,7 +607,7 @@ bool Md2Model::Load(foo *bar) {
 				ps += 3;
 			#endif
 			// copy over each vertex position (and scale correctly)
-			for(unsigned int k=0;k!=MD2::GetModel()->numVertices; ++k, ++vertexIterator ) {
+			for(int k=0;k!=MD2::GetModel()->numVertices; ++k, ++vertexIterator ) {
 				#if MD2_USE_FLOATS
 					vertexIterator->FromMd2( pf->vertices[k], pf->scale, pf->translate );
 				#else
@@ -642,7 +642,8 @@ void Md2Model::MakeVertexArray() {
 		m_OriginalIndices = new unsigned short [ m_NumTris*3 ];
 	#endif
 	
-	m_Indices		  = new unsigned short [ m_NumTris*3 ];
+	m_Indices = (unsigned short *) malloc(m_NumTris * 3 * sizeof(unsigned short));
+	//new unsigned short [ m_NumTris*3 ];
 
 	// iterators for index lists
 
@@ -694,7 +695,8 @@ void Md2Model::MakeVertexArray() {
 		}
 	}
 
-	*m_Indices = 0;
+	//*m_Indices = 0;
+	//m_Indices = pi;
 	
 	
 	// create a mapping from original points to vertex array points
@@ -819,6 +821,8 @@ Md2Instance::Md2Instance(Md2Model* mod, GLuint texture) {
 	m_TransitionTime = 0.1f;
 	m_TimeRemaining = -1.0f;
 
+	m_LoopAnim = -1;
+	
 	// if unsigned chars are used for data storage, we need to LERP the scale and translation
 	// keys between the keyframes and apply them with glScale & glTranslate
 	#if !MD2_USE_FLOATS
@@ -946,9 +950,9 @@ void Md2Instance::Render() {
 
 
 				{
-					for (int iii=0; iii<m_pModel->m_NumTris; iii++) {
-						//LOGV("%d\n", m_pModel->m_Indices[iii]);
-					}
+					//for (int iii=0; iii<m_pModel->m_NumTris; iii++) {
+					//	LOGV("%d\n", m_pModel->m_Indices[iii]);
+					//}
 						glDrawElements(GL_TRIANGLES, m_pModel->m_NumTris*3, GL_UNSIGNED_SHORT, m_pModel->m_Indices);
 				}
 
@@ -1013,7 +1017,7 @@ void Md2Instance::Update(float dt){
 
 	m_AnimTime += dt;
 	float rate = 1.0f/m_pModel->m_FPS;
-	while( m_AnimTime > rate * thisAnim->GetNumFrames()) {
+	while (m_AnimTime > rate * thisAnim->GetNumFrames()) {
 		m_AnimTime -= rate * thisAnim->GetNumFrames();
 	}
 	
@@ -1033,7 +1037,7 @@ void Md2Instance::Update(float dt){
 	if (m_LoopAnim != 0) {
 		
 		float ddt = m_AnimTime;
-		unsigned int firstFrame = 0;
+		int firstFrame = 0;
 		while( ddt > rate ) {
 			ddt -= rate;
 			++firstFrame;

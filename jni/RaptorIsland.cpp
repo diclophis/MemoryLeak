@@ -58,14 +58,14 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 40.0;
+	myDeltaTime = 1.0 / 60.0;
 	
 	myTextures = textures;
 		
 	buildCamera();
 	 
 	myRaptorHeight = 2.5;	
-	myRaptorManager.SetStagger(4.0);
+	myRaptorManager.SetStagger(2.0);
 	
 	// create the seeker ("hero"/"attacker")
 	ctfSeeker = new CtfSeeker;
@@ -82,12 +82,12 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	CtfBase::initializeObstacles();
 	
-	for (int i=0; i<ctfEnemies.size(); i++) {
-		Md2Instance *raptor = myRaptorManager.Load(models[0], 1, myTextures[0]);
-		myRaptors.push_back(raptor);
-		raptor->SetCycle(1);
-		raptor->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
-		raptor->SetScale(0.1, 0.1, 0.1);
+	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
+		//Md2Instance *raptor = ;
+		myRaptors.push_back(myRaptorManager.Load(models[0], 30, myTextures[0]));
+		myRaptors[i]->SetCycle(1);
+		myRaptors[i]->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
+		myRaptors[i]->SetScale(0.1, 0.1, 0.1);
 	}
 	
 	for (int cycle = 0; cycle < myRaptors[0]->GetNumCycles(); cycle++) {

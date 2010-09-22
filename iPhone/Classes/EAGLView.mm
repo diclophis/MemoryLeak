@@ -20,6 +20,7 @@
 
 #include <unistd.h>
 
+
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 

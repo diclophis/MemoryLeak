@@ -34,6 +34,10 @@ Engine::Engine() {
 	
 	pthread_mutex_init(&m_mutex, 0);
 	mNeedsTick = false;
+	mySceneBuilt = false;
+	myViewportSet = false;
+	
+	LOGV("ctor done\n");
 }
 
 
@@ -63,14 +67,12 @@ int Engine::tick() {
 	int gameState;
 	
 	timeval t1, t2;
-    double elapsedTime;
+	double elapsedTime;
 	
 	gettimeofday(&t1, NULL);
 
 	while (true) {
 		if (mySceneBuilt) {
-			//if (pthread_mutex_trylock(&m_mutex) == 0) {
-			// stop timer
 			gettimeofday(&t2, NULL);
 			
 			// compute and print the elapsed time in millisec
@@ -79,7 +81,7 @@ int Engine::tick() {
 			//cout << elapsedTime << " ms.\n";
 			//LOGV("%f", elapsedTime);
 			
-			if (elapsedTime > 32.0) {
+			if (elapsedTime > 60.0) {
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
 				//mNeedsTick = false;
@@ -112,7 +114,11 @@ void Engine::draw(float rotation) {
 	if (mySceneBuilt) {
 		//if (pthread_mutex_trylock(&m_mutex) == 0) {
 			//LOGV("while locked draw()\n");
-			prepareFrame(screenWidth, screenHeight);
+			//prepareFrame(screenWidth, screenHeight);
+		glClearColor(0.5, 0.6, 0.85, 1.0);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+		if (myViewportSet) {
 			glPushMatrix();
 			{
 				glMatrixMode(GL_MODELVIEW);
@@ -127,10 +133,10 @@ void Engine::draw(float rotation) {
 			}
 			glPopMatrix();
 			//mNeedsTick = true;
-			pthread_mutex_unlock(&m_mutex);
-		//} else {
-			//LOGV("skipping draw\n");
-		//}
+			//pthread_mutex_unlock(&m_mutex);
+		} else {
+			prepareFrame(screenWidth, screenHeight);
+		}
 	} else {
 		//LOGV("no need to draw\n");
 	}
@@ -155,33 +161,31 @@ void Engine::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat
 
 
 void Engine::prepareFrame(int width, int height) {
+	LOGV("resize\n");
+	/*
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	*/
+
 	glViewport(0, 0, width, height);
 	glClearColor(0.5, 0.6, 0.85, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 200.0);
-	//gluPerspective(25.0, (float) width / (float) height, 0.1, 50.0);
-	//gluPerspective(120.0, (float) width / (float) height, 21.0, 70.0);
-	gluPerspective(100.0, (float) width / (float) height, 0.1, 200.0);
 
-	//lower left corner at (left, bottom, -near) 
-	//upper right corner at (right, top, -near).
-	//glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near, GLdouble far); 
-	//glOrthof(-1.0, 1.0, 0.0, 1.0, -49.0, 49.0);
-	
+	gluPerspective(100.0, (float) width / (float) height, 0.1, 200.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	myViewportSet = true;
 }
 
 
 void Engine::resizeScreen(int width, int height) {
 	screenWidth = width;
 	screenHeight = height;
+	myViewportSet = false;
 }
-
-
-
 
 
 void Engine::buildFont() {	
@@ -272,7 +276,7 @@ void Engine::drawFont() {
 	 
 	float y = 0.875;
 	
-	for (int i=0; i<fps.length(); i++) {
+	for (unsigned int i=0; i<fps.length(); i++) {
 		
 		int c = fps.at(i);
 

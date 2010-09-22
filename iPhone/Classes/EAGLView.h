@@ -6,6 +6,7 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
@@ -39,6 +40,9 @@ typedef struct RaptorIsland RaptorIsland;
 	RaptorIsland *gameController;
 	BOOL myFrameRequested;
 	int gameState;
+	
+	//std::vector<GLuint> textures;
+	//std::vector<foo*> models;
 
 }
 

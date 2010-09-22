@@ -171,6 +171,8 @@ public:
 
 	// World Engine
 	bool mySceneBuilt;
+	bool myViewportSet;
+
 	float myGravity;
 	float mySimulationTime;
 	float myDeltaTime;

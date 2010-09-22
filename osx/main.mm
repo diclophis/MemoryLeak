@@ -1,99 +1,114 @@
+// Vanilla MacOSX OpenGL App
 
-#include <stdio.h>
-#include <OpenGL/gl.h>    // Header File For The OpenGL32 Library
-#include <OpenGL/glu.h>   // Header File For The GLu32 Library
-#include <GLUT/glut.h>    // Header File For The GLut Library
+#import <Foundation/Foundation.h>
+#import <AppKit/NSImage.h>
+#import <QuartzCore/QuartzCore.h>
 
-#include "OpenSteer/Vec3.h"
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/Color.h"
-#include "CaptureTheFlag.h"
-#include "RaptorIsland.h"
+#include "MemoryLeak.h"
 
+#define kWindowWidth  480
+#define kWindowHeight 320
 
-#define kWindowWidth  400
-#define kWindowHeight 300
-
-static FILE *myFile1;
-static unsigned int fileOffset1;
-static unsigned int fileLength1;
-
-static FILE *myFile2;
-static unsigned int fileOffset2;
-static unsigned int fileLength2;
-
-static FILE *myFile3;
-static unsigned int fileOffset3;
-static unsigned int fileLength3;
-
-static std::vector<GLuint> sPlayerTextures;
+static std::vector<GLuint> textures;
+static std::vector<foo*> models;
 static RaptorIsland *gameController;
 
-void InitGL(void) {
+GLuint loadTexture(NSString *filename, NSString *type) {
+	GLuint text = 0;
+	
+	glEnable(GL_TEXTURE_2D);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	glGenTextures(1, &text);
+	glBindTexture(GL_TEXTURE_2D, text);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	
+	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"../../assets/textures"];
+	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+	NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
+
+	if (image == nil) {
+		throw 1;
+	}
+
+	GLuint width = CGImageGetWidth(image.CGImage);
+	GLuint height = CGImageGetHeight(image.CGImage);
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	void *imageData = malloc( height * width * 4 );
+	CGContextRef context2 = CGBitmapContextCreate( imageData, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
+	CGColorSpaceRelease( colorSpace );
+	CGContextClearRect( context2, CGRectMake( 0, 0, width, height ) );
+	CGContextTranslateCTM( context2, 0, height - height );
+	CGContextDrawImage( context2, CGRectMake( 0, 0, width, height ), image.CGImage );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+	CGContextRelease(context2);
+	free(imageData);
+	[image release];
+	[texData release];
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+	
+	return text;
 }
 
-void DrawGLScene(void) {
-  printf("draw\n");
+
+void draw(void) {
+	gameController->draw(0);
   glutSwapBuffers();
 }
 
-void ReSizeGLScene(int width, int height) {
-  glViewport(0, 0, width, height);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+
+void resize(int width, int height) {
+  gameController->resizeScreen(width, height);
 }
 
-int main(int argc, char** argv)
-{
+
+int main(int argc, char** argv) {
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+
+
   glutInitWindowSize (kWindowWidth, kWindowHeight);
   glutInitWindowPosition(100, 100);
   glutCreateWindow(argv[0]);
 
-  //InitGL();
-	//for (int i=0; i<13; i++) {
-	//	sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
-	//}
+	//glutGameModeString("1440x900:32@65");
+	//glutEnterGameMode();
 
-	std::vector<foo*> models;
+	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"crate", nil];
+	for (NSString *model_name in model_names) {
+		FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:model_name ofType:@"wav" inDirectory:@"../../assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
 		
-	foo firstModel; // = new foo;
-	firstModel.fp = myFile1;
-	firstModel.off = fileOffset1;
-	firstModel.len = fileLength1;
-	
-	models.push_back(&firstModel);
+		models.push_back(firstModel);
+	}
 
-	foo secondModel; // = new foo;
-	secondModel.fp = myFile2;
-	secondModel.off = fileOffset2;
-	secondModel.len = fileLength2;
-	
-	models.push_back(&secondModel);
-
-	foo thirdModel; // = new foo;
-	thirdModel.fp = myFile3;
-	thirdModel.off = fileOffset3;
-	thirdModel.len = fileLength3;
-	
-	models.push_back(&thirdModel);
+	textures.push_back(loadTexture(@"raptor", @"png"));
+	textures.push_back(loadTexture(@"font_01", @"png"));
+	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
+	textures.push_back(loadTexture(@"crate_01", @"jpg"));
+	textures.push_back(loadTexture(@"skybox_01", @"png"));
 
   gameController = new RaptorIsland();
-  gameController->build(kWindowWidth, kWindowHeight, sPlayerTextures, models);
-	models.clear();
-	sPlayerTextures.clear();
+  gameController->build(kWindowWidth, kWindowHeight, textures, models);
 
-
-  glutDisplayFunc(DrawGLScene);
-  glutReshapeFunc(ReSizeGLScene);
-
+  glutDisplayFunc(draw);
+	glutIdleFunc(draw);
+  glutReshapeFunc(resize);
   glutMainLoop();
+
+	[pool release];
 
   return 0;
 }
-
-

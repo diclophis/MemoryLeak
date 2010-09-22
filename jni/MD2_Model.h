@@ -313,11 +313,13 @@ public:
 	/// the name of the cycle
 	char m_Name[15];
 
+	/// a quick lookup for the start of the keyframe data for this cycle
+	Md2Vertex* m_KeyFrameData;
+	
 	/// the number of frames in the cycle
 	unsigned char m_NumFrames;
 
-	/// a quick lookup for the start of the keyframe data for this cycle
-	Md2Vertex* m_KeyFrameData;
+
 
 	#if !MD2_USE_FLOATS
 		/// the key frame scale values
@@ -697,13 +699,10 @@ public:
 	void Update(float dt,unsigned char off,unsigned char stagger);
 	
 //private:
-
-	/// the number of cycles
-	unsigned char m_NumCycles;
-
+	
 	/// the frames per second
 	unsigned char m_FPS;
-
+	
 	/// the number of triangles
 	unsigned short m_NumTris;
 
@@ -713,10 +712,21 @@ public:
 	/// the numbert of vertices in vertex array
 	unsigned short m_NumElements;
 
+	
+	/// the number of cycles
+	unsigned char m_NumCycles;
+
+
+
+	
+
 	//union {
 		/// VBO for the tex coords
 		unsigned int m_TexCoordBuffer;
-
+		
+		/// an array of skin names used in the model
+		std::vector<std::string> m_SkinNames;
+	
 		/// the tex coords, expanded to vertex array format. All instances will share 
 		/// this data.
 		Md2TexCoord* m_TexCoords;
@@ -745,8 +755,7 @@ public:
 	/// an array of all instances of this model
 	std::vector<Md2Instance*> m_Instances;
 
-	/// an array of skin names used in the model
-	std::vector<std::string> m_SkinNames;
+
 
 
 };	// 68bytes + sizeof(std::vector<Md2Instance*>)

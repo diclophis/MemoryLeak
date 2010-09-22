@@ -1024,9 +1024,9 @@ steerForPursuit (const AbstractVehicle& quarry,
     const Vec3 target = quarry.predictFuturePosition (etl);
 
     // annotation
-    annotationLine (position(),
-                    target,
-                    gaudyPursuitAnnotation ? color : gGray40);
+    //annotationLine (position(),
+    //                target,
+    //                gaudyPursuitAnnotation ? color : gGray40);
 
     return steerForSeek (target);
 }

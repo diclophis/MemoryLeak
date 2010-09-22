@@ -3,6 +3,7 @@ bin/DemoActivity-debug.apk
 bin/DemoActivity.ap_
 bin/classes.dex
 bin/classes/
+build/
 build/Debug-iphonesimulator/
 build/MemoryLeak.build/
 build/Debug-iphoneos/
@@ -17,3 +18,4 @@ assets/textures/.DS_Store
 MemoryLeak.xcodeproj/*.pbxuser
 MemoryLeak.xcodeproj/*.perspectivev3
 osx/*.o
+
