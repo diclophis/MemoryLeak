@@ -33,6 +33,7 @@
 
 #else
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -188,6 +189,20 @@ FNDEF(void, glTexParameteri, (GLenum target, GLenum pname, GLint param));
 #endif
 
 
+static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+	GLfloat xmin, xmax, ymin, ymax;
+
+	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+	ymin = -ymax;
+	xmin = ymin * aspect;
+	xmax = ymax * aspect;
+
+	glFrustumx(
+		(GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
+		(GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
+		(GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
+	);
+}
 
 #pragma mark Missing GLUT Functionality
 // This is a modified version of the function of the same name from 

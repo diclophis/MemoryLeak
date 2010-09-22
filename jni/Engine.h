@@ -191,9 +191,6 @@ public:
 	void bindTexture(GLuint texture);
 	void unbindTexture(GLuint texture);
 	void resizeScreen(int width, int height);
-#ifndef DESKTOP
-	void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
-#endif
 	
 	void prepareFrame(int width, int height);
 	inline std::string stringify(double x);

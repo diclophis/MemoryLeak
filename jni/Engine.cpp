@@ -29,34 +29,26 @@ inline std::string Engine::stringify(double x) {
 
 
 Engine::Engine() {
-	LOGV("alloc/init GameController\n");
-	LOGV("mutex_init\n");
-	
 	pthread_mutex_init(&m_mutex, 0);
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
-	
 	LOGV("ctor done\n");
 }
 
 
 void *Engine::start_thread(void *obj) {
-	//All we do here is call the do_work() function
-	LOGV("go\n");
 	reinterpret_cast<Engine *>(obj)->tick();
 	return 0;
 }
 
 
 void Engine::go() {
-	LOGV("pthread_create\n");
 	pthread_create(&m_thread, 0, Engine::start_thread, this);
 }
 
 
 Engine::~Engine() {
-	LOGV("dealloc GameController\n");
 	pthread_mutex_destroy(&m_mutex);
 	myTextures.clear();
 }
@@ -64,100 +56,56 @@ Engine::~Engine() {
 
 int Engine::tick() {
 	
-	int gameState;
+	int gameState = -1;
 	
 	timeval t1, t2;
 	double elapsedTime;
 	
 	gettimeofday(&t1, NULL);
 
-	while (true) {
+	while (gameState != 0) {
 		if (mySceneBuilt) {
 			gettimeofday(&t2, NULL);
-			
-			// compute and print the elapsed time in millisec
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			//cout << elapsedTime << " ms.\n";
-			//LOGV("%f", elapsedTime);
-			
 			if (elapsedTime > 60.0) {
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
-				//mNeedsTick = false;
-				if (gameState == 0) {
-					//break;
-					return gameState;
-				}
-			    gettimeofday(&t1, NULL);
+				gettimeofday(&t1, NULL);
 			} else {
-				//LOGV("waiting");
 				usleep(15.0);
 			}
-			
-			//	pthread_mutex_unlock(&m_mutex);
-			//} else{
-				//LOGV("skip tick\n");
-			//}
-		} else {
-			//LOGV("no need to tick\n");
 		}
-		//usleep((1.0 / 60.0) * 1000.0);
 	}
 	
 	return gameState;
-	
 }
 
 
 void Engine::draw(float rotation) {
 	if (mySceneBuilt) {
-		//if (pthread_mutex_trylock(&m_mutex) == 0) {
-			//LOGV("while locked draw()\n");
-			//prepareFrame(screenWidth, screenHeight);
-		glClearColor(0.5, 0.6, 0.85, 1.0);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
 		if (myViewportSet) {
 			glPushMatrix();
 			{
+				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				//glEnable(GL_BLEND);
+				//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glEnable(GL_DEPTH_TEST);
 				glRotatef(rotation, 0.0, 0.0, 1.0);
 				render();
-				glDisable(GL_BLEND);
-				glDisable(GL_DEPTH_TEST);
+				//glDisable(GL_BLEND);
+				//glDisable(GL_DEPTH_TEST);
 			}
 			glPopMatrix();
-			//mNeedsTick = true;
-			//pthread_mutex_unlock(&m_mutex);
 		} else {
 			prepareFrame(screenWidth, screenHeight);
 		}
-	} else {
-		//LOGV("no need to draw\n");
 	}
 }
 
-#ifndef DESKTOP
-void Engine::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
-	GLfloat xmin, xmax, ymin, ymax;
 
-	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-	ymin = -ymax;
-	xmin = ymin * aspect;
-	xmax = ymax * aspect;
-
-	glFrustumx(
-		(GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-		(GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-		(GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
-	);
-}
-#endif
 
 
 void Engine::prepareFrame(int width, int height) {
