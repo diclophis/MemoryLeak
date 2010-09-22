@@ -101,7 +101,13 @@ void CtfSeeker::reset (void)
 {
 	CtfBase::reset();
 	setPosition(gHomeBaseCenter);
-	setRadius(2.5);
+	//setPosition(Vec3(0.0, 0.0, 0.0));
+	setRadius(20.0);
+	
+	setSpeed(1);             // speed along Forward direction.
+	setMaxSpeed(1.0);        // velocity is clipped to this magnitude
+	setMaxForce(1000.0);        // steering force is clipped to this magnitude
+	
 	gSeeker = this;
 	state = running;
 	evading = false;
@@ -122,10 +128,10 @@ void CtfEnemy::reset (void)
 	rx = (rx * 200.0) + 50;
 
 	setPosition(rx, 0.0, rz);
-	setRadius(2.5);
+	setRadius(2.0);
 	setSpeed(25.0);
-	setMaxSpeed(25.0);
-	setMaxForce(600.0);
+	setMaxSpeed(30.0);
+	setMaxForce(100.0);
 }
 
 
@@ -138,7 +144,7 @@ void CtfBase::initializeObstacles (void)
 	
 	/*
 	for (int z=-60; z<=60; z+=4) {
-		if (z > 5 || z < -5) {
+		if (z > 20 || z < -20) {
 			c = Vec3(-50.0 + (z * z * 0.015), 0, z);
 			allObstacles.push_back (new SphereObstacle (r * 2.1, c));
 			obstacleCount++;
@@ -146,6 +152,8 @@ void CtfBase::initializeObstacles (void)
 	}
 	 */
 	
+	
+	/*
 	for (int i=0; i<14; i++) {
 		c = Vec3(-30.0 + (i * 4), 0, -26.0 - i);
 		allObstacles.push_back (new SphereObstacle (r * 1.5, c));
@@ -157,11 +165,13 @@ void CtfBase::initializeObstacles (void)
 		allObstacles.push_back (new SphereObstacle (r * 1.5, c));
 		obstacleCount++;
 	}
+	 */
+	
 	
 	//allObstacles.push_back (new PlaneObstacle());
 
 	
-	for (int z=-100; z<=100; z+=10) {
+	for (int z=-60; z<=60; z+=20) {
 		float rx = (lrand48() % 255) / 255.f;
 		c = Vec3((rx > 0.5) ? -25.0 : -15, 0, z);
 		allObstacles.push_back (new SphereObstacle (r, c));
@@ -243,13 +253,10 @@ void CtfBase::randomizeStartingPositionAndHeading (void)
 void CtfEnemy::update (const float currentTime, const float elapsedTime)
 {
 	// determine upper bound for pursuit prediction time
-	const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter,
-												   gSeeker->position());
-	const float adjustedDistance = seekerToGoalDist - radius()-gHomeBaseRadius;
-	const float seekerToGoalTime = ((adjustedDistance < 0 ) ?
-									0 :
-									(adjustedDistance/gSeeker->speed()));
-	const float maxPredictionTime = seekerToGoalTime * 0.9f;
+	//const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter, gSeeker->position());
+	//const float adjustedDistance = seekerToGoalDist - radius() - gHomeBaseRadius;
+	//const float seekerToGoalTime = ((adjustedDistance < 0 ) ? 0 : (adjustedDistance/gSeeker->speed()));
+	const float maxPredictionTime = 0.5; //seekerToGoalTime * 0.9f;
 	
 	// determine steering (pursuit, obstacle avoidance, or braking)
 	Vec3 steer (0, 0, 0);
@@ -258,13 +265,14 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
 		Vec3 avoidance = steerToAvoidObstacles(gAvoidancePredictTimeMin, (ObstacleGroup&) allObstacles);
 
 		// saved for annotation
-		avoiding = (avoidance == Vec3::zero);
+		//avoiding = (avoidance == Vec3::zero);
 		
-		if (avoiding) {
-			steer = steerForPursuit (*gSeeker, maxPredictionTime); // + limitMaxDeviationAngle(steerToEvadeAllOtherEnemies(), 0.00001f, forward());
-		} else {
-			steer = avoidance;
-		}
+		//if (avoiding) {
+		//	steer += steerForPursuit(*gSeeker, maxPredictionTime);
+		//} else {
+		//	steer = avoidance;
+		//}
+		steer = avoidance + steerForPursuit(*gSeeker, maxPredictionTime);
 	}
 	else
 	{
@@ -489,10 +497,9 @@ Vec3 CtfSeeker::XXXsteerToEvadeAllDefenders (void)
 Vec3 CtfSeeker::steeringForSeeker (void)
 {
 	// determine if obstacle avodiance is needed
-	const bool clearPath = clearPathToGoal ();
+	const bool clearPath = clearPathToGoal();
 	adjustObstacleAvoidanceLookAhead (clearPath);
-	const Vec3 obstacleAvoidance =
-	steerToAvoidObstacles(gAvoidancePredictTime, (ObstacleGroup&) allObstacles);
+	const Vec3 obstacleAvoidance = steerToAvoidObstacles(gAvoidancePredictTime, (ObstacleGroup&) allObstacles);
 	
 	// saved for annotation
 	avoiding = (obstacleAvoidance != Vec3::zero);

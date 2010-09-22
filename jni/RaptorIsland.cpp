@@ -58,14 +58,14 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 60.0;
+	myDeltaTime = 1.0 / 40.0;
 	
 	myTextures = textures;
 		
 	buildCamera();
 	 
 	myRaptorHeight = 2.5;	
-	myRaptorManager.SetStagger(3.0);
+	myRaptorManager.SetStagger(4.0);
 	
 	// create the seeker ("hero"/"attacker")
 	ctfSeeker = new CtfSeeker;
@@ -83,7 +83,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	CtfBase::initializeObstacles();
 	
 	for (int i=0; i<ctfEnemies.size(); i++) {
-		Md2Instance *raptor = myRaptorManager.Load(models[0], 10, myTextures[0]);
+		Md2Instance *raptor = myRaptorManager.Load(models[0], 1, myTextures[0]);
 		myRaptors.push_back(raptor);
 		raptor->SetCycle(1);
 		raptor->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
@@ -120,13 +120,13 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	mySkyBox->SetRotation(90.0);
 	mySkyBox->SetScale(0.5, 0.25, 0.5);
 
-	/*
+	
 	myPlayerHeight = 0.0;
 	myPlayer = myPlayerManager.Load(models[2], 1, myTextures[3]);
 	myPlayer->SetPosition(0.0, myPlayerHeight, 0.0);
 	myPlayer->SetRotation(90.0);
 	myPlayer->SetScale(0.1, 0.1, 0.1);
-	*/
+	
 	
 	/*
 	for (int cycle = 0; cycle < myBarrels[0]->GetNumCycles(); cycle++) {
@@ -234,7 +234,6 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 		
 	mySceneBuilt = true;
 	
-	//tick();
 	simulate();
 	go();
 	
@@ -262,7 +261,7 @@ int RaptorIsland::simulate() {
 	myRaptorManager.Update(myDeltaTime);
 	myBarrelManager.Update(myDeltaTime);
 	mySkyBoxManager.Update(myDeltaTime);
-	//myPlayerManager.Update(myDeltaTime);
+	myPlayerManager.Update(myDeltaTime);
 
 	
 	/*
@@ -323,14 +322,14 @@ int RaptorIsland::simulate() {
 	{
 		OpenSteer::Vec3 a = (**so).center;
 		if (a.x == -25.0) {
-			if (a.z < -100.0) {
-				a.z = 100.0;
+			if (a.z < -60.0) {
+				a.z = 60.0;
 			} else {
 				a.z -= 0.1;
 			}
 		} else if (a.x == -15.0) {
-			if (a.z > 100.0) {
-				a.z = -100.0;
+			if (a.z > 60.0) {
+				a.z = -60.0;
 			} else {
 				a.z += 0.1;
 			}
@@ -343,9 +342,9 @@ int RaptorIsland::simulate() {
 	}
 	
 	
-	//pos1a = ctfSeeker->position();
-	//vel1a = ctfSeeker->velocity();
-	//myPlayer->SetPosition(pos1a.x, pos1a.y, pos1a.z);
+	pos1a = ctfSeeker->position();
+	vel1a = ctfSeeker->velocity();
+	myPlayer->SetPosition(pos1a.x, pos1a.y, pos1a.z);
 	
 	
 	//if (mySimulationTime > 30.0) {
@@ -389,7 +388,7 @@ void RaptorIsland::tickCamera() {
 	desiredTarget = Vector3DMake(1.0, 2.0, 0.0);
 
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
-	//Vector3D desiredPosition = Vector3DMake(-100.0, 100.0, 0.0);
+	//Vector3D desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
 	Vector3D desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
 
 	myCameraTarget = desiredTarget;

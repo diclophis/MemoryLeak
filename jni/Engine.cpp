@@ -5,6 +5,7 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
+#include "math.h"
 #include <sstream>
 #include <sys/time.h>
 #include "pthread.h"
@@ -135,7 +136,7 @@ void Engine::draw(float rotation) {
 	}
 }
 
-
+#ifndef DESKTOP
 void Engine::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
 	GLfloat xmin, xmax, ymin, ymax;
 
@@ -150,6 +151,7 @@ void Engine::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat
 		(GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
 	);
 }
+#endif
 
 
 void Engine::prepareFrame(int width, int height) {
@@ -245,8 +247,12 @@ void Engine::drawFont() {
 	glPushMatrix();	
 	glLoadIdentity();
 
+#ifdef DESKTOP
+	glOrtho(0, _scaleX, 0, _scaleY, -1, 1);
+#else
 	glOrthof(0, _scaleX, 0, _scaleY, -1, 1);
-
+#endif
+	
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
@@ -896,6 +902,7 @@ void Engine::tickFountain() {
 
 
 void Engine::drawFountain() {
+	/*
 	if (false) {
 		//GLfloat points [ ] = { myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z };
 		bindTexture(myFountainTextures[0]);
@@ -919,6 +926,7 @@ void Engine::drawFountain() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
+	 */
 }
 
 

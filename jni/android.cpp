@@ -40,8 +40,6 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/Color.h"
 #include "CaptureTheFlag.h"
-//CtfSeeker* gSeeker = NULL;
-//std::vector<CtfEnemy*> ctfEnemies;
 #include "RaptorIsland.h"
 
 
