@@ -26,13 +26,13 @@
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
-		FCB1F7A2123E40F700BA41ED /* MemoryLeakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41451216807900A60972 /* MemoryLeakAppDelegate.m */; };
+		FCB1F7A2123E40F700BA41ED /* MemoryLeakAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41451216807900A60972 /* MemoryLeakAppDelegate.mm */; };
 		FCB1F7AD123E412100BA41ED /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41611216811B00A60972 /* Engine.cpp */; };
 		FCB1F7AE123E412200BA41ED /* MD2_File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41651216811B00A60972 /* MD2_File.cpp */; };
 		FCB1F7AF123E412300BA41ED /* MD2_Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41671216811B00A60972 /* MD2_Manager.cpp */; };
 		FCB1F7B0123E412400BA41ED /* MD2_Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41691216811B00A60972 /* MD2_Model.cpp */; };
 		FCB1F7B1123E412500BA41ED /* RaptorIsland.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */; };
-		FCB1F7B2123E412900BA41ED /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41461216807900A60972 /* main.m */; };
+		FCB1F7B2123E412900BA41ED /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41461216807900A60972 /* main.mm */; };
 		FCB1F7B5123E413000BA41ED /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41421216807900A60972 /* EAGLView.mm */; };
 		FCBE414D1216807A00A60972 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = FCBE41471216807900A60972 /* MainWindow.xib */; };
 		FCE2DF10122C09AB005D610E /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FCE2DF0F122C09AB005D610E /* Default.png */; };
@@ -110,8 +110,8 @@
 		FCBE41421216807900A60972 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		FCBE41431216807900A60972 /* importgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = importgl.h; sourceTree = "<group>"; };
 		FCBE41441216807900A60972 /* MemoryLeakAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeakAppDelegate.h; sourceTree = "<group>"; };
-		FCBE41451216807900A60972 /* MemoryLeakAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemoryLeakAppDelegate.m; sourceTree = "<group>"; };
-		FCBE41461216807900A60972 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = iPhone/main.m; sourceTree = "<group>"; };
+		FCBE41451216807900A60972 /* MemoryLeakAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MemoryLeakAppDelegate.mm; sourceTree = "<group>"; };
+		FCBE41461216807900A60972 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = iPhone/main.mm; sourceTree = "<group>"; };
 		FCBE41471216807900A60972 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = iPhone/MainWindow.xib; sourceTree = "<group>"; };
 		FCBE41611216811B00A60972 /* Engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Engine.cpp; path = jni/Engine.cpp; sourceTree = "<group>"; };
 		FCBE41621216811B00A60972 /* Engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Engine.h; path = jni/Engine.h; sourceTree = "<group>"; };
@@ -128,7 +128,6 @@
 		FCBE417C121681C600A60972 /* importgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = importgl.h; path = jni/importgl.h; sourceTree = "<group>"; };
 		FCE2DF0F122C09AB005D610E /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		FCFD43DF121BBEFD00A65BCF /* MemoryLeak-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MemoryLeak-Info.plist"; sourceTree = "<group>"; };
-		FCFD70BA121E84EC00C8F382 /* MemoryLeak_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeak_Prefix.pch; sourceTree = "<group>"; };
 		FCFD71AE121E95C800C8F382 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
 		FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		FCFECB6B11EC0D5200BBBE2A /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -253,7 +252,7 @@
 				FCBE41421216807900A60972 /* EAGLView.mm */,
 				FCBE41431216807900A60972 /* importgl.h */,
 				FCBE41441216807900A60972 /* MemoryLeakAppDelegate.h */,
-				FCBE41451216807900A60972 /* MemoryLeakAppDelegate.m */,
+				FCBE41451216807900A60972 /* MemoryLeakAppDelegate.mm */,
 			);
 			name = Classes;
 			path = iPhone/Classes;
@@ -290,10 +289,9 @@
 			isa = PBXGroup;
 			children = (
 				FCE2DF0F122C09AB005D610E /* Default.png */,
-				FCFD70BA121E84EC00C8F382 /* MemoryLeak_Prefix.pch */,
 				FCFD43DF121BBEFD00A65BCF /* MemoryLeak-Info.plist */,
 				FCBE41471216807900A60972 /* MainWindow.xib */,
-				FCBE41461216807900A60972 /* main.m */,
+				FCBE41461216807900A60972 /* main.mm */,
 			);
 			name = Etc;
 			sourceTree = "<group>";
@@ -360,13 +358,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCB1F7A2123E40F700BA41ED /* MemoryLeakAppDelegate.m in Sources */,
+				FCB1F7A2123E40F700BA41ED /* MemoryLeakAppDelegate.mm in Sources */,
 				FCB1F7AD123E412100BA41ED /* Engine.cpp in Sources */,
 				FCB1F7AE123E412200BA41ED /* MD2_File.cpp in Sources */,
 				FCB1F7AF123E412300BA41ED /* MD2_Manager.cpp in Sources */,
 				FCB1F7B0123E412400BA41ED /* MD2_Model.cpp in Sources */,
 				FCB1F7B1123E412500BA41ED /* RaptorIsland.cpp in Sources */,
-				FCB1F7B2123E412900BA41ED /* main.m in Sources */,
+				FCB1F7B2123E412900BA41ED /* main.mm in Sources */,
 				FCB1F7B5123E413000BA41ED /* EAGLView.mm in Sources */,
 				FC3997A91242C16E008E614D /* Clock.cpp in Sources */,
 				FC3997AA1242C16E008E614D /* Color.cpp in Sources */,
@@ -399,7 +397,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
+				GCC_PREFIX_HEADER = "";
 				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;

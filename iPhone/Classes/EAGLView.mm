@@ -90,7 +90,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval =  2;
+	animationFrameInterval =  1;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -245,7 +245,7 @@ static std::vector<foo*> models;
 	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
 
 	//skybox
-	textures.push_back([self loadTexture:@"skybox_02" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"skybox_01" ofType:@"png"]);
 
 	gameController = new RaptorIsland();
 	
