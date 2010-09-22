@@ -68,12 +68,12 @@ int Engine::tick() {
 			gettimeofday(&t2, NULL);
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			if (elapsedTime > 60.0) {
+			if (elapsedTime > 55.0) {
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
 				gettimeofday(&t1, NULL);
 			} else {
-				usleep(15.0);
+				usleep(5.0);
 			}
 		}
 	}
@@ -286,26 +286,23 @@ void Engine::random_velocity(int idx) {
 	velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
 	*/
 
-	velocity[idx].x = 0.5 - randf();
-	velocity[idx].y = -(randf() * 5.0);
-	velocity[idx].z = 0.5 - randf();
+	
+	velocity[idx].x = 1.0 - randf() * 2.0;
+	velocity[idx].y = (randf() * 1.0) + 3.0;
+	velocity[idx].z = 1.0 - randf() * 2.0;
+	
+
+	//velocity[idx].x = 0.1;
+	//velocity[idx].y = 0.1;
+	//velocity[idx].z = 0.1;
 }
 
 
 void Engine::reset_particle(int idx) {
-	if (false) {
-		generator[idx].x = myPlayerPlatformIntersection.x;
-		generator[idx].y = myPlayerPlatformIntersection.y;
-		generator[idx].z = myPlayerPlatformIntersection.z;
-	} else {
-		generator[idx].x = myPlayerPosition.x;
-		generator[idx].y = myPlayerPosition.y;
-		generator[idx].z = myPlayerPosition.z;
-		//generator[idx].x = myPlayerPosition.x + (randf() * 4.0) - 2.0;
-		//generator[idx].y = myPlayerPosition.y + (randf() * 4.0) - 2.0;
-		//generator[idx].z = myPlayerPosition.z + (randf() * 4.0) - 2.0;
-		//LOGV("RES 1: %f %f %f\n", mySpiralVertices[0], mySpiralVertices[1], mySpiralVertices[2]);
-	}
+	generator[idx].x = myFountainPosition.x;
+	generator[idx].y = myFountainPosition.y;
+	generator[idx].z = myFountainPosition.z;
+
 	
 	reset_vertex(idx);
 	random_velocity(idx);
@@ -320,27 +317,36 @@ void Engine::update_vertex(int idx) {
 	vertices[i] += velocity[idx].x;
 	vertices[i+1] += velocity[idx].y;
 	vertices[i+2] += velocity[idx].z;
-	//velocity[idx].y -= 0.0002 * fabs(myPlayerSpeed.y);
-	//LOGV("%d %f %f %f\n", idx, vertices[idx * 3], life[idx], myPlayerPosition.x);
+	velocity[idx].y -= 1.3; 
 }
 
 
+/*
 static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 {
 	{1.0f,1.0f,1.0f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},
 	{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},
 	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
 };
+ */
+
+static GLfloat ccolors[12][3]=				// Rainbow Of Colors
+{
+	{0.0f,1.0f,0.0f},{0.0f,0.9f,0.1f},{0.0f,0.9f,0.1f},{0.0f,0.9f,0.1f},
+	{0.0f,0.5f,0.1f},{0.0f,0.5f,0.1f},{0.0f,0.5f,0.1f},{0.0f,0.5f,0.5f},
+	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
+};
 
 
 void Engine::update_color(int idx) {
 	int i = idx * 4;
-	float distanceFromPlayer = myPlayerPosition.x - vertices[idx * 3];
-	float percentOf = (distanceFromPlayer) / 40.0;
-	int ii = (int)(percentOf * 12);
-	if (ii > 11) {
-		ii = 11;
-	}
+	//float distanceFromPlayer = myPlayerPosition.x - vertices[idx * 3];
+	//float percentOf = (distanceFromPlayer) / 40.0;
+	int ii = randf() * 11;//(int)(percentOf * 12);
+	//if (ii > 11) {
+	//	ii = 11;
+	//}
+	
 	colors[i+0] = ccolors[ii][0];
 	colors[i+1] = ccolors[ii][1];
 	colors[i+2] = ccolors[ii][2];
@@ -370,7 +376,7 @@ void Engine::buildFountain() {
 
 void Engine::tickFountain() {	
 	int i = 0; //particle index
-	for(i=0;i<NUM_PARTICLES;i++) {
+	for(i=0; i<NUM_PARTICLES; i++) {
 		life[i] -= 0.1;
 		if(life[i] <= 0.0) {
 			reset_particle(i);
@@ -383,12 +389,21 @@ void Engine::tickFountain() {
 
 
 void Engine::drawFountain() {
-	/*
 	if (false) {
-		//GLfloat points [ ] = { myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z };
-		bindTexture(myFountainTextures[0]);
+		glBindTexture(GL_TEXTURE_2D, myTextures[5]);
+#ifdef DESKTOP
+		glEnable(GL_POINT_SPRITE);
+		glPointSize(5.0);
+		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
+		glEnableClientState(GL_VERTEX_ARRAY); 
+		glVertexPointer(3, GL_FLOAT, 0, vertices); 
+		glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
+		//glColor4f(1.0, 1.0, 1.0, 1.0);
+		glDisable(GL_POINT_SPRITE);
+#else
 		glEnable(GL_POINT_SPRITE_OES);
-		glPointSize(100.0);
+		glPointSize(5.0);
 		glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
 		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
 		glEnableClientState(GL_VERTEX_ARRAY); 
@@ -396,16 +411,15 @@ void Engine::drawFountain() {
 		glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
 		//glColor4f(1.0, 1.0, 1.0, 1.0);
 		glDisable(GL_POINT_SPRITE_OES);
-		unbindTexture(myGroundTexture);
+#endif
 	} else {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, vertices);
 		glColorPointer(4, GL_FLOAT, 0, colors);
-		glPointSize(7.0);
+		glPointSize(5.0);
 		glDrawElements(GL_POINTS, NUM_PARTICLES, GL_UNSIGNED_SHORT, elements);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
-	 */
 }

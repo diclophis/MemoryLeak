@@ -193,7 +193,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	
 	
-	
+	buildFountain();	
 	
 	
 	
@@ -219,6 +219,7 @@ void RaptorIsland::render() {
 	myBarrelManager.Render();
 	myPlayerManager.Render();
 	mySkyBoxManager.Render();
+	drawFountain();
 	drawFont();
 	glDisable(GL_TEXTURE_2D);
 }
@@ -227,6 +228,7 @@ void RaptorIsland::render() {
 int RaptorIsland::simulate() {
 	
 	tickCamera();
+
 	
 	myRaptorManager.Update(myDeltaTime);
 	myBarrelManager.Update(myDeltaTime);
@@ -261,6 +263,11 @@ int RaptorIsland::simulate() {
 	for (SOI so = CtfBase::allObstacles.begin(); so != CtfBase::allObstacles.end(); so++)
 	{
 		OpenSteer::Vec3 a = (**so).center;
+		
+		if (randf() < 0.1) {
+			myFountainPosition = Vector3DMake(a.x, a.y, a.z);
+		}
+		
 		if (a.x == -25.0) {
 			if (a.z < -60.0) {
 				a.z = 60.0;
@@ -286,6 +293,9 @@ int RaptorIsland::simulate() {
 	vel1a = ctfSeeker->velocity();
 	myPlayer->SetPosition(pos1a.x, pos1a.y, pos1a.z);
 	
+
+	tickFountain();
+
 	
 	//if (mySimulationTime > 30.0) {
 	//	return 0;
@@ -306,10 +316,10 @@ void RaptorIsland::tickCamera() {
 	Vector3D desiredTarget;
 	Vector3D desiredPosition;
 
-	desiredTarget = Vector3DMake(1.0, 2.0, 0.0);
+	desiredTarget = Vector3DMake(1.0, 5.0, 0.0);
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
-	desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
-	//desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
+	//desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
+	desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
 
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;

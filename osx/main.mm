@@ -98,7 +98,8 @@ int main(int argc, char** argv) {
 	textures.push_back(loadTexture(@"font_01", @"png"));
 	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
 	textures.push_back(loadTexture(@"crate_01", @"jpg"));
-	textures.push_back(loadTexture(@"skybox_01", @"png"));
+	textures.push_back(loadTexture(@"skybox_02", @"png"));
+	textures.push_back(loadTexture(@"smoke", @"png"));
 
   gameController = new RaptorIsland();
   gameController->build(kWindowWidth, kWindowHeight, textures, models);

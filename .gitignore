@@ -12,6 +12,7 @@ gen/
 bin/
 libs/armeabi/
 obj/local/
+.DS_Store
 assets/.DS_Store
 assets/models/.DS_Store
 assets/textures/.DS_Store

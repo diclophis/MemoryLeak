@@ -39,7 +39,8 @@ public:
 	Engine& operator=(const Engine&);
 	
 	// Fountain Engine
-	#define NUM_PARTICLES 10
+	#define NUM_PARTICLES 150
+	
 	GLfloat vertices[NUM_PARTICLES * 3];
 	GLfloat colors[NUM_PARTICLES * 4];
 	GLushort elements[NUM_PARTICLES];
@@ -48,6 +49,7 @@ public:
 	float alpha[NUM_PARTICLES]; //keep track of alpha for display
 	float life[NUM_PARTICLES]; //keep track of life of particle
 	GLuint myFountainTextures[1];
+	Vector3D myFountainPosition;
 	void buildFountain();
 	void tickFountain();
 	void drawFountain();
