@@ -164,8 +164,9 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
   LOGV("nativeResize %d %d", width, height);
-  gameController->screenWidth = sWindowWidth  = width;
-  gameController->screenHeight = sWindowHeight = height;
+  //gameController->screenWidth = sWindowWidth  = width;
+  //gameController->screenHeight = sWindowHeight = height;
+  gameController->resizeScreen(width, height);
 }
 
 
@@ -207,7 +208,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
       //}
       //gameState = gameController->tick();
       //LOGV("tick");
-			gameController->draw(90);
+			gameController->draw(0);
     } else {
       //if (gameController) {
       //  delete gameController;

@@ -360,7 +360,13 @@ public:
 	/// \note	the animation time is still updated even though the VBO's aren't. This means
 	///			that the anims will still look like they've updated when they are off the screen
 	/// 
-	void SetVisible(bool visible);
+	void SetVisible(bool visible) {
+		m_Visible = visible;
+	}
+
+	bool GetVisible() {
+		return m_Visible;
+	}
 
 
 	//-------------------------------------------------------------------------------------------	Anim Controls
@@ -381,6 +387,10 @@ public:
 	/// \return	true if OK
 	/// 
 	bool SetCycle(unsigned int cnum);
+
+	int GetCycle() {
+		return (int) m_CurrentAnim;
+	}
 
 	/// \brief	this func sets the anim cycle to use for the model
 	/// \param	cnum		-	the cycle number for the animation

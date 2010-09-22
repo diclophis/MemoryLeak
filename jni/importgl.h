@@ -25,6 +25,8 @@
 #ifndef IMPORTGL_H_INCLUDED
 #define IMPORTGL_H_INCLUDED
 
+#include <math.h>
+
 #ifdef DESKTOP
 
 #include <OpenGL/gl.h>    // Header File For The OpenGL32 Library

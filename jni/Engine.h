@@ -9,8 +9,7 @@
 #include "OpenGLCommon.h"
 #include "MD2_Model.h"
 #include "MD2_Manager.h"
-//#include "Player.h"
-
+#include "OpenSteer/Vec3.h"
 
 #define CHAR_WIDTH 0.1			/* ogl tex coords :: Based on not quite 42 chars per line! */
 #define CHAR_HEIGHT 0.1
@@ -39,7 +38,7 @@ public:
 	Engine& operator=(const Engine&);
 	
 	// Fountain Engine
-	#define NUM_PARTICLES 100
+	#define NUM_PARTICLES 1000
 	
 	GLfloat vertices[NUM_PARTICLES * 3];
 	GLfloat colors[NUM_PARTICLES * 4];
@@ -224,6 +223,10 @@ public:
 	void buildSkyBox();
 	void tickSkyBox();
 	void drawSkyBox();
+
+	virtual void hitTest(float x, float y) = 0;
+
+	OpenSteer::Vec3 directionFromCameraToScreenPosition (int x, int y, int h);
 
 	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
 	

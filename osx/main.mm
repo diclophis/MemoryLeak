@@ -65,12 +65,19 @@ void resize(int width, int height) {
 }
 
 
+void processMouse(int button, int state, int x, int y) {
+	if (state == GLUT_DOWN) {
+		gameController->hitTest(x, y);
+	}
+}
+
+
+
 int main(int argc, char** argv) {
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-
 
   glutInitWindowSize (kWindowWidth, kWindowHeight);
   glutInitWindowPosition(100, 100);
@@ -104,6 +111,7 @@ int main(int argc, char** argv) {
   gameController = new RaptorIsland();
   gameController->build(kWindowWidth, kWindowHeight, textures, models);
 
+	glutMouseFunc(processMouse);
   glutDisplayFunc(draw);
 	glutIdleFunc(draw);
   glutReshapeFunc(resize);

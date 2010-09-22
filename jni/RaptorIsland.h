@@ -46,5 +46,9 @@ public:
 	std::vector<CtfBase*> all;
 	unsigned int mMode;
 	Vec3 steeringFromInput;
+
+	GLfloat myLineVertices[6];
+	CtfBase *myNearest;
+	void hitTest(float x, float y);
 	
 };

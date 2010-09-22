@@ -200,7 +200,13 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	
 	
-	
+	myLineVertices[0] = -50.0;	
+	myLineVertices[1] = 1.0;	
+	myLineVertices[2] = 0.0;	
+
+	myLineVertices[3] = 50.0;	
+	myLineVertices[4] = 1.0;	
+	myLineVertices[5] = 0.0;	
 	
 	mySimulationTime = 0.0;
 		
@@ -217,10 +223,24 @@ void RaptorIsland::render() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	myRaptorManager.Render();
 	myBarrelManager.Render();
-	myPlayerManager.Render();
-	mySkyBoxManager.Render();
+	//myPlayerManager.Render();
+	//mySkyBoxManager.Render();
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glColor4f(1.0, 0.0, 0.0, 1.0);
+	glLineWidth(2.0);
+	//glPointSize(2.0);
+	glVertexPointer(3, GL_FLOAT, 0, myLineVertices);
+	glDrawArrays(GL_LINES, 0, 2);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+
 	drawFountain();
 	drawFont();
+
+
+
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -316,14 +336,174 @@ void RaptorIsland::tickCamera() {
 	Vector3D desiredTarget;
 	Vector3D desiredPosition;
 
-	desiredTarget = Vector3DMake(0.0, 3.0, 0.0);
+	//desiredTarget = Vector3DMake(1000.0, 8.0, 0.0);
+	desiredTarget = Vector3DMake(0.0, 0.0, 0.0);
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
 #ifdef DESKTOP
-	desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
+	//desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
+	//desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
+	//desiredPosition = Vector3DMake(-11.0, 50.0, 0.0);
+	desiredPosition = Vector3DMake(-49.0, 50.0 - (mySimulationTime * 10.0), 0.0);
 #else
 	desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
 #endif
 	
 	myCameraTarget = desiredTarget;
-	myCameraPosition = desiredPosition;
+
+	if (desiredPosition.y > 5.0) {
+		myCameraPosition = desiredPosition;
+	}
 }
+
+void RaptorIsland::hitTest(float x, float y) {
+
+/*
+// assuming you created your own frustum setting function with a
+// similar signature to this for the camera position.
+//void Set(float fFov, float fAspect, float fNear, float fFar)
+// and you are familiar with the following camera settings.
+//#define SCREEN_WIDTH 320
+//#define SCREEN_HEIGHT 480
+#define NEAR 0.1
+#define FAR 200
+//#define FOV SCREEN_HEIGHT
+//#define ASPECT  float(SCREEN_WIDTH)/float(SCREEN_HEIGHT)
+float aspect = (float)screenWidth / (float)screenHeight;
+
+
+float centered_y = (screenHeight - y) - screenHeight / 2;
+float centered_x = x - screenWidth / 2;
+float unit_x = centered_x / (screenWidth / 2);
+float unit_y = centered_y / (screenWidth / 2);
+
+float near_height = NEAR * float(tan(screenHeight * M_PI / 360.0 ));
+float ray[4] ={ unit_x * near_height * aspect, unit_y * near_height, 1, 0 };
+float ray_start_point[4] = {0.f, 0.f, 0.f, 1.f};
+
+GLfloat the_modelview[16];
+//Read the current modelview matrix into the array the_modelview
+glGetFloatv(GL_MODELVIEW_MATRIX, the_modelview);
+
+M = {
+{R11, R12, R13, 0},
+{R21, R22, R23, 0},
+{R31, R32, R33, 0},
+{tx, ty, tz, 1},
+};
+
+Rt = {
+{R11, R21, R31},
+{R12, R22, R32},
+{R13, R23, R33}
+}
+
+Rt*t = t'
+
+M-1 = {
+{R11, R21, R31, 0},
+{R12, R22, R32, 0},
+{R13, R23, R33, 0},
+{-t'x, -t'y, -t'z, 1},
+};
+*/
+
+
+	const Vec3 direction = directionFromCameraToScreenPosition(x, y, screenHeight);
+
+	LOGV("ray: %f, %f, %f\n", direction.x, direction.y, direction.z);
+	
+	float minDistance = FLT_MAX;       // smallest distance found so far
+	float d = FLT_MAX;
+
+	//CtfBase *nearest;
+
+	int nearestIndex = -1;
+
+	Vec3 cameraPosition;
+	cameraPosition.x = myCameraPosition.x;
+	cameraPosition.y = myCameraPosition.y;
+	cameraPosition.z = myCameraPosition.z;
+
+	
+    
+	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
+		if (myRaptors[i]->GetVisible()) {
+			ctfEnemies[i]->update(mySimulationTime, myDeltaTime);
+
+			d = distanceFromLine(ctfEnemies[i]->position(), cameraPosition, direction);
+
+			//LOGV("wtf: %f\n", d);
+
+			if (d < 75.0) {
+				//if (myRaptors[i]->GetCycle() == 1) {
+				//	myRaptors[i]->SwitchCycle(19, 0.03, false, -1, 1);
+				//	break;
+				//}
+				myRaptors[i]->SetVisible(false);
+			}
+		}
+
+		//if (d < minDistance) {
+		//	minDistance = d;
+		//	nearestIndex = i;
+		//}
+	}
+
+	//myLineVertices[0] = 0.0 + (direction.y * 100.0);	
+	//myLineVertices[1] = 5.0; //0.0 + (direction.z * 100.0);	
+	//myLineVertices[2] = 0.0 + (direction.x * 100.0);
+
+	float zzz = x - (screenWidth / 2);
+
+
+	myLineVertices[0] = 200.0; //0.0 + (direction.x * 100.0);	
+	myLineVertices[1] = 5.0; //0.0 + (direction.z * 100.0);	
+	myLineVertices[2] = zzz;
+
+	myLineVertices[3] = -48.0;
+	myLineVertices[4] = 5.0;
+	myLineVertices[5] = 0.0;
+
+	LOGV("zzz: %f", zzz);
+	LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
+	LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
+
+	//myLineVertices[3] = myCameraPosition.x + (direction.x * 10.0);	
+	//myLineVertices[4] = 0.0; direction.y;	
+	//myLineVertices[5] = 0.0; direction.z;	
+
+	//LOGV("nearest: %d\n", nearestIndex);
+
+	//if (nearestIndex != -1) {
+	//	//myRaptors[nearestIndex]->SetVisible(false);
+	//	myRaptors[nearestIndex]->SwitchCycle(6, 0.001, false, 1, 1);
+	//}
+	
+	
+	//d = distanceFromLine([mySeeker myVehicle]->position(), myCameraPosition, direction);
+	//if (d < minDistance) {
+	//	myNearest = mySeeker;
+	//}
+	
+	//NSLog(@"nearest: %@", myNearest);
+
+	//const AVGroup& vehicles = allVehiclesOfSelectedPlugIn();
+    //for (AVIterator i = vehicles.begin(); i != vehicles.end(); i++)
+    //{
+        // distance from this vehicle's center to the selection line:
+        //d = distanceFromLine ((**i).position(), camera.position(), direction);
+		
+        // if this vehicle-to-line distance is the smallest so far,
+        // store it and this vehicle in the selection registers.
+        //if (d < minDistance)
+        //{
+        //    minDistance = d;
+        //    nearest = *i;
+        //}
+    //}
+	
+	//NSLog(@"%i", ((SimpleVehicle*)i)->serialNumber);
+
+	
+}
+
