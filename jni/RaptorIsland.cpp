@@ -50,7 +50,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	all.push_back(ctfSeeker);
 
 
-	for (int i = 0; i<15; i++) {
+	for (int i = 0; i<10; i++) {
 		CtfEnemy *enemy = new CtfEnemy;
 		ctfEnemies.push_back(enemy);
 		all.push_back (ctfEnemies[i]);
@@ -59,13 +59,13 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	CtfBase::initializeObstacles();
 
-	myRaptorHeight = 2.5;	
-	myRaptorManager.SetStagger(2.0);
+	myRaptorHeight = 5.0;	
+	myRaptorManager.SetStagger(4.0);
 	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
 		myRaptors.push_back(myRaptorManager.Load(models[0], 30, myTextures[0]));
 		myRaptors[i]->SetCycle(1);
 		myRaptors[i]->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
-		myRaptors[i]->SetScale(0.1, 0.1, 0.1);
+		myRaptors[i]->SetScale(0.2, 0.2, 0.2);
 	}
 
 
@@ -272,13 +272,13 @@ int RaptorIsland::simulate() {
 			if (a.z < -60.0) {
 				a.z = 60.0;
 			} else {
-				a.z -= 0.1;
+				a.z -= 0.2;
 			}
 		} else if (a.x == -15.0) {
 			if (a.z > 60.0) {
 				a.z = -60.0;
 			} else {
-				a.z += 0.1;
+				a.z += 0.2;
 			}
 		}
 		
@@ -316,11 +316,14 @@ void RaptorIsland::tickCamera() {
 	Vector3D desiredTarget;
 	Vector3D desiredPosition;
 
-	desiredTarget = Vector3DMake(1.0, 5.0, 0.0);
+	desiredTarget = Vector3DMake(0.0, 3.0, 0.0);
 	//Vector3D desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
-	//desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
-	desiredPosition = Vector3DMake(-49.0, 5.0, 0.0);
-
+#ifdef DESKTOP
+	desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
+#else
+	desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
+#endif
+	
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;
 }

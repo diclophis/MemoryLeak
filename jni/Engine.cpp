@@ -68,7 +68,7 @@ int Engine::tick() {
 			gettimeofday(&t2, NULL);
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			if (elapsedTime > 55.0) {
+			if (elapsedTime > 45.0) {
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
 				gettimeofday(&t1, NULL);
@@ -389,8 +389,10 @@ void Engine::tickFountain() {
 
 
 void Engine::drawFountain() {
+
 	if (false) {
 		glBindTexture(GL_TEXTURE_2D, myTextures[5]);
+
 #ifdef DESKTOP
 		glEnable(GL_POINT_SPRITE);
 		glPointSize(5.0);
@@ -413,6 +415,7 @@ void Engine::drawFountain() {
 		glDisable(GL_POINT_SPRITE_OES);
 #endif
 	} else {
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, vertices);

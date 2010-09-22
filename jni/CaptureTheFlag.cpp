@@ -102,7 +102,7 @@ void CtfSeeker::reset (void)
 	CtfBase::reset();
 	setPosition(gHomeBaseCenter);
 	//setPosition(Vec3(0.0, 0.0, 0.0));
-	setRadius(20.0);
+	setRadius(5.0);
 	
 	setSpeed(1);             // speed along Forward direction.
 	setMaxSpeed(1.0);        // velocity is clipped to this magnitude
@@ -128,10 +128,10 @@ void CtfEnemy::reset (void)
 	rx = (rx * 200.0) + 50;
 
 	setPosition(rx, 0.0, rz);
-	setRadius(2.0);
-	setSpeed(25.0);
-	setMaxSpeed(30.0);
-	setMaxForce(100.0);
+	setRadius(4.0);
+	setSpeed(35.0);
+	setMaxSpeed(40.0);
+	setMaxForce(1000.0);
 }
 
 
@@ -256,7 +256,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
 	//const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter, gSeeker->position());
 	//const float adjustedDistance = seekerToGoalDist - radius() - gHomeBaseRadius;
 	//const float seekerToGoalTime = ((adjustedDistance < 0 ) ? 0 : (adjustedDistance/gSeeker->speed()));
-	const float maxPredictionTime = 0.5; //seekerToGoalTime * 0.9f;
+	const float maxPredictionTime = 2.75; //seekerToGoalTime * 0.9f;
 	
 	// determine steering (pursuit, obstacle avoidance, or braking)
 	Vec3 steer (0, 0, 0);

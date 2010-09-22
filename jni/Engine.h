@@ -39,7 +39,7 @@ public:
 	Engine& operator=(const Engine&);
 	
 	// Fountain Engine
-	#define NUM_PARTICLES 150
+	#define NUM_PARTICLES 100
 	
 	GLfloat vertices[NUM_PARTICLES * 3];
 	GLfloat colors[NUM_PARTICLES * 4];
