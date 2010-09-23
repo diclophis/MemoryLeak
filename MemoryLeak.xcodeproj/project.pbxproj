@@ -23,6 +23,7 @@
 		FC3997BA1242C16E008E614D /* Vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A41242C16E008E614D /* Vec3.cpp */; };
 		FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A61242C16E008E614D /* Vec3Utilities.cpp */; };
 		FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8138B6124413590027435E /* CaptureTheFlag.cpp */; };
+		FC8771DC124B2FD30028EB2C /* MachineGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8771DA124B2FD30028EB2C /* MachineGun.cpp */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
@@ -103,6 +104,8 @@
 		FC8137481243F3840027435E /* CaptureTheFlag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CaptureTheFlag.h; path = jni/CaptureTheFlag.h; sourceTree = "<group>"; };
 		FC8138B6124413590027435E /* CaptureTheFlag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CaptureTheFlag.cpp; path = jni/CaptureTheFlag.cpp; sourceTree = "<group>"; };
 		FC8138D0124415C00027435E /* Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Globals.h; path = jni/Globals.h; sourceTree = "<group>"; };
+		FC8771DA124B2FD30028EB2C /* MachineGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MachineGun.cpp; path = jni/MachineGun.cpp; sourceTree = "<group>"; };
+		FC8771DB124B2FD30028EB2C /* MachineGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MachineGun.h; path = jni/MachineGun.h; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -261,6 +264,8 @@
 		FCBE418D1216835400A60972 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				FC8771DA124B2FD30028EB2C /* MachineGun.cpp */,
+				FC8771DB124B2FD30028EB2C /* MachineGun.h */,
 				FC8138D0124415C00027435E /* Globals.h */,
 				FC8137481243F3840027435E /* CaptureTheFlag.h */,
 				FC8138B6124413590027435E /* CaptureTheFlag.cpp */,
@@ -381,6 +386,7 @@
 				FC3997BA1242C16E008E614D /* Vec3.cpp in Sources */,
 				FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */,
 				FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */,
+				FC8771DC124B2FD30028EB2C /* MachineGun.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

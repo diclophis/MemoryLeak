@@ -69,7 +69,7 @@ int Engine::tick() {
 			gettimeofday(&t2, NULL);
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			if (elapsedTime > 45.0) {
+			if (elapsedTime > 30.0) {
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
 				gettimeofday(&t1, NULL);
@@ -88,16 +88,15 @@ void Engine::draw(float rotation) {
 		if (myViewportSet) {
 			glPushMatrix();
 			{
+				//glClearDepthf(1.0f);
 				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_DEPTH_TEST);
+				//glEnable(GL_DEPTH_TEST);
+				//glDepthFunc(GL_LEQUAL);
 				glRotatef(rotation, 0.0, 0.0, 1.0);
 				render();
-				glDisable(GL_BLEND);
-				glDisable(GL_DEPTH_TEST);
+				//glDisable(GL_DEPTH_TEST);
 			}
 			glPopMatrix();
 		} else {
@@ -106,14 +105,33 @@ void Engine::draw(float rotation) {
 	}
 }
 
+#ifndef DESKTOP
+static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+	GLfloat xmin, xmax, ymin, ymax;
+	
+	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+	ymin = -ymax;
+	xmin = ymin * aspect;
+	xmax = ymax * aspect;
+	
+	glFrustumx(
+			   (GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
+			   (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
+			   (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
+			   );
+}
+#endif
+
 
 void Engine::prepareFrame(int width, int height) {
 	glViewport(0, 0, width, height);
-	glClearColor(0.5, 0.6, 0.85, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(100.0, (float) width / (float) height, 0.1, 200.0);
+	gluPerspective(45.0, (float) width / (float) height, 1.0, 300.0);
+	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	myViewportSet = true;
@@ -390,7 +408,7 @@ void Engine::tickFountain() {
 
 
 void Engine::drawFountain() {
-
+	glDisable(GL_DEPTH_TEST);
 	if (false) {
 		glBindTexture(GL_TEXTURE_2D, myTextures[5]);
 
@@ -426,6 +444,7 @@ void Engine::drawFountain() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
+	glEnable(GL_DEPTH_TEST);
 }
 
 

@@ -11,6 +11,7 @@ LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework Appli
 
 objects = $(build)/main.o \
 $(build)/Engine.o \
+$(build)/MachineGun.o \
 $(build)/RaptorIsland.o \
 $(build)/CaptureTheFlag.o \
 $(build)/MD2_File.o \

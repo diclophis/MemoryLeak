@@ -190,7 +190,7 @@ FNDEF(void, glTexParameteri, (GLenum target, GLenum pname, GLint param));
 }
 #endif
 
-
+/*
 static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
 	GLfloat xmin, xmax, ymin, ymax;
 
@@ -205,6 +205,7 @@ static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat 
 		(GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
 	);
 }
+ */
 
 #pragma mark Missing GLUT Functionality
 // This is a modified version of the function of the same name from 

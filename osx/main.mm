@@ -66,12 +66,13 @@ void resize(int width, int height) {
 
 
 void processMouse(int button, int state, int x, int y) {
-	if (state == GLUT_DOWN) {
-		printf("yea: %d\n", x);
-		gameController->hitTest(x, y);
-	}
+	gameController->hitTest(x, y);
 }
 
+
+void processMouseMotion(int x, int y) {
+	gameController->hitTest(x, y);
+}
 
 
 int main(int argc, char** argv) {
@@ -87,7 +88,7 @@ int main(int argc, char** argv) {
 	//glutGameModeString("1440x900:32@65");
 	//glutEnterGameMode();
 
-	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"crate", nil];
+	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	for (NSString *model_name in model_names) {
 		FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:model_name ofType:@"wav" inDirectory:@"../../assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);
@@ -105,14 +106,15 @@ int main(int argc, char** argv) {
 	textures.push_back(loadTexture(@"raptor", @"png"));
 	textures.push_back(loadTexture(@"font_01", @"png"));
 	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
-	textures.push_back(loadTexture(@"crate_01", @"jpg"));
-	textures.push_back(loadTexture(@"skybox_02", @"png"));
-	textures.push_back(loadTexture(@"smoke", @"png"));
+	textures.push_back(loadTexture(@"vincent", @"png"));
+	textures.push_back(loadTexture(@"skybox_03", @"png"));
+	textures.push_back(loadTexture(@"fire", @"png"));
 
   gameController = new RaptorIsland();
   gameController->build(kWindowWidth, kWindowHeight, textures, models);
 
 	glutMouseFunc(processMouse);
+	glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);
 	glutIdleFunc(draw);
   glutReshapeFunc(resize);

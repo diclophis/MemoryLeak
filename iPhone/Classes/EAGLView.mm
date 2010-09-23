@@ -91,7 +91,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval =  2;
+	animationFrameInterval =  3;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -117,11 +117,35 @@ static std::vector<foo*> models;
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
 		//gameController->playerStartedJumping();
+		NSSet *allTouches = [event allTouches];
+		CGRect bounds;
+		UITouch* touch;
+		bounds = [self bounds];
+		touch = [[allTouches allObjects] objectAtIndex:0];
+		CGPoint location;
+		location = [touch locationInView:self];
+		location.y = 480.0 - location.y;
+		
+		//NSLog(@"x=%f y=%f", location.y, location.x);
+		gameController->hitTest(location.x, location.y);
 	}
 }
 
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	if (animating) {
+		NSSet *allTouches = [event allTouches];
+		CGRect bounds;
+		UITouch* touch;
+		bounds = [self bounds];
+		touch = [[allTouches allObjects] objectAtIndex:0];
+		CGPoint location;
+		location = [touch locationInView:self];
+		location.y = 480.0 - location.y;
+		
+		//NSLog(@"x=%f y=%f", location.y, location.x);
+		gameController->hitTest(location.x, location.y);
+	}
 }
 
 
@@ -138,7 +162,7 @@ static std::vector<foo*> models;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
 		
-		NSLog(@"x=%f y=%f", location.y, location.x);
+		//NSLog(@"x=%f y=%f", location.y, location.x);
 		gameController->hitTest(location.x, location.y);
 		
 	}
@@ -225,7 +249,7 @@ static std::vector<foo*> models;
 		delete gameController;
 	}
 	
-	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"crate", nil];
+	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	
 	for (NSString *model_name in model_names) {
 		
@@ -256,16 +280,15 @@ static std::vector<foo*> models;
 	textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
 
 	//crate
-	textures.push_back([self loadTexture:@"crate_01" ofType:@"jpg"]);
+	textures.push_back([self loadTexture:@"vincent" ofType:@"png"]);
 
 	//skybox
-	textures.push_back([self loadTexture:@"skybox_02" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"skybox_03" ofType:@"png"]);
 
 	//smoke
-	textures.push_back([self loadTexture:@"smoke" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"fire" ofType:@"png"]);
 	
 	gameController = new RaptorIsland();
-	
 
 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
 	gameState = 1;

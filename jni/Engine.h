@@ -228,6 +228,7 @@ public:
 
 	OpenSteer::Vec3 directionFromCameraToScreenPosition (int x, int y, int h);
 
+
 	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
 	
 private:

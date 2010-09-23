@@ -104,9 +104,9 @@ void CtfSeeker::reset (void)
 	//setPosition(Vec3(0.0, 0.0, 0.0));
 	setRadius(5.0);
 	
-	setSpeed(1);             // speed along Forward direction.
-	setMaxSpeed(1.0);        // velocity is clipped to this magnitude
-	setMaxForce(1000.0);        // steering force is clipped to this magnitude
+	setSpeed(0);             // speed along Forward direction.
+	setMaxSpeed(0.0);        // velocity is clipped to this magnitude
+	setMaxForce(0.0);        // steering force is clipped to this magnitude
 	
 	gSeeker = this;
 	state = running;

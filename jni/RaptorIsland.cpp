@@ -87,7 +87,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	
 	mySkyBoxHeight = 12.5;
-	mySkyBox = mySkyBoxManager.Load(models[2], 1, myTextures[4]);
+	mySkyBox = mySkyBoxManager.Load(models[3], 1, myTextures[4]);
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
 	mySkyBox->SetRotation(90.0);
 	mySkyBox->SetScale(0.5, 0.25, 0.5);
@@ -96,8 +96,8 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myPlayerHeight = 0.0;
 	myPlayer = myPlayerManager.Load(models[2], 1, myTextures[3]);
 	myPlayer->SetPosition(0.0, myPlayerHeight, 0.0);
-	myPlayer->SetRotation(90.0);
-	myPlayer->SetScale(0.1, 0.1, 0.1);
+	//myPlayer->SetRotation(90.0);
+	myPlayer->SetScale(0.15, 0.15, 0.15);
 	
 	
 	/*
@@ -200,13 +200,16 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	
 	
-	myLineVertices[0] = -50.0;	
-	myLineVertices[1] = 1.0;	
+	myLineVertices[0] = 0.0;	
+	myLineVertices[1] = 0.0;	
 	myLineVertices[2] = 0.0;	
 
-	myLineVertices[3] = 50.0;	
-	myLineVertices[4] = 1.0;	
+	myLineVertices[3] = 0.0;	
+	myLineVertices[4] = 0.0;	
 	myLineVertices[5] = 0.0;	
+
+	m_Gun = MachineGun(myTextures[5], myLineVertices);
+	m_Gun.buildFountain();
 	
 	mySimulationTime = 0.0;
 		
@@ -218,25 +221,29 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 }
 
 void RaptorIsland::render() {
+	//glEnable(GL_DEPTH_TEST);
 	drawCamera();
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	myRaptorManager.Render();
 	myBarrelManager.Render();
+	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	//glBlendFunc(GL_DST_COLOR, GL_ONE);
+	
 	mySkyBoxManager.Render();
-	//myPlayerManager.Render();
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glColor4f(1.0, 0.0, 0.0, 1.0);
-	glLineWidth(2.0);
-	glVertexPointer(3, GL_FLOAT, 0, myLineVertices);
-	glDrawArrays(GL_LINES, 0, 2);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	
+	glDisable(GL_BLEND);
 
 	drawFountain();
 	drawFont();
+	
+	m_Gun.drawFountain();
+
+	myPlayerManager.Render();
+
 
 
 
@@ -252,7 +259,7 @@ int RaptorIsland::simulate() {
 	myRaptorManager.Update(myDeltaTime);
 	myBarrelManager.Update(myDeltaTime);
 	mySkyBoxManager.Update(myDeltaTime);
-	//myPlayerManager.Update(myDeltaTime);
+	myPlayerManager.Update(myDeltaTime);
 
 	OpenSteer::Vec3 pos1a, vel1a, pos2a, vel2a;
 	
@@ -263,7 +270,7 @@ int RaptorIsland::simulate() {
 	// update each enemy
 	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
 		ctfEnemies[i]->update(mySimulationTime, myDeltaTime);
-		bool hit = false;
+		//bool hit = false;
 		pos1a = ctfEnemies[i]->position();
 		vel1a = ctfEnemies[i]->velocity();
 		if (vel1a.x != 0.0) {
@@ -312,6 +319,36 @@ int RaptorIsland::simulate() {
 	vel1a = ctfSeeker->velocity();
 	myPlayer->SetPosition(pos1a.x, pos1a.y, pos1a.z);
 	
+	//LOGV("zzz: %f\n", zzz);
+	//LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
+	//LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
+
+	Vec3 a,b,c;
+	a.x = myLineVertices[0];
+	a.y = myLineVertices[1];
+	a.z = myLineVertices[2];
+	b.x = myLineVertices[3];
+	b.y = myLineVertices[4];
+	b.z = myLineVertices[5];
+
+	bool hit = false;
+
+	for (i = 0; i < ctfEnemies.size(); i++) {
+		c = ctfEnemies[i]->position();
+		if (c.x < 0.0) {
+			hit = IntersectCircleSegment(c, 7.0, a, b);
+			if (hit) {
+				myRaptors[i]->SwitchCycle(3 + (int)(randf() * 3.0), 0.02, false, 1, 1);
+			}
+		}
+	}
+
+	//pos1a = ctfSeeker->position();
+	myLineVertices[3] = pos1a.x;
+	myLineVertices[4] = pos1a.y;
+	myLineVertices[5] = pos1a.z;
+
+	m_Gun.tickFountain();
 
 	tickFountain();
 
@@ -331,6 +368,7 @@ void RaptorIsland::buildCamera() {
 	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
 }
 
+
 void RaptorIsland::tickCamera() {
 	Vector3D desiredTarget;
 	Vector3D desiredPosition;
@@ -343,9 +381,13 @@ void RaptorIsland::tickCamera() {
 	//desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
 	//desiredPosition = Vector3DMake(-11.0, 50.0, 0.0);
 	//desiredPosition = Vector3DMake(-49.0, 50.0 - (mySimulationTime * 10.0), 0.0);
-	desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
+	//desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
+	//desiredPosition = Vector3DMake(-55.0 - (mySimulationTime * 8.0), 10.0 + (mySimulationTime * 7.0), mySimulationTime);
+	desiredPosition = Vector3DMake(-70.0, 12.0, 0.0);
 #else
-	desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
+	desiredPosition = Vector3DMake(-70.0, 12.0, 0.0);
+	//desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
+
 #endif
 	
 	myCameraTarget = desiredTarget;
@@ -376,21 +418,19 @@ bool RaptorIsland::IntersectCircleSegment(
 
 
 void RaptorIsland::hitTest(float x, float y) {
-	printf("wtf!!\n");
+	//printf("wtf!!\n");
 
-	printf("%f %f\n", x, y);
+	//printf("%f %f\n", x, y);
 
 	float zzz = x - (screenWidth / 2);
 	float p = zzz / screenWidth;
 
-	myLineVertices[0] = 250.0;
-	myLineVertices[1] = 5.0;
-	myLineVertices[2] = p * 1100.0;
+	myLineVertices[0] = 300.0;
+	myLineVertices[1] = 0.0;
+	myLineVertices[2] = p * 700.0;
 
-	myLineVertices[3] = -48.0;
-	myLineVertices[4] = 5.0;
-	myLineVertices[5] = 0.0;
 
+/*
 	//LOGV("zzz: %f\n", zzz);
 	//LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
 	//LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
@@ -415,4 +455,7 @@ void RaptorIsland::hitTest(float x, float y) {
 			}
 		}
 	}
+*/
+
+	m_Gun.SetVertices(myLineVertices);
 }

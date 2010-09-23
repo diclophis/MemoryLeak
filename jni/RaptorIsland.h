@@ -6,6 +6,7 @@
 //
 
 #include "Engine.h"
+#include "MachineGun.h"
 
 class RaptorIsland : public Engine {
 
@@ -55,5 +56,7 @@ public:
     float r,                            // radius
     const Vec3& p1,     // segment start
     const Vec3& p2);     // segment end
+
+	MachineGun m_Gun;
 	
 };
