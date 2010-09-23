@@ -50,5 +50,10 @@ public:
 	GLfloat myLineVertices[6];
 	CtfBase *myNearest;
 	void hitTest(float x, float y);
+	bool IntersectCircleSegment(
+    const Vec3& c,        // center
+    float r,                            // radius
+    const Vec3& p1,     // segment start
+    const Vec3& p2);     // segment end
 	
 };

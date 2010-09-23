@@ -60,10 +60,10 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	CtfBase::initializeObstacles();
 
 	myRaptorHeight = 5.0;	
-	myRaptorManager.SetStagger(4.0);
+	//myRaptorManager.SetStagger(4.0);
 	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
 		myRaptors.push_back(myRaptorManager.Load(models[0], 30, myTextures[0]));
-		myRaptors[i]->SetCycle(1);
+		myRaptors[i]->SwitchCycle(1, 0.0, false, -1, 1);
 		myRaptors[i]->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
 		myRaptors[i]->SetScale(0.2, 0.2, 0.2);
 	}
@@ -223,14 +223,13 @@ void RaptorIsland::render() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	myRaptorManager.Render();
 	myBarrelManager.Render();
+	mySkyBoxManager.Render();
 	//myPlayerManager.Render();
-	//mySkyBoxManager.Render();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glColor4f(1.0, 0.0, 0.0, 1.0);
 	glLineWidth(2.0);
-	//glPointSize(2.0);
 	glVertexPointer(3, GL_FLOAT, 0, myLineVertices);
 	glDrawArrays(GL_LINES, 0, 2);
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -253,7 +252,7 @@ int RaptorIsland::simulate() {
 	myRaptorManager.Update(myDeltaTime);
 	myBarrelManager.Update(myDeltaTime);
 	mySkyBoxManager.Update(myDeltaTime);
-	myPlayerManager.Update(myDeltaTime);
+	//myPlayerManager.Update(myDeltaTime);
 
 	OpenSteer::Vec3 pos1a, vel1a, pos2a, vel2a;
 	
@@ -274,9 +273,9 @@ int RaptorIsland::simulate() {
 		myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a));
 		myRaptors[i]->SetPosition(pos1a.x, myRaptorHeight, pos1a.z);
 		
-		if (hit) {
-			myRaptors[i]->SwitchCycle(6, 0.0, true, -1, 0);
-		}
+		//if (hit) {
+		//	myRaptors[i]->SwitchCycle(6, 0.0, false, 1, 1);
+		//}
 	}
 	
 	int i=0;
@@ -343,7 +342,8 @@ void RaptorIsland::tickCamera() {
 	//desiredPosition = Vector3DMake(-75.0, 75.0, 0.0);
 	//desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
 	//desiredPosition = Vector3DMake(-11.0, 50.0, 0.0);
-	desiredPosition = Vector3DMake(-49.0, 50.0 - (mySimulationTime * 10.0), 0.0);
+	//desiredPosition = Vector3DMake(-49.0, 50.0 - (mySimulationTime * 10.0), 0.0);
+	desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
 #else
 	desiredPosition = Vector3DMake(-49.0, 8.0, 0.0);
 #endif
@@ -355,155 +355,64 @@ void RaptorIsland::tickCamera() {
 	}
 }
 
-void RaptorIsland::hitTest(float x, float y) {
-
-/*
-// assuming you created your own frustum setting function with a
-// similar signature to this for the camera position.
-//void Set(float fFov, float fAspect, float fNear, float fFar)
-// and you are familiar with the following camera settings.
-//#define SCREEN_WIDTH 320
-//#define SCREEN_HEIGHT 480
-#define NEAR 0.1
-#define FAR 200
-//#define FOV SCREEN_HEIGHT
-//#define ASPECT  float(SCREEN_WIDTH)/float(SCREEN_HEIGHT)
-float aspect = (float)screenWidth / (float)screenHeight;
-
-
-float centered_y = (screenHeight - y) - screenHeight / 2;
-float centered_x = x - screenWidth / 2;
-float unit_x = centered_x / (screenWidth / 2);
-float unit_y = centered_y / (screenWidth / 2);
-
-float near_height = NEAR * float(tan(screenHeight * M_PI / 360.0 ));
-float ray[4] ={ unit_x * near_height * aspect, unit_y * near_height, 1, 0 };
-float ray_start_point[4] = {0.f, 0.f, 0.f, 1.f};
-
-GLfloat the_modelview[16];
-//Read the current modelview matrix into the array the_modelview
-glGetFloatv(GL_MODELVIEW_MATRIX, the_modelview);
-
-M = {
-{R11, R12, R13, 0},
-{R21, R22, R23, 0},
-{R31, R32, R33, 0},
-{tx, ty, tz, 1},
-};
-
-Rt = {
-{R11, R21, R31},
-{R12, R22, R32},
-{R13, R23, R33}
+bool RaptorIsland::IntersectCircleSegment(
+    const Vec3& c,        // center
+    float r,                            // radius
+    const Vec3& p1,     // segment start
+    const Vec3& p2)     // segment end
+{
+    Vec3 dir = p2 - p1;
+    Vec3 diff = c - p1;
+    float t = diff.dot(dir) / dir.dot(dir);
+    if (t < 0.0f)
+        t = 0.0f;
+    if (t > 1.0f)
+        t = 1.0f;
+    Vec3 closest = p1 + t * dir;
+    Vec3 d = c - closest;
+    float distsqr = d.dot(d);
+    return distsqr <= r * r;
 }
 
-Rt*t = t'
 
-M-1 = {
-{R11, R21, R31, 0},
-{R12, R22, R32, 0},
-{R13, R23, R33, 0},
-{-t'x, -t'y, -t'z, 1},
-};
-*/
+void RaptorIsland::hitTest(float x, float y) {
+	printf("wtf!!\n");
 
-
-	const Vec3 direction = directionFromCameraToScreenPosition(x, y, screenHeight);
-
-	LOGV("ray: %f, %f, %f\n", direction.x, direction.y, direction.z);
-	
-	float minDistance = FLT_MAX;       // smallest distance found so far
-	float d = FLT_MAX;
-
-	//CtfBase *nearest;
-
-	int nearestIndex = -1;
-
-	Vec3 cameraPosition;
-	cameraPosition.x = myCameraPosition.x;
-	cameraPosition.y = myCameraPosition.y;
-	cameraPosition.z = myCameraPosition.z;
-
-	
-    
-	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
-		if (myRaptors[i]->GetVisible()) {
-			ctfEnemies[i]->update(mySimulationTime, myDeltaTime);
-
-			d = distanceFromLine(ctfEnemies[i]->position(), cameraPosition, direction);
-
-			//LOGV("wtf: %f\n", d);
-
-			if (d < 75.0) {
-				//if (myRaptors[i]->GetCycle() == 1) {
-				//	myRaptors[i]->SwitchCycle(19, 0.03, false, -1, 1);
-				//	break;
-				//}
-				myRaptors[i]->SetVisible(false);
-			}
-		}
-
-		//if (d < minDistance) {
-		//	minDistance = d;
-		//	nearestIndex = i;
-		//}
-	}
-
-	//myLineVertices[0] = 0.0 + (direction.y * 100.0);	
-	//myLineVertices[1] = 5.0; //0.0 + (direction.z * 100.0);	
-	//myLineVertices[2] = 0.0 + (direction.x * 100.0);
+	printf("%f %f\n", x, y);
 
 	float zzz = x - (screenWidth / 2);
+	float p = zzz / screenWidth;
 
-
-	myLineVertices[0] = 200.0; //0.0 + (direction.x * 100.0);	
-	myLineVertices[1] = 5.0; //0.0 + (direction.z * 100.0);	
-	myLineVertices[2] = zzz;
+	myLineVertices[0] = 250.0;
+	myLineVertices[1] = 5.0;
+	myLineVertices[2] = p * 1100.0;
 
 	myLineVertices[3] = -48.0;
 	myLineVertices[4] = 5.0;
 	myLineVertices[5] = 0.0;
 
-	LOGV("zzz: %f", zzz);
-	LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
-	LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
+	//LOGV("zzz: %f\n", zzz);
+	//LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
+	//LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
 
-	//myLineVertices[3] = myCameraPosition.x + (direction.x * 10.0);	
-	//myLineVertices[4] = 0.0; direction.y;	
-	//myLineVertices[5] = 0.0; direction.z;	
+	Vec3 a,b,c;
+	a.x = myLineVertices[0];
+	a.y = myLineVertices[1];
+	a.z = myLineVertices[2];
+	b.x = myLineVertices[3];
+	b.y = myLineVertices[4];
+	b.z = myLineVertices[5];
 
-	//LOGV("nearest: %d\n", nearestIndex);
+	bool hit = false;
 
-	//if (nearestIndex != -1) {
-	//	//myRaptors[nearestIndex]->SetVisible(false);
-	//	myRaptors[nearestIndex]->SwitchCycle(6, 0.001, false, 1, 1);
-	//}
-	
-	
-	//d = distanceFromLine([mySeeker myVehicle]->position(), myCameraPosition, direction);
-	//if (d < minDistance) {
-	//	myNearest = mySeeker;
-	//}
-	
-	//NSLog(@"nearest: %@", myNearest);
-
-	//const AVGroup& vehicles = allVehiclesOfSelectedPlugIn();
-    //for (AVIterator i = vehicles.begin(); i != vehicles.end(); i++)
-    //{
-        // distance from this vehicle's center to the selection line:
-        //d = distanceFromLine ((**i).position(), camera.position(), direction);
-		
-        // if this vehicle-to-line distance is the smallest so far,
-        // store it and this vehicle in the selection registers.
-        //if (d < minDistance)
-        //{
-        //    minDistance = d;
-        //    nearest = *i;
-        //}
-    //}
-	
-	//NSLog(@"%i", ((SimpleVehicle*)i)->serialNumber);
-
-	
+	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
+		c = ctfEnemies[i]->position();
+		if (c.x < 0.0) {
+			hit = IntersectCircleSegment(c, 10.0, a, b);
+			if (hit) {
+				myRaptors[i]->SwitchCycle(21, 0.03, false, 1, 1);
+				//break;
+			}
+		}
+	}
 }
-

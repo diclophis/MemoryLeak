@@ -994,9 +994,10 @@ bool Md2Instance::SetSkin(unsigned int snum) {
 bool Md2Instance::SwitchCycle(unsigned int cnum,float over,bool FromStart, int loops, int afterCycle) {
 	if (cnum < GetNumCycles()) {
 		if (m_TimeRemaining <= 0.0f) {			
-			m_PreviousTime   = m_AnimTime;
-			if(FromStart)
+			m_PreviousTime = m_AnimTime;
+			if(FromStart) {
 				m_AnimTime = 0.0f;
+			}
 			m_TransitionTime = over;
 			m_TimeRemaining = over;
 			m_PreviousAnim = m_CurrentAnim;
@@ -1109,9 +1110,11 @@ void Md2Instance::Update(float dt){
 		} else {
 			if (firstFrame == (thisAnim->GetNumFrames() - 1)) {
 				if (m_AfterCycle) {
-					this->SwitchCycle(m_AfterCycle, 0.0, false);
+					//printf("switch %d %p\n", m_AfterCycle, this);
+					this->SwitchCycle(m_AfterCycle, 0.1, false);
 				} else {
 					m_LoopAnim--;
+					//printf("looping again %d %d %p\n", m_LoopAnim, m_AfterCycle, this);
 				}
 			}
 		}

@@ -428,32 +428,4 @@ void Engine::drawFountain() {
 	}
 }
 
-// ----------------------------------------------------------------------------
-// return a normalized direction vector pointing from the camera towards a
-// given point on the screen: the ray that would be traced for that pixel
-OpenSteer::Vec3 Engine::directionFromCameraToScreenPosition (int x, int y, int h) {
-	// Get window height, viewport, modelview and projection matrices
-	GLint vp[4];
-	GLfloat mMat[16], pMat[16];
-	GLdouble mDMat[16], pDMat[16];
-	glGetIntegerv(GL_VIEWPORT, vp);
-	glGetFloatv(GL_MODELVIEW_MATRIX, mMat);
-	glGetFloatv(GL_PROJECTION_MATRIX, pMat);
-	for(int i=0; i<16; i++) {
-		mDMat[i] = (GLdouble) mMat[i];
-		pDMat[i] = (GLdouble) pMat[i];
-	}
-	GLdouble un0x, un0y, un0z, un1x, un1y, un1z;
 
-	// Unproject mouse position at near and far clipping planes
-	gluUnProject (x, h-y, 0, mDMat, pDMat, vp, &un0x, &un0y, &un0z);
-	gluUnProject (x, h-y, 1, mDMat, pDMat, vp, &un1x, &un1y, &un1z);
-
-	// "direction" is the normalized difference between these far and near
-	// unprojected points.  Its parallel to the "eye-mouse" selection line.
-
-	const OpenSteer::Vec3 diffNearFar (un1x-un0x, un1y-un0y, un1z-un0z);
-	const OpenSteer::Vec3 direction = diffNearFar.normalize ();
-
-	return direction;
-}

@@ -67,6 +67,7 @@ void resize(int width, int height) {
 
 void processMouse(int button, int state, int x, int y) {
 	if (state == GLUT_DOWN) {
+		printf("yea: %d\n", x);
 		gameController->hitTest(x, y);
 	}
 }
@@ -105,7 +106,7 @@ int main(int argc, char** argv) {
 	textures.push_back(loadTexture(@"font_01", @"png"));
 	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
 	textures.push_back(loadTexture(@"crate_01", @"jpg"));
-	textures.push_back(loadTexture(@"skybox_01", @"png"));
+	textures.push_back(loadTexture(@"skybox_02", @"png"));
 	textures.push_back(loadTexture(@"smoke", @"png"));
 
   gameController = new RaptorIsland();

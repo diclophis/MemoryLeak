@@ -128,6 +128,19 @@ static std::vector<foo*> models;
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
 		//gameController->playerStoppedJumping();
+		
+		NSSet *allTouches = [event allTouches];
+		CGRect bounds;
+		UITouch* touch;
+		bounds = [self bounds];
+		touch = [[allTouches allObjects] objectAtIndex:0];
+		CGPoint location;
+		location = [touch locationInView:self];
+		location.y = 480.0 - location.y;
+		
+		NSLog(@"x=%f y=%f", location.y, location.x);
+		gameController->hitTest(location.x, location.y);
+		
 	}
 }
 
@@ -145,7 +158,7 @@ static std::vector<foo*> models;
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
 			//gameController->tick();
-			gameController->draw(90);
+			gameController->draw(0);
 		} else {
 			[self startGame];
 		}
