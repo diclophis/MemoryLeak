@@ -91,7 +91,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval =  3;
+	animationFrameInterval =  1;
 	displayLink = nil;
 	animationTimer = nil;
 	

@@ -28,6 +28,7 @@ LOCAL_SRC_FILES := \
     importgl.c \
     android.cpp \
     Engine.cpp \
+    MachineGun.cpp \
     RaptorIsland.cpp \
     CaptureTheFlag.cpp \
     MD2_File.cpp \

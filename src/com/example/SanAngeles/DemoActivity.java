@@ -81,19 +81,23 @@ public class DemoActivity extends Activity {
 		android.content.res.AssetFileDescriptor afd1;
 		android.content.res.AssetFileDescriptor afd2;
 		android.content.res.AssetFileDescriptor afd3;
+		android.content.res.AssetFileDescriptor afd4;
+
 		try {
 			afd1 = getAssets().openFd("models/raptor.wav");
 			afd2 = getAssets().openFd("models/barrel.wav");
-			afd3 = getAssets().openFd("models/crate.wav");
+			afd3 = getAssets().openFd("models/vincent.wav");
+			afd4 = getAssets().openFd("models/crate.wav");
 		} catch(java.io.IOException e) {
 			System.out.println(e);
 			afd1 = null;
 			afd2 = null;
 			afd3 = null;
+			afd4 = null;
 		}
 
 		int res = 0;
-		if (afd1 != null && afd2 != null && afd3 != null) {
+		if (afd1 != null && afd2 != null && afd3 != null && afd4 != null) {
 			java.io.FileDescriptor fd1 = afd1.getFileDescriptor();
 			int off1 = (int)afd1.getStartOffset();
 			int len1 = (int)afd1.getLength();
@@ -106,7 +110,11 @@ public class DemoActivity extends Activity {
 			int off3 = (int)afd3.getStartOffset();
 			int len3 = (int)afd3.getLength();
 
-			res = initNative(fd1, off1, len1, fd2, off2, len2, fd3, off3, len3);
+			java.io.FileDescriptor fd4 = afd4.getFileDescriptor();
+			int off4 = (int)afd4.getStartOffset();
+			int len4 = (int)afd4.getLength();
+
+			res = initNative(fd1, off1, len1, fd2, off2, len2, fd3, off3, len3, fd4, off4, len4);
 		}
 	}
 
@@ -116,7 +124,7 @@ public class DemoActivity extends Activity {
   }
 
 
-	private static native int initNative(java.io.FileDescriptor fd1, int off1, int len1, java.io.FileDescriptor fd2, int off2, int len2, java.io.FileDescriptor fd3, int off3, int len3); 
+	private static native int initNative(java.io.FileDescriptor fd1, int off1, int len1, java.io.FileDescriptor fd2, int off2, int len2, java.io.FileDescriptor fd3, int off3, int len3, java.io.FileDescriptor fd4, int off4, int len4); 
 
     @Override
     protected void onPause() {
@@ -170,9 +178,9 @@ class DemoRenderer implements GLSurfaceView.Renderer {
           "textures/raptor.png",
           "textures/font_01.png",
           "textures/barrel_03.jpg",
-          "textures/crate_01.jpg",
-          "textures/skybox_02.png",
-          "textures/smoke.png"
+          "textures/vincent.png",
+          "textures/skybox_03.png",
+          "textures/fire.png"
         };
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];

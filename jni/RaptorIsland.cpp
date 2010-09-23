@@ -84,7 +84,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 		barrel->SetRotation(90.0);
 	}
 	 
-	
+	LOGV("barrels\n");
 	
 	mySkyBoxHeight = 12.5;
 	mySkyBox = mySkyBoxManager.Load(models[3], 1, myTextures[4]);
@@ -99,6 +99,9 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	//myPlayer->SetRotation(90.0);
 	myPlayer->SetScale(0.15, 0.15, 0.15);
 	
+	
+	LOGV("player skybox\n");
+
 	
 	/*
 	for (int cycle = 0; cycle < myBarrels[0]->GetNumCycles(); cycle++) {
@@ -217,6 +220,9 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	simulate();
 	go();
+	
+	LOGV("foo\n");
+
 	
 }
 
@@ -383,9 +389,9 @@ void RaptorIsland::tickCamera() {
 	//desiredPosition = Vector3DMake(-49.0, 50.0 - (mySimulationTime * 10.0), 0.0);
 	//desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
 	//desiredPosition = Vector3DMake(-55.0 - (mySimulationTime * 8.0), 10.0 + (mySimulationTime * 7.0), mySimulationTime);
-	desiredPosition = Vector3DMake(-70.0, 12.0, 0.0);
+	desiredPosition = Vector3DMake(-80.0, 12.0, 0.0);
 #else
-	desiredPosition = Vector3DMake(-70.0, 12.0, 0.0);
+	desiredPosition = Vector3DMake(-80.0, 12.0, 0.0);
 	//desiredPosition = Vector3DMake(-49.0, 10.0, 0.0);
 
 #endif

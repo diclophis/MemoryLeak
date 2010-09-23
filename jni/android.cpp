@@ -44,7 +44,7 @@
 
 
 extern "C" {
-  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3);
+  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4);
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
@@ -66,6 +66,10 @@ static FILE *myFile3;
 static unsigned int fileOffset3;
 static unsigned int fileLength3;
 
+static FILE *myFile4;
+static unsigned int fileOffset4;
+static unsigned int fileLength4;
+
 static std::vector<GLuint> sPlayerTextures;
 static long sStartTick = 0;
 static long sTick = 0;
@@ -85,7 +89,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 }
 
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3) {
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4) {
 	importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
@@ -106,9 +110,15 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 
 			jint fd3 = env->GetIntField(fd_sys3, fdClassDescriptorFieldID);
 			int myfd3 = dup(fd3);
-			myFile3 = fdopen(myfd2, "rb");
+			myFile3 = fdopen(myfd3, "rb");
 			fileOffset3 = off3;
 			fileLength3 = len3;
+
+			jint fd4 = env->GetIntField(fd_sys4, fdClassDescriptorFieldID);
+			int myfd4 = dup(fd4);
+			myFile4 = fdopen(myfd4, "rb");
+			fileOffset4 = off4;
+			fileLength4 = len4;
 		}
 	} 
 } 
@@ -147,6 +157,13 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	
 	models.push_back(&thirdModel);
 
+	foo fourthModel;
+	fourthModel.fp = myFile4;
+	fourthModel.off = fileOffset4;
+	fourthModel.len = fileLength4;
+	
+	models.push_back(&fourthModel);
+
   LOGV("nativeInit c");
 
   gameController = new RaptorIsland();
@@ -164,8 +181,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
   LOGV("nativeResize %d %d", width, height);
-  //gameController->screenWidth = sWindowWidth  = width;
-  //gameController->screenHeight = sWindowHeight = height;
   gameController->resizeScreen(width, height);
 }
 
@@ -188,7 +203,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
   LOGV("nativeTouch");
-  //gameController->playerStartedJumping();
+	gameController->hitTest(10, 10);
 }
 
 

@@ -69,12 +69,12 @@ int Engine::tick() {
 			gettimeofday(&t2, NULL);
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			if (elapsedTime > 30.0) {
+			if (elapsedTime > 40.0) {
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
 				gettimeofday(&t1, NULL);
 			} else {
-				usleep(5.0);
+				usleep(30.0);
 			}
 		}
 	}
@@ -439,7 +439,7 @@ void Engine::drawFountain() {
 		glEnableClientState(GL_COLOR_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, vertices);
 		glColorPointer(4, GL_FLOAT, 0, colors);
-		glPointSize(2.0);
+		glPointSize(4.0);
 		glDrawElements(GL_POINTS, NUM_PARTICLES, GL_UNSIGNED_SHORT, elements);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);

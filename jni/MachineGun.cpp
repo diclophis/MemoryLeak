@@ -96,7 +96,7 @@ void MachineGun::update_color(int idx) {
 
 
 void MachineGun::reset_life(int i) {
-	life[i] = 3.66 + randf();
+	life[i] = 4.66 + randf();
 }
 
 
