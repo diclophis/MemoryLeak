@@ -283,10 +283,10 @@ static std::vector<foo*> models;
 	textures.push_back([self loadTexture:@"vincent" ofType:@"png"]);
 
 	//skybox
-	textures.push_back([self loadTexture:@"skybox_03" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"skybox_04" ofType:@"png"]);
 
 	//smoke
-	textures.push_back([self loadTexture:@"fire" ofType:@"png"]);
+	textures.push_back([self loadTexture:@"glow" ofType:@"png"]);
 	
 	gameController = new RaptorIsland();
 

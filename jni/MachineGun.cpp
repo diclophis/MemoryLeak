@@ -57,7 +57,7 @@ void MachineGun::update_vertex(int idx) {
 	vertices[i] += velocity[idx].x;
 	vertices[i+1] += velocity[idx].y;
 	vertices[i+2] += velocity[idx].z;
-	//velocity[idx].y -= 0.05; 
+	//velocity[idx].y += 0.1 * randf(); 
 }
 
 
@@ -96,7 +96,7 @@ void MachineGun::update_color(int idx) {
 
 
 void MachineGun::reset_life(int i) {
-	life[i] = 4.66 + randf();
+	life[i] = (randf() * 50.0);
 }
 
 
@@ -110,7 +110,7 @@ void MachineGun::buildFountain() {
 	
 	for(i=0;i<num_particles;i++) {
 		reset_particle(i);
-		life[i] -= (float)i * (0.1);
+		//life[i] -= (float)i * (0.01);
 	}	
 }
 
@@ -118,7 +118,7 @@ void MachineGun::buildFountain() {
 void MachineGun::tickFountain() {	
 	int i = 0; //particle index
 	for(i=0; i<num_particles; i++) {
-		life[i] -= 0.3;
+		life[i] -= 1.0;
 		if(life[i] <= 0.0) {
 			reset_particle(i);
 		} else {
@@ -145,7 +145,7 @@ void MachineGun::drawFountain() {
 	
 	
 	
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 	//glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 
 	glEnable(GL_BLEND);
@@ -158,23 +158,24 @@ void MachineGun::drawFountain() {
 
 #ifdef DESKTOP
 		glEnable(GL_POINT_SPRITE);
-		glPointSize(35.0);
 		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
-		glEnableClientState(GL_VERTEX_ARRAY); 
-		glVertexPointer(3, GL_FLOAT, 0, vertices); 
-		glDrawArrays(GL_POINTS, 0, num_particles);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-		glDisable(GL_POINT_SPRITE);
 #else
 		glEnable(GL_POINT_SPRITE_OES);
-		glPointSize(35.0);
 		glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
-		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
+#endif
+		
 		glEnableClientState(GL_VERTEX_ARRAY); 
-		glVertexPointer(3, GL_FLOAT, 0, vertices); 
-		glDrawArrays(GL_POINTS, 0, num_particles);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
+		glVertexPointer(3, GL_FLOAT, 0, vertices);
+		int split = 5;
+		int time = num_particles / split;
+		for (int i=0; i<split; i++) {
+			glPointSize(50.0 - (i * 10));
+			glDrawArrays(GL_POINTS, i * time, time);
+		}
+		
+#ifdef DESKTOP
+		glDisable(GL_POINT_SPRITE);
+#else
 		glDisable(GL_POINT_SPRITE_OES);
 #endif
 	} else {
@@ -188,6 +189,5 @@ void MachineGun::drawFountain() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
-	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 }

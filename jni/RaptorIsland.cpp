@@ -227,32 +227,29 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 }
 
 void RaptorIsland::render() {
-	//glEnable(GL_DEPTH_TEST);
 	drawCamera();
+
+	
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	myRaptorManager.Render();
-	myBarrelManager.Render();
-	
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	//glBlendFunc(GL_DST_COLOR, GL_ONE);
-	
 	mySkyBoxManager.Render();
-	
 	glDisable(GL_BLEND);
 
-	drawFountain();
-	drawFont();
+	glEnable(GL_DEPTH_TEST);
+	myRaptorManager.Render();
+	myBarrelManager.Render();
+	glDisable(GL_DEPTH_TEST);
 	
+	//drawFountain();
+	drawFont();
 	m_Gun.drawFountain();
-
+	
+	glEnable(GL_DEPTH_TEST);
 	myPlayerManager.Render();
-
-
-
-
+	glDisable(GL_DEPTH_TEST);	
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -351,7 +348,7 @@ int RaptorIsland::simulate() {
 
 	//pos1a = ctfSeeker->position();
 	myLineVertices[3] = pos1a.x;
-	myLineVertices[4] = pos1a.y;
+	myLineVertices[4] = pos1a.y + 2.0;
 	myLineVertices[5] = pos1a.z;
 
 	m_Gun.tickFountain();

@@ -1,6 +1,6 @@
 // Machine Gun Particle Effect
 
-const int num_particles = 200;
+const int num_particles = 40;
 
 class MachineGun {
 

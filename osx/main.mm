@@ -81,12 +81,14 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-  glutInitWindowSize (kWindowWidth, kWindowHeight);
-  glutInitWindowPosition(100, 100);
-  glutCreateWindow(argv[0]);
-
-	//glutGameModeString("1440x900:32@65");
-	//glutEnterGameMode();
+  if (argc > 1) {
+    glutGameModeString("1440x900:32@65");
+    glutEnterGameMode();
+  } else {
+    glutInitWindowSize (kWindowWidth, kWindowHeight);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow(argv[0]);
+  }
 
 	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	for (NSString *model_name in model_names) {
@@ -107,8 +109,8 @@ int main(int argc, char** argv) {
 	textures.push_back(loadTexture(@"font_01", @"png"));
 	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
 	textures.push_back(loadTexture(@"vincent", @"png"));
-	textures.push_back(loadTexture(@"skybox_03", @"png"));
-	textures.push_back(loadTexture(@"fire", @"png"));
+	textures.push_back(loadTexture(@"skybox_04", @"png"));
+	textures.push_back(loadTexture(@"glow", @"png"));
 
   gameController = new RaptorIsland();
   gameController->build(kWindowWidth, kWindowHeight, textures, models);
