@@ -57,6 +57,8 @@ public:
     const Vec3& p1,     // segment start
     const Vec3& p2);     // segment end
 
+  Vec3 m_LastCollide;
+
 	MachineGun m_Gun;
 	
 };

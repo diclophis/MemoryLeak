@@ -13,7 +13,7 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static RaptorIsland *gameController;
 
-GLuint loadTexture(NSString *filename, NSString *type) {
+GLuint loadTexture(NSBitMapDataRef *image) {
 	GLuint text = 0;
 	
 	glEnable(GL_TEXTURE_2D);
@@ -25,13 +25,6 @@ GLuint loadTexture(NSString *filename, NSString *type) {
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	
-	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"../../assets/textures"];
-	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-	NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
-
-	if (image == nil) {
-		throw 1;
-	}
 
 	GLuint width = CGImageGetWidth(image.CGImage);
 	GLuint height = CGImageGetHeight(image.CGImage);
@@ -90,7 +83,7 @@ int main(int argc, char** argv) {
     glutCreateWindow(argv[0]);
   }
 
-	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
+	NSArray *model_names = [[NSBundle mainBundle] pathForResourcesOfType:@"wav" inDirectory:@"../../assets/models"];//[NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	for (NSString *model_name in model_names) {
 		FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:model_name ofType:@"wav" inDirectory:@"../../assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);
@@ -105,12 +98,25 @@ int main(int argc, char** argv) {
 		models.push_back(firstModel);
 	}
 
-	textures.push_back(loadTexture(@"raptor", @"png"));
+	NSArray *texture_names = [[NSBundle mainBundle] pathForResourcesOfType:nil inDirectory:@"../../assets/textures"];//[NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
+	for (NSString *path in texture_names) {
+    NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"../../assets/textures"];
+    NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+    NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
+
+    if (image == nil) {
+      throw 1;
+    }
+
+	  textures.push_back(loadTexture(image));
+  }
+  /*
 	textures.push_back(loadTexture(@"font_01", @"png"));
 	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
 	textures.push_back(loadTexture(@"vincent", @"png"));
 	textures.push_back(loadTexture(@"skybox_04", @"png"));
 	textures.push_back(loadTexture(@"glow", @"png"));
+  */
 
   gameController = new RaptorIsland();
   gameController->build(kWindowWidth, kWindowHeight, textures, models);

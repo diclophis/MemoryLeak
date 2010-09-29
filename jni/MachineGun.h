@@ -7,7 +7,7 @@ class MachineGun {
 public:
 
 	MachineGun() {};
-	MachineGun(GLuint texture, GLfloat *lineVertices);
+	MachineGun(GLuint texture);
 
 	GLuint m_Texture;
 	GLfloat *m_Vertices;

@@ -174,20 +174,26 @@ class DemoRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
       try {
         AssetManager am = mContext.getAssets();
+        /*
         String[] texture_file_names = {
           "textures/raptor.png",
           "textures/font_01.png",
           "textures/barrel_03.jpg",
           "textures/vincent.png",
-          "textures/skybox_03.png",
-          "textures/fire.png"
+          "textures/skybox_04.png",
+          "textures/glow.png"
         };
+        */
+			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nasd asda sdasda sdas d");
+        String path = "textures";
+        String[] texture_file_names = am.list(path);
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];
         gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
         textures = tmp_tex; 
         for (int i=0; i<texture_file_names.length; i++) {
-          InputStream stream = am.open(texture_file_names[i]);
+			System.out.println(path + texture_file_names[i]);
+          InputStream stream = am.open(path + "/" + texture_file_names[i]);
           Bitmap bitmap = BitmapFactory.decodeStream(stream);
           int t = textures[i];
           gl.glBindTexture(GL10.GL_TEXTURE_2D, t);

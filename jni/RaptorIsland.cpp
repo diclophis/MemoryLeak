@@ -199,19 +199,16 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	buildFountain();	
 	
 	
+  myLineVertices[0] = 0.0;
+  myLineVertices[1] = 0.0;
+  myLineVertices[2] = 0.0;
+  myLineVertices[3] = 0.0;
+  myLineVertices[4] = 0.0;
+  myLineVertices[5] = 0.0;
 	
 	
-	
-	
-	myLineVertices[0] = 0.0;	
-	myLineVertices[1] = 0.0;	
-	myLineVertices[2] = 0.0;	
+	m_Gun = MachineGun(myTextures[5]);
 
-	myLineVertices[3] = 0.0;	
-	myLineVertices[4] = 0.0;	
-	myLineVertices[5] = 0.0;	
-
-	m_Gun = MachineGun(myTextures[5], myLineVertices);
 	m_Gun.buildFountain();
 	
 	mySimulationTime = 0.0;
@@ -325,6 +322,19 @@ int RaptorIsland::simulate() {
 	//LOGV("zzz: %f\n", zzz);
 	//LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
 	//LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
+  myLineVertices[3] = pos1a.x;
+  myLineVertices[4] = pos1a.y + 2.0;
+  myLineVertices[5] = pos1a.z;
+
+  GLfloat m_GunHit[9];
+
+  m_GunHit[0] = myLineVertices[0];
+  m_GunHit[1] = myLineVertices[1];
+  m_GunHit[2] = myLineVertices[2];
+
+  m_GunHit[3] = pos1a.x;
+  m_GunHit[4] = pos1a.y + 2.0;
+  m_GunHit[5] = pos1a.z;
 
 	Vec3 a,b,c;
 	a.x = myLineVertices[0];
@@ -335,21 +345,28 @@ int RaptorIsland::simulate() {
 	b.z = myLineVertices[5];
 
 	bool hit = false;
+  m_LastCollide = Vec3(0.0, 0.0, 0.0);
 
 	for (i = 0; i < ctfEnemies.size(); i++) {
 		c = ctfEnemies[i]->position();
 		if (c.x < 0.0) {
 			hit = IntersectCircleSegment(c, 7.0, a, b);
 			if (hit) {
-				myRaptors[i]->SwitchCycle(3 + (int)(randf() * 3.0), 0.02, false, 1, 1);
+				//myRaptors[i]->SwitchCycle(3 + (int)(randf() * 3.0), 0.02, false, 1, 1);
+        LOGV("hit\n");
+				myRaptors[i]->SwitchCycle(21, 0.02, false, 1, 1);
+        m_LastCollide = c;
 			}
 		}
 	}
 
-	//pos1a = ctfSeeker->position();
-	myLineVertices[3] = pos1a.x;
-	myLineVertices[4] = pos1a.y + 2.0;
-	myLineVertices[5] = pos1a.z;
+
+    m_GunHit[6] = m_LastCollide.x;
+    m_GunHit[7] = m_LastCollide.y + 2.0;
+    m_GunHit[8] = m_LastCollide.z;
+
+
+    m_Gun.SetVertices(m_GunHit);
 
 	m_Gun.tickFountain();
 
@@ -428,9 +445,9 @@ void RaptorIsland::hitTest(float x, float y) {
 	float zzz = x - (screenWidth / 2);
 	float p = zzz / screenWidth;
 
-	myLineVertices[0] = 300.0;
+	myLineVertices[0] = -25.0;
 	myLineVertices[1] = 0.0;
-	myLineVertices[2] = p * 700.0;
+	myLineVertices[2] = p * 20.0;
 
 
 /*
@@ -460,5 +477,4 @@ void RaptorIsland::hitTest(float x, float y) {
 	}
 */
 
-	m_Gun.SetVertices(myLineVertices);
 }

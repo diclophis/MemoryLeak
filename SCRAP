@@ -1,8 +1,0 @@
-
-	//gluPerspective(0.0 + (mySimulationTime * 20.0), (float) width / (float) height, 0.1, 200.0);
-	//gluPerspective(25.0, (float) width / (float) height, 0.1, 50.0);
-	//gluPerspective(120.0, (float) width / (float) height, 21.0, 70.0);
-	//lower left corner at (left, bottom, -near) 
-	//upper right corner at (right, top, -near).
-	//glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near, GLdouble far); 
-	//glOrthof(-1.0, 1.0, 0.0, 1.0, -49.0, 49.0);

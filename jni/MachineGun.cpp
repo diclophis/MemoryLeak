@@ -9,9 +9,8 @@
 #include "MachineGun.h"
 
 
-MachineGun::MachineGun(GLuint texture, GLfloat *lineVertices) {
+MachineGun::MachineGun(GLuint texture) {
 	m_Texture = texture;
-	m_Vertices = lineVertices;
 }
 
 //returns a random float between 0 and 1
@@ -31,9 +30,10 @@ void MachineGun::reset_vertex(int idx) {
 
 
 void MachineGun::random_velocity(int idx) {
-	OpenSteer::Vec3 a = OpenSteer::Vec3(m_Vertices[0], m_Vertices[1], m_Vertices[2]);
-	OpenSteer::Vec3 b = a.normalize();
-	b *= 2.0;
+	//OpenSteer::Vec3 a = OpenSteer::Vec3(m_Vertices[0], m_Vertices[1], m_Vertices[2]);
+	//OpenSteer::Vec3 b = a.normalize();
+	//b *= 2.0;
+	OpenSteer::Vec3 b = OpenSteer::Vec3(0.0, 1.0, 0);
 	velocity[idx].x = b.x + (randf() * 0.1 - 0.05);
 	velocity[idx].y = b.y + (randf() * 0.1 - 0.05);
 	velocity[idx].z = b.z + (randf() * 0.1 - 0.05);
@@ -42,9 +42,13 @@ void MachineGun::random_velocity(int idx) {
 
 void MachineGun::reset_particle(int idx) {
 
-	generator[idx].x = m_Vertices[3];
-	generator[idx].y = m_Vertices[4];
-	generator[idx].z = m_Vertices[5];
+	//generator[idx].x = m_Vertices[3];
+	//generator[idx].y = m_Vertices[4];
+	//generator[idx].z = m_Vertices[5];
+
+	generator[idx].x = m_Vertices[6];
+	generator[idx].y = m_Vertices[7];
+	generator[idx].z = m_Vertices[8];
 	
 	reset_vertex(idx);
 	random_velocity(idx);
@@ -131,27 +135,19 @@ void MachineGun::tickFountain() {
 
 void MachineGun::drawFountain() {
 	
+	//if (randf() < 0.1) {
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glColor4f(1.0, 0.0, 0.0, 0.3);
+		glLineWidth(2.0);
+		glVertexPointer(3, GL_FLOAT, 0, m_Vertices);
+		glDrawArrays(GL_LINES, 0, 2);
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+	//}
 	
-	/*
-	 glBindTexture(GL_TEXTURE_2D, 0);
-	 glEnableClientState(GL_VERTEX_ARRAY);
-	 glColor4f(1.0, 0.0, 0.0, 1.0);
-	 glLineWidth(2.0);
-	 glVertexPointer(3, GL_FLOAT, 0, myLineVertices);
-	 glDrawArrays(GL_LINES, 0, 2);
-	 glDisableClientState(GL_VERTEX_ARRAY);
-	 glColor4f(1.0, 1.0, 1.0, 1.0);
-	 */
-	
-	
-	
-	//glDisable(GL_DEPTH_TEST);
-	//glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
-
 	glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	//glBlendFunc(GL_DST_COLOR, GL_ONE);
 	
 	if (true) {
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
