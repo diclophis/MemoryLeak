@@ -44,7 +44,7 @@
 
 
 extern "C" {
-  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4);
+  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1); //, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4);
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
@@ -54,6 +54,9 @@ extern "C" {
 }
 
 
+static std::vector<foo*> models;
+
+/*
 static FILE *myFile1;
 static unsigned int fileOffset1;
 static unsigned int fileLength1;
@@ -69,6 +72,7 @@ static unsigned int fileLength3;
 static FILE *myFile4;
 static unsigned int fileOffset4;
 static unsigned int fileLength4;
+*/
 
 static std::vector<GLuint> sPlayerTextures;
 static long sStartTick = 0;
@@ -89,13 +93,35 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 }
 
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4) {
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1) { //jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4) {
+  LOGV("initNative 1");
+
 	importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
 		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
-		if (fdClassDescriptorFieldID != NULL && fd_sys1 != NULL && fd_sys2 != NULL) {
+		if (fdClassDescriptorFieldID != NULL) { // && fd_sys1 != NULL && fd_sys2 != NULL) {
+
+      for (int i=0; i<count; i++) {
+        LOGV("load model 1");
+
+        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID); //env->GetIntField(fd_sys4, fdClassDescriptorFieldID);
+        int myfdx = dup(fdx);
+
+        foo firstModel;
+        firstModel.fp = fdopen(myfdx, "rb");
+        //firstModel.fp = fdopen(env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID), "rb");
+        firstModel.off = env->GetIntArrayElements(off1, 0)[i];
+        firstModel.len = env->GetIntArrayElements(len1, 0)[i];
+
+        //off1[i];
+        //firstModel.len = len1[i];
+        
+        models.push_back(&firstModel);
+      }
+
+      /*
 			jint fd1 = env->GetIntField(fd_sys1, fdClassDescriptorFieldID);
 			int myfd1 = dup(fd1);
 			myFile1 = fdopen(myfd1, "rb");
@@ -119,30 +145,24 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 			myFile4 = fdopen(myfd4, "rb");
 			fileOffset4 = off4;
 			fileLength4 = len4;
+      */
 		}
 	} 
+
+  LOGV("initNative 2");
 } 
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
 
-  LOGV("nativeInit");
+  LOGV("nativeOnSurfaceCreated 1");
 
 	for (int i=0; i<13; i++) {
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-
-	std::vector<foo*> models;
 		
-	foo firstModel; // = new foo;
-	firstModel.fp = myFile1;
-	firstModel.off = fileOffset1;
-	firstModel.len = fileLength1;
-	
-	models.push_back(&firstModel);
 
-  LOGV("nativeInit b");
-
+/*
 	foo secondModel; // = new foo;
 	secondModel.fp = myFile2;
 	secondModel.off = fileOffset2;
@@ -163,11 +183,15 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	fourthModel.len = fileLength4;
 	
 	models.push_back(&fourthModel);
+*/
 
-  LOGV("nativeInit c");
+  LOGV("nativeOnSurfaceCreated AAA");
 
   gameController = new RaptorIsland();
   gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+
+  LOGV("nativeOnSurfaceCreated BBB");
+
   gameState = 1; //gameController->tick();
 	models.clear();
 	sPlayerTextures.clear();
@@ -175,13 +199,15 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   sDemoStopped = 0;
   sTimeOffsetInit = 0;
 
-  LOGV("nativeInit d");
+  LOGV("nativeOnSurfaceCreated 2");
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
+
   LOGV("nativeResize %d %d", width, height);
   gameController->resizeScreen(width, height);
+
 }
 
 
@@ -207,30 +233,12 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
 }
 
 
-/* Call to render the next GL frame */
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
-  /* NOTE: if sDemoStopped is TRUE, then we re-render the same frame
-   *       on each iteration.
-   */
   if (sDemoStopped) {
   } else {
     if (gameState) {
-      //for (int i=0; i<=gameState; i++) {
-      //  gameState = gameController->tick(1.0 / 500.0);
-      //  gameState = gameController->tick(1.0 / 500.0);
-      //	gameState = gameController->tick(1.0 / 500.0);
-      //  gameState = gameController->tick(1.0 / 500.0);
-      //}
-      //gameState = gameController->tick();
-      //LOGV("tick");
 			gameController->draw(0);
     } else {
-      //if (gameController) {
-      //  delete gameController;
-      //}
-      //gameController = new GLViewController();
-      //gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, myFile, fileOffset, fileLength);
-      //gameState = gameController->tick(1.0 / 200.0);
     }
   }
 }

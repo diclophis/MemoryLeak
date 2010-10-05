@@ -13,7 +13,7 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static RaptorIsland *gameController;
 
-GLuint loadTexture(NSBitMapDataRef *image) {
+GLuint loadTexture(NSBitmapImageRep *image) {
 	GLuint text = 0;
 	
 	glEnable(GL_TEXTURE_2D);
@@ -38,8 +38,6 @@ GLuint loadTexture(NSBitMapDataRef *image) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 	CGContextRelease(context2);
 	free(imageData);
-	[image release];
-	[texData release];
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	
@@ -83,9 +81,9 @@ int main(int argc, char** argv) {
     glutCreateWindow(argv[0]);
   }
 
-	NSArray *model_names = [[NSBundle mainBundle] pathForResourcesOfType:@"wav" inDirectory:@"../../assets/models"];//[NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
-	for (NSString *model_name in model_names) {
-		FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:model_name ofType:@"wav" inDirectory:@"../../assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/models"];
+	for (NSString *path in model_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
@@ -98,9 +96,8 @@ int main(int argc, char** argv) {
 		models.push_back(firstModel);
 	}
 
-	NSArray *texture_names = [[NSBundle mainBundle] pathForResourcesOfType:nil inDirectory:@"../../assets/textures"];//[NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
+	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/textures"];//[NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	for (NSString *path in texture_names) {
-    NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"../../assets/textures"];
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
     NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
 
@@ -109,7 +106,10 @@ int main(int argc, char** argv) {
     }
 
 	  textures.push_back(loadTexture(image));
+    [image release];
+    [texData release];
   }
+
   /*
 	textures.push_back(loadTexture(@"font_01", @"png"));
 	textures.push_back(loadTexture(@"barrel_03", @"jpg"));

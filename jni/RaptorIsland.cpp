@@ -29,6 +29,9 @@ RaptorIsland::~RaptorIsland() {
 
 
 void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
+
+  LOGV("wtf1");
+
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
@@ -42,9 +45,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 
 	myTextures = textures;
 
-
 	buildCamera();
-
 
 	ctfSeeker = new CtfSeeker;
 	all.push_back(ctfSeeker);
