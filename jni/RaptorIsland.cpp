@@ -29,9 +29,6 @@ RaptorIsland::~RaptorIsland() {
 
 
 void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
-
-  LOGV("wtf1");
-
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
@@ -61,7 +58,6 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	CtfBase::initializeObstacles();
 
 	myRaptorHeight = 5.0;	
-	//myRaptorManager.SetStagger(4.0);
 	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
 		myRaptors.push_back(myRaptorManager.Load(models[0], 30, myTextures[0]));
 		myRaptors[i]->SwitchCycle(1, 0.0, false, -1, 1);
@@ -84,8 +80,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 		barrel->SetPosition(0.0, myBarrelHeight, 0.0);
 		barrel->SetRotation(90.0);
 	}
-	 
-	LOGV("barrels\n");
+
 	
 	mySkyBoxHeight = 12.5;
 	mySkyBox = mySkyBoxManager.Load(models[3], 1, myTextures[4]);
@@ -97,12 +92,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myPlayerHeight = 0.0;
 	myPlayer = myPlayerManager.Load(models[2], 1, myTextures[3]);
 	myPlayer->SetPosition(0.0, myPlayerHeight, 0.0);
-	//myPlayer->SetRotation(90.0);
 	myPlayer->SetScale(0.15, 0.15, 0.15);
-	
-	
-	LOGV("player skybox\n");
-
 	
 	/*
 	for (int cycle = 0; cycle < myBarrels[0]->GetNumCycles(); cycle++) {
@@ -113,115 +103,33 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	buildFont();
 	
-	/*
-	myPlatformCount = 1;
-	int i = 0;
-	
-	myPlatforms = (Platform *)malloc(myPlatformCount * sizeof(Platform));
-
-	myPlatforms[i].position = Vector3DMake(0.0, 0.0, 0.0);
-	myPlatforms[i].length = 100.0;
-	myPlatforms[i].amplitude = 0.0; //randf();
-	myPlatforms[i].step = 100.0;
-	myPlatforms[i].angular_frequency = 0.0;
-	myPlatforms[i].phase = 0.0;
-	
-	buildSkyBox();
-	*/
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	int i=0;
-	for (SOI so = CtfBase::allObstacles.begin(); so != CtfBase::allObstacles.end(); so++)
-	{
+	for (SOI so = CtfBase::allObstacles.begin(); so != CtfBase::allObstacles.end(); so++) {
 		OpenSteer::Vec3 a = (**so).center;
-		
 		myBarrels[i]->SetPosition(a.x, a.y, a.z);
-		
-		
 		i++;
-		
-		//Ogre::Vector3 b = Vector3(a.x, a.y, a.z);
-		
-		/*
-		if (frandom2(1.0, 2.0) >= 1.5) {
-			obstacle = m_pSceneMgr->createEntity(gen->generate(), "rock.05.mesh");
-			scale = Vector3(0.1, 0.1, 0.1);
-		} else {
-			obstacle = m_pSceneMgr->createEntity(gen->generate(), "tree.05.mesh");
-			scale = Vector3(1.0, 1.0, 1.0);
-		}
-		 */
-		
-		/*
-		node1 = m_pSceneMgr->getRootSceneNode()->createChildSceneNode(gen->generate());
-		node1->attachObject(obstacle);
-		node1->setScale(scale);
-		node1->setPosition(b);
-		*/
-		/*
-		 CONICAL = 0, ///< Conical shape
-		 SPHERICAL, ///< Spherical shape
-		 HEMISPHERICAL, ///< Hemispherical shape
-		 CYLINDRICAL, ///< Cylindrical shape
-		 TAPERED_CYLINDRICAL, ///< Tapered cylindrical shape
-		 FLAME, ///< Flame shape
-		 INVERSE_CONICAL, ///< Inverse conical shape
-		 TEND_FLAME, ///< Tend flame shape
-		 */
-		
-		/*
-		 obstacle = m_pSceneMgr->createEntity(gen->generate(), "TreeMesh");
-		 treeNode = m_pSceneMgr->getRootSceneNode()->createChildSceneNode();
-		 treeNode->attachObject(obstacle);
-		 treeNode->setPosition(b);
-		 */
 	}
 	
+	buildFountain();
 	
 	
-	
-	
-	
-	
-	
-	
-	buildFountain();	
-	
-	
-  myLineVertices[0] = 0.0;
-  myLineVertices[1] = 0.0;
-  myLineVertices[2] = 0.0;
-  myLineVertices[3] = 0.0;
-  myLineVertices[4] = 0.0;
-  myLineVertices[5] = 0.0;
+	myLineVertices[0] = 0.0;
+	myLineVertices[1] = 0.0;
+	myLineVertices[2] = 0.0;
+	myLineVertices[3] = 0.0;
+	myLineVertices[4] = 0.0;
+	myLineVertices[5] = 0.0;
 	
 	
 	m_Gun = MachineGun(myTextures[5]);
-
 	m_Gun.buildFountain();
 	
-	mySimulationTime = 0.0;
-		
+	mySimulationTime = 0.0;		
 	mySceneBuilt = true;
-	
+
 	simulate();
 	go();
-	
-	LOGV("foo\n");
-
-	
 }
 
 void RaptorIsland::render() {
@@ -241,8 +149,8 @@ void RaptorIsland::render() {
 	myBarrelManager.Render();
 	glDisable(GL_DEPTH_TEST);
 	
-	//drawFountain();
 	drawFont();
+  drawFountain();
 	m_Gun.drawFountain();
 	
 	glEnable(GL_DEPTH_TEST);
@@ -271,7 +179,6 @@ int RaptorIsland::simulate() {
 	// update each enemy
 	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
 		ctfEnemies[i]->update(mySimulationTime, myDeltaTime);
-		//bool hit = false;
 		pos1a = ctfEnemies[i]->position();
 		vel1a = ctfEnemies[i]->velocity();
 		if (vel1a.x != 0.0) {
@@ -280,10 +187,6 @@ int RaptorIsland::simulate() {
 		
 		myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a));
 		myRaptors[i]->SetPosition(pos1a.x, myRaptorHeight, pos1a.z);
-		
-		//if (hit) {
-		//	myRaptors[i]->SwitchCycle(6, 0.0, false, 1, 1);
-		//}
 	}
 	
 	int i=0;
@@ -320,22 +223,20 @@ int RaptorIsland::simulate() {
 	vel1a = ctfSeeker->velocity();
 	myPlayer->SetPosition(pos1a.x, pos1a.y, pos1a.z);
 	
-	//LOGV("zzz: %f\n", zzz);
-	//LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
-	//LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
-  myLineVertices[3] = pos1a.x;
-  myLineVertices[4] = pos1a.y + 2.0;
-  myLineVertices[5] = pos1a.z;
 
-  GLfloat m_GunHit[9];
+	myLineVertices[3] = pos1a.x;
+	myLineVertices[4] = pos1a.y + 2.0;
+	myLineVertices[5] = pos1a.z;
 
-  m_GunHit[0] = myLineVertices[0];
-  m_GunHit[1] = myLineVertices[1];
-  m_GunHit[2] = myLineVertices[2];
+	GLfloat m_GunHit[9];
 
-  m_GunHit[3] = pos1a.x;
-  m_GunHit[4] = pos1a.y + 2.0;
-  m_GunHit[5] = pos1a.z;
+	m_GunHit[0] = myLineVertices[0];
+	m_GunHit[1] = myLineVertices[1];
+	m_GunHit[2] = myLineVertices[2];
+
+	m_GunHit[3] = pos1a.x;
+	m_GunHit[4] = pos1a.y + 2.0;
+	m_GunHit[5] = pos1a.z;
 
 	Vec3 a,b,c;
 	a.x = myLineVertices[0];
@@ -346,7 +247,7 @@ int RaptorIsland::simulate() {
 	b.z = myLineVertices[5];
 
 	bool hit = false;
-  m_LastCollide = Vec3(0.0, 0.0, 0.0);
+	m_LastCollide = Vec3(0.0, 0.0, 0.0);
 
 	for (i = 0; i < ctfEnemies.size(); i++) {
 		c = ctfEnemies[i]->position();
@@ -354,9 +255,8 @@ int RaptorIsland::simulate() {
 			hit = IntersectCircleSegment(c, 7.0, a, b);
 			if (hit) {
 				//myRaptors[i]->SwitchCycle(3 + (int)(randf() * 3.0), 0.02, false, 1, 1);
-        LOGV("hit\n");
 				myRaptors[i]->SwitchCycle(21, 0.02, false, 1, 1);
-        m_LastCollide = c;
+				m_LastCollide = c;
 			}
 		}
 	}
@@ -374,11 +274,8 @@ int RaptorIsland::simulate() {
 	tickFountain();
 
 	
-	//if (mySimulationTime > 30.0) {
-	//	return 0;
-	//} else {
-		return 1;
-	//}
+
+	return 1;
 }
 
 
@@ -418,19 +315,17 @@ void RaptorIsland::tickCamera() {
 	}
 }
 
-bool RaptorIsland::IntersectCircleSegment(
-    const Vec3& c,        // center
-    float r,                            // radius
-    const Vec3& p1,     // segment start
-    const Vec3& p2)     // segment end
-{
+
+bool RaptorIsland::IntersectCircleSegment(const Vec3& c, float r, const Vec3& p1, const Vec3& p2) {
     Vec3 dir = p2 - p1;
     Vec3 diff = c - p1;
     float t = diff.dot(dir) / dir.dot(dir);
-    if (t < 0.0f)
+    if (t < 0.0f) {
         t = 0.0f;
-    if (t > 1.0f)
+	}
+    if (t > 1.0f) {
         t = 1.0f;
+	}
     Vec3 closest = p1 + t * dir;
     Vec3 d = c - closest;
     float distsqr = d.dot(d);
@@ -439,43 +334,9 @@ bool RaptorIsland::IntersectCircleSegment(
 
 
 void RaptorIsland::hitTest(float x, float y) {
-	//printf("wtf!!\n");
-
-	//printf("%f %f\n", x, y);
-
 	float zzz = x - (screenWidth / 2);
 	float p = zzz / screenWidth;
-
 	myLineVertices[0] = -25.0;
 	myLineVertices[1] = 0.0;
 	myLineVertices[2] = p * 20.0;
-
-
-/*
-	//LOGV("zzz: %f\n", zzz);
-	//LOGV("one: %f %f %f\n", myLineVertices[0], myLineVertices[1], myLineVertices[2]);
-	//LOGV("two: %f %f %f\n", myLineVertices[3], myLineVertices[4], myLineVertices[5]);
-
-	Vec3 a,b,c;
-	a.x = myLineVertices[0];
-	a.y = myLineVertices[1];
-	a.z = myLineVertices[2];
-	b.x = myLineVertices[3];
-	b.y = myLineVertices[4];
-	b.z = myLineVertices[5];
-
-	bool hit = false;
-
-	for (unsigned int i = 0; i < ctfEnemies.size(); i++) {
-		c = ctfEnemies[i]->position();
-		if (c.x < 0.0) {
-			hit = IntersectCircleSegment(c, 10.0, a, b);
-			if (hit) {
-				myRaptors[i]->SwitchCycle(21, 0.03, false, 1, 1);
-				//break;
-			}
-		}
-	}
-*/
-
 }
