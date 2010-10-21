@@ -4,8 +4,10 @@
 #include <sstream>
 
 #include "OpenSteer/Vec3.h"
+
 #include "importgl.h"
 #include "OpenGLCommon.h"
+
 #include "MachineGun.h"
 
 

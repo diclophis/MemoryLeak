@@ -12,8 +12,14 @@
 
 #include "importgl.h"
 
+struct Engine;
+typedef struct Engine Engine;
+
 struct RaptorIsland;
 typedef struct RaptorIsland RaptorIsland;
+
+struct RunAndJump;
+typedef struct RunAndJump RunAndJump;
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
@@ -37,7 +43,7 @@ typedef struct RaptorIsland RaptorIsland;
     GLint backingHeight;
     // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
     GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
-	RaptorIsland *gameController;
+	Engine *gameController;
 	BOOL myFrameRequested;
 	int gameState;
 	
@@ -56,7 +62,6 @@ typedef struct RaptorIsland RaptorIsland;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
 -(void)startGame;
--(GLuint)loadTexture:(NSString *)filename ofType:(NSString *)type;
 
 
 @end

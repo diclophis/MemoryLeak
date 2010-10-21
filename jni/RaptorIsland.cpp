@@ -9,6 +9,12 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/Color.h"
 #include "CaptureTheFlag.h"
+
+#include "importgl.h"
+#include "OpenGLCommon.h"
+
+#include "Engine.h"
+#include "MachineGun.h"
 #include "RaptorIsland.h"
 
 
@@ -123,7 +129,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	
 	
 	m_Gun = MachineGun(myTextures[5]);
-	m_Gun.buildFountain();
+	//m_Gun.buildFountain();
 	
 	mySimulationTime = 0.0;		
 	mySceneBuilt = true;
@@ -133,12 +139,13 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 }
 
 void RaptorIsland::render() {
-	drawCamera();
+	//drawCamera();
 
 	
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	/*
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mySkyBoxManager.Render();
@@ -148,15 +155,19 @@ void RaptorIsland::render() {
 	myRaptorManager.Render();
 	myBarrelManager.Render();
 	glDisable(GL_DEPTH_TEST);
+	*/
 	
 	drawFont();
-  drawFountain();
 	m_Gun.drawFountain();
 	
+	/*
 	glEnable(GL_DEPTH_TEST);
 	myPlayerManager.Render();
 	glDisable(GL_DEPTH_TEST);	
+	*/
+	
 	glDisable(GL_TEXTURE_2D);
+	 
 }
 
 

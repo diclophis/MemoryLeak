@@ -5,8 +5,7 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
-#include "importgl.h"
-#include "OpenGLCommon.h"
+
 #include "MD2_Model.h"
 #include "MD2_Manager.h"
 #include "OpenSteer/Vec3.h"

@@ -8,11 +8,22 @@
 
 #import "EAGLView.h"
 
+/*
 #include "OpenSteer/Vec3.h"
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/Color.h"
 #include "CaptureTheFlag.h"
+
+#include "importgl.h"
+#include "OpenGLCommon.h"
+
+#include "Engine.h"
+#include "MachineGun.h"
 #include "RaptorIsland.h"
+#include "RunAndJump.h"
+ */
+
+#include "MemoryLeak.h"
 
 #import "MemoryLeakAppDelegate.h"
 
@@ -192,11 +203,9 @@ static std::vector<foo*> models;
 	}
 }
 
-
--(GLuint)loadTexture:(NSString *)filename ofType:(NSString *)type {
+GLuint loadTexture(UIImage *image) {
 	GLuint text = 0;
 	
-	//Texture loading is done here
 	glEnable(GL_TEXTURE_2D);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 	glGenTextures(1, &text);
@@ -206,36 +215,19 @@ static std::vector<foo*> models;
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	
-	NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:type inDirectory:@"assets/textures"];
-	//NSString *extension = [path pathExtension];
-	NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-	//float inWidth = 512.0;
-	//float inHeight = 512.0;
-	// Assumes pvr4 is RGB not RGBA, which is how texturetool generates them
-	//if ([extension isEqualToString:@"pvr4"]) {
-	//	glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
-	//} else if ([extension isEqualToString:@"pvr2"]) {
-	//	glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG, inWidth, inHeight, 0, (inWidth * inHeight) / 2, [texData bytes]);
-	//} else {
-		UIImage *image = [[UIImage alloc] initWithData:texData];
-		if (image == nil) {
-			throw 1;
-		}
-		GLuint width = CGImageGetWidth(image.CGImage);
-		GLuint height = CGImageGetHeight(image.CGImage);
-		CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-		void *imageData = malloc( height * width * 4 );
-		CGContextRef context2 = CGBitmapContextCreate( imageData, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
-		CGColorSpaceRelease( colorSpace );
-		CGContextClearRect( context2, CGRectMake( 0, 0, width, height ) );
-		CGContextTranslateCTM( context2, 0, height - height );
-		CGContextDrawImage( context2, CGRectMake( 0, 0, width, height ), image.CGImage );
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-		CGContextRelease(context2);
-		free(imageData);
-		[image release];
-	//}
-	[texData release];
+
+	GLuint width = CGImageGetWidth(image.CGImage);
+	GLuint height = CGImageGetHeight(image.CGImage);
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	void *imageData = malloc( height * width * 4 );
+	CGContextRef context2 = CGBitmapContextCreate( imageData, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
+	CGColorSpaceRelease( colorSpace );
+	CGContextClearRect( context2, CGRectMake( 0, 0, width, height ) );
+	CGContextTranslateCTM( context2, 0, height - height );
+	CGContextDrawImage( context2, CGRectMake( 0, 0, width, height ), image.CGImage );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+	CGContextRelease(context2);
+	free(imageData);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	
@@ -243,12 +235,15 @@ static std::vector<foo*> models;
 }
 
 
+
+
 -(void)startGame {
 	
 	if (gameController != NULL) {
 		delete gameController;
 	}
-	
+
+/*
 	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	
 	for (NSString *model_name in model_names) {
@@ -291,6 +286,44 @@ static std::vector<foo*> models;
 	gameController = new RaptorIsland();
 
 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+*/
+
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
+	for (NSString *path in model_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
+		
+		models.push_back(firstModel);
+	}
+
+	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
+	for (NSString *path in texture_names) {
+    NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+    //NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
+	UIImage *image = [[UIImage alloc] initWithData:texData];
+		
+
+    if (image == nil) {
+      throw 1;
+    }
+
+	  textures.push_back(loadTexture(image));
+    [image release];
+    [texData release];
+  }
+
+
+	
+	gameController = new RunAndJump();
+ 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+
 	gameState = 1;
 	
 

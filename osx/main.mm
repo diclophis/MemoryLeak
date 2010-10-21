@@ -11,7 +11,8 @@
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
-static RaptorIsland *gameController;
+//static RaptorIsland *gameController;
+static Engine *gameController;
 
 GLuint loadTexture(NSBitmapImageRep *image) {
 	GLuint text = 0;
@@ -96,7 +97,7 @@ int main(int argc, char** argv) {
 		models.push_back(firstModel);
 	}
 
-	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/textures"];//[NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
+	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/textures"];
 	for (NSString *path in texture_names) {
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
     NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
@@ -109,14 +110,6 @@ int main(int argc, char** argv) {
     [image release];
     [texData release];
   }
-
-  /*
-	textures.push_back(loadTexture(@"font_01", @"png"));
-	textures.push_back(loadTexture(@"barrel_03", @"jpg"));
-	textures.push_back(loadTexture(@"vincent", @"png"));
-	textures.push_back(loadTexture(@"skybox_04", @"png"));
-	textures.push_back(loadTexture(@"glow", @"png"));
-  */
 
   gameController = new RaptorIsland();
   gameController->build(kWindowWidth, kWindowHeight, textures, models);

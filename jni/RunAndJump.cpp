@@ -1,74 +1,31 @@
 //
-//  GLViewController.m
+//  RunAndJump.m
 //  MemoryLeak
 //
 //  Created by Jon Bardin on 9/7/09.
 //  Copyright __MyCompanyName__ 2009. All rights reserved.
 //
-/*
-  class generic_category : public boost::system::error_category
-  {
-  public:
-    generic_category();
-    const char *name() { return "wtf"; }
-    std::string message(int ev) const;
-  };
-
-  class system_category : public boost::system::error_category
-  {
-  public:
-    system_category();
-    const char *name() { return "wtf"; }
-    std::string message(int ev) const;
-  };
-  */
-
-
-#include <pthread.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-
-// a single header file is required
-//#include <ev.c>
-
-#include <stdio.h> // for puts
 
 
 #include "importgl.h"
+#include "OpenGLCommon.h"
+
 #include "Engine.h"
+#include "RunAndJump.h"
 
 
 
+//static GLuint myFontTexture;
 
-inline std::string GLViewController::stringify(double x)
-{
-	std::ostringstream o;
-	if (!(o << x))
-		throw 987;
-	return o.str();
+
+void RunAndJump::hitTest(float x, float y) {
+
 }
 
 
-static GLuint myFontTexture;
-
-
-
-
-
-GLViewController::GLViewController() {
-	//myPlayerManager->Release();
-	myGameSpeed = 1;
-}
-
-
-GLViewController::~GLViewController() {
+RunAndJump::~RunAndJump() {
 	LOGV("dealloc GameController\n");
-	myPlayerManager->Release();
+	myPlayerManager.Release();
 	if (myPlatforms) {
 		free(myPlatforms);
 	}
@@ -79,7 +36,7 @@ GLViewController::~GLViewController() {
 }
 
 
-void GLViewController::playerStartedJumping() {
+void RunAndJump::playerStartedJumping() {
 	if (myGameStarted) {
 		
 		
@@ -102,16 +59,20 @@ void GLViewController::playerStartedJumping() {
 }
 
 
-void GLViewController::playerStoppedJumping() {
+void RunAndJump::playerStoppedJumping() {
 	myPlayerLastEnd = mySimulationTime;
 }
 
 
-void GLViewController::build(int width, int height, GLuint *textures, foo *playerFoo) {
-	//Screen
+//void RunAndJump::build(int width, int height, GLuint *textures, foo *playerFoo) {
+void RunAndJump::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
+	myGameSpeed = 1;
+	myTextures = textures;
 	screenWidth = width;
 	screenHeight = height;
 	
+	
+	/*
 	//World
 	myGravity = -3500.0; //-500
 	myState = 0;
@@ -120,40 +81,93 @@ void GLViewController::build(int width, int height, GLuint *textures, foo *playe
 	
 	myBuildSkyBoxDuration = 60.0;
 	
-	myPlayerTexture = textures[0];
-	myGroundTexture = textures[1];
-	mySkyBoxTextures = (GLuint *) malloc(6 * sizeof(GLuint));
-	mySkyBoxTextures[0] = textures[2];
-	mySkyBoxTextures[1] = textures[3];
-	mySkyBoxTextures[2] = textures[4];
-	mySkyBoxTextures[3] = textures[5];
-	mySkyBoxTextures[4] = textures[6];
-	mySkyBoxTextures[5] = textures[7];
-	myFontTexture = textures[8];
-	myTreeTextures[0] = textures[9];
+	//myPlayerTexture = textures[0];
+	myGroundTexture = textures[5];
 	
-	buildFont();
-	buildSkyBox();
-	buildPlayer(playerFoo);
-	buildPlatforms();
-	buildCamera();
-	//buildSpiral();
-	buildFountain();
-	mySceneBuilt = true;
-}
 
-int GLViewController::tick(float delta) {
-	mySimulationTime += (myDeltaTime = delta);
 	
-	if (mySceneBuilt) {
-		tickFont();
-		tickPlatform();
-		tickPlayer();
-		//tickSpiral();
-		tickFountain();
-		tickCamera();
+	
+	//Player
+	myPlayerAnimationIndex = 0;
+	myPlayerAnimationDirection = 1;
+	myPlayerMaxSpeed = 120.0;
+	myPlayerJumpSpeed = 60.0;
+	
+	myPlayerPosition = Vector3DMake(0.0, 300.0, 0.0);
+	myPlayerSpeed = Vector3DMake(400.0, 0.0, 0.0);
+	myPlayerAcceleration = Vector3DMake(0.0, 0.0, 0.0);
+	myPlayerAnimationIndex = 0;
+	
+	myPlayerRunCycle = 1;
+	
+	//15 //14 //13         //16 //17 //25
+	
+	myPlayerTransformedCycle = 17;
+	myPlayerTransformUpCycle = 25;
+	
+	myPlayerTransformDownCycle = 16;
+	myPlayerIsTransformed = false;
+	myPlayerNeedsTransform = true;
+	
+	//myPlayerManager = new Md2Manager();
+	
+	myPlayerMd2 = myPlayerManager.Load(models[0], 30, myTextures[0]);
+
+	for (int cycle = 0; cycle < myPlayerMd2->GetNumCycles(); cycle++) {
+		LOGV("%d %d %s\n", myPlayerMd2->GetNumCycles(), cycle,myPlayerMd2->GetCycleName(cycle));
 	}
 	
+	//myMd2->SwitchCycle(myPlayerRunCycle, 0.0, true, -1);
+	
+	*/
+	
+	
+	
+	
+	
+	
+	
+	
+	//buildSkyBox();
+	//buildPlayer(playerFoo);
+	
+	//buildPlatforms();
+	//buildCamera();
+	
+	//buildSpiral();
+	//buildFountain();
+	
+	//mySceneBuilt = true;
+	
+	
+	
+	
+	
+	buildFont();
+
+	
+	mySimulationTime = 0.0;		
+	mySceneBuilt = true;
+	
+	simulate();
+	go();
+	
+}
+
+int RunAndJump::simulate() {
+
+	
+	//tickFont();
+	
+	//tickPlatform();
+	//tickPlayer();
+	
+	//tickSpiral();
+	//tickFountain();
+	
+	//tickCamera();
+	
+	/*
 	if (mySimulationTime > 2.0) {
 		myGameStarted = true;
 	}
@@ -162,48 +176,62 @@ int GLViewController::tick(float delta) {
 		return 0;
 	} else {
 		return myGameSpeed;
-	}	
-}
-
-
-
-
-
-void GLViewController::gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar)
-{
-    GLfloat xmin, xmax, ymin, ymax;
+	}
+	 */
 	
-    ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-    ymin = -ymax;
-    xmin = ymin * aspect;
-    xmax = ymax * aspect;
+	return 1;
+}
+
+
+
+
+
+
+
+void RunAndJump::render() {
 	
-    glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-               (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-               (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
-}
-
-
-void GLViewController::prepareFrame(int width, int height) {
-    glViewport(0, 0, width, height);
-	glClearColor(0.5, 0.6, 0.85, 1.0);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(40.0, (float) width / (float) height, 5.0, 10000.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
-
-
-void GLViewController::resizeScreen(int width, int height) {
-	screenWidth = width;
-	screenHeight = height;
-}
-
-
-void GLViewController::draw(float rotation) {
 	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	drawFont();
+
+	glDisable(GL_TEXTURE_2D);
+	
+	
+	
+	/*
+	drawCamera();
+	
+	
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//mySkyBoxManager.Render();
+	//glDisable(GL_BLEND);
+	
+	//glEnable(GL_DEPTH_TEST);
+	//myRaptorManager.Render();
+	//myBarrelManager.Render();
+	//glDisable(GL_DEPTH_TEST);
+	
+	drawPlatform();
+
+	
+	//drawFont();
+	
+	//glEnable(GL_DEPTH_TEST);
+	//myPlayerManager.Render();
+	//glDisable(GL_DEPTH_TEST);	
+	
+	//glDisable(GL_TEXTURE_2D);
+	
+	
+	*/
+	
+	/*
 	if (mySceneBuilt) {
 		
 		prepareFrame(screenWidth, screenHeight);
@@ -229,132 +257,15 @@ void GLViewController::draw(float rotation) {
 		}
 		glPopMatrix();
 	}
+	 */
 }
 
 
-void GLViewController::buildFont() {	
-	
-	m_charPixelWidth = m_animPixelWidth = CHAR_PIXEL_W;
-	m_charPixelHeight = m_animPixelWidth = CHAR_PIXEL_H;
-	
-	//
-	// Zero Z Coords in Geomtery Array.
-	//
-	for(int i=0; i<(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_V); i+=ONE_CHAR_SIZE_V)
-	{
-		charGeomV[i+2] = charGeomV[i+5] = charGeomV[i+8] = charGeomV[i+11] = 0.0;
-	}
-	
-	// Pre-generate all possible texture coords
-	for(int c=FONT_TEXTURE_ATLAS_WIDTH * FONT_TEXTURE_ATLAS_LINES; c>=0; c--)
-	{
-		int character = c * ONE_CHAR_SIZE_T;
-		charTexCoords[character] = charTexCoords[character+4] = (c % FONT_TEXTURE_ATLAS_WIDTH) * CHAR_WIDTH;	
-		charTexCoords[character+1] = charTexCoords[character+3] = 1.0 - (c / FONT_TEXTURE_ATLAS_WIDTH) * CHAR_HEIGHT;
-		charTexCoords[character+2] = charTexCoords[character+6] = charTexCoords[character+0] + CHAR_WIDTH;
-		charTexCoords[character+7] = charTexCoords[character+5] = 1.0 - (c / FONT_TEXTURE_ATLAS_WIDTH + 1) * CHAR_HEIGHT;
-	}		
-}
 
 
-void GLViewController::tickFont() {
-}
 
 
-void GLViewController::drawFont() {
-		
-	float _scaleX = 1.0;
-	float _scaleY = 1.0;
-
-	if (m_animPixelWidth > m_charPixelWidth) {
-		m_animPixelWidth /= 1.5;
-	} else {
-		m_animPixelWidth = m_charPixelWidth;
-	}
-
-	if (m_animPixelHeight > m_charPixelHeight) {
-		m_animPixelHeight /= 1.5;
-	} else {
-		m_animPixelHeight = m_charPixelHeight;
-	}
-
-	m_ntextWidth = screenWidth / m_animPixelWidth;
-	m_ntextHeight = screenHeight / m_animPixelHeight;
-	m_fCharacterWidth = 1.0 / m_ntextWidth;
-	m_fCharacterHeight = 1.0 / m_ntextHeight;
-
-
-	bindTexture(myFontTexture);
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();	
-	glLoadIdentity();
-
-	glOrthof(0, _scaleX, 0, _scaleY, -1, 1);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	float x;
-	std::string fps;
-
-	if (myGameStarted) {
-		x = 0.05;
-		fps = "S:" + stringify((int)myPlayerSpeed.x) + " D:" + stringify((int)myPlayerPosition.x);
-	} else {
-		x = 0.1 + m_fCharacterWidth * fastSinf(mySimulationTime);
-		fps = "Robot Rainbow Racer";
-	}
-	 
-	float y = 0.875;
-
-	for (int i=0; i<fps.length(); i++) {
-		int c = fps.at(i);
-
-		if (c == ' ') {
-			if (myGameStarted) {
-				x = -0.025;
-			} else {
-				x = -m_fCharacterWidth * fastSinf(mySimulationTime + (float)i);
-			}
-			y -= 0.075;
-		}
-		
-		c -= ' ';
-
-		m_nCurrentChar = 0;
-
-		// TexCoords
-		int offsetT = m_nCurrentChar - (m_nCurrentChar / 3);	// 12 / 3 = 4 So 12 - 4 = 8
-		memcpy(&charGeomT[offsetT], &charTexCoords[c * ONE_CHAR_SIZE_T], ONE_CHAR_SIZE_T * sizeof(GLfloat));
-
-		// Vertex Xs
-		charGeomV[m_nCurrentChar + 0] = charGeomV[m_nCurrentChar + 6] = x;
-		charGeomV[m_nCurrentChar + 3] = charGeomV[m_nCurrentChar + 9] = x + m_fCharacterWidth;
-
-		// Vertex Ys
-		charGeomV[m_nCurrentChar + 1] = charGeomV[m_nCurrentChar + 4] = y;
-		charGeomV[m_nCurrentChar + 10] = charGeomV[m_nCurrentChar + 7] = y + m_fCharacterHeight;
-
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT,0, &charGeomT);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_FLOAT, 0, &charGeomV);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		x += m_fCharacterWidth;
-	}
-	 
-	unbindTexture(myFontTexture);
-	
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();		
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-}
-
-
-void GLViewController::buildCamera() {
+void RunAndJump::buildCamera() {
 	//Camera
 	myCameraTarget = Vector3DMake(35.0, 0.0, 0.0);
 	myCameraPosition = Vector3DMake(-45.0, 20.0, 80.0);
@@ -362,7 +273,8 @@ void GLViewController::buildCamera() {
 }
 
 
-void GLViewController::tickCamera() {
+
+void RunAndJump::tickCamera() {
 	Vector3D cameraPosition;
 	Vector3D cameraTarget;
 	float limitP;
@@ -437,48 +349,9 @@ void GLViewController::tickCamera() {
 }
 
 
-void GLViewController::drawCamera() {	
-	gluLookAt(myCameraPosition.x, myCameraPosition.y, myCameraPosition.z,
-			  myCameraTarget.x, myCameraTarget.y, myCameraTarget.z,
-			  0.0, 1.0, 0.0);
-}
 
 
-void GLViewController::buildPlayer(foo *playerFoo) {
-	//Player
-	myPlayerAnimationIndex = 0;
-	myPlayerAnimationDirection = 1;
-	myPlayerMaxSpeed = 120.0;
-	myPlayerJumpSpeed = 60.0;
-	
-	myPlayerPosition = Vector3DMake(0.0, 300.0, 0.0);
-	myPlayerSpeed = Vector3DMake(400.0, 0.0, 0.0);
-	myPlayerAcceleration = Vector3DMake(0.0, 0.0, 0.0);
-	myPlayerAnimationIndex = 0;
-	
-	myPlayerRunCycle = 1;
-	
-	//15 //14 //13         //16 //17 //25
-
-	myPlayerTransformedCycle = 17;
-	myPlayerTransformUpCycle = 25;
-	myPlayerTransformDownCycle = 16;
-	myPlayerIsTransformed = false;
-	myPlayerNeedsTransform = true;
-	
-	myPlayerManager = new Md2Manager();
-	
-	myPlayerMd2 = myPlayerManager->Load(playerFoo, 25);
-	
-	for (int cycle = 0; cycle < myPlayerMd2->GetNumCycles(); cycle++) {
-		//LOGV("%d %d %s\n", myMd2->GetNumCycles(), cycle,myMd2->GetCycleName(cycle));
-	}
-	
-	//myMd2->SwitchCycle(myPlayerRunCycle, 0.0, true, -1);
-}
-
-
-void GLViewController::tickPlayer() {
+void RunAndJump::tickPlayer() {
 	myPlayerJumpCycle = (int)(randf() * 3.0) + 13;
 	
 	//float timeSinceStarted = -[myPlayerLastJump timeIntervalSinceNow];
@@ -505,7 +378,7 @@ void GLViewController::tickPlayer() {
 	} else {
 	}
 
-	myPlayerManager->Update(myDeltaTime);
+	myPlayerManager.Update(myDeltaTime);
 	
 	if (timeSinceStarted < 0.02 && timeSinceStarted > 0.0) {
 		//myMd2->SwitchCycle(6, 0.001, false);
@@ -583,7 +456,9 @@ void GLViewController::tickPlayer() {
 	//}
 }
 
-void GLViewController::drawPlayer() {
+
+/*
+void RunAndJump::drawPlayer() {
 	glPushMatrix();
 	{
 		glTranslatef(myPlayerPosition.x, myPlayerPosition.y + 1.5, myPlayerPosition.z);
@@ -592,14 +467,15 @@ void GLViewController::drawPlayer() {
 		glScalef(scale, scale, scale);
 		bindTexture(myPlayerTexture);
 		//Md2Manager::Render();
-		myPlayerManager->Render();
+		myPlayerManager.Render();
 		unbindTexture(myPlayerTexture);
 	}
 	glPopMatrix();
 }
+ */
 
 
-void GLViewController::buildPlatforms() {	
+void RunAndJump::buildPlatforms() {	
 	myPlatformCount = 100;
 	Vector3D lastPlatformPosition = Vector3DMake(0.0, 0.0, 0.0);
 	myPlatforms = (Platform *)malloc(myPlatformCount * sizeof(Platform));
@@ -648,21 +524,21 @@ void GLViewController::buildPlatforms() {
 }
 
 
-void GLViewController::tickPlatform() {
+void RunAndJump::tickPlatform() {
 	myPlayerOnPlatform = false;
 	myPlayerPlatformCorrection = Vector3DMake(0.0, 0.0, 0.0);
 	iteratePlatform(0);
 }
 
 
-void GLViewController::drawPlatform() {
-	bindTexture(myGroundTexture);
+void RunAndJump::drawPlatform() {
+	glBindTexture(GL_TEXTURE_2D, myGroundTexture);
 	iteratePlatform(1);
-	unbindTexture(myGroundTexture);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
-void GLViewController::iteratePlatform(int operation) {
+void RunAndJump::iteratePlatform(int operation) {
 	for (int j=0; j<myPlatformCount; j++) {
 		Platform platform = myPlatforms[j];
 		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
@@ -699,7 +575,7 @@ void GLViewController::iteratePlatform(int operation) {
 
 
 /*
-const GLfloat GLViewController::myPlatformTextureCoords[6] = {
+const GLfloat RunAndJump::myPlatformTextureCoords[6] = {
 	0.0, 0.0, // top-upper-right
 	1.0, 0.0,
 	1.0, 1.0,
@@ -710,7 +586,7 @@ const GLfloat GLViewController::myPlatformTextureCoords[6] = {
  */
 
 
-void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
+void RunAndJump::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
 	float beginX; float beginY; float endX; float endY;
 	
 	baseY -= 0.0;
@@ -823,7 +699,7 @@ void GLViewController::drawPlatformSegment(float baseY, float x1, float y1, floa
 }
 
 
-void GLViewController::tickPlatformSegment(float beginX, float beginY, float endX, float endY) {
+void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, float endY) {
 	if (!myPlayerJumping && !(myPlayerSpeed.y > 250.0)) {
 	Vector3D p1 = Vector3DMake(beginX, beginY, 0.0);
 	Vector3D p2 = Vector3DMake(endX, endY, 0.0);
@@ -870,13 +746,15 @@ void GLViewController::tickPlatformSegment(float beginX, float beginY, float end
 	}
 }
 
-
-void GLViewController::tickSpiral() {
+/*
+void RunAndJump::tickSpiral() {
 	myGarbageCollectorPosition = myPlayerPosition;
 }
+ */
 
 
-void GLViewController::buildSpiral() {
+/*
+void RunAndJump::buildSpiral() {
 	int dots = 0;
 	int lines_from_dot = 0;
 	
@@ -900,9 +778,10 @@ void GLViewController::buildSpiral() {
 		z += incline;
 	}
 }
+ */
 
-
-void GLViewController::drawSpiral() {
+/*
+void RunAndJump::drawSpiral() {
 	glPushMatrix();
 	{
 		float rotation = mySimulationTime * 360.0;
@@ -910,15 +789,7 @@ void GLViewController::drawSpiral() {
 		glRotatef(90.0, 0.0f, 1.0f, 0.0f);
 		//glScalef(1.0, fastSinf(mySimulationTime) + 1.0, fastSinf(mySimulationTime) + 1.0);
 		glRotatef(rotation, 1.0, -fastSinf(mySimulationTime), fastSinf(mySimulationTime));
-		/*
-		 for (int i=0; i<mySpiralArrays; i+=6) {
-		 glEnableClientState(GL_VERTEX_ARRAY);
-		 glVertexPointer(3, GL_FLOAT, 0, mySpiralVertices);
-		 glDrawArrays(GL_LINE_STRIP, i, 3);
-		 glDrawArrays(GL_POINTS, i, 1);
-		 glDisableClientState(GL_VERTEX_ARRAY);
-		 }
-		 */
+
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, mySpiralVertices);
 		glDrawArrays(GL_POINTS, 0, mySpiralArrays / 3);
@@ -927,18 +798,20 @@ void GLViewController::drawSpiral() {
 	}
 	glPopMatrix();
 }
+ */
 
-
-void GLViewController::tickGarbageCollector() {
+/*
+void RunAndJump::tickGarbageCollector() {
 	//float percentOfMaxSpeed = myPlayerSpeed.x / myPlayerMaxSpeed;
 	//float distanceFromPlayer = percentOfMaxSpeed * 20.0;
 	//myGarbageCollectorPosition = Vector3DMake(myPlayerPosition.x - distanceFromPlayer, 0.0, 0.0);	 
 	//myGarbageCollectorPosition = myPlayerPosition;
 }
+ */
 
-
-void GLViewController::buildGarbageCollector() {
-	/*
+/*
+void RunAndJump::buildGarbageCollector() {
+	
 	 float linesPerHalf = 12.0f;
 	 
 	 myGarbageCollectorArrays = linesPerHalf * 2;
@@ -964,11 +837,12 @@ void GLViewController::buildGarbageCollector() {
 	 myGarbageCollectorVertices[c++] = y;
 	 myGarbageCollectorVertices[c++] = z;
 	 }
-	 */
+	 
 }
+ */
 
-
-void GLViewController::drawGarbageCollector() {	
+/*
+void RunAndJump::drawGarbageCollector() {	
 	glPushMatrix();
 	{
 		glTranslatef(myGarbageCollectorPosition.x, myGarbageCollectorPosition.y, myGarbageCollectorPosition.z);
@@ -981,14 +855,16 @@ void GLViewController::drawGarbageCollector() {
 	}
 	glPopMatrix();
 }
+*/
 
-
-void GLViewController::tickSomething() {
+/*
+void RunAndJump::tickSomething() {
 }
+*/
 
-
-void GLViewController::buildSomething() {
-	/*
+/*
+void RunAndJump::buildSomething() {
+	
 	 int segments = 6;
 	 GLfloat width = 10;
 	 GLfloat height = 10;
@@ -1002,12 +878,13 @@ void GLViewController::buildSomething() {
 	 mySomethingVertices[count++] = (cos(DEGREES_TO_RADIANS(i))*width);
 	 mySomethingVertices[count++] = (sin(DEGREES_TO_RADIANS(i))*height);
 	 }
-	 */
+	 
 }
+ */
 
-
-void GLViewController::drawSomething() {
-	/*
+/*
+void RunAndJump::drawSomething() {
+	
 	 glPushMatrix();
 	 {
 	 glRotatef(90.0, 0.0, 1.0, 0.0);
@@ -1016,20 +893,23 @@ void GLViewController::drawSomething() {
 	 glDrawArrays (GL_LINE_LOOP, 0, mySomethingArrays);
 	 }
 	 glPopMatrix();
-	 */
+	 
 }
+ */
 
 
+/*
 //returns a random float between 0 and 1
-float GLViewController::randf()
+float RunAndJump::randf()
 {
     //random hack since no floating point random function
     //optimize later
     return (lrand48() % 255) / 255.f;
 }
+*/
 
-
-void GLViewController::reset_vertex(int idx) {
+/*
+void RunAndJump::reset_vertex(int idx) {
     int i = idx * 3;
     vertices[i + 0] = generator[idx].x;
     vertices[i + 1] = generator[idx].y;
@@ -1037,22 +917,14 @@ void GLViewController::reset_vertex(int idx) {
 }
 
 
-void GLViewController::random_velocity(int idx) {
-    //velocity[idx].x = -0.35 + (randf() * 0.01);
-	//velocity[idx].y = 0.25 - (randf() * 0.5);
-    //velocity[idx].z = 0.25 - (randf() * 0.5);
-	/*
-	velocity[idx].x = -0.35 + (randf() * 0.01);
-	velocity[idx].y = 0.25 - (randf() * 0.5);
-    velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
-	 */
-	
+void RunAndJump::random_velocity(int idx) {
+
 	velocity[idx].x = 0.5 - randf();
 	velocity[idx].y = -(randf() * 5.0);
     velocity[idx].z = 0.5 - randf();
 }
 
-void GLViewController::reset_particle(int idx) {
+void RunAndJump::reset_particle(int idx) {
 
 	if (false) {
 		generator[idx].x = myPlayerPlatformIntersection.x;
@@ -1080,7 +952,7 @@ void GLViewController::reset_particle(int idx) {
 
 }
 
-void GLViewController::update_vertex(int idx) {
+void RunAndJump::update_vertex(int idx) {
 	
     int i = idx * 3;
     vertices[i] += velocity[idx].x;
@@ -1089,6 +961,7 @@ void GLViewController::update_vertex(int idx) {
 	//velocity[idx].y -= 0.0002 * fabs(myPlayerSpeed.y);
 	//LOGV("%d %f %f %f\n", idx, vertices[idx * 3], life[idx], myPlayerPosition.x);
 }
+ */
 
 /*
 static GLfloat ccolors[12][3]=				// Rainbow Of Colors
@@ -1099,6 +972,7 @@ static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 };
  */
 
+/*
 static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 {
 	{1.0f,1.0f,1.0f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},
@@ -1106,7 +980,7 @@ static GLfloat ccolors[12][3]=				// Rainbow Of Colors
 	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
 };
 
-void GLViewController::update_color(int idx) {
+void RunAndJump::update_color(int idx) {
     int i = idx * 4;
 	
 	float distanceFromPlayer = myPlayerPosition.x - vertices[idx * 3];
@@ -1121,11 +995,11 @@ void GLViewController::update_color(int idx) {
 	colors[i+3] = 1.0; //i / (float)11.0;	
 }
 
-void GLViewController::reset_life(int i) {
+void RunAndJump::reset_life(int i) {
 	life[i] = 1.0;
 }
 
-void GLViewController::buildFountain() {	
+void RunAndJump::buildFountain() {	
 	srand48(time(NULL));
 	
 	int i = 0;
@@ -1140,7 +1014,7 @@ void GLViewController::buildFountain() {
 }
 
 
-void GLViewController::tickFountain() {	
+void RunAndJump::tickFountain() {	
 	int i = 0; //particle index
     for(i=0;i<NUM_PARTICLES;i++) {
         life[i] -= 0.1;
@@ -1152,9 +1026,10 @@ void GLViewController::tickFountain() {
 		}
     }
 }
+*/
 
-
-void GLViewController::drawFountain() {
+/*
+void RunAndJump::drawFountain() {
 
 	if (false) {
 	
@@ -1187,9 +1062,10 @@ void GLViewController::drawFountain() {
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
 }
+ */
 
-
-const GLfloat GLViewController::mySkyBoxVertices[108] = {
+/*
+const GLfloat RunAndJump::mySkyBoxVertices[108] = {
 	-1.0, 1.0, -1.0, // top-upper-right
 	1.0, 1.0, 1.0,
 	1.0, 1.0, -1.0,
@@ -1240,7 +1116,7 @@ const GLfloat GLViewController::mySkyBoxVertices[108] = {
 };
 
 
-const GLfloat GLViewController::cubeTextureCoords[72] = {
+const GLfloat RunAndJump::cubeTextureCoords[72] = {
 	0.0f, 1.0, // top-upper-right
 	1.0, 0.0f,
 	0.0f, 0.0f,
@@ -1291,28 +1167,28 @@ const GLfloat GLViewController::cubeTextureCoords[72] = {
 };
 
 
-void GLViewController::buildSkyBox() {
+void RunAndJump::buildSkyBox() {
 	mySkyBoxRotation = 0.0;
 }
 
 
-void GLViewController::tickSkyBox() {
+void RunAndJump::tickSkyBox() {
 }
 
 
-void GLViewController::bindTexture(GLuint texture) {
+void RunAndJump::bindTexture(GLuint texture) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
 
-void GLViewController::unbindTexture(GLuint texture) {
+void RunAndJump::unbindTexture(GLuint texture) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
 
 
-void GLViewController::drawSkyBox() {
+void RunAndJump::drawSkyBox() {
 	glPushMatrix();
 	{
 		glEnable(GL_TEXTURE_2D);
@@ -1335,3 +1211,5 @@ void GLViewController::drawSkyBox() {
 	}
 	glPopMatrix();
 }
+
+*/

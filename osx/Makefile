@@ -14,6 +14,7 @@ $(build)/Engine.o \
 $(build)/MachineGun.o \
 $(build)/RaptorIsland.o \
 $(build)/CaptureTheFlag.o \
+$(build)/RunAndJump.o \
 $(build)/MD2_File.o \
 $(build)/MD2_Manager.o \
 $(build)/MD2_Model.o \

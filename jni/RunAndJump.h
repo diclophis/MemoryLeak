@@ -6,40 +6,16 @@
 //  Copyright __MyCompanyName__ 2009. All rights reserved.
 //
 
-#include "OpenGLCommon.h"
-#include "MD2_Model.h"
-#include "MD2_Manager.h"
-#include "Player.h"
+
+//#include "Engine.h"
 
 
-// For FastFontDefinition
-//#define CHAR_WIDTH 0.0234375			/* ogl tex coords :: Based on not quite 42 chars per line! */
-//#define CHAR_HEIGHT 0.203125			/* ogl tex coords */
-
-#define CHAR_WIDTH 0.1			/* ogl tex coords :: Based on not quite 42 chars per line! */
-#define CHAR_HEIGHT 0.1
-
-// Initial setup only.
-#define CHAR_PIXEL_W 20 // 8
-#define CHAR_PIXEL_H 23 // 9
-
-#define MAX_CHAR_BUFFER 256
-
-#define ONE_CHAR_SIZE_V 12				// Floats making up one TRIANGLE_STRIP Vertices
-#define ONE_CHAR_SIZE_T 8				// Floats making up one TRIANGLE_STRIP TexCoords
-
-#define FONT_TEXTURE_ATLAS_WIDTH 10		// Characters per line in Atlas
-#define FONT_TEXTURE_ATLAS_LINES 10		// Lines of characters in the Atlas
-
-#ifndef LOGV
-#define LOGV printf
-#endif
-
-
-class GLViewController {
+class RunAndJump : public Engine {
 	
 public:
 
+	~RunAndJump();
+	void hitTest(float x, float y);
 	
 	typedef struct {
 		GLfloat step;
@@ -58,8 +34,9 @@ public:
 		GLfloat rotation;
 	} PlayerState;
 	
-	#define NUM_PARTICLES 10
+	//#define NUM_PARTICLES 10
 	
+	/*
 	GLfloat vertices[NUM_PARTICLES * 3];
 	GLfloat colors[NUM_PARTICLES * 4];
 	GLushort elements[NUM_PARTICLES];
@@ -91,52 +68,53 @@ public:
 	GLfloat		charGeomT[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_T)];
 	GLint		viewport[4];	
 	
+
+	*/
+	
 	GLfloat *mySomethingVertices;
 	GLfloat *myGarbageCollectorVertices;
 	GLfloat *mySpiralVertices;
 	
-	
 	Platform *myPlatforms;
-	//static const GLfloat myPlatformTextureCoords[];
-	
 	
 	PlayerState *myPlayerStates;
 	int myPlayerStatesCount;
 	
-	bool mySceneBuilt;
+	//bool mySceneBuilt;
 
 	
 	float myGravity;
-	float mySimulationTime;
-	float myDeltaTime;
+	//float mySimulationTime;
+	//float myDeltaTime;
+	
 	Vector3D myPlayerPlatformIntersection;
 	
 	
-	Vector3D myCameraPosition;
-	Vector3D myCameraSpeed;
-	Vector3D myCameraTarget;
+	//Vector3D myCameraPosition;
+	//Vector3D myCameraSpeed;
+	//Vector3D myCameraTarget;
 	
 	
-	Vector3D myPlayerPosition;
-	Vector3D myPlayerSpeed;
-	Vector3D myPlayerAcceleration;
-	Vector3D myPlayerJumpStartPosition;
-	float myPlayerMaxSpeed;
-	float myPlayerJumpSpeed;
+	//Vector3D myPlayerPosition;
+	//Vector3D myPlayerSpeed;
+	//Vector3D myPlayerAcceleration;
+	//Vector3D myPlayerJumpStartPosition;
 	
-	GLfloat myPlayerRotation;
+	//float myPlayerMaxSpeed;
+	//float myPlayerJumpSpeed;
 	
-	int myPlayerAnimationIndex;
-	int myPlayerAnimationDirection;
+	//GLfloat myPlayerRotation;
 	
-	bool myPlayerJumping;
-	bool myPlayerCanDoubleJump;
-	bool myPlayerOnPlatform;
-	bool myPlayerBelowPlatform;
+	//int myPlayerAnimationIndex;
+	//int myPlayerAnimationDirection;
+	
+	//bool myPlayerJumping;
+	//bool myPlayerCanDoubleJump;
+	//bool myPlayerOnPlatform;
+	//bool myPlayerBelowPlatform;
 	
 	int myState;
 	int myStatesToShow;
-	//NSTimeInterval myTimeSinceLastStatePush;
 	int myLastStateAvailable;
 	Vector3D myGarbageCollectorPosition;
 	
@@ -146,14 +124,10 @@ public:
 	
 	int myPlatformCount;
 	
-	//NSDate *myPlayerLastJump;
-	//NSDate *myPlayerLastEnd;
-	
-	float myPlayerLastJump;
-	float myPlayerLastEnd;
+	//float myPlayerLastJump;
+	//float myPlayerLastEnd;
 	
 	Vector3D myPlayerPlatformCorrection;
-	
 	
 	static const GLfloat mySkyBoxVertices[];
 	static const GLfloat cubeTextureCoords[];
@@ -165,23 +139,18 @@ public:
 	GLuint myGroundTexture;
 	
 	Md2Instance *myPlayerMd2;
-	Md2Manager *myPlayerManager;
+	Md2Manager myPlayerManager;
 	
 	
-	GLViewController();
-	~GLViewController();
 	
-	void build(int width, int height, GLuint *textures, foo *playerFoo);
-	int tick(float delta);
-	void draw(float rotation);
-
+	// Game Engine
+	void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
+	int simulate();
+	void render();
 	void buildCamera();
 	void tickCamera();
-	void drawCamera();
-
-
-	void buildPlayer(foo *playerFoo);
-
+	
+	
 	void tickPlayer();
 	void drawPlayer();
 
@@ -201,7 +170,6 @@ public:
 	void drawSpiral();
 	
 	
-	
 	void buildGarbageCollector();
 	void tickGarbageCollector();
 	void drawGarbageCollector();
@@ -209,11 +177,7 @@ public:
 	void buildSomething();
 	void tickSomething();
 	void drawSomething();
-
-
-	void buildFont();
-	void tickFont();
-	void drawFont();
+	
 
 	void buildStates();
 	void pushState(bool shift);
@@ -227,12 +191,14 @@ public:
 	void drawFountain();
 	void reset_life(int idx);
 
-
+/*
 	void buildSkyBox();
 	void tickSkyBox();
 	void drawSkyBox();
+	
 	GLuint *mySkyBoxTextures;
 	GLfloat mySkyBoxRotation;
+	
 	
 	float randf();
 	void reset_vertex(int idx);
@@ -242,14 +208,13 @@ public:
 	void update_color(int idx);
 	void bindTexture(GLuint texture);
 	void unbindTexture(GLuint texture);
+ */
 	
-	int screenWidth;
-	int screenHeight;
-	
-	void resizeScreen(int width, int height);
-	
-	void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
-	void prepareFrame(int width, int height);
+	//int screenWidth;
+	//int screenHeight;
+		
+	//void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
+	//void prepareFrame(int width, int height);
 	
 	int myPlayerRunCycle;
 	int myPlayerJumpCycle;
@@ -261,11 +226,11 @@ public:
 	
 	inline std::string stringify(double x);
 	
-	bool myGameStarted;
-	int myGameSpeed;
+	//bool myGameStarted;
+	//int myGameSpeed;
 	
 	GLuint myTreeTextures[1];
 	
-	void camera_directions(float * out_rgt, float * out_up , float * out_look);
+	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
 	
 };

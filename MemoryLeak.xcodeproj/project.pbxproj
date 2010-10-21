@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC083461126F88F100D509E2 /* RunAndJump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC08345F126F88F100D509E2 /* RunAndJump.cpp */; };
 		FC38F783123DABB50036678B /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC38F766123DABB50036678B /* assets */; };
 		FC3997A91242C16E008E614D /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997751242C16E008E614D /* Clock.cpp */; };
 		FC3997AA1242C16E008E614D /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997771242C16E008E614D /* Color.cpp */; };
@@ -44,6 +45,9 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC08345F126F88F100D509E2 /* RunAndJump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RunAndJump.cpp; path = jni/RunAndJump.cpp; sourceTree = "<group>"; };
+		FC083460126F88F100D509E2 /* RunAndJump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunAndJump.h; path = jni/RunAndJump.h; sourceTree = "<group>"; };
+		FC08350D126F925600D509E2 /* MemoryLeak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryLeak.h; path = jni/MemoryLeak.h; sourceTree = "<group>"; };
 		FC10A985123C502F002A6142 /* foo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = foo.h; path = jni/foo.h; sourceTree = "<group>"; };
 		FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RaptorIsland.cpp; path = jni/RaptorIsland.cpp; sourceTree = "<group>"; };
 		FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RaptorIsland.h; path = jni/RaptorIsland.h; sourceTree = "<group>"; };
@@ -264,6 +268,9 @@
 		FCBE418D1216835400A60972 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				FC08350D126F925600D509E2 /* MemoryLeak.h */,
+				FC08345F126F88F100D509E2 /* RunAndJump.cpp */,
+				FC083460126F88F100D509E2 /* RunAndJump.h */,
 				FC8771DA124B2FD30028EB2C /* MachineGun.cpp */,
 				FC8771DB124B2FD30028EB2C /* MachineGun.h */,
 				FC8138D0124415C00027435E /* Globals.h */,
@@ -387,6 +394,7 @@
 				FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */,
 				FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */,
 				FC8771DC124B2FD30028EB2C /* MachineGun.cpp in Sources */,
+				FC083461126F88F100D509E2 /* RunAndJump.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

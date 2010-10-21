@@ -10,6 +10,8 @@
 #include <sys/time.h>
 #include "pthread.h"
 
+#include "importgl.h"
+#include "OpenGLCommon.h"
 
 #include "Engine.h"
 
