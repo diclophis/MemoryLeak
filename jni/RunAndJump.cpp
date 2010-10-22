@@ -23,6 +23,8 @@ void RunAndJump::hitTest(float x, float y) {
 }
 
 
+
+
 RunAndJump::~RunAndJump() {
 	LOGV("dealloc GameController\n");
 	myPlayerManager.Release();
@@ -65,133 +67,31 @@ void RunAndJump::playerStoppedJumping() {
 
 
 //void RunAndJump::build(int width, int height, GLuint *textures, foo *playerFoo) {
-void RunAndJump::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
-	myGameSpeed = 1;
-	myTextures = textures;
-	screenWidth = width;
-	screenHeight = height;
-	
-	
-	/*
-	//World
-	myGravity = -3500.0; //-500
-	myState = 0;
-	mySimulationTime = 0.0;
-	myGameStarted = false;
-	
-	myBuildSkyBoxDuration = 60.0;
-	
-	//myPlayerTexture = textures[0];
-	myGroundTexture = textures[5];
-	
-
-	
-	
-	//Player
-	myPlayerAnimationIndex = 0;
-	myPlayerAnimationDirection = 1;
-	myPlayerMaxSpeed = 120.0;
-	myPlayerJumpSpeed = 60.0;
-	
-	myPlayerPosition = Vector3DMake(0.0, 300.0, 0.0);
-	myPlayerSpeed = Vector3DMake(400.0, 0.0, 0.0);
-	myPlayerAcceleration = Vector3DMake(0.0, 0.0, 0.0);
-	myPlayerAnimationIndex = 0;
-	
-	myPlayerRunCycle = 1;
-	
-	//15 //14 //13         //16 //17 //25
-	
-	myPlayerTransformedCycle = 17;
-	myPlayerTransformUpCycle = 25;
-	
-	myPlayerTransformDownCycle = 16;
-	myPlayerIsTransformed = false;
-	myPlayerNeedsTransform = true;
-	
-	//myPlayerManager = new Md2Manager();
-	
-	myPlayerMd2 = myPlayerManager.Load(models[0], 30, myTextures[0]);
-
-	for (int cycle = 0; cycle < myPlayerMd2->GetNumCycles(); cycle++) {
-		LOGV("%d %d %s\n", myPlayerMd2->GetNumCycles(), cycle,myPlayerMd2->GetCycleName(cycle));
-	}
-	
-	//myMd2->SwitchCycle(myPlayerRunCycle, 0.0, true, -1);
-	
-	*/
-	
-	
-	
-	
-	
-	
-	
-	
-	//buildSkyBox();
-	//buildPlayer(playerFoo);
-	
-	//buildPlatforms();
-	//buildCamera();
-	
-	//buildSpiral();
-	//buildFountain();
-	
-	//mySceneBuilt = true;
-	
-	
-	
-	
-	
-	buildFont();
-
-	
-	mySimulationTime = 0.0;		
-	mySceneBuilt = true;
-	
-	simulate();
-	go();
-	
+void RunAndJump::build() {
+	mySkyBoxHeight = 12.5;
+	mySkyBox = mySkyBoxManager.Load(models[3], 1, textures[4]);
+	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
+	mySkyBox->SetRotation(90.0);
+	mySkyBox->SetScale(0.5, 0.25, 0.5);
 }
 
-int RunAndJump::simulate() {
 
-	
-	//tickFont();
-	
-	//tickPlatform();
-	//tickPlayer();
-	
-	//tickSpiral();
-	//tickFountain();
-	
-	//tickCamera();
-	
-	/*
-	if (mySimulationTime > 2.0) {
-		myGameStarted = true;
-	}
-	
-	if (myPlayerPosition.y < -1500.0) {
-		return 0;
-	} else {
-		return myGameSpeed;
-	}
-	 */
-	
+int RunAndJump::simulate() {
+	tickCamera();
+	mySkyBoxManager.Update(myDeltaTime);
 	return 1;
 }
 
 
-
-
-
-
-
 void RunAndJump::render() {
-	
+  drawCamera();	
 	
 	glEnable(GL_TEXTURE_2D);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  mySkyBoxManager.Render();
+  glDisable(GL_BLEND);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	drawFont();
@@ -263,92 +163,21 @@ void RunAndJump::render() {
 
 
 
-
-
 void RunAndJump::buildCamera() {
-	//Camera
-	myCameraTarget = Vector3DMake(35.0, 0.0, 0.0);
-	myCameraPosition = Vector3DMake(-45.0, 20.0, 80.0);
+	myCameraTarget = Vector3DMake(0.0, 0.0, 0.0);
+	myCameraPosition = Vector3DMake(-10.0, 0.0, 0.0);
 	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
 }
 
 
-
 void RunAndJump::tickCamera() {
-	Vector3D cameraPosition;
-	Vector3D cameraTarget;
-	float limitP;
-	float limitT;
-	/*
-	if (mySimulationTime < 0.5) {
-		//close up sideways
-		cameraPosition = Vector3DMake(20.0, 0.0, 100.0);
-		cameraTarget = Vector3DMake(20.0, 0.0, 0.0);
-		limit = 0.02;
-		
-	} else if (mySimulationTime < 1.0) {
-		//far out sideways
-		cameraPosition = Vector3DMake(50.0, 0.0, 300.0);
-		cameraTarget = Vector3DMake(50.0, 0.0, 0.0);
-		limit = 0.02;
-
-	} else 
-		*/
-	//if (mySimulationTime < 2.5) {
-	if (false) {//(!myPlayerOnPlatform) {
-		//on top of
-		//cameraPosition = Vector3DMake(-20.0, 15.0, 0.0);
-		//cameraTarget = Vector3DMake(80.0, 8.0, 0.0);
-		
-		//mid out sideways
-		cameraPosition = Vector3DMake(-140.0, 15.0, 30.0);
-		cameraTarget = Vector3DMake(90.0, 8.0, 0.0);
-		
-
-	} else {
-		cameraPosition = Vector3DMake(-100.0, 15.0, 30.0);
-		cameraTarget = Vector3DMake(0.0, 0.0, 0.0);
-
-		//far out sideways
-		//cameraPosition = Vector3DMake(50.0, 0.0, 250.0);
-		//cameraTarget = Vector3DMake(50.0, 0.0, 0.0);
-		//limit = 0.02;
-	}
-	
-	//cameraPosition = Vector3DMake(0.0, 200.0, 200.0);
-	//cameraTarget = Vector3DMake(0.0, 0.0, 0.0);
-	
-	
-	//LOGV("%f\n", myDeltaTime);
-	limitP = 1.07 * myDeltaTime;//0.0020;
-	limitT = 1.1 * myDeltaTime;//0.0020;
-	
-	Vector3D desiredPosition = Vector3DAdd(myPlayerPosition, cameraPosition);
-	Vector3D desiredTarget = Vector3DAdd(myPlayerPosition, cameraTarget);
-
-	/*
-	Vector3DFlip(&desiredPosition);
-	Vector3D deltaP = Vector3DAdd(desiredPosition, myCameraPosition);
-	deltaP = Vector3DLimit(deltaP, myPlayerSpeed.x * limitP);
-	Vector3DFlip(&deltaP);
-	
-	myCameraPosition = Vector3DAdd(myCameraPosition, deltaP);
-	
-	
-	Vector3DFlip(&desiredTarget);
-	Vector3D deltaT = Vector3DAdd(desiredTarget, myCameraTarget);
-	deltaT = Vector3DLimit(deltaT, myPlayerSpeed.x * limitT);
-	Vector3DFlip(&deltaT);
-	
-	myCameraTarget = Vector3DAdd(myCameraTarget, deltaT);
-	 */
-	
+	Vector3D desiredTarget;
+	Vector3D desiredPosition;
+	desiredTarget = Vector3DMake(0.0, 0.0, 0.0);
+	desiredPosition = Vector3DMake(-80.0, 12.0, 0.0);
 	myCameraTarget = desiredTarget;
 	myCameraPosition = desiredPosition;
-	
 }
-
-
 
 
 void RunAndJump::tickPlayer() {

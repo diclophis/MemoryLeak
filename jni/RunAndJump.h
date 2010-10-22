@@ -14,6 +14,9 @@ class RunAndJump : public Engine {
 	
 public:
 
+  RunAndJump(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) : Engine(width, height, x_textures, x_models) {
+  };
+
 	~RunAndJump();
 	void hitTest(float x, float y);
 	
@@ -144,7 +147,7 @@ public:
 	
 	
 	// Game Engine
-	void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
+	void build();
 	int simulate();
 	void render();
 	void buildCamera();
@@ -232,5 +235,10 @@ public:
 	GLuint myTreeTextures[1];
 	
 	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
+
+	// SkyBox Engine
+	float mySkyBoxHeight;
+	Md2Instance *mySkyBox;
+	Md2Manager mySkyBoxManager;
 	
 };

@@ -180,10 +180,11 @@ public:
 	int myGameSpeed;
 	int screenWidth;
 	int screenHeight;
-	std::vector<GLuint> myTextures;
-	Engine();
+	std::vector<GLuint> textures;
+  std::vector<foo*> models;
+	Engine(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
 	virtual ~Engine();
-	virtual void build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) = 0;
+  virtual void build() = 0;
 	int tick();
 	virtual int simulate() = 0;
 	virtual void render() = 0;
@@ -207,8 +208,8 @@ public:
 	Vector3D myCameraPosition;
 	Vector3D myCameraSpeed;
 	Vector3D myCameraTarget;
-	virtual void buildCamera() = 0;
-	virtual void tickCamera() = 0;
+	void buildCamera() {};
+	void tickCamera() {};
 	void drawCamera();
 	
 	// SkyBox Engine	

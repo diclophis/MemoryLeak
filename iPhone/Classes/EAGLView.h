@@ -12,6 +12,8 @@
 
 #include "importgl.h"
 
+GLuint loadTexture(UIImage *image);
+
 struct Engine;
 typedef struct Engine Engine;
 

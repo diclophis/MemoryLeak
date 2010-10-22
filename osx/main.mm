@@ -73,14 +73,14 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-  if (argc > 1) {
-    glutGameModeString("1440x900:32@65");
-    glutEnterGameMode();
-  } else {
+  //if (argc > 1) {
+  //  glutGameModeString("1440x900:32@65");
+  //  glutEnterGameMode();
+  //} else {
     glutInitWindowSize (kWindowWidth, kWindowHeight);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
-  }
+  //}
 
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/models"];
 	for (NSString *path in model_names) {
@@ -111,8 +111,13 @@ int main(int argc, char** argv) {
     [texData release];
   }
 
-  gameController = new RaptorIsland();
-  gameController->build(kWindowWidth, kWindowHeight, textures, models);
+  if (argc > 1) {
+    gameController = new RaptorIsland(kWindowWidth, kWindowHeight, textures, models);
+  } else {
+    gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
+  }
+
+  gameController->go();
 
 	glutMouseFunc(processMouse);
 	glutMotionFunc(processMouseMotion);

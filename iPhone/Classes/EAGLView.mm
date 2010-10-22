@@ -321,9 +321,9 @@ GLuint loadTexture(UIImage *image) {
 
 
 	
-	gameController = new RunAndJump();
- 	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
-
+	gameController = new RunAndJump(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+	gameController->go();
+	
 	gameState = 1;
 	
 

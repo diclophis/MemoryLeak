@@ -31,29 +31,50 @@ inline std::string Engine::stringify(double x) {
 }
 
 
-Engine::Engine() {
-	pthread_mutex_init(&m_mutex, 0);
+Engine::Engine(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) {
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
-	LOGV("ctor done\n");
+
+  // Engine!!!
+	//Screen
+	screenWidth = width;
+	screenHeight = height;
+	//World
+	myGravity = 0.0;
+	mySimulationTime = 0.0;
+	myGameStarted = false;
+	myGameSpeed = 1;
+	myDeltaTime = 1.0 / 60.0;
+	textures = x_textures;
+	models = x_models;
+	buildCamera();
+	buildFont();
 }
 
 
 void *Engine::start_thread(void *obj) {
+
+
 	reinterpret_cast<Engine *>(obj)->tick();
 	return 0;
 }
 
 
 void Engine::go() {
+  build();
+	mySceneBuilt = true;
+	mySimulationTime = 0.0;		
+	simulate();
+	pthread_mutex_init(&m_mutex, 0);
 	pthread_create(&m_thread, 0, Engine::start_thread, this);
 }
 
 
 Engine::~Engine() {
 	pthread_mutex_destroy(&m_mutex);
-	myTextures.clear();
+	textures.clear();
+	models.clear();
 }
 
 
@@ -195,7 +216,7 @@ void Engine::drawFont() {
 	m_fCharacterWidth = 1.0 / m_ntextWidth;
 	m_fCharacterHeight = 1.0 / m_ntextHeight;
 
-	glBindTexture(GL_TEXTURE_2D, myTextures[1]);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();	
@@ -412,7 +433,7 @@ void Engine::tickFountain() {
 void Engine::drawFountain() {
 	glDisable(GL_DEPTH_TEST);
 	if (false) {
-		glBindTexture(GL_TEXTURE_2D, myTextures[5]);
+		glBindTexture(GL_TEXTURE_2D, textures[5]);
 
 #ifdef DESKTOP
 		glEnable(GL_POINT_SPRITE);

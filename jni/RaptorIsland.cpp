@@ -34,25 +34,14 @@ RaptorIsland::~RaptorIsland() {
 }
 
 
-void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models) {
-	//Screen
-	screenWidth = width;
-	screenHeight = height;
+//RaptorIsland::RaptorIsland(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) {
+//}
 
-	//World
-	myGravity = 0.0;
-	mySimulationTime = 0.0;
-	myGameStarted = false;
-	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 60.0;
 
-	myTextures = textures;
-
-	buildCamera();
+void RaptorIsland::build() {
 
 	ctfSeeker = new CtfSeeker;
 	all.push_back(ctfSeeker);
-
 
 	for (int i = 0; i<10; i++) {
 		CtfEnemy *enemy = new CtfEnemy;
@@ -65,7 +54,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 
 	myRaptorHeight = 5.0;	
 	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
-		myRaptors.push_back(myRaptorManager.Load(models[0], 30, myTextures[0]));
+		myRaptors.push_back(myRaptorManager.Load(models[0], 30, textures[0]));
 		myRaptors[i]->SwitchCycle(1, 0.0, false, -1, 1);
 		myRaptors[i]->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
 		myRaptors[i]->SetScale(0.2, 0.2, 0.2);
@@ -80,7 +69,7 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myBarrelHeight = 0.0;
 	for (int i=0; i<CtfBase::obstacleCount; i++) {
 		Md2Instance *barrel;
-		barrel = myBarrelManager.Load(models[1], 1, myTextures[2]);
+		barrel = myBarrelManager.Load(models[1], 1, textures[2]);
 		myBarrels.push_back(barrel);
 		barrel->SetScale(0.05, 0.05, 0.05);
 		barrel->SetPosition(0.0, myBarrelHeight, 0.0);
@@ -89,14 +78,14 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 
 	
 	mySkyBoxHeight = 12.5;
-	mySkyBox = mySkyBoxManager.Load(models[3], 1, myTextures[4]);
+	mySkyBox = mySkyBoxManager.Load(models[3], 1, textures[4]);
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
 	mySkyBox->SetRotation(90.0);
 	mySkyBox->SetScale(0.5, 0.25, 0.5);
 
 	
 	myPlayerHeight = 0.0;
-	myPlayer = myPlayerManager.Load(models[2], 1, myTextures[3]);
+	myPlayer = myPlayerManager.Load(models[2], 1, textures[3]);
 	myPlayer->SetPosition(0.0, myPlayerHeight, 0.0);
 	myPlayer->SetScale(0.15, 0.15, 0.15);
 	
@@ -105,10 +94,6 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 		LOGV("%d %d %s\n", myBarrels[0]->GetNumCycles(), cycle, myBarrels[0]->GetCycleName(cycle));
 	}
 	 */
-	
-	
-	buildFont();
-	
 	
 	int i=0;
 	for (SOI so = CtfBase::allObstacles.begin(); so != CtfBase::allObstacles.end(); so++) {
@@ -128,28 +113,23 @@ void RaptorIsland::build(int width, int height, std::vector<GLuint> textures, st
 	myLineVertices[5] = 0.0;
 	
 	
-	m_Gun = MachineGun(myTextures[5]);
+	m_Gun = MachineGun(textures[5]);
 	//m_Gun.buildFountain();
-	
-	mySimulationTime = 0.0;		
-	mySceneBuilt = true;
-
-	simulate();
-	go();
 }
 
 void RaptorIsland::render() {
-	//drawCamera();
+	drawCamera();
 
 	
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	/*
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mySkyBoxManager.Render();
 	glDisable(GL_BLEND);
+
+  /*
 
 	glEnable(GL_DEPTH_TEST);
 	myRaptorManager.Render();
