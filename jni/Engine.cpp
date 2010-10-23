@@ -32,6 +32,9 @@ inline std::string Engine::stringify(double x) {
 
 
 Engine::Engine(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) {
+
+int x = 0; x = 1;
+
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
@@ -54,9 +57,12 @@ Engine::Engine(int width, int height, std::vector<GLuint> x_textures, std::vecto
 
 
 void *Engine::start_thread(void *obj) {
-
-
 	reinterpret_cast<Engine *>(obj)->tick();
+	//(Engine *)obj->tick();
+  //Engine* engine = static_cast<Engine*>(obj);
+  //engine->tick();
+
+  //Engine *engine = reinterpret_cast<Engine *>(obj);
 	return 0;
 }
 
@@ -152,7 +158,7 @@ void Engine::prepareFrame(int width, int height) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0, (float) width / (float) height, 1.0, 300.0);
+	gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -304,8 +310,8 @@ void Engine::drawCamera() {
 
 //returns a random float between 0 and 1
 float Engine::randf() {
-	//random hack since no floating point random function
-	//optimize later
+	//#define ARC4RANDOM_MAX 0x100000000LL
+	//return floorf(((double)arc4random() / ARC4RANDOM_MAX));
 	return (lrand48() % 255) / 255.f;
 }
 

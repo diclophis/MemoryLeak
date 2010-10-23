@@ -93,7 +93,7 @@ void CtfBase::reset (void)
 	
 	avoiding = false;         // not actively avoiding
 	
-	clearTrailHistory ();     // prevent long streaks due to teleportation
+	//clearTrailHistory ();     // prevent long streaks due to teleportation
 }
 
 

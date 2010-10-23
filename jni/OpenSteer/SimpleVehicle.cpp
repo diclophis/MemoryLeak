@@ -305,8 +305,8 @@ OpenSteer::SimpleVehicle::annotationVelocityAcceleration (float maxLengthA,
     const Color aColor (desat, desat, 1); // bluish
     const Color vColor (    1, desat, 1); // pinkish
 
-    annotationLine (p, p + (velocity ()           * vScale), vColor);
-    annotationLine (p, p + (_smoothedAcceleration * aScale), aColor);
+    //annotationLine (p, p + (velocity ()           * vScale), vColor);
+    //annotationLine (p, p + (_smoothedAcceleration * aScale), aColor);
 }
 
 

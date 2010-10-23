@@ -1,5 +1,7 @@
 // MemoryLeak Engine
 
+#define NOT_OPENSTEERDEMO
+
 #include <stdio.h>
 
 #include "importgl.h"

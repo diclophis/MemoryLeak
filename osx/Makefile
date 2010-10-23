@@ -2,9 +2,11 @@
 
 #edit: main.o
 
+
 #main.o: main.cpp
 #CXX=/Users/jon/llvm/Debug+Asserts/bin/clang++
-CXX=g++
+#CXX=g++
+#CXX=~/Desktop/checker-249/libexec/c++-analyzer
 build=../build/osx
 CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../jni
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread
@@ -24,7 +26,6 @@ $(build)/Obstacle.o \
 $(build)/OldPathway.o \
 $(build)/Path.o \
 $(build)/Pathway.o \
-$(build)/PlugIn.o \
 $(build)/SegmentedPath.o \
 $(build)/SegmentedPathway.o \
 $(build)/SimpleVehicle.o \

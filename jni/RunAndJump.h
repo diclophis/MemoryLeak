@@ -141,11 +141,12 @@ public:
 	
 	GLuint myGroundTexture;
 	
-	Md2Instance *myPlayerMd2;
+	// Player Engine
+	float myPlayerHeight;
+	Md2Instance *myPlayer;
 	Md2Manager myPlayerManager;
-	
-	
-	
+
+
 	// Game Engine
 	void build();
 	int simulate();

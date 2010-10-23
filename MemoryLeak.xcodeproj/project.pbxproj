@@ -16,7 +16,6 @@
 		FC3997AF1242C16E008E614D /* OldPathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997821242C16E008E614D /* OldPathway.cpp */; };
 		FC3997B01242C16E008E614D /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997851242C16E008E614D /* Path.cpp */; };
 		FC3997B11242C16E008E614D /* Pathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997871242C16E008E614D /* Pathway.cpp */; };
-		FC3997B21242C16E008E614D /* PlugIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997891242C16E008E614D /* PlugIn.cpp */; };
 		FC3997B61242C16E008E614D /* SegmentedPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997961242C16E008E614D /* SegmentedPath.cpp */; };
 		FC3997B71242C16E008E614D /* SegmentedPathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997991242C16E008E614D /* SegmentedPathway.cpp */; };
 		FC3997B81242C16E008E614D /* SimpleVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC39979C1242C16E008E614D /* SimpleVehicle.cpp */; };
@@ -72,8 +71,6 @@
 		FC3997861242C16E008E614D /* Path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
 		FC3997871242C16E008E614D /* Pathway.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pathway.cpp; sourceTree = "<group>"; };
 		FC3997881242C16E008E614D /* Pathway.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pathway.h; sourceTree = "<group>"; };
-		FC3997891242C16E008E614D /* PlugIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlugIn.cpp; sourceTree = "<group>"; };
-		FC39978A1242C16E008E614D /* PlugIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlugIn.h; sourceTree = "<group>"; };
 		FC39978B1242C16E008E614D /* PolylineSegmentedPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolylineSegmentedPath.cpp; sourceTree = "<group>"; };
 		FC39978C1242C16E008E614D /* PolylineSegmentedPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolylineSegmentedPath.h; sourceTree = "<group>"; };
 		FC39978D1242C16E008E614D /* PolylineSegmentedPathwaySegmentRadii.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolylineSegmentedPathwaySegmentRadii.cpp; sourceTree = "<group>"; };
@@ -216,8 +213,6 @@
 				FC3997861242C16E008E614D /* Path.h */,
 				FC3997871242C16E008E614D /* Pathway.cpp */,
 				FC3997881242C16E008E614D /* Pathway.h */,
-				FC3997891242C16E008E614D /* PlugIn.cpp */,
-				FC39978A1242C16E008E614D /* PlugIn.h */,
 				FC39978B1242C16E008E614D /* PolylineSegmentedPath.cpp */,
 				FC39978C1242C16E008E614D /* PolylineSegmentedPath.h */,
 				FC39978D1242C16E008E614D /* PolylineSegmentedPathwaySegmentRadii.cpp */,
@@ -385,7 +380,6 @@
 				FC3997AF1242C16E008E614D /* OldPathway.cpp in Sources */,
 				FC3997B01242C16E008E614D /* Path.cpp in Sources */,
 				FC3997B11242C16E008E614D /* Pathway.cpp in Sources */,
-				FC3997B21242C16E008E614D /* PlugIn.cpp in Sources */,
 				FC3997B61242C16E008E614D /* SegmentedPath.cpp in Sources */,
 				FC3997B71242C16E008E614D /* SegmentedPathway.cpp in Sources */,
 				FC3997B81242C16E008E614D /* SimpleVehicle.cpp in Sources */,
@@ -405,7 +399,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jon Bardin (W6CH2N775F)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -434,8 +428,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = RaptorIsland;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D9B4C504-2C04-4AC8-B456-6644935F0A4D";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = iphonesimulator4.1;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -444,6 +439,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -453,6 +449,8 @@
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = RaptorIsland;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphonesimulator4.1;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -467,7 +465,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphonesimulator4.1;
 			};
 			name = Debug;
 		};
@@ -480,7 +478,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphonesimulator4.1;
 			};
 			name = Release;
 		};

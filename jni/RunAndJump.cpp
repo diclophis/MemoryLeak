@@ -14,17 +14,6 @@
 #include "RunAndJump.h"
 
 
-
-//static GLuint myFontTexture;
-
-
-void RunAndJump::hitTest(float x, float y) {
-
-}
-
-
-
-
 RunAndJump::~RunAndJump() {
 	LOGV("dealloc GameController\n");
 	myPlayerManager.Release();
@@ -38,47 +27,55 @@ RunAndJump::~RunAndJump() {
 }
 
 
-void RunAndJump::playerStartedJumping() {
-	if (myGameStarted) {
-		
-		
-		if (myPlayerCanDoubleJump) {
-			myGameSpeed += 1;
-			myPlayerCanDoubleJump = false;
-			myPlayerLastJump = mySimulationTime;
-		} else {
-			//myPlayerNeedsTransform = true;
-		}
-		
-		if (myPlayerOnPlatform) {
-			myPlayerLastJump = mySimulationTime;
-		}
-		
-	}
-	
-	//myPlayerSpeed.x = 0;
-
+void RunAndJump::hitTest(float x, float y) {
 }
 
 
-void RunAndJump::playerStoppedJumping() {
-	myPlayerLastEnd = mySimulationTime;
+void RunAndJump::buildCamera() {
+	myCameraTarget = Vector3DMake(0.0, 0.0, 0.0);
+	myCameraPosition = Vector3DMake(0.0, 0.0, 0.0);
+	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
 }
 
 
-//void RunAndJump::build(int width, int height, GLuint *textures, foo *playerFoo) {
+void RunAndJump::tickCamera() {
+	Vector3D desiredTarget;
+	Vector3D desiredPosition;
+	desiredTarget = Vector3DMake(100.0, 0.0, 0.0);
+	desiredPosition = Vector3DMake(-200.0, 80.0, 0.0);
+	myCameraTarget = desiredTarget;
+	myCameraPosition = desiredPosition;
+}
+
+
 void RunAndJump::build() {
-	mySkyBoxHeight = 12.5;
+	mySkyBoxHeight = 0.0;
 	mySkyBox = mySkyBoxManager.Load(models[3], 1, textures[4]);
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
-	mySkyBox->SetRotation(90.0);
-	mySkyBox->SetScale(0.5, 0.25, 0.5);
+	mySkyBox->SetScale(20.0, 20.0, 20.0);
+
+	myPlayerPosition = Vector3DMake(0.0, 1.0, 0.0);
+	myPlayerSpeed = Vector3DMake(0.5, 0.0, 0.0);
+	
+	myPlayerHeight = 0.0;
+	myPlayer = myPlayerManager.Load(models[2], 1, textures[3]);
+	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z);
+	myPlayer->SetScale(1.0, 1.0, 1.0);
+
+	buildPlatforms();
 }
 
 
 int RunAndJump::simulate() {
 	tickCamera();
 	mySkyBoxManager.Update(myDeltaTime);
+	myPlayerManager.Update(myDeltaTime);
+	mySkyBox->SetRotation(mySimulationTime * 40.0);
+	//mySkyBox->SetRotation((randf() * 40.0 * 51.0) * mySimulationTime);
+
+	tickPlatform();
+	tickPlayer();
+	
 	return 1;
 }
 
@@ -87,49 +84,24 @@ void RunAndJump::render() {
   drawCamera();	
 	
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   mySkyBoxManager.Render();
-  glDisable(GL_BLEND);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
+  //glDisable(GL_BLEND);
+
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  myPlayerManager.Render();
+  //glDisable(GL_BLEND);
+
+  drawPlatform();
+
 	drawFont();
 
+	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
-	
-	
-	
-	/*
-	drawCamera();
-	
-	
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//mySkyBoxManager.Render();
-	//glDisable(GL_BLEND);
-	
-	//glEnable(GL_DEPTH_TEST);
-	//myRaptorManager.Render();
-	//myBarrelManager.Render();
-	//glDisable(GL_DEPTH_TEST);
-	
-	drawPlatform();
-
-	
-	//drawFont();
-	
-	//glEnable(GL_DEPTH_TEST);
-	//myPlayerManager.Render();
-	//glDisable(GL_DEPTH_TEST);	
-	
-	//glDisable(GL_TEXTURE_2D);
-	
-	
-	*/
 	
 	/*
 	if (mySceneBuilt) {
@@ -161,27 +133,34 @@ void RunAndJump::render() {
 }
 
 
-
-
-void RunAndJump::buildCamera() {
-	myCameraTarget = Vector3DMake(0.0, 0.0, 0.0);
-	myCameraPosition = Vector3DMake(-10.0, 0.0, 0.0);
-	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
+void RunAndJump::playerStartedJumping() {
+	if (myGameStarted) {
+		if (myPlayerCanDoubleJump) {
+			myGameSpeed += 1;
+			myPlayerCanDoubleJump = false;
+			myPlayerLastJump = mySimulationTime;
+		} else {
+			//myPlayerNeedsTransform = true;
+		}
+		
+		if (myPlayerOnPlatform) {
+			myPlayerLastJump = mySimulationTime;
+		}
+		
+	}
 }
 
 
-void RunAndJump::tickCamera() {
-	Vector3D desiredTarget;
-	Vector3D desiredPosition;
-	desiredTarget = Vector3DMake(0.0, 0.0, 0.0);
-	desiredPosition = Vector3DMake(-80.0, 12.0, 0.0);
-	myCameraTarget = desiredTarget;
-	myCameraPosition = desiredPosition;
+void RunAndJump::playerStoppedJumping() {
+	myPlayerLastEnd = mySimulationTime;
 }
 
 
 void RunAndJump::tickPlayer() {
-	myPlayerJumpCycle = (int)(randf() * 3.0) + 13;
+	myPlayer->SetPosition(myPlayerPosition.x, 0.0, 0.0);
+
+	
+	//myPlayerJumpCycle = (int)(randf() * 3.0) + 13;
 	
 	//float timeSinceStarted = -[myPlayerLastJump timeIntervalSinceNow];
 	//float timeSinceEnded = -[myPlayerLastEnd timeIntervalSinceNow];
@@ -199,19 +178,19 @@ void RunAndJump::tickPlayer() {
 	if (myPlayerNeedsTransform) {
 		myPlayerNeedsTransform = false;
 		if (myPlayerIsTransformed) {
-			myPlayerMd2->SwitchCycle(myPlayerTransformUpCycle, 0.1, false, -1, myPlayerRunCycle);
+			//myPlayerMd2->SwitchCycle(myPlayerTransformUpCycle, 0.1, false, -1, myPlayerRunCycle);
 		} else {
-			myPlayerMd2->SwitchCycle(myPlayerTransformDownCycle, 0.1, false, 1, myPlayerTransformedCycle);
+			//myPlayerMd2->SwitchCycle(myPlayerTransformDownCycle, 0.1, false, 1, myPlayerTransformedCycle);
 		}
 		myPlayerIsTransformed = !myPlayerIsTransformed;
 	} else {
 	}
 
-	myPlayerManager.Update(myDeltaTime);
+	//myPlayerManager.Update(myDeltaTime);
 	
 	if (timeSinceStarted < 0.02 && timeSinceStarted > 0.0) {
 		//myMd2->SwitchCycle(6, 0.001, false);
-		myPlayerMd2->SwitchCycle(myPlayerJumpCycle, 0.01, false, -1, myPlayerRunCycle);
+		//myPlayerMd2->SwitchCycle(myPlayerJumpCycle, 0.01, false, -1, myPlayerRunCycle);
 		myPlayerFalling = false;
 		if (myPlayerJumping) {
 
@@ -313,30 +292,36 @@ void RunAndJump::buildPlatforms() {
 	float randomA;
 	float randomL;
 	int length;
-
-	lastPlatformPosition.x = -250.0;
+	lastPlatformPosition.x = -25.0;
 	
 	for (int i=0; i<myPlatformCount; i++) {
-		randomY = lastPlatformPosition.y;
-		while (fabs(lastPlatformPosition.y - randomY) < 70.0) {
-			randomY = ((random() / (float)RAND_MAX) * 150.0);
-		}
-		randomA = ((random() / (float)RAND_MAX) * 10.0);
-		randomL = 40.0 - (i * randf());
-		
+		//randomY = lastPlatformPosition.y;
+		//while (fabs(lastPlatformPosition.y - randomY) < 70.0) {
+		//	randomY = ((random() / (float)RAND_MAX) * 150.0);
+		//}
+		//randomA = ((random() / (float)RAND_MAX) * 10.0);
+		//randomL = 40.0 - (i * randf());
+    randomY = 0.0;
+    randomA = 0.0;
+    randomL = 50.0;
+
+	
+    /*
 		if (randomA > 5.0) {
-			step = 5;
+			step = 10;
 		} else if (randomA > 3.0) {
-			step = 25;
+			step = 10;
 		} else if (randomA > 1.0) {
-			step = 30;
+			step = 10;
 		} else if (randomA > 0.5) {
-			step = 35;
+			step = 10;
 		} else {
-			step = 40;
+			step = 10;
 		}
+    */
 		
-		length = step * randomL;
+		length = randomL;
+		step = 10.0;
 		
 		myPlatforms[i].position = Vector3DMake(lastPlatformPosition.x, randomY, 0.0);
 		myPlatforms[i].length = length;
@@ -346,9 +331,9 @@ void RunAndJump::buildPlatforms() {
 		myPlatforms[i].angular_frequency = 0.030; //1 / (i + 0.000001) + 1.0;
 		myPlatforms[i].phase = 0.0;
 		lastPlatformPosition = myPlatforms[i].position;
-		//LOGV("%f\n", logf((float)i + 1.1) * 20.0);
 		//lastPlatformPosition.x += length + (logf((float)i + 1.1) * 50.0);
-		lastPlatformPosition.x += (0.5 * length) + randf() * 600.0;
+		//lastPlatformPosition.x += (0.5 * length) + randf() * 600.0;
+		lastPlatformPosition.x += length + length;
 	}
 }
 
@@ -361,9 +346,8 @@ void RunAndJump::tickPlatform() {
 
 
 void RunAndJump::drawPlatform() {
-	glBindTexture(GL_TEXTURE_2D, myGroundTexture);
+	glBindTexture(GL_TEXTURE_2D, textures[5]);
 	iteratePlatform(1);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -371,7 +355,7 @@ void RunAndJump::iteratePlatform(int operation) {
 	for (int j=0; j<myPlatformCount; j++) {
 		Platform platform = myPlatforms[j];
 		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
-			for (float i = platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
+			for (int i = platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
 				if ((i < (myPlayerPosition.x + 1200.0)) && (i > (myPlayerPosition.x - 150.0))) {
 					float beginX = i;
 					float endX = i + platform.step;
@@ -416,19 +400,103 @@ const GLfloat RunAndJump::myPlatformTextureCoords[6] = {
 
 
 void RunAndJump::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
+  int i = 0;
+  float tex = 1.0;
+  int index = 0;
+  int tindex = 0;
+  int number = 6 * 3 * 1;
+
+  GLfloat platformRadius = 50.0;
+  GLfloat deep = -25.0;
+
+	GLfloat *platformVertices = (GLfloat *)malloc(number * sizeof(GLfloat));
+	//GLfloat platformVertices[number];
+	//GLfloat myPlatformTextureCoords[6 * 2 * 1];
+	//LOGV("wtf: %d\n", index++);
+	GLfloat *myPlatformTextureCoords = (GLfloat *)malloc(6 * 2 * 1 * sizeof(GLfloat));
+
+		//1
+		platformVertices[index++] = x1;
+		platformVertices[index++] = y1;
+		platformVertices[index++] = (deep); //-10 - 0
+		
+		//2
+		platformVertices[index++] = x1;
+		platformVertices[index++] = y2;//beginY + lift;
+		platformVertices[index++] = (deep + platformRadius); //0 - 10
+		
+		//3
+		platformVertices[index++] = x2;
+		platformVertices[index++] = y2; //endY + lift;
+		platformVertices[index++] = (deep + platformRadius);
+		
+		//4
+		platformVertices[index++] = x2;
+		platformVertices[index++] = y2; //endY + lift;
+		platformVertices[index++] = (deep + platformRadius);
+		
+		//5
+		platformVertices[index++] = x2;
+		platformVertices[index++] = y2;
+		platformVertices[index++] = (deep);
+		
+		//6
+		platformVertices[index++] = x1;
+		platformVertices[index++] = y1;
+		platformVertices[index++] = (deep);
+
+
+		myPlatformTextureCoords[tindex++] = (i) * tex;
+		myPlatformTextureCoords[tindex++] = 0.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex + tex;
+		myPlatformTextureCoords[tindex++] = 0.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex + tex;
+		myPlatformTextureCoords[tindex++] = 1.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex + tex;
+		myPlatformTextureCoords[tindex++] = 1.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex;
+		myPlatformTextureCoords[tindex++] = 1.0;
+		
+		myPlatformTextureCoords[tindex++] = (i) * tex;
+		myPlatformTextureCoords[tindex++] = 0.0;
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glVertexPointer(3, GL_FLOAT, 0, platformVertices);
+	glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
+	
+	
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	
+
+
+  /*
 	float beginX; float beginY; float endX; float endY;
 	
 	baseY -= 0.0;
 	
 	float platformRadius = 10.0;
 
-	int total = 10;
+	int total = 4;
 
 	float deep = -((platformRadius * (float)total) * 0.5);
 	
 	int number = 6 * 3 * total;
 	
-	GLfloat platformVertices[number];
+	//GLfloat platformVertices[number];
+	GLfloat *platformVertices = (GLfloat *)malloc(number * sizeof(GLfloat));
+  for (int i=0; i<number; i++) {
+    platformVertices[i] = 0.0;
+  }
+
 	GLfloat myPlatformTextureCoords[2 * 3 * 2 * total];
 	
 	int index = 0;
@@ -523,8 +591,13 @@ void RunAndJump::drawPlatformSegment(float baseY, float x1, float y1, float x2, 
 	glVertexPointer(3, GL_FLOAT, 0, platformVertices);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, myPlatformTextureCoords);
-	glDrawArrays(GL_TRIANGLES, 0, 6 * total);
+	glDrawArrays(GL_TRIANGLES, 0, number);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+  */
+
+  //free(platformVertices);
 }
 
 

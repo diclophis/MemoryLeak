@@ -161,7 +161,7 @@ void Md2Manager::Update(float dt) {
 	std::vector<ModelRef*>::iterator it = m_LoadedModels.begin();
 	for( unsigned char i=m_UpdateCurrent; it != m_LoadedModels.end(); ++it, ++i )
 	{
-		(*it)->pModel->Update(ddt,i%m_UpdateStagger,m_UpdateStagger);
+		(*it)->pModel->Update(ddt,i % m_UpdateStagger,m_UpdateStagger);
 	}
 
 	if( (++m_UpdateCurrent) >= m_UpdateStagger )
