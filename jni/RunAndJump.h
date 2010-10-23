@@ -37,42 +37,7 @@ public:
 		GLfloat rotation;
 	} PlayerState;
 	
-	//#define NUM_PARTICLES 10
-	
-	/*
-	GLfloat vertices[NUM_PARTICLES * 3];
-	GLfloat colors[NUM_PARTICLES * 4];
-	GLushort elements[NUM_PARTICLES];
-	Vector3D generator[NUM_PARTICLES]; //keep track of generator (origin) for each particle
-	Vector3D velocity[NUM_PARTICLES]; //keep track of velocity vector for each particle
-	float alpha[NUM_PARTICLES]; //keep track of alpha for display
-	float life[NUM_PARTICLES]; //keep track of life of particle
-	
-	
-	float		m_nScalerX;		// To scale texture values based on imported pngs.
-	float		m_nScalerY;		// To scale texture values based on imported pngs.
-	
-	float		m_charPixelWidth;
-	float		m_charPixelHeight;
-	float		m_animPixelWidth;
-	float		m_animPixelHeight;	
-	
-	int			m_ntextWidth, m_ntextHeight;
-	GLfloat		m_fCharacterWidth, m_fCharacterHeight;
-	
-	GLuint myPlayerTexture;
-	
-	// Predefined texture coords
-	GLfloat		charTexCoords[FONT_TEXTURE_ATLAS_WIDTH*FONT_TEXTURE_ATLAS_LINES*8];
-	
-	// Working space for OpenGL
-	int			m_nCurrentChar;					// Position in current line.
-	GLfloat		charGeomV[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_V)];
-	GLfloat		charGeomT[(MAX_CHAR_BUFFER * ONE_CHAR_SIZE_T)];
-	GLint		viewport[4];	
-	
 
-	*/
 	
 	GLfloat *mySomethingVertices;
 	GLfloat *myGarbageCollectorVertices;
@@ -83,38 +48,10 @@ public:
 	PlayerState *myPlayerStates;
 	int myPlayerStatesCount;
 	
-	//bool mySceneBuilt;
-
-	
-	float myGravity;
-	//float mySimulationTime;
-	//float myDeltaTime;
-	
 	Vector3D myPlayerPlatformIntersection;
 	
 	
-	//Vector3D myCameraPosition;
-	//Vector3D myCameraSpeed;
-	//Vector3D myCameraTarget;
-	
-	
-	//Vector3D myPlayerPosition;
-	//Vector3D myPlayerSpeed;
-	//Vector3D myPlayerAcceleration;
-	//Vector3D myPlayerJumpStartPosition;
-	
-	//float myPlayerMaxSpeed;
-	//float myPlayerJumpSpeed;
-	
-	//GLfloat myPlayerRotation;
-	
-	//int myPlayerAnimationIndex;
-	//int myPlayerAnimationDirection;
-	
-	//bool myPlayerJumping;
-	//bool myPlayerCanDoubleJump;
-	//bool myPlayerOnPlatform;
-	//bool myPlayerBelowPlatform;
+
 	
 	int myState;
 	int myStatesToShow;
@@ -126,9 +63,6 @@ public:
 	int mySomethingArrays;
 	
 	int myPlatformCount;
-	
-	//float myPlayerLastJump;
-	//float myPlayerLastEnd;
 	
 	Vector3D myPlayerPlatformCorrection;
 	
@@ -195,31 +129,7 @@ public:
 	void drawFountain();
 	void reset_life(int idx);
 
-/*
-	void buildSkyBox();
-	void tickSkyBox();
-	void drawSkyBox();
-	
-	GLuint *mySkyBoxTextures;
-	GLfloat mySkyBoxRotation;
-	
-	
-	float randf();
-	void reset_vertex(int idx);
-	void random_velocity(int idx);
-	void reset_particle(int idx);
-	void update_vertex(int idx);
-	void update_color(int idx);
-	void bindTexture(GLuint texture);
-	void unbindTexture(GLuint texture);
- */
-	
-	//int screenWidth;
-	//int screenHeight;
-		
-	//void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
-	//void prepareFrame(int width, int height);
-	
+
 	int myPlayerRunCycle;
 	int myPlayerJumpCycle;
 	int myPlayerTransformedCycle;
@@ -229,14 +139,9 @@ public:
 	int myPlayerNeedsTransform;
 	
 	inline std::string stringify(double x);
-	
-	//bool myGameStarted;
-	//int myGameSpeed;
-	
+		
 	GLuint myTreeTextures[1];
 	
-	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
-
 	// SkyBox Engine
 	float mySkyBoxHeight;
 	Md2Instance *mySkyBox;

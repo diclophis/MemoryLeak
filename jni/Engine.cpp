@@ -32,9 +32,6 @@ inline std::string Engine::stringify(double x) {
 
 
 Engine::Engine(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) {
-
-int x = 0; x = 1;
-
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
@@ -44,11 +41,11 @@ int x = 0; x = 1;
 	screenWidth = width;
 	screenHeight = height;
 	//World
-	myGravity = 0.0;
+	myGravity = -1.0;
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 60.0;
+	myDeltaTime = 1.0 / 10.0;
 	textures = x_textures;
 	models = x_models;
 	buildCamera();
