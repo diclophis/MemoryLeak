@@ -23,6 +23,14 @@ namespace OpenSteer {
 }
 
 
+Engine::~Engine() {
+	pthread_mutex_destroy(&m_mutex);
+	textures.clear();
+	models.clear();
+}
+
+
+
 inline std::string Engine::stringify(double x) {
 	std::ostringstream o;
 	if (!(o << x))
@@ -32,53 +40,54 @@ inline std::string Engine::stringify(double x) {
 
 
 Engine::Engine(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) {
+	LOGV("ABC");
+
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
 
-  // Engine!!!
+	// Engine!!!
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
 	//World
-	myGravity = -1.0;
-	mySimulationTime = 0.0;
-	myGameStarted = false;
-	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 10.0;
 	textures = x_textures;
 	models = x_models;
 	buildCamera();
 	buildFont();
+	LOGV("123");
 }
 
 
-void *Engine::start_thread(void *obj) {
-	reinterpret_cast<Engine *>(obj)->tick();
-	//(Engine *)obj->tick();
-  //Engine* engine = static_cast<Engine*>(obj);
-  //engine->tick();
-
-  //Engine *engine = reinterpret_cast<Engine *>(obj);
-	return 0;
+void Engine::buildCamera() {
+	myCameraTarget = Vector3DMake(0.0, 0.0, 0.0);
+	myCameraPosition = Vector3DMake(0.0, 0.0, 0.0);
+	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
 }
 
 
 void Engine::go() {
-  build();
+	LOGV("wtfA");
+	build();
+	LOGV("wtfB");
 	mySceneBuilt = true;
 	mySimulationTime = 0.0;		
-	simulate();
 	pthread_mutex_init(&m_mutex, 0);
 	pthread_create(&m_thread, 0, Engine::start_thread, this);
+	LOGV("wtfC");
+
 }
 
-
-Engine::~Engine() {
-	pthread_mutex_destroy(&m_mutex);
-	textures.clear();
-	models.clear();
+void *Engine::start_thread(void *obj) {
+	reinterpret_cast<Engine *>(obj)->tick();
+	//(Engine *)obj->tick();
+	//Engine* engine = static_cast<Engine*>(obj);
+	//engine->tick();
+	
+	//Engine *engine = reinterpret_cast<Engine *>(obj);
+	return 0;
 }
+
 
 
 int Engine::tick() {
@@ -92,6 +101,7 @@ int Engine::tick() {
 
 	while (gameState != 0) {
 		if (mySceneBuilt) {
+			pthread_mutex_lock(&m_mutex);
 			gettimeofday(&t2, NULL);
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
@@ -102,6 +112,7 @@ int Engine::tick() {
 			} else {
 				usleep(30.0);
 			}
+			pthread_mutex_unlock(&m_mutex);
 		}
 	}
 	
@@ -110,25 +121,25 @@ int Engine::tick() {
 
 
 void Engine::draw(float rotation) {
+	pthread_mutex_lock(&m_mutex);
 	if (mySceneBuilt) {
 		if (myViewportSet) {
 			glPushMatrix();
 			{
-				//glClearDepthf(1.0f);
 				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
-				//glEnable(GL_DEPTH_TEST);
-				//glDepthFunc(GL_LEQUAL);
 				glRotatef(rotation, 0.0, 0.0, 1.0);
+				drawCamera();
 				render();
-				//glDisable(GL_DEPTH_TEST);
 			}
 			glPopMatrix();
 		} else {
 			prepareFrame(screenWidth, screenHeight);
 		}
 	}
+	pthread_mutex_unlock(&m_mutex);
+
 }
 
 #ifndef DESKTOP

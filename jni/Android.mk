@@ -30,6 +30,7 @@ LOCAL_SRC_FILES := \
     Engine.cpp \
     MachineGun.cpp \
     RaptorIsland.cpp \
+    RunAndJump.cpp \
     CaptureTheFlag.cpp \
     MD2_File.cpp \
     MD2_Manager.cpp \
@@ -41,7 +42,6 @@ LOCAL_SRC_FILES := \
     OpenSteer/OldPathway.cpp \
     OpenSteer/Path.cpp \
     OpenSteer/Pathway.cpp \
-    OpenSteer/PlugIn.cpp \
     OpenSteer/SegmentedPath.cpp \
     OpenSteer/SegmentedPathway.cpp \
     OpenSteer/SimpleVehicle.cpp \

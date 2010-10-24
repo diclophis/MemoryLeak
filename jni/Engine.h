@@ -208,8 +208,8 @@ public:
 	Vector3D myCameraPosition;
 	Vector3D myCameraSpeed;
 	Vector3D myCameraTarget;
-	void buildCamera() {};
-	void tickCamera() {};
+	void buildCamera();
+	virtual void tickCamera() = 0;
 	void drawCamera();
 	
 	// SkyBox Engine	

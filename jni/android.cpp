@@ -36,11 +36,7 @@
 
 #include "importgl.h"
 
-#include "OpenSteer/Vec3.h"
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/Color.h"
-#include "CaptureTheFlag.h"
-#include "RaptorIsland.h"
+#include "MemoryLeak.h"
 
 
 extern "C" {
@@ -53,31 +49,12 @@ extern "C" {
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env);
 }
 
-
 static std::vector<foo*> models;
-
-/*
-static FILE *myFile1;
-static unsigned int fileOffset1;
-static unsigned int fileLength1;
-
-static FILE *myFile2;
-static unsigned int fileOffset2;
-static unsigned int fileLength2;
-
-static FILE *myFile3;
-static unsigned int fileOffset3;
-static unsigned int fileLength3;
-
-static FILE *myFile4;
-static unsigned int fileOffset4;
-static unsigned int fileLength4;
-*/
-
 static std::vector<GLuint> sPlayerTextures;
+
 static long sStartTick = 0;
 static long sTick = 0;
-static RaptorIsland *gameController;
+static Engine *gameController;
 int gAppAlive   = 1;
 static int  sDemoStopped  = 0;
 static long sTimeOffset   = 0;
@@ -93,7 +70,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 }
 
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1) { //jobject fd_sys1, unsigned int off1, unsigned int len1, jobject fd_sys2, unsigned int off2, unsigned int len2, jobject fd_sys3, unsigned int off3, unsigned int len3, jobject fd_sys4, unsigned int off4, unsigned int len4) {
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1) {
   LOGV("initNative 1");
 
 	importGLInit();
@@ -101,51 +78,17 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
 		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
-		if (fdClassDescriptorFieldID != NULL) { // && fd_sys1 != NULL && fd_sys2 != NULL) {
-
+		if (fdClassDescriptorFieldID != NULL) {
       for (int i=0; i<count; i++) {
         LOGV("load model 1");
-
-        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID); //env->GetIntField(fd_sys4, fdClassDescriptorFieldID);
+        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-
-        foo firstModel;
-        firstModel.fp = fdopen(myfdx, "rb");
-        //firstModel.fp = fdopen(env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID), "rb");
-        firstModel.off = env->GetIntArrayElements(off1, 0)[i];
-        firstModel.len = env->GetIntArrayElements(len1, 0)[i];
-
-        //off1[i];
-        //firstModel.len = len1[i];
-        
-        models.push_back(&firstModel);
+        foo *firstModel = new foo;
+        firstModel->fp = fdopen(myfdx, "rb");
+        firstModel->off = env->GetIntArrayElements(off1, 0)[i];
+        firstModel->len = env->GetIntArrayElements(len1, 0)[i];
+        models.push_back(firstModel);
       }
-
-      /*
-			jint fd1 = env->GetIntField(fd_sys1, fdClassDescriptorFieldID);
-			int myfd1 = dup(fd1);
-			myFile1 = fdopen(myfd1, "rb");
-			fileOffset1 = off1;
-			fileLength1 = len1;
-
-			jint fd2 = env->GetIntField(fd_sys2, fdClassDescriptorFieldID);
-			int myfd2 = dup(fd2);
-			myFile2 = fdopen(myfd2, "rb");
-			fileOffset2 = off2;
-			fileLength2 = len2;
-
-			jint fd3 = env->GetIntField(fd_sys3, fdClassDescriptorFieldID);
-			int myfd3 = dup(fd3);
-			myFile3 = fdopen(myfd3, "rb");
-			fileOffset3 = off3;
-			fileLength3 = len3;
-
-			jint fd4 = env->GetIntField(fd_sys4, fdClassDescriptorFieldID);
-			int myfd4 = dup(fd4);
-			myFile4 = fdopen(myfd4, "rb");
-			fileOffset4 = off4;
-			fileLength4 = len4;
-      */
 		}
 	} 
 
@@ -157,44 +100,20 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
   LOGV("nativeOnSurfaceCreated 1");
 
-	for (int i=0; i<13; i++) {
+	for (int i=0; i<5; i++) {
+  LOGV("texture %d", env->GetIntArrayElements(arr, 0)[i]);
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 		
 
-/*
-	foo secondModel; // = new foo;
-	secondModel.fp = myFile2;
-	secondModel.off = fileOffset2;
-	secondModel.len = fileLength2;
-	
-	models.push_back(&secondModel);
-
-	foo thirdModel; // = new foo;
-	thirdModel.fp = myFile3;
-	thirdModel.off = fileOffset3;
-	thirdModel.len = fileLength3;
-	
-	models.push_back(&thirdModel);
-
-	foo fourthModel;
-	fourthModel.fp = myFile4;
-	fourthModel.off = fileOffset4;
-	fourthModel.len = fileLength4;
-	
-	models.push_back(&fourthModel);
-*/
-
   LOGV("nativeOnSurfaceCreated AAA");
 
-  gameController = new RaptorIsland();
-  gameController->build(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+  gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+  gameController->go();
 
   LOGV("nativeOnSurfaceCreated BBB");
 
-  gameState = 1; //gameController->tick();
-	models.clear();
-	sPlayerTextures.clear();
+  gameState = 1;
   gAppAlive    = 1;
   sDemoStopped = 0;
   sTimeOffsetInit = 0;

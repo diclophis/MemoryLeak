@@ -118,8 +118,6 @@ void RaptorIsland::build() {
 }
 
 void RaptorIsland::render() {
-	drawCamera();
-
 	
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -267,14 +265,6 @@ int RaptorIsland::simulate() {
 	
 
 	return 1;
-}
-
-
-void RaptorIsland::buildCamera() {
-	//Camera
-	myCameraTarget = Vector3DMake(0.0, 0.0, 0.0);
-	myCameraPosition = Vector3DMake(-10.0, 0.0, 0.0);
-	myCameraSpeed = Vector3DMake(0.0, 0.0, 0.0);
 }
 
 

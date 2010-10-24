@@ -66,7 +66,8 @@ void processMouse(int button, int state, int x, int y) {
 
 
 void processMouseMotion(int x, int y) {
-	gameController->hitTest(x, y);
+	//gameController->hitTest(x, y);
+  //LOGV("Wtf2");
 }
 
 
