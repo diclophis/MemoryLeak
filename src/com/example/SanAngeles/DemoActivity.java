@@ -1,45 +1,3 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * This is a small port of the "San Angeles Observation" demo
- * program for OpenGL ES 1.x. For more details, see:
- *
- *    http://jet.ro/visuals/san-angeles-observation/
- *
- * This program demonstrates how to use a GLSurfaceView from Java
- * along with native OpenGL calls to perform frame rendering.
- *
- * Touching the screen will start/stop the animation.
- *
- * Note that the demo runs much faster on the emulator than on
- * real devices, this is mainly due to the following facts:
- *
- * - the demo sends bazillions of polygons to OpenGL without
- *   even trying to do culling. Most of them are clearly out
- *   of view.
- *
- * - on a real device, the GPU bus is the real bottleneck
- *   that prevent the demo from getting acceptable performance.
- *
- * - the software OpenGL engine used in the emulator uses
- *   the system bus instead, and its code rocks :-)
- *
- * Fixing the program to send less polygons to the GPU is left
- * as an exercise to the reader. As always, patches welcomed :-)
- */
-
 package com.example.SanAngeles;
 
 
@@ -71,19 +29,11 @@ public class DemoActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-    //requestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
-
 
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
 
-
-    /*
-		android.content.res.AssetFileDescriptor afd2;
-		android.content.res.AssetFileDescriptor afd3;
-		android.content.res.AssetFileDescriptor afd4;
-    */
     AssetManager am = getAssets();
     String path = "models";
     String[] texture_file_names;
@@ -95,51 +45,30 @@ public class DemoActivity extends Activity {
     try {
       texture_file_names = am.list(path);
       android.content.res.AssetFileDescriptor afd1;
-
       fd1 = new java.io.FileDescriptor[texture_file_names.length];
       off1 = new int[texture_file_names.length];
       len1 = new int[texture_file_names.length];
-
       for (int i=0; i<texture_file_names.length; i++) {
-
         afd1 = getAssets().openFd(path + "/" + texture_file_names[i]);
-        //afd2 = getAssets().openFd("models/barrel.wav");
-        //afd3 = getAssets().openFd("models/vincent.wav");
-        //afd4 = getAssets().openFd("models/crate.wav");
-
-        if (afd1 != null) { //  && afd2 != null && afd3 != null && afd4 != null) {
+        if (afd1 != null) {
             fd1[i] = afd1.getFileDescriptor();
             off1[i] = (int)afd1.getStartOffset();
             len1[i] = (int)afd1.getLength();
-
-            /*
-            java.io.FileDescriptor fd2 = afd2.getFileDescriptor();
-            int off2 = (int)afd2.getStartOffset();
-            int len2 = (int)afd2.getLength();
-            java.io.FileDescriptor fd3 = afd3.getFileDescriptor();
-            int off3 = (int)afd3.getStartOffset();
-            int len3 = (int)afd3.getLength();
-            java.io.FileDescriptor fd4 = afd4.getFileDescriptor();
-            int off4 = (int)afd4.getStartOffset();
-            int len4 = (int)afd4.getLength();
-            */
-
         }
       }
-		  int res = initNative(texture_file_names.length, fd1, off1, len1); //, fd2, off2, len2, fd3, off3, len3, fd4, off4, len4);
+		  int res = initNative(texture_file_names.length, fd1, off1, len1);
     } catch(java.io.IOException e) {
       System.out.println(e);
     }
-
 	}
+
 
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    //setContentView(R.layout.myLayout);
   }
 
 
-	private static native int initNative(int count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1); //, java.io.FileDescriptor fd2, int off2, int len2, java.io.FileDescriptor fd3, int off3, int len3, java.io.FileDescriptor fd4, int off4, int len4); 
+	private static native int initNative(int count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1);
 
     @Override
     protected void onPause() {

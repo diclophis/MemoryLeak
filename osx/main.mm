@@ -14,7 +14,6 @@
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
-//static RaptorIsland *gameController;
 static Engine *gameController;
 
 GLuint loadTexture(NSBitmapImageRep *image) {
@@ -61,7 +60,9 @@ void resize(int width, int height) {
 
 
 void processMouse(int button, int state, int x, int y) {
-	gameController->hitTest(x, y);
+  if (state == GLUT_DOWN) {
+    gameController->hitTest(x, y);
+  }
 }
 
 

@@ -155,7 +155,7 @@ static std::vector<foo*> models;
 		location.y = 480.0 - location.y;
 		
 		//NSLog(@"x=%f y=%f", location.y, location.x);
-		gameController->hitTest(location.x, location.y);
+		//gameController->hitTest(location.x, location.y);
 	}
 }
 
@@ -174,8 +174,7 @@ static std::vector<foo*> models;
 		location.y = 480.0 - location.y;
 		
 		//NSLog(@"x=%f y=%f", location.y, location.x);
-		gameController->hitTest(location.x, location.y);
-		
+		//gameController->hitTest(location.x, location.y);
 	}
 }
 
