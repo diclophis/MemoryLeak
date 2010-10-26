@@ -60,7 +60,7 @@ void RunAndJump::build() {
 	myPlayerOnPlatform = false;
 
 	myPlayerHeight = 0.0;
-	myPlayer = myPlayerManager.Load(models[2], 30, textures[3]);
+	myPlayer = myPlayerManager.Load(models[5], 30, textures[7]);
 	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z);
 	myPlayer->SetScale(1.0, 1.0, 1.0);
 	myPlayer->SwitchCycle(8, 0.1, false, -1, 8);
@@ -167,6 +167,7 @@ void RunAndJump::tickPlayer() {
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
 
 	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y, 0.0);
+  myPlayer->SetRotation(mySimulationTime * 80.0);
 }
 
 
