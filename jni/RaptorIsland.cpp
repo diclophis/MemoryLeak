@@ -73,14 +73,14 @@ void RaptorIsland::build() {
 		myBarrels.push_back(barrel);
 		barrel->SetScale(0.05, 0.05, 0.05);
 		barrel->SetPosition(0.0, myBarrelHeight, 0.0);
-		barrel->SetRotation(90.0);
+		barrel->SetRotation(90.0, 0.0);
 	}
 
 	
 	mySkyBoxHeight = 12.5;
 	mySkyBox = mySkyBoxManager.Load(models[3], 1, textures[4]);
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
-	mySkyBox->SetRotation(90.0);
+	mySkyBox->SetRotation(90.0, 0.0);
 	mySkyBox->SetScale(0.5, 0.25, 0.5);
 
 	
@@ -174,7 +174,7 @@ int RaptorIsland::simulate() {
 			rot1a = atan2(vel1a.z, vel1a.x);
 		}
 		
-		myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a));
+		myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a), 0.0);
 		myRaptors[i]->SetPosition(pos1a.x, myRaptorHeight, pos1a.z);
 	}
 	

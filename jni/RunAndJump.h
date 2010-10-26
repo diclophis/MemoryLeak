@@ -44,6 +44,11 @@ public:
 	GLfloat *mySpiralVertices;
 	
 	Platform *myPlatforms;
+
+  int mySegmentIndex;
+  int mySegmentCount;
+	std::vector<Md2Instance *> mySegments;
+	Md2Manager mySegmentManager;
 	
 	PlayerState *myPlayerStates;
 	int myPlayerStatesCount;
@@ -66,19 +71,21 @@ public:
 	
 	Vector3D myPlayerPlatformCorrection;
 	
-	static const GLfloat mySkyBoxVertices[];
-	static const GLfloat cubeTextureCoords[];
-	GLuint mySkyBoxTexture[1];
+	//static const GLfloat mySkyBoxVertices[];
+	//static const GLfloat cubeTextureCoords[];
+	//GLuint mySkyBoxTexture[1];
 		
-	float myBuildSkyBoxDuration;
-	float myBuildPlatformDuration;
+	//float myBuildSkyBoxDuration;
+	//float myBuildPlatformDuration;
 	
-	GLuint myGroundTexture;
+	//GLuint myGroundTexture;
 	
 	// Player Engine
 	float myPlayerHeight;
 	Md2Instance *myPlayer;
 	Md2Manager myPlayerManager;
+
+
 
 
 	// Game Engine

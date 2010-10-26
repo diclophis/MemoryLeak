@@ -933,6 +933,7 @@ void Md2Instance::Render() {
 
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
 		glRotatef(m_RotateY,0,1,0);
+		glRotatef(m_RotateZ,0,1,1);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
 		#if !MD2_USE_FLOATS

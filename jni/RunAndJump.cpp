@@ -20,10 +20,6 @@ RunAndJump::~RunAndJump() {
 	if (myPlatforms) {
 		free(myPlatforms);
 	}
-	
-	if (mySkyBoxTextures) {
-		free(mySkyBoxTextures);
-	}
 }
 
 
@@ -34,14 +30,16 @@ void RunAndJump::hitTest(float x, float y) {
 
 void RunAndJump::tickCamera() {
 	const float *playerRenderPosition = myPlayer->GetPosition();
-	myCameraTarget = Vector3DMake(playerRenderPosition[0] + 200.0, 0.0, 0.0);
-	myCameraPosition = Vector3DMake(playerRenderPosition[0] - 400.0, 40.0, 200.0);
+	//myCameraTarget = Vector3DMake(playerRenderPosition[0] + 200.0, 0.0, 0.0);
+	//myCameraPosition = Vector3DMake(playerRenderPosition[0] - 300.0, 100.0, 100.0);
+	myCameraTarget = Vector3DMake(playerRenderPosition[0] + 300.0, 20.0 + playerRenderPosition[1], -300.0);
+	myCameraPosition = Vector3DMake(playerRenderPosition[0] - 25.0, 125.0, 500.0);
 }
 
 
 void RunAndJump::build() {
 	mySkyBoxHeight = 0.0;
-	mySkyBox = mySkyBoxManager.Load(models[3], 1, textures[4]);
+	mySkyBox = mySkyBoxManager.Load(models[0], 1, textures[3]);
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
 	mySkyBox->SetScale(20.0, 20.0, 20.0);
 
@@ -52,26 +50,32 @@ void RunAndJump::build() {
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
-	myDeltaTime = 1.0 / 60.0;
+	myDeltaTime = 1.0 / 80.0;
 	
 	myPlayerAcceleration = Vector3DMake(1.0, 0.0, 0.0);
 	myPlayerJumping = false;
 	myPlayerLastJump = -1.0;
 	myPlayerOnPlatform = false;
 
-	myPlayerHeight = 0.0;
-	myPlayer = myPlayerManager.Load(models[5], 30, textures[7]);
-	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z);
-	myPlayer->SetScale(1.0, 1.0, 1.0);
-	myPlayer->SwitchCycle(8, 0.1, false, -1, 8);
+	myPlayerHeight = 25.0;
+	myPlayer = myPlayerManager.Load(models[1], 30, textures[4]);
+	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, myPlayerPosition.z);
+	myPlayer->SetScale(1.4, 1.4, 1.4);
+	myPlayer->SwitchCycle(1, 0.1, false, -1, 1);
   
 	for (unsigned int cycle = 0; cycle < myPlayer->GetNumCycles(); cycle++) {
 		LOGV("%d %d %s\n", myPlayer->GetNumCycles(), cycle, myPlayer->GetCycleName(cycle));
 	}
 	
-	LOGV("f");
-
 	buildPlatforms();
+
+	mySegmentCount = 12;
+	for (unsigned int i=0; i<mySegmentCount; i++) {
+		mySegments.push_back(mySegmentManager.Load(models[0], 1, textures[2]));
+		mySegments[i]->SetScale(0.5, 1.0, 3.0);
+		mySegments[i]->SetPosition(0.0, 0.0, 0.0);
+		mySegments[i]->SetRotation(0.0, 0.0);
+	}
 }
 
 
@@ -80,8 +84,9 @@ int RunAndJump::simulate() {
 	
 	mySkyBoxManager.Update(myDeltaTime);
 	myPlayerManager.Update(myDeltaTime);
+	mySegmentManager.Update(myDeltaTime);
 	
-	mySkyBox->SetRotation(mySimulationTime);
+	mySkyBox->SetRotation(160.0, 0.0);
 	mySkyBox->SetPosition(myPlayerPosition.x, mySkyBoxHeight, 0.0);
 
 	tickPlatform();
@@ -99,9 +104,8 @@ void RunAndJump::render() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	mySkyBoxManager.Render();
+	mySegmentManager.Render();
 	myPlayerManager.Render();
-	drawPlatform();
-	drawFont();
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
@@ -135,16 +139,21 @@ void RunAndJump::tickPlayer() {
 	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
 	
 	if (timeSinceStarted < 0.15 && timeSinceStarted > 0.0) {
-		myPlayer->SwitchCycle(15, 0.05, false, -1, 8);
+		//13 is shrink
+		//14 is stay shrunk
+		//15 is grow
+		//19 is side
+		//
+		myPlayer->SwitchCycle(2, 0.2, false, -1, 1);
 		myPlayerFalling = false;
 		if (myPlayerJumping) {
 			myPlayerAcceleration.x = 0.0;
-      LOGV(".");
+      //LOGV(".");
 		} else {
 			myPlayerAcceleration.x = 100.0;
 			myPlayerSpeed.y = 1250.0;
 			myPlayerJumping = true;
-      LOGV("\n\nbump");
+      //LOGV("\n\nbump");
 		}
 	}
 	
@@ -166,8 +175,8 @@ void RunAndJump::tickPlayer() {
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x, myPlayerAcceleration.y, myPlayerAcceleration.z));
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
 
-	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y, 0.0);
-  myPlayer->SetRotation(mySimulationTime * 80.0);
+	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
+	myPlayer->SetRotation(0.0, myPlayerRotation);
 }
 
 
@@ -194,11 +203,11 @@ void RunAndJump::buildPlatforms() {
     
     //randomY = 0.0;
     //randomA = 10.0;
-    randomL = 500.0;
+    randomL = 1000.0;
 
 		
 		length = randomL;
-		step = 40.0;
+		step = 50.0;
 		
 		myPlatforms[i].position = Vector3DMake(lastPlatformPosition.x, randomY, 0.0);
 		myPlatforms[i].length = length;
@@ -208,12 +217,13 @@ void RunAndJump::buildPlatforms() {
 		myPlatforms[i].angular_frequency = 0.030;
 		myPlatforms[i].phase = 0.0;
 		lastPlatformPosition = myPlatforms[i].position;
-		lastPlatformPosition.x += length + 100.0;
+		lastPlatformPosition.x += length; // + 100.0;
 	}
 }
 
 
 void RunAndJump::tickPlatform() {
+	mySegmentIndex = 0;
 	myPlayerOnPlatform = false;
 	myPlayerPlatformCorrection = Vector3DMake(0.0, 0.0, 0.0);
 	iteratePlatform(0);
@@ -221,8 +231,9 @@ void RunAndJump::tickPlatform() {
 
 
 void RunAndJump::drawPlatform() {
-	glBindTexture(GL_TEXTURE_2D, textures[5]);
-	iteratePlatform(1);
+	//mySegmentIndex = 0;
+	//glBindTexture(GL_TEXTURE_2D, textures[5]);
+	//iteratePlatform(1);
 }
 
 
@@ -231,17 +242,12 @@ void RunAndJump::iteratePlatform(int operation) {
 		Platform platform = myPlatforms[j];
 		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
 			for (int i = platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
-				if ((i < (myPlayerPosition.x + 1000.0)) && (i > (myPlayerPosition.x - 100.0))) {
+				if ((i < (myPlayerPosition.x + 550.0)) && (i > (myPlayerPosition.x - 80.0))) {
 					float beginX = i;
 					float endX = i + platform.step;
 					
 					float phaseX = platform.phase;
 					float phaseY = phaseX;
-					
-					//if (false) {
-					//	phaseX = mySimulationTime * 1000.0;//(myPlayerPosition.x - beginX); //platform.phase + (mySimulationTime * );
-					//	phaseY = -phaseX; //platform.phase + (mySimulationTime * 1000.0);
-					//}
 					
 					float beginY = platform.position.y + platform.amplitude * fastSinf(platform.angular_frequency * (beginX + phaseX));
 					float endY = platform.position.y + platform.amplitude * fastSinf(platform.angular_frequency * (endX + phaseY));
@@ -250,10 +256,18 @@ void RunAndJump::iteratePlatform(int operation) {
 					
 					switch (operation) {
 						case 0:
+							if (mySegmentIndex < mySegmentCount) {
+								mySegments[mySegmentIndex]->SetPosition(beginX, beginY - 50.0, 0.0);
+								mySegmentIndex++;
+							}
 							tickPlatformSegment(beginX, beginY, endX, endY);
 							break;
 						case 1:
-							drawPlatformSegment(platform.position.y, beginX, beginY, endX, endY);
+							//drawPlatformSegment(platform.position.y, beginX, beginY, endX, endY);
+              if (mySegmentIndex < mySegmentCount) {
+                mySegments[mySegmentIndex]->SetPosition(beginX, beginY - 50.0, 0.0);
+                mySegmentIndex++;
+              }
 							break;
 					}
 				}
@@ -264,6 +278,8 @@ void RunAndJump::iteratePlatform(int operation) {
 
 
 void RunAndJump::drawPlatformSegment(float baseY, float x1, float y1, float x2, float y2) {
+
+
   int i = 0;
   float tex = 1.0;
   int index = 0;
@@ -502,7 +518,7 @@ void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, flo
 			myPlayerPlatformIntersection = Vector3DAdd(p, timesT);
 			float slope = (endY - beginY) / (endX - beginX);
 			//if (slope > 0) {
-				myPlayerRotation = slope * 70.0;
+				myPlayerRotation = slope * 40.0;
 			//} else {
 			//	myPlayerRotation = slope;
 			//}

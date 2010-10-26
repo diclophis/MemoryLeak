@@ -56,6 +56,7 @@ static std::vector<foo*> models;
 }
 
 
+
 -(void)build {
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
@@ -192,7 +193,7 @@ static std::vector<foo*> models;
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
 			//gameController->tick();
-			gameController->draw(0);
+			gameController->draw(90);
 		} else {
 			[self startGame];
 		}
@@ -242,82 +243,33 @@ GLuint loadTexture(UIImage *image) {
 		delete gameController;
 	}
 
-/*
-	NSArray *model_names = [NSArray arrayWithObjects:@"raptor", @"barrel", @"vincent", @"crate", nil];
 	
-	for (NSString *model_name in model_names) {
-		
-		FILE *fd = fopen([[[NSBundle mainBundle] pathForResource:model_name ofType:@"wav" inDirectory:@"assets/models"] cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
-
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		
-		models.push_back(firstModel);
-		
-	}
-
-	//raptor
-	textures.push_back([self loadTexture:@"raptor" ofType:@"png"]);
-
-	// font
-	textures.push_back([self loadTexture:@"font_01" ofType:@"png"]);
-
-	//tree
-	//textures.push_back([self loadTexture:@"vincent" ofType:@"png"]);
-
-	//barrel
-	textures.push_back([self loadTexture:@"barrel_03" ofType:@"jpg"]);
-
-	//crate
-	textures.push_back([self loadTexture:@"vincent" ofType:@"png"]);
-
-	//skybox
-	textures.push_back([self loadTexture:@"skybox_04" ofType:@"png"]);
-
-	//smoke
-	textures.push_back([self loadTexture:@"glow" ofType:@"png"]);
-	
-	gameController = new RaptorIsland();
-
-	gameController->build(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
-*/
-
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
 	for (NSString *path in model_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-
 		foo *firstModel = new foo;
 		firstModel->fp = fd;
 		firstModel->off = 0;
 		firstModel->len = len;
-		
 		models.push_back(firstModel);
 	}
 
 	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
 	for (NSString *path in texture_names) {
-    NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-    //NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
-	UIImage *image = [[UIImage alloc] initWithData:texData];
-		
+		NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+		UIImage *image = [[UIImage alloc] initWithData:texData];		
 
-    if (image == nil) {
-      throw 1;
-    }
+		if (image == nil) {
+			throw 1;
+		}
 
-	  textures.push_back(loadTexture(image));
-    [image release];
-    [texData release];
-  }
-
+		textures.push_back(loadTexture(image));
+		[image release];
+		[texData release];
+	}
 
 	
 	gameController = new RunAndJump(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);

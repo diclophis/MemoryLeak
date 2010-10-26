@@ -472,8 +472,9 @@ public:
 	///			for the instance
 	/// \param	rot	-	the current rotation amount
 	/// 
-	void SetRotation(float rot) {
-		m_RotateY = rot;
+	void SetRotation(float roty, float rotz) {
+		m_RotateY = roty;
+		m_RotateZ = rotz;
 	}
 
 	/// \brief	returns the current position of the model at the current moment
@@ -586,6 +587,7 @@ public:
 
 	/// the instances y rotation
 	float m_RotateY;
+	float m_RotateZ;
 		
 	/// the current skin IDX used by this model
 	unsigned int m_CurrentSkin;

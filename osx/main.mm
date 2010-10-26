@@ -6,11 +6,14 @@
 
 #include "MemoryLeak.h"
 
-//#define kWindowWidth  480
-//#define kWindowHeight 320
+//#define kWindowWidth  1024
+//#define kWindowHeight 600
 
-#define kWindowWidth  320
-#define kWindowHeight 480
+#define kWindowWidth  480
+#define kWindowHeight 320
+
+//#define kWindowWidth  320
+//#define kWindowHeight 480
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;

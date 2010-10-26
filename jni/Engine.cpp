@@ -132,6 +132,8 @@ void Engine::draw(float rotation) {
 				glRotatef(rotation, 0.0, 0.0, 1.0);
 				drawCamera();
 				render();
+				//glDisable(GL_TEXTURE_2D);
+				//drawFont();
 			}
 			glPopMatrix();
 		} else {
