@@ -50,8 +50,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 
 
 void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1) {
-  LOGV("initNative 1");
-
 	importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
@@ -59,7 +57,6 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
 		if (fdClassDescriptorFieldID != NULL) {
       for (int i=0; i<count; i++) {
-        LOGV("load model 1");
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
         foo *firstModel = new foo;
@@ -70,53 +67,38 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
       }
 		}
 	} 
-
-  LOGV("initNative 2");
 } 
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
-
-  LOGV("nativeOnSurfaceCreated 1");
 
 	for (int i=0; i<5; i++) {
   LOGV("texture %d", env->GetIntArrayElements(arr, 0)[i]);
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 		
-
-  LOGV("nativeOnSurfaceCreated AAA");
-
   gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, models);
   gameController->go();
-
-  LOGV("nativeOnSurfaceCreated BBB");
 
   gameState = 1;
   gAppAlive    = 1;
   sDemoStopped = 0;
   sTimeOffsetInit = 0;
-
-  LOGV("nativeOnSurfaceCreated 2");
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
-  LOGV("nativeResize %d %d", width, height);
   gameController->resizeScreen(width, height);
-
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeDone( JNIEnv*  env ) {
-    LOGV("appDeinit");
     delete gameController;
     importGLDeinit();
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-		LOGV("nativePause");
     sDemoStopped = !sDemoStopped;
     if (sDemoStopped) {
     } else {

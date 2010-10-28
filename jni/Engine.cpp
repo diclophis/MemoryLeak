@@ -96,7 +96,7 @@ int Engine::tick() {
 	
 	timeval t1, t2;
 	double elapsedTime;
-  double interval = 20.0;
+  double interval = 30.0;
 	
 	gettimeofday(&t1, NULL);
 
@@ -115,7 +115,6 @@ int Engine::tick() {
 			  pthread_mutex_lock(&m_mutex);
 			  gettimeofday(&t1, NULL);
         if (waited < 1000) {
-          LOGV("adapting\n");
           myDeltaTime = (elapsedTime / interval) * 5.0;
         } else {
           myDeltaTime = 5.0; //(1.0 / 0.5);
@@ -154,8 +153,6 @@ void Engine::draw(float rotation) {
 				glRotatef(rotation, 0.0, 0.0, 1.0);
 				drawCamera();
 				render();
-				//glDisable(GL_TEXTURE_2D);
-				//drawFont();
 			}
 			glPopMatrix();
 		} else {
@@ -191,7 +188,7 @@ void Engine::prepareFrame(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
-	gluPerspective(45.0, (float) width / (float) height, 100.0, 8000.0);
+	gluPerspective(45.0, (float) width / (float) height, 100.0, 10000.0);
 
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
 
