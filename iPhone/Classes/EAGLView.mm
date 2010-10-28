@@ -103,7 +103,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval =  1;
+	animationFrameInterval = 1;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -243,7 +243,7 @@ GLuint loadTexture(UIImage *image) {
 	}
 
 	
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResoutercesOfType:nil inDirectory:@"assets/models"];
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
 	for (NSString *path in model_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);

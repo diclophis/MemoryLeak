@@ -49,6 +49,15 @@ inline void CrossProduct(float out[],float a[],float b[]) {
 }
 #endif
  */
+//-----------------------------------------------------------------------------------------------	CrossProduct
+//
+#if MD2_USE_NORMALS
+inline void CrossProduct(float out[],float a[],float b[]) {
+	out[0] = ( a[1] * b[2]  -  a[2] * b[1] );
+	out[1] = ( a[2] * b[0]  -  a[0] * b[2] );
+	out[2] = ( a[0] * b[1]  -  a[1] * b[0] );
+}
+#endif
 
 
 //-----------------------------------------------------------------------------------------------	class Md2AnimCycle
@@ -945,6 +954,9 @@ void Md2Instance::Render() {
 
 
 
+				#if MD2_USE_NORMALS
+					glNormalPointer(GL_FLOAT,sizeof(Md2VertexNormal), m_VertexData[0].normal );
+				#endif
 				// vertex data
 				glVertexPointer(3,GL_FLOAT,sizeof(Md2VertexNormal), m_VertexData[0].vertex);
 				
@@ -1237,3 +1249,52 @@ void Md2Instance::Update(float dt){
 #endif
 
 }	
+
+//-----------------------------------------------------------------------------------------------	Md2Model :: CalcNormals
+//
+#if MD2_USE_NORMALS
+void Md2Model::CalcNormals() {
+
+	unsigned short* ptr = m_OriginalIndices;
+	unsigned short* end = ptr + 3*m_NumTris;
+
+	for( ; ptr != end; ptr+=3 )
+	{
+		float ab[3];
+		float ac[3];
+
+		Md2VertexNormal* a = g_VertBuffer + ptr[0];
+		Md2VertexNormal* b = g_VertBuffer + ptr[1];
+		Md2VertexNormal* c = g_VertBuffer + ptr[2];
+
+		ab[0] = b->vx - a->vx; 
+		ab[1] = b->vy - a->vy;
+		ab[2] = b->vz - a->vz;
+
+		ac[0] = c->vx - a->vx; 
+		ac[1] = c->vy - a->vy;
+		ac[2] = c->vz - a->vz;
+
+		float cross[3];
+		CrossProduct(cross,ab,ac);
+
+		float l = 1.0f/sqrt( cross[0]*cross[0] + cross[1]*cross[1] + cross[2]*cross[2] );
+		cross[0]*=l;
+		cross[1]*=l;
+		cross[2]*=l;
+
+		a->nx += cross[0];
+		a->ny += cross[1];
+		a->nz += cross[2];
+
+		b->nx += cross[0];
+		b->ny += cross[1];
+		b->nz += cross[2];
+
+		c->nx += cross[0];
+		c->ny += cross[1];
+		c->nz += cross[2];
+	}
+
+}
+#endif

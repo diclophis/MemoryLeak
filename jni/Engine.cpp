@@ -96,22 +96,44 @@ int Engine::tick() {
 	
 	timeval t1, t2;
 	double elapsedTime;
+  double interval = 20.0;
 	
 	gettimeofday(&t1, NULL);
+
+  unsigned long waited = 0;
 
 	while (gameState != 0) {
 		if (mySceneBuilt) {
 			gettimeofday(&t2, NULL);
-			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
-			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			if (elapsedTime > 16.0) {
+      elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
+      elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
+			if (elapsedTime > interval) {
+      //if (waited++ > 50000) {
+        //if (waited < 5) {
+        //}
+        //LOGV("foo:( %d %f\n", waited, elapsedTime);
 			  pthread_mutex_lock(&m_mutex);
+			  gettimeofday(&t1, NULL);
+        if (waited < 1000) {
+          LOGV("adapting\n");
+          myDeltaTime = (elapsedTime / interval) * 5.0;
+        } else {
+          myDeltaTime = 5.0; //(1.0 / 0.5);
+        }
+        //LOGV("%f %f\n", myDeltaTime, 1.0 / 60.0);
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
-				gettimeofday(&t1, NULL);
 			  pthread_mutex_unlock(&m_mutex);
+			  //usleep(500);
+        //struct timeval tv;
+        //tv.sec = 0;
+        //tv.tv_usec = 1;
+        //select(0,NULL,NULL,NULL,&tv);
+        waited = 0;
 			} else {
-				//usleep(30.0);
+        waited++;
+			  //usleep(500.0);
+        //LOGV("sleep\n");
 			}
 		}
 	}
@@ -169,13 +191,46 @@ void Engine::prepareFrame(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
-	gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
+	gluPerspective(45.0, (float) width / (float) height, 100.0, 8000.0);
 
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
 
   //glOrthof(0, 320, 0, 480, -100.0, 500.0);
 
 	glMatrixMode(GL_MODELVIEW);
+
+  /*
+  glEnable(GL_LIGHTING);
+  //glEnable(GL_LIGHT0);
+
+  // Define the ambient component of the first light
+  const GLfloat light0Ambient[] = {0.5, 0.5, 0.5, 1.0};
+  glLightfv(GL_LIGHT0, GL_AMBIENT, light0Ambient);
+
+  // Define the diffuse component of the first light
+  const GLfloat light0Diffuse[] = {0.7, 0.7, 0.7, 1.0};
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light0Diffuse);
+
+  // Define the specular component and shininess of the first light
+  const GLfloat light0Specular[] = {0.7, 0.7, 0.7, 1.0};
+  const GLfloat light0Shininess = 0.4;
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light0Specular);
+
+  // Define the position of the first light
+  GLfloat light0Position[] = {1.0, 0.0, -1.0, 0.0}; 
+  glLightfv(GL_LIGHT0, GL_POSITION, light0Position); 
+
+  // Define a direction vector for the light, this one points right down the Z axis
+  GLfloat light0Direction[] = {-1.0, 0.0, 1.0};
+  glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light0Direction);
+  // Define a cutoff angle. This defines a 90° field of vision, since the cutoff
+  // is number of degrees to each side of an imaginary line drawn from the light's
+  // position along the vector supplied in GL_SPOT_DIRECTION above
+  glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0);
+  */
+
+  //glDisable(GL_LIGHTING);
+
 	glLoadIdentity();
 	myViewportSet = true;
 }

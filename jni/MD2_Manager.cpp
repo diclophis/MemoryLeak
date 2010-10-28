@@ -122,6 +122,10 @@ void Md2Manager::Release() {
 //-----------------------------------------------------------------------------------------------	Md2Manager :: Render
 //
 void Md2Manager::Render() {
+	#if MD2_USE_NORMALS
+		glEnable(GL_NORMALIZE);
+		glEnableClientState(GL_NORMAL_ARRAY);
+	#endif
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -135,6 +139,11 @@ void Md2Manager::Render() {
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	#if MD2_USE_NORMALS
+		glDisable(GL_NORMALIZE);
+		glDisableClientState(GL_NORMAL_ARRAY);
+	#endif
+
 }
 
 
