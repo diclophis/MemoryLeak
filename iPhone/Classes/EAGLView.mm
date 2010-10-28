@@ -192,7 +192,6 @@ static std::vector<foo*> models;
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
-			//gameController->tick();
 			gameController->draw(90);
 		} else {
 			[self startGame];
@@ -244,7 +243,7 @@ GLuint loadTexture(UIImage *image) {
 	}
 
 	
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResoutercesOfType:nil inDirectory:@"assets/models"];
 	for (NSString *path in model_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);

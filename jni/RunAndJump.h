@@ -54,6 +54,11 @@ public:
 	int myPlayerStatesCount;
 	
 	Vector3D myPlayerPlatformIntersection;
+
+  int myTerrainIndex;
+  int myTerrainCount;
+	std::vector<Md2Instance *> myTerrains;
+	Md2Manager myTerrainManager;
 	
 	
 

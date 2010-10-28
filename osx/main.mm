@@ -79,14 +79,14 @@ int main(int argc, char** argv) {
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
   glutInit(&argc, argv);
-  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
   //if (argc > 1) {
   //  glutGameModeString("1440x900:32@65");
   //  glutEnterGameMode();
   //} else {
-    glutInitWindowSize (kWindowWidth, kWindowHeight);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(kWindowWidth, kWindowHeight);
+    glutInitWindowPosition(1000, 500);
     glutCreateWindow(argv[0]);
   //}
 

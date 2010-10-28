@@ -101,18 +101,18 @@ int Engine::tick() {
 
 	while (gameState != 0) {
 		if (mySceneBuilt) {
-			pthread_mutex_lock(&m_mutex);
 			gettimeofday(&t2, NULL);
 			elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
 			elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-			if (elapsedTime > 40.0) {
+			if (elapsedTime > 16.0) {
+			  pthread_mutex_lock(&m_mutex);
 				mySimulationTime += myDeltaTime;
 				gameState = simulate();
 				gettimeofday(&t1, NULL);
+			  pthread_mutex_unlock(&m_mutex);
 			} else {
-				usleep(30.0);
+				//usleep(30.0);
 			}
-			pthread_mutex_unlock(&m_mutex);
 		}
 	}
 	
@@ -168,8 +168,12 @@ void Engine::prepareFrame(int width, int height) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	//gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
 	gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
+
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
+
+  //glOrthof(0, 320, 0, 480, -100.0, 500.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

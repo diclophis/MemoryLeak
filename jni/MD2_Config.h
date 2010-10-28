@@ -21,7 +21,7 @@
 	/// You only really want this as 0 if you are not using lighting for your models
 	///
 
-	//#define MD2_USE_NORMALS 0
+	#define MD2_USE_NORMALS 1
 
 	/// if 0, the code uses vertex arrays. If 1, vertex buffer objects are used. Using 
 	/// VBO's may increase the total memory usage since some temporary data buffers are
