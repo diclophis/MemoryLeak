@@ -117,24 +117,27 @@ void RunAndJump::build() {
 	 */
 	
 	m_Player = new Model(importer.ReadFile("0",
-									  aiProcess_FlipUVs |
-									  aiProcess_TransformUVCoords |
-									  aiProcess_GenUVCoords |
-									  aiProcess_CalcTangentSpace |
-									  aiProcess_GenNormals |
-									  aiProcess_GenSmoothNormals |
-									  aiProcess_SplitLargeMeshes |
-									  aiProcess_ImproveCacheLocality |
-									  aiProcess_FixInfacingNormals |
-									  aiProcess_OptimizeGraph |
-									  aiProcess_Triangulate |
-									  aiProcess_JoinIdenticalVertices |
-									  aiProcess_SortByPType));
+									  aiProcess_FlipUVs
+										   ));
 	
 	
 	
 	
 	/*
+	 
+	 |
+	 aiProcess_TransformUVCoords |
+	 aiProcess_GenUVCoords |
+	 aiProcess_CalcTangentSpace |
+	 aiProcess_GenNormals |
+	 aiProcess_GenSmoothNormals |
+	 aiProcess_SplitLargeMeshes |
+	 aiProcess_ImproveCacheLocality |
+	 aiProcess_FixInfacingNormals |
+	 aiProcess_OptimizeGraph |
+	 aiProcess_Triangulate |
+	 aiProcess_JoinIdenticalVertices |
+	 aiProcess_SortByPType
 
 	 */
 	/*
