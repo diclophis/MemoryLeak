@@ -12,6 +12,7 @@
 
 #include "importgl.h"
 #include "OpenGLCommon.h"
+#include "assimp.hpp"
 
 #include "Engine.h"
 #include "MachineGun.h"
@@ -54,7 +55,7 @@ void RaptorIsland::build() {
 
 	myRaptorHeight = 5.0;	
 	for (unsigned int i=0; i<ctfEnemies.size(); i++) {
-		myRaptors.push_back(myRaptorManager.Load(models[0], 30, textures[0]));
+		myRaptors.push_back(myRaptorManager.Load(models->at(0), 30, textures->at(0)));
 		myRaptors[i]->SwitchCycle(1, 0.0, false, -1, 1);
 		myRaptors[i]->SetPosition(-25.0, myRaptorHeight, (randf() * 50.0) - 25.0);
 		myRaptors[i]->SetScale(0.2, 0.2, 0.2);
@@ -69,7 +70,7 @@ void RaptorIsland::build() {
 	myBarrelHeight = 0.0;
 	for (int i=0; i<CtfBase::obstacleCount; i++) {
 		Md2Instance *barrel;
-		barrel = myBarrelManager.Load(models[1], 1, textures[2]);
+		barrel = myBarrelManager.Load(models->at(1), 1, textures->at(2));
 		myBarrels.push_back(barrel);
 		barrel->SetScale(0.05, 0.05, 0.05);
 		barrel->SetPosition(0.0, myBarrelHeight, 0.0);
@@ -78,14 +79,14 @@ void RaptorIsland::build() {
 
 	
 	mySkyBoxHeight = 12.5;
-	mySkyBox = mySkyBoxManager.Load(models[3], 1, textures[4]);
+	mySkyBox = mySkyBoxManager.Load(models->at(3), 1, textures->at(4));
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
 	mySkyBox->SetRotation(90.0, 0.0);
 	mySkyBox->SetScale(0.5, 0.25, 0.5);
 
 	
 	myPlayerHeight = 0.0;
-	myPlayer = myPlayerManager.Load(models[2], 1, textures[3]);
+	myPlayer = myPlayerManager.Load(models->at(2), 1, textures->at(3));
 	myPlayer->SetPosition(0.0, myPlayerHeight, 0.0);
 	myPlayer->SetScale(0.15, 0.15, 0.15);
 	
@@ -113,7 +114,7 @@ void RaptorIsland::build() {
 	myLineVertices[5] = 0.0;
 	
 	
-	m_Gun = MachineGun(textures[5]);
+	//m_Gun = MachineGun(textures[5]);
 	//m_Gun.buildFountain();
 }
 

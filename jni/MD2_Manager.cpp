@@ -78,7 +78,8 @@ bool Md2Manager::IsValid(const Md2Instance* ptr) {
 //-----------------------------------------------------------------------------------------------	Md2Manager :: Load
 //
 Md2Instance* Md2Manager::Load(foo *bar, unsigned short fps, GLuint texture) {
-	
+
+  LOGV("..1\n");
 	std::vector<ModelRef*>::iterator it = m_LoadedModels.begin();
 	for( ; it != m_LoadedModels.end(); ++it )
 	{
@@ -86,11 +87,13 @@ Md2Instance* Md2Manager::Load(foo *bar, unsigned short fps, GLuint texture) {
 			return (*it)->pModel->CreateInstance(texture);
 		}
 	}
+  LOGV("..2\n");
 	ModelRef* pmref = new ModelRef;
 	assert(pmref);
 	pmref->pModel = new Md2Model;
 	assert(pmref->pModel);
 	pmref->Filename = bar->fp;
+  LOGV("..3\n");
 	
 	if(!pmref->pModel->Load(bar)) {
 		throw 123;
@@ -98,10 +101,12 @@ Md2Instance* Md2Manager::Load(foo *bar, unsigned short fps, GLuint texture) {
 		delete pmref;
 		return 0;
 	}
+  LOGV("..4\n");
 
 	pmref->pModel->SetFps(fps);
 
 	m_LoadedModels.push_back(pmref);
+  LOGV("..5\n");
 
 	return pmref->pModel->CreateInstance(texture);
 

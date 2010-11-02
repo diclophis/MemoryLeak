@@ -180,9 +180,10 @@ public:
 	int myGameSpeed;
 	int screenWidth;
 	int screenHeight;
-	std::vector<GLuint> textures;
-  std::vector<foo*> models;
-	Engine(int width, int height, std::vector<GLuint> textures, std::vector<foo*> models);
+	std::vector<GLuint> *textures;
+	std::vector<foo*> *models;
+	Assimp::Importer importer;
+	Engine(int width, int height, std::vector<GLuint> &textures, std::vector<foo*> &models);
 	virtual ~Engine();
   virtual void build() = 0;
 	int tick();

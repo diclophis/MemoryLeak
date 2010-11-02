@@ -14,7 +14,7 @@ class RunAndJump : public Engine {
 	
 public:
 
-  RunAndJump(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) : Engine(width, height, x_textures, x_models) {
+  RunAndJump(int width, int height, std::vector<GLuint> &x_textures, std::vector<foo*> &x_models) : Engine(width, height, x_textures, x_models) {
   };
 
 	~RunAndJump();
@@ -43,7 +43,7 @@ public:
 	GLfloat *myGarbageCollectorVertices;
 	GLfloat *mySpiralVertices;
 	
-	Platform *myPlatforms;
+	std::vector<Platform> myPlatforms;
 
   int mySegmentIndex;
   int mySegmentCount;
@@ -158,5 +158,7 @@ public:
 	float mySkyBoxHeight;
 	Md2Instance *mySkyBox;
 	Md2Manager mySkyBoxManager;
+	
+	const aiScene *myPlayerScene;
 	
 };

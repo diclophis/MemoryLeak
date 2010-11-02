@@ -277,8 +277,8 @@ GLuint loadTexture(UIImage *image) {
 	gameState = 1;
 	
 
-	models.clear();
-	textures.clear();
+	//models.clear();
+	//textures.clear();
 }
 
 

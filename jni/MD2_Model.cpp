@@ -279,8 +279,10 @@ void Md2Model::CalcNormals() {
 //-----------------------------------------------------------------------------------------------	Md2Model :: CreateInstance
 //
 Md2Instance* Md2Model::CreateInstance(GLuint texture) {
+  LOGV("!!- 1\n");
 	Md2Instance* newInstance = new Md2Instance(this, texture);
 	m_Instances.push_back(newInstance);
+  LOGV("!!- 2\n");
 	return newInstance;
 }
 
@@ -442,6 +444,7 @@ unsigned int Md2Model::GetDataSize(Md2MemoryType type) const {
 //-----------------------------------------------------------------------------------------------	Md2Model :: Load
 //
 bool Md2Model::Load(foo *bar) {
+  LOGV("++1\n");
 	if(!MD2::Load(bar)) {
 		LOGV("failed to MD2::Load file");
 		return false;
@@ -454,6 +457,8 @@ bool Md2Model::Load(foo *bar) {
 			m_SkinNames.push_back(MD2::GetSkin(i));
 		}
 	}
+
+  LOGV("++2\n");
 
 	// copy uv coord data
 //	#if !MD2_ALWAYS_TRIANGLES
@@ -471,6 +476,8 @@ bool Md2Model::Load(foo *bar) {
 			ptr->FromMd2( (MD2::GetTexCoords())[i] , MD2::GetModel()->skinWidth, MD2::GetModel()->skinHeight );
 		}
 	}
+
+  LOGV("++3\n");
 	
 //	#if !MD2_ALWAYS_TRIANGLES
 //	if(MD2::GetModel()->numGlCommands >1)
@@ -537,6 +544,7 @@ bool Md2Model::Load(foo *bar) {
 		
 	// get number of frames
 	unsigned int nf = MD2::GetModel()->numFrames;
+  LOGV("++4\n");
 
 
 	// determine number of frames per anim
@@ -565,6 +573,7 @@ bool Md2Model::Load(foo *bar) {
 	}
 	m_NumCycles = static_cast<unsigned short>(counts.size());
 	m_NumVerts = MD2::GetModel()->numVertices;
+  LOGV("++5\n");
 
 	// allocate anim cycle data
 	m_AnimCycles = new Md2AnimCycle[m_NumCycles];
@@ -629,6 +638,7 @@ bool Md2Model::Load(foo *bar) {
 	}
 
 	// free statically allocated data
+  LOGV("++6\n");
 	MD2::Release();
 
 	return true;
@@ -798,7 +808,7 @@ unsigned short Md2VertexArrayIndexList::Insert(Md2VertexArrayIndex& index) {
 //-----------------------------------------------------------------------------------------------	Md2Instance :: Md2Instance
 //
 Md2Instance::Md2Instance(Md2Model* mod, GLuint texture) {
-	//NSLog("new instance");
+	LOGV("foo 1\n");
 	
 	m_pModel = mod;
 	m_Texture = texture;
@@ -819,6 +829,7 @@ Md2Instance::Md2Instance(Md2Model* mod, GLuint texture) {
 		//glBufferDataARB( GL_ARRAY_BUFFER_ARB, m_pModel->m_NumElements*sizeof(Md2VertexNormal), 0, GL_STATIC_DRAW_ARB );
 	glBufferData(GL_ARRAY_BUFFER, m_pModel->m_NumElements*sizeof(Md2VertexNormal), 0, GL_STATIC_DRAW);
 	#endif
+	LOGV("foo 2\n");
 
 	m_Position[0] = m_Position[1] = m_Position[2] = m_RotateY = 0.0f;
 
@@ -840,6 +851,7 @@ Md2Instance::Md2Instance(Md2Model* mod, GLuint texture) {
 		m_Translate[0] = m_Translate[1] = m_Translate[2] = 0.0f;
 
 	#endif
+	LOGV("foo 3\n");
 }
 
 //-----------------------------------------------------------------------------------------------	Md2Instance :: ~Md2Instance

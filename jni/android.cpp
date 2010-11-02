@@ -77,7 +77,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 		
-  gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+  gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, &models);
   gameController->go();
 
   gameState = 1;

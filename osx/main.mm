@@ -9,8 +9,8 @@
 //#define kWindowWidth  1024
 //#define kWindowHeight 600
 
-#define kWindowWidth  480
-#define kWindowHeight 320
+#define kWindowWidth  400
+#define kWindowHeight 240
 
 //#define kWindowWidth  320
 //#define kWindowHeight 480
@@ -76,6 +76,7 @@ void processMouseMotion(int x, int y) {
 
 
 int main(int argc, char** argv) {
+  LOGV("1\n");
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
   glutInit(&argc, argv);
@@ -105,6 +106,8 @@ int main(int argc, char** argv) {
 		models.push_back(firstModel);
 	}
 
+  LOGV("2 ------- %d\n", models.size());
+
 	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/textures"];
 	for (NSString *path in texture_names) {
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
@@ -125,7 +128,11 @@ int main(int argc, char** argv) {
     gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
   }
 
+  LOGV("3\n");
+
   gameController->go();
+
+  LOGV("4\n");
 
 	glutMouseFunc(processMouse);
 	glutMotionFunc(processMouseMotion);

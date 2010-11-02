@@ -50,12 +50,14 @@ namespace MD2 {
 	
 	// this loads an MD2 into a single buffer
 	bool Load(foo *bar) {
+    LOGV("--AA\n");
 		FILE *fp = bar->fp;
 		if (!fp) {
 			LOGV("MD2::Load WTFWTF");
 			Release();
 			return false;
 		}
+    LOGV("--BB\n");
 		unsigned int off = bar->off;
 		unsigned int len = bar->len;
 		fseek(fp, off, SEEK_SET);
@@ -66,6 +68,7 @@ namespace MD2 {
 			Release();
 			return false;
 		}
+    LOGV("--CC\n");
 		return true;	
 	}
 

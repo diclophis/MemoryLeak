@@ -12,7 +12,7 @@ class RaptorIsland : public Engine {
 
 public:
 	
-  RaptorIsland(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) : Engine(width, height, x_textures, x_models) {
+  RaptorIsland(int width, int height, std::vector<GLuint> &x_textures, std::vector<foo*> &x_models) : Engine(width, height, x_textures, x_models) {
   };
 	
 	~RaptorIsland();

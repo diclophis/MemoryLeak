@@ -12,6 +12,8 @@
 #include "OpenSteer/Color.h"
 #include "CaptureTheFlag.h"
 
+#include "assimp.hpp"
+
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RaptorIsland.h"

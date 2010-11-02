@@ -8,7 +8,7 @@
 #CXX=g++
 #CXX=~/Desktop/checker-249/libexec/c++-analyzer
 build=../build/osx
-CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../jni
+CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../jni -I../jni/include -I../jni/assimp/BoostWorkaround
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread
 
 objects = $(build)/main.o \
@@ -32,6 +32,13 @@ $(build)/SimpleVehicle.o \
 $(build)/TerrainRayTest.o \
 $(build)/Vec3.o \
 $(build)/Vec3Utilities.o
+
+#OBJECTS   := $(patsubst %.cpp,%.o,  $(wildcard *.cpp)) 
+objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/assimp/*.cpp)) 
+objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/contrib/irrXML/*.cpp)) 
+objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/ConvertUTF/*.c))
+objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/unzip/*.c))
+objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/zlib/*.c))
 
 raptor_island: $(build) $(objects)
 	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
