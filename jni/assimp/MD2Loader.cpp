@@ -226,7 +226,7 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 	pScene->mMaterials[0] = new MaterialHelper();
 	pScene->mNumMeshes = pScene->mRootNode->mNumMeshes;
 	pScene->mMeshes = new aiMesh*[pScene->mRootNode->mNumMeshes];
-
+	pScene->mNumTexCoords = m_pcHeader->numTexCoords;
 
 	for (unsigned int iii=0; iii<pScene->mRootNode->mNumMeshes; iii++) {
 		

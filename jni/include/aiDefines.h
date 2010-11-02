@@ -243,7 +243,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #	elif defined(__x86_64__)
 #		define ASSIMP_BUILD_X86_64BIT_ARCHITECTURE
 #	else
-#		error unknown architecture
+//#		error unknown architecture
 #	endif
 #else
 #	error unknown compiler

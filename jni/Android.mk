@@ -8,7 +8,7 @@ TARGET_ARCH=arm
 TARGET_ARCH_ABI=arm
 LOCAL_ARM_MODE=arm
 
-LOCAL_CFLAGS := -I/Users/jon/iPhone/MemoryLeak/jni -DANDROID_NDK -DEV_STANDALONE=1 -DEV_USE_SELECT=1 -DEV_SELECT_USE_FD_SET -D_iPhoneVersion=1
+LOCAL_CFLAGS := -I/Users/jon/iPhone/MemoryLeak/jni -I/Users/jon/iPhone/MemoryLeak/jni/include -I/Users/jon/iPhone/MemoryLeak/jni/assimp/BoostWorkaround -DANDROID_NDK -DEV_STANDALONE=1 -DEV_USE_SELECT=1 -DEV_SELECT_USE_FD_SET -D_iPhoneVersion=1
 
 #-DANDROID \
 #-D_REENTRANT \
@@ -27,6 +27,7 @@ LOCAL_CFLAGS := -I/Users/jon/iPhone/MemoryLeak/jni -DANDROID_NDK -DEV_STANDALONE
 LOCAL_SRC_FILES := \
     importgl.c \
     android.cpp \
+    Model.cpp \
     Engine.cpp \
     MachineGun.cpp \
     RaptorIsland.cpp \
@@ -47,7 +48,29 @@ LOCAL_SRC_FILES := \
     OpenSteer/SimpleVehicle.cpp \
     OpenSteer/TerrainRayTest.cpp \
     OpenSteer/Vec3.cpp \
-    OpenSteer/Vec3Utilities.cpp
+    OpenSteer/Vec3Utilities.cpp \
+
+#LOCAL_SRC_FILES += $(wildcard jni/assimp/*.cpp)
+
+MY_PREFIX := $(LOCAL_PATH)
+MY_SOURCES := $(wildcard $(MY_PREFIX)/assimp/*.cpp)
+MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/irrXML/*.cpp)
+MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/ConvertUTF/*.c)
+MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/unzip/*.c)
+MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/zlib/*.c)
+
+#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/ConvertUTF/*.c))
+#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/unzip/*.c))
+#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/zlib/*.c))
+
+LOCAL_SRC_FILES += $(MY_SOURCES:$(MY_PREFIX)%=%) 
+
+
+#objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/contrib/irrXML/*.cpp))
+#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/ConvertUTF/*.c))
+#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/unzip/*.c))
+#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/zlib/*.c))
+
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 

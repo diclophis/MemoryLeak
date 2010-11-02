@@ -8,23 +8,19 @@
  */
 
 class Model {
+
 public:
 	Model(const aiScene *a) : m_Scene(a) {
 		build();
 	};
 	
-	void render();
+	void render(int frame);
 	
-private:
+private:	
 	bool build();
-
 	const aiScene *m_Scene;
-	
-
-
-	
-	int frame;
-	
 	int numVBO;
 	GLuint *vboID;
+	GLuint *m_TextureBuffer;
+
 };

@@ -25,7 +25,10 @@ bool Model::build() {
 	numVBO = (numFrames * 3);
 	
 	vboID = (GLuint*)malloc(sizeof(GLuint) * (numVBO));
+	m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (1));
+
 	glGenBuffers(numVBO, vboID);
+	glGenBuffers(1, m_TextureBuffer);
 	
 	/*
 	int numVerts = model.header->num_Vertices;
@@ -58,9 +61,12 @@ bool Model::build() {
 	}
 	 */
 	
-	//if (aimesh.HasTextureCoords(0)) {
-	//	glTexCoordPointer(3, GL_FLOAT, 0, aimesh.mTextureCoords[0]);
-	//}
+	const aiMesh& aimesh = *m_Scene->mMeshes[0];
+
+	if (aimesh.HasTextureCoords(0)) {
+		glBindBuffer(GL_ARRAY_BUFFER, m_TextureBuffer[0]);
+		glBufferData(GL_ARRAY_BUFFER, aimesh.mNumVertices * 3 * sizeof(float), aimesh.mTextureCoords[0], GL_STATIC_DRAW);
+	}
 	
 	int cnt = m_Scene->mNumMeshes;
 	for (unsigned int mm=0; mm<cnt; mm++) {
@@ -137,13 +143,12 @@ bool Model::build() {
 	return true;
 }
 
-void Model::render() {
+void Model::render(int frame) {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	//glEnable(GL_NORMALIZE);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_NORMALIZE);
 	
-	int frame = 0;
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vboID[frame + 1]);
 	glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
@@ -151,14 +156,14 @@ void Model::render() {
 	glBindBuffer(GL_ARRAY_BUFFER, vboID[frame + 2]	);
 	glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
 	
-	//glBindBufferARB(	GL_ARRAY_BUFFER_ARB, vboID[numVBO - 2]	);
-	//glTexCoordPointer(	2, GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
+	glBindBuffer(GL_ARRAY_BUFFER, m_TextureBuffer[0]);
+	glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[frame + 0]);	
 	glDrawElements(GL_TRIANGLES,3 * m_Scene->mMeshes[0]->mNumFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 	
-	//glDisable(GL_NORMALIZE);
-	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisable(GL_NORMALIZE);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	

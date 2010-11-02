@@ -905,7 +905,7 @@ void WriteLogOpening(const std::string& file)
 #elif defined(ASSIMP_BUILD_IA_64BIT_ARCHITECTURE)
 		<< " itanium"
 #else
-#	error unknown architecture
+//#	error unknown architecture
 #endif
 
 #if defined(_MSC_VER)

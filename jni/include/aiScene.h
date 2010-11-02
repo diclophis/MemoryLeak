@@ -288,7 +288,8 @@ struct aiScene
 
 	/** The number of textures embedded into the file */
 	unsigned int mNumTextures;
-
+	unsigned int mNumTexCoords;
+	
 	/** The array of embedded textures.
 	* 
 	* Not many file formats embed their textures into the file.

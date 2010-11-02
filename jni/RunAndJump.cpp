@@ -87,7 +87,7 @@ void RunAndJump::build() {
 	LOGV("A %d %d\n", models->size(), textures->size());
 
 	mySkyBoxHeight = 0.0;
-	mySkyBox = mySkyBoxManager.Load(models->at(0), 1, textures->at(1));
+	mySkyBox = mySkyBoxManager.Load(models->at(0), 1, textures->at(0));
   LOGV("really??? 1\n");
 	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
   LOGV("really??? 1\n");
@@ -116,7 +116,7 @@ void RunAndJump::build() {
 	}
 	 */
 	
-	m_Player = new Model(importer.ReadFile("6",
+	m_Player = new Model(importer.ReadFile("0",
 									  aiProcess_FlipUVs |
 									  aiProcess_TransformUVCoords |
 									  aiProcess_GenUVCoords |
@@ -201,7 +201,7 @@ int RunAndJump::simulate() {
 
 
 void RunAndJump::render() {	
-	//glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LESS);
 	//glDepthFunc(GL_LEQUAL);
@@ -223,9 +223,9 @@ void RunAndJump::render() {
 	glScalef(10.5, 10.5, 10.5);
 	//LOGV("A %d %d\n", models->size(), textures->size());
 
-	glBindTexture(GL_TEXTURE_2D, textures->at(7));
+	glBindTexture(GL_TEXTURE_2D, textures->at(0));
 	
-	m_Player->render();
+	m_Player->render(0);
 	/*
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
