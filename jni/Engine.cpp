@@ -491,10 +491,10 @@ void Engine::prepareFrame(int width, int height) {
 
   /*
   glEnable(GL_LIGHTING);
-  //glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT0);
 
   // Define the ambient component of the first light
-  const GLfloat light0Ambient[] = {0.5, 0.5, 0.5, 1.0};
+  const GLfloat light0Ambient[] = {0.75, 0.75, 0.75, 1.0};
   glLightfv(GL_LIGHT0, GL_AMBIENT, light0Ambient);
 
   // Define the diffuse component of the first light

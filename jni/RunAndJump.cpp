@@ -115,14 +115,31 @@ void RunAndJump::build() {
 	}
 	 */
 	
-	myPlayerScene = importer.ReadFile("0", 
-									  aiProcess_Triangulate |
-									  aiProcess_OptimizeMeshes |
+	myPlayerScene = importer.ReadFile("6",
+									  aiProcess_FlipUVs |
+									  aiProcess_TransformUVCoords |
+									  aiProcess_GenUVCoords |
+									  aiProcess_CalcTangentSpace |
+									  aiProcess_GenNormals |
+									  aiProcess_GenSmoothNormals |
+									  aiProcess_SplitLargeMeshes |
+									  aiProcess_ImproveCacheLocality |
+									  aiProcess_FixInfacingNormals |
 									  aiProcess_OptimizeGraph |
+									  aiProcess_Triangulate |
 									  aiProcess_JoinIdenticalVertices |
 									  aiProcess_SortByPType
+									  
 									  );
+	
+	
+	
 	/*
+
+	 */
+	/*
+	 aiProcess_OptimizeMeshes |
+	 
 aiProcess_OptimizeGraph |
 aiProcess_TransformUVCoords |
 aiProcess_GenUVCoords |
@@ -201,10 +218,12 @@ void RunAndJump::render() {
 	glTranslatef(myPlayerPosition.x ,myPlayerPosition.y, myPlayerPosition.z);
 	//glRotatef(m_RotateY,0,1,0);
 	//glRotatef(m_RotateZ,1,0,0);
-	glScalef(1.5, 1.5, 1.5);
+	glRotatef(mySimulationTime * 0.5,0,1,0);
+
+	glScalef(10.5, 10.5, 10.5);
 	//LOGV("A %d %d\n", models->size(), textures->size());
 
-	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	glBindTexture(GL_TEXTURE_2D, textures->at(7));
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -221,8 +240,9 @@ void RunAndJump::render() {
 	//glMultMatrixf((float*)&m);
 	
 
-	int cnt = myPlayerScene->mNumMeshes;
-	for (unsigned int mm=0; mm<cnt; mm++) {
+	//int cnt = myPlayerScene->mNumMeshes;
+	//for (unsigned int mm=0; mm<cnt; mm++) {
+	int mm = (int)(mySimulationTime * 0.075) % myPlayerScene->mNumMeshes;
 		const aiMesh& aimesh = *myPlayerScene->mMeshes[mm];
 		
 		
@@ -244,7 +264,8 @@ void RunAndJump::render() {
 		}
 		glDrawElements(GL_TRIANGLES,3 * myPlayerScene->mMeshes[mm]->mNumFaces, GL_UNSIGNED_SHORT, indices);
 		delete indices;
-	}
+	//}
+	
 	glDisable(GL_NORMALIZE);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

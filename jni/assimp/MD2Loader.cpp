@@ -217,22 +217,28 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 	// there won't be more than one mesh inside the file
 	pScene->mNumMaterials = 1;
 	pScene->mRootNode = new aiNode();
-	pScene->mRootNode->mNumMeshes = 1;
-	pScene->mRootNode->mMeshes = new unsigned int[1];
-	pScene->mRootNode->mMeshes[0] = 0;
+	pScene->mRootNode->mNumMeshes = m_pcHeader->numFrames;
+	pScene->mRootNode->mMeshes = new unsigned int[pScene->mRootNode->mNumMeshes];
+	for (unsigned int i=0; i<pScene->mRootNode->mNumMeshes; i++) {
+	  pScene->mRootNode->mMeshes[i] = 0;
+  }
 	pScene->mMaterials = new aiMaterial*[1];
 	pScene->mMaterials[0] = new MaterialHelper();
-	pScene->mNumMeshes = 1;
-	pScene->mMeshes = new aiMesh*[1];
+	pScene->mNumMeshes = pScene->mRootNode->mNumMeshes;
+	pScene->mMeshes = new aiMesh*[pScene->mRootNode->mNumMeshes];
 
-	aiMesh* pcMesh = pScene->mMeshes[0] = new aiMesh();
-	pcMesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
+
+	for (unsigned int iii=0; iii<pScene->mRootNode->mNumMeshes; iii++) {
+		
+		aiMesh* pcMesh = pScene->mMeshes[iii] = new aiMesh();
+		pcMesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
+		
 
 	// navigate to the begin of the frame data
 	BE_NCONST MD2::Frame* pcFrame = (BE_NCONST MD2::Frame*) ((uint8_t*)
-		m_pcHeader + m_pcHeader->offsetFrames);
+		m_pcHeader + m_pcHeader->offsetFrames + (iii * m_pcHeader->frameSize));
 
-	pcFrame += configFrameID;
+	//pcFrame += ;
 
 	// navigate to the begin of the triangle data
 	MD2::Triangle* pcTriangles = (MD2::Triangle*) ((uint8_t*)
@@ -267,6 +273,8 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 	ByteSwap::Swap4( & pcFrame->translate[2] );
 #endif
 
+
+	
 	pcMesh->mNumFaces = m_pcHeader->numTriangles;
 	pcMesh->mFaces = new aiFace[m_pcHeader->numTriangles];
 
@@ -356,8 +364,8 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 
 	for (unsigned int i = 0; i < (unsigned int)m_pcHeader->numTriangles;++i)	{
 		// Allocate the face
-		pScene->mMeshes[0]->mFaces[i].mIndices = new unsigned int[3];
-		pScene->mMeshes[0]->mFaces[i].mNumIndices = 3;
+		pScene->mMeshes[iii]->mFaces[i].mIndices = new unsigned int[3];
+		pScene->mMeshes[iii]->mFaces[i].mNumIndices = 3;
 
 		// copy texture coordinates
 		// check whether they are different from the previous value at this index.
@@ -406,8 +414,10 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 				pcOut.x = pcTexCoords[iIndex].s / fDivisorU;
 				pcOut.y = 1.f-pcTexCoords[iIndex].t / fDivisorV;
 			}
-			pScene->mMeshes[0]->mFaces[i].mIndices[c] = iCurrent;
+			pScene->mMeshes[iii]->mFaces[i].mIndices[c] = iCurrent;
 		}
+	}
+		
 	}
 }
 
