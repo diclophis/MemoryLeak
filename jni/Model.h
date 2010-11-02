@@ -8,14 +8,23 @@
  */
 
 class Model {
-	aiScene *m_Scene;
-	Model(aiScene &scene) : m_Scene(&scene) {
+public:
+	Model(const aiScene *a) : m_Scene(a) {
+		build();
 	};
+	
+	void render();
+	
+private:
 	bool build();
-	bool draw();
+
+	const aiScene *m_Scene;
+	
+
+
 	
 	int frame;
 	
 	int numVBO;
-	int vboID;
+	GLuint *vboID;
 };

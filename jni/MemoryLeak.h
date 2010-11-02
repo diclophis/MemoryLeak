@@ -14,6 +14,7 @@
 
 #include "assimp.hpp"
 
+#include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RaptorIsland.h"

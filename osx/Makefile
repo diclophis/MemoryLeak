@@ -12,6 +12,7 @@ CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../jni -I../jni/include -I../jni/
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread
 
 objects = $(build)/main.o \
+$(build)/Model.o \
 $(build)/Engine.o \
 $(build)/MachineGun.o \
 $(build)/RaptorIsland.o \

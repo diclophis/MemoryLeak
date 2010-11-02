@@ -14,22 +14,20 @@
 #include "aiPostProcess.h"
 #include "aiScene.h"
 
-#include "Engine.h"
-#include "RunAndJump.h"
-
 #include "Model.h"
 
 bool Model::build() {
 	
 
 	
-	int numFrames = m_Scene->mNumFrames;
+	int numFrames = m_Scene->mNumMeshes;
 	
-	numVBO = (numFrames * 2) + 3;
+	numVBO = (numFrames * 3);
 	
-	vboID = (GLuint*)malloc(sizeof(GLuint) * (numVBO + 1));
-	glGenBuffersARB(numVBO, vboID);
+	vboID = (GLuint*)malloc(sizeof(GLuint) * (numVBO));
+	glGenBuffers(numVBO, vboID);
 	
+	/*
 	int numVerts = model.header->num_Vertices;
 	
 	float *verts = (float*)malloc(sizeof(float) * numVerts * 3);
@@ -58,7 +56,35 @@ bool Model::build() {
 						norms, GL_STATIC_DRAW_ARB	);
 		
 	}
+	 */
 	
+	//if (aimesh.HasTextureCoords(0)) {
+	//	glTexCoordPointer(3, GL_FLOAT, 0, aimesh.mTextureCoords[0]);
+	//}
+	
+	int cnt = m_Scene->mNumMeshes;
+	for (unsigned int mm=0; mm<cnt; mm++) {
+		//const aiMesh& aimesh = *m_Scene->mMeshes[mm];
+		unsigned short* indices = new unsigned short[m_Scene->mMeshes[mm]->mNumFaces * 3];
+		for(unsigned int i=0,j=0; i<m_Scene->mMeshes[mm]->mNumFaces; ++i,j+=3)
+		{
+			indices[j]   = m_Scene->mMeshes[mm]->mFaces[i].mIndices[0];
+			indices[j+1] = m_Scene->mMeshes[mm]->mFaces[i].mIndices[1];
+			indices[j+2] = m_Scene->mMeshes[mm]->mFaces[i].mIndices[2];
+		}
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[(mm * 3) + 0]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Scene->mMeshes[mm]->mNumFaces * 3 * sizeof(short), indices, GL_STATIC_DRAW);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vboID[(mm * 3) + 1]);
+		glBufferData(GL_ARRAY_BUFFER, m_Scene->mMeshes[mm]->mNumVertices * 3 * sizeof(float), m_Scene->mMeshes[mm]->mVertices, GL_STATIC_DRAW);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vboID[(mm * 3) + 2]);
+		glBufferData(GL_ARRAY_BUFFER, m_Scene->mMeshes[mm]->mNumVertices * 3 * sizeof(float), m_Scene->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
+		delete indices;
+	}
+	
+	/*
 	int numTexCrds = model.header->num_TexCoords;
 	
 	float *texCrds = (float*)malloc(sizeof(float) * numTexCrds * 2);
@@ -90,40 +116,50 @@ bool Model::build() {
 		}
 		
 	}
+	 */
 	
 	//glBindBufferARB(	GL_ELEMENT_ARRAY_BUFFER_ARB, vboID[numVBO - 1]	);
 	//glBufferDataARB(	GL_ELEMENT_ARRAY_BUFFER_ARB, numIndices * sizeof(int),
 	//					texInds, GL_STATIC_DRAW_ARB	);
 	
+	/*
 	glBindBufferARB(	GL_ELEMENT_ARRAY_BUFFER_ARB, vboID[numVBO]	);
 	glBufferDataARB(	GL_ELEMENT_ARRAY_BUFFER_ARB, numIndices * sizeof(int),
 					verInds, GL_STATIC_DRAW_ARB );
-	
+	*/
+	/*
 	free(verts);
 	free(norms);
 	free(texCrds);
 	free(texInds);
 	free(verInds);
+	 */
+	return true;
 }
 
-bool Model::render() {
+void Model::render() {
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glEnable(GL_NORMALIZE);
 	
-	glBindBufferARB(	GL_ARRAY_BUFFER_ARB, vboID[frame]	);
-	glVertexPointer(	3, GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
+	int frame = 0;
 	
-	glBindBufferARB(	GL_ARRAY_BUFFER_ARB, vboID[frame + 1]	);
-	glNormalPointer(	GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
+	glBindBuffer(GL_ARRAY_BUFFER, vboID[frame + 1]);
+	glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
 	
-	glBindBufferARB(	GL_ARRAY_BUFFER_ARB, vboID[numVBO - 2]	);
-	glTexCoordPointer(	2, GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
+	glBindBuffer(GL_ARRAY_BUFFER, vboID[frame + 2]	);
+	glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
 	
-	glBindBufferARB(	GL_ELEMENT_ARRAY_BUFFER, vboID[numVBO]	);
-	glDrawRangeElementsEXT(		GL_TRIANGLES, 0, numIndices, 
-						   numIndices, GL_UNSIGNED_INT,
-						   (GLvoid*)((char*)NULL)	);
+	//glBindBufferARB(	GL_ARRAY_BUFFER_ARB, vboID[numVBO - 2]	);
+	//glTexCoordPointer(	2, GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
 	
-	//glDrawElements(	GL_TRIANGLES, 
-	//				numIndices, 
-	//				GL_UNSIGNED_INT, 
-	//				(GLvoid*)((char*)NULL)	);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[frame + 0]);	
+	glDrawElements(GL_TRIANGLES,3 * m_Scene->mMeshes[0]->mNumFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+	
+	//glDisable(GL_NORMALIZE);
+	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	
 }

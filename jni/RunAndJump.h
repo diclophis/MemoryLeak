@@ -159,6 +159,8 @@ public:
 	Md2Instance *mySkyBox;
 	Md2Manager mySkyBoxManager;
 	
-	const aiScene *myPlayerScene;
+	Model *m_Player;
+	
+	aiScene *myPlayerScene;
 	
 };

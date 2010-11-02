@@ -13,6 +13,7 @@
 #include "assimp.hpp"
 #include "aiPostProcess.h"
 #include "aiScene.h"
+#include "Model.h"
 
 #include "Engine.h"
 #include "RunAndJump.h"
@@ -115,7 +116,7 @@ void RunAndJump::build() {
 	}
 	 */
 	
-	myPlayerScene = importer.ReadFile("6",
+	m_Player = new Model(importer.ReadFile("6",
 									  aiProcess_FlipUVs |
 									  aiProcess_TransformUVCoords |
 									  aiProcess_GenUVCoords |
@@ -128,9 +129,8 @@ void RunAndJump::build() {
 									  aiProcess_OptimizeGraph |
 									  aiProcess_Triangulate |
 									  aiProcess_JoinIdenticalVertices |
-									  aiProcess_SortByPType
-									  
-									  );
+									  aiProcess_SortByPType));
+	
 	
 	
 	
@@ -201,7 +201,7 @@ int RunAndJump::simulate() {
 
 
 void RunAndJump::render() {	
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LESS);
 	//glDepthFunc(GL_LEQUAL);
@@ -224,6 +224,9 @@ void RunAndJump::render() {
 	//LOGV("A %d %d\n", models->size(), textures->size());
 
 	glBindTexture(GL_TEXTURE_2D, textures->at(7));
+	
+	m_Player->render();
+	/*
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -270,6 +273,8 @@ void RunAndJump::render() {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+	
+	*/
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glPopMatrix();
 	
