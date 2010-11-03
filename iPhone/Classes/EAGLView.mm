@@ -296,6 +296,7 @@ GLuint loadTexture(UIImage *image) {
 
 -(void)stopAnimation {
     if (animating) {
+		gameController->pause();
         if (displayLinkSupported) {
             [displayLink invalidate];
             displayLink = nil;

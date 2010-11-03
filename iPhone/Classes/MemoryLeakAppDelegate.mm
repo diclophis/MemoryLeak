@@ -37,8 +37,6 @@
 }
 
 
-
-
 -(void)dealloc {
     [window release];
     [glView release];	

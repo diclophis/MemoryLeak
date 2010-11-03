@@ -6,10 +6,6 @@
 //
 
 
-#include "MD2_Model.h"
-#include "MD2_Manager.h"
-#include "OpenSteer/Vec3.h"
-
 #define CHAR_WIDTH 0.1			/* ogl tex coords :: Based on not quite 42 chars per line! */
 #define CHAR_HEIGHT 0.1
 
@@ -144,8 +140,6 @@ public:
 	float myPlayerLastJump;
 	float myPlayerLastEnd;
 	Vector3D myPlayerPlatformCorrection;
-	Md2Instance *myPlayerMd2;
-	Md2Manager *myPlayerManager;
 	int myPlayerRunCycle;
 	int myPlayerJumpCycle;
 	int myPlayerTransformedCycle;
@@ -229,7 +223,7 @@ public:
 
 	virtual void hitTest(float x, float y) = 0;
 
-	OpenSteer::Vec3 directionFromCameraToScreenPosition (int x, int y, int h);
+	//OpenSteer::Vec3 directionFromCameraToScreenPosition (int x, int y, int h);
 
 
 	//void camera_directions(float * out_rgt, float * out_up , float * out_look);

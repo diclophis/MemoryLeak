@@ -58,10 +58,6 @@ public:
 	int myTerrainCount;
 	float myTerrainHeight;
 	std::vector<Model *> myTerrains;
-	Md2Manager myTerrainManager;
-	
-	
-
 	
 	int myState;
 	int myStatesToShow;
@@ -87,8 +83,6 @@ public:
 	
 	// Player Engine
 	float myPlayerHeight;
-	Md2Instance *myPlayer;
-	Md2Manager myPlayerManager;
 
 
 

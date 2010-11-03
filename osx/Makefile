@@ -13,26 +13,9 @@ LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework Appli
 
 objects = $(build)/main.o \
 $(build)/Model.o \
-$(build)/Engine.o \
 $(build)/MachineGun.o \
-$(build)/RaptorIsland.o \
-$(build)/CaptureTheFlag.o \
-$(build)/RunAndJump.o \
-$(build)/MD2_File.o \
-$(build)/MD2_Manager.o \
-$(build)/MD2_Model.o \
-$(build)/Clock.o \
-$(build)/Color.o \
-$(build)/Obstacle.o \
-$(build)/OldPathway.o \
-$(build)/Path.o \
-$(build)/Pathway.o \
-$(build)/SegmentedPath.o \
-$(build)/SegmentedPathway.o \
-$(build)/SimpleVehicle.o \
-$(build)/TerrainRayTest.o \
-$(build)/Vec3.o \
-$(build)/Vec3Utilities.o
+$(build)/Engine.o \
+$(build)/RunAndJump.o
 
 #OBJECTS   := $(patsubst %.cpp,%.o,  $(wildcard *.cpp)) 
 objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/assimp/*.cpp)) 

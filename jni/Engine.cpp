@@ -5,21 +5,23 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
-#include "math.h"
-#include <sstream>
-#include <sys/time.h>
-#include "pthread.h"
+//#include "math.h"
+//#include <sstream>
+//#include "pthread.h"
 
-#include "importgl.h"
-#include "OpenGLCommon.h"
+//#include "importgl.h"
+//#include "OpenGLCommon.h"
 
-#include "assimp.hpp"
+//#include "assimp.hpp"
+
+#include "MemoryLeak.h"
+
+#include <include/IOStream.h>
+#include <include/IOSystem.h>
 
 #include "Engine.h"
 
 
-#include <include/IOStream.h>
-#include <include/IOSystem.h>
 
 
 class ResourceIOStream : public Assimp::IOStream {
