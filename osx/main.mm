@@ -5,6 +5,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "MemoryLeak.h"
+#include "Engine.h"
 #include "RunAndJump.h"
 
 //#define kWindowWidth  1024

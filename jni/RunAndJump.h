@@ -6,10 +6,6 @@
 //  Copyright __MyCompanyName__ 2009. All rights reserved.
 //
 
-
-//#include "Engine.h"
-
-
 class RunAndJump : public Engine {
 	
 public:
@@ -32,16 +28,10 @@ public:
 		Vector3D acceleration;
 	} Platform;
 	
-	typedef struct {
-		Vector3D position;
-		GLfloat rotation;
-	} PlayerState;
 	
-
-	
-	GLfloat *mySomethingVertices;
-	GLfloat *myGarbageCollectorVertices;
-	GLfloat *mySpiralVertices;
+	//GLfloat *mySomethingVertices;
+	//GLfloat *myGarbageCollectorVertices;
+	//GLfloat *mySpiralVertices;
 	
 	std::vector<Platform> myPlatforms;
 
@@ -49,8 +39,8 @@ public:
   int mySegmentCount;
 	std::vector<Model *> mySegments;
 	
-	PlayerState *myPlayerStates;
-	int myPlayerStatesCount;
+	//PlayerState *myPlayerStates;
+	//int myPlayerStatesCount;
 	
 	Vector3D myPlayerPlatformIntersection;
 
@@ -59,33 +49,20 @@ public:
 	float myTerrainHeight;
 	std::vector<Model *> myTerrains;
 	
-	int myState;
-	int myStatesToShow;
-	int myLastStateAvailable;
-	Vector3D myGarbageCollectorPosition;
+	//int myState;
+	//int myStatesToShow;
+	//int myLastStateAvailable;
+	//Vector3D myGarbageCollectorPosition;
 	
-	int mySpiralArrays;
-	int myGarbageCollectorArrays;
-	int mySomethingArrays;
+	//int mySpiralArrays;
+	//int myGarbageCollectorArrays;
+	//int mySomethingArrays;
 	
 	int myPlatformCount;
 	
 	Vector3D myPlayerPlatformCorrection;
 	
-	//static const GLfloat mySkyBoxVertices[];
-	//static const GLfloat cubeTextureCoords[];
-	//GLuint mySkyBoxTexture[1];
-		
-	//float myBuildSkyBoxDuration;
-	//float myBuildPlatformDuration;
-	
-	//GLuint myGroundTexture;
-	
-	// Player Engine
 	float myPlayerHeight;
-
-
-
 
 	// Game Engine
 	void build();
@@ -94,59 +71,54 @@ public:
 	void buildCamera();
 	void tickCamera();
 	
-	
 	void tickPlayer();
 	void drawPlayer();
 
 
 	void buildPlatforms();
 	void tickPlatform();
-	void drawPlatform();
-
 
 	void iteratePlatform(int operation);
 	void tickPlatformSegment(float beginX, float beginY, float endX, float endY);
-	void drawPlatformSegment(float baseY, float beginX, float beginY, float endX, float endY);
 
-
-	void buildSpiral();
-	void tickSpiral();
-	void drawSpiral();
+	//void buildSpiral();
+	//void tickSpiral();
+	//void drawSpiral();
 	
 	
-	void buildGarbageCollector();
-	void tickGarbageCollector();
-	void drawGarbageCollector();
+	//void buildGarbageCollector();
+	//void tickGarbageCollector();
+	//void drawGarbageCollector();
 	
-	void buildSomething();
-	void tickSomething();
-	void drawSomething();
+	//void buildSomething();
+	//void tickSomething();
+	//void drawSomething();
 	
 
-	void buildStates();
-	void pushState(bool shift);
-	void setState(int n);
+	//void buildStates();
+	//void pushState(bool shift);
+	//void setState(int n);
 
 	void playerStartedJumping();
 	void playerStoppedJumping();
 
-	void buildFountain();
-	void tickFountain();
-	void drawFountain();
-	void reset_life(int idx);
+	//void buildFountain();
+	//void tickFountain();
+	//void drawFountain();
+	//void reset_life(int idx);
 
 
-	int myPlayerRunCycle;
-	int myPlayerJumpCycle;
-	int myPlayerTransformedCycle;
-	int myPlayerTransformUpCycle;
-	int myPlayerTransformDownCycle;
-	int myPlayerIsTransformed;
-	int myPlayerNeedsTransform;
+	//int myPlayerRunCycle;
+	//int myPlayerJumpCycle;
+	//int myPlayerTransformedCycle;
+	//int myPlayerTransformUpCycle;
+	//int myPlayerTransformDownCycle;
+	//int myPlayerIsTransformed;
+	//int myPlayerNeedsTransform;
 	
-	inline std::string stringify(double x);
+	//inline std::string stringify(double x);
 
-	GLuint myTreeTextures[1];
+	//GLuint myTreeTextures[1];
 	
 	// SkyBox Engine
 	//float mySkyBoxHeight;
