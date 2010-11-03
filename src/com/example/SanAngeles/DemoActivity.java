@@ -101,6 +101,12 @@ class DemoGLSurfaceView extends GLSurfaceView {
         return true;
     }
 
+    @Override
+    protected void onPause() {
+      super.onPause();
+      nativePause();
+    }
+
     DemoRenderer mRenderer;
 
     private static native void nativePause();
@@ -150,5 +156,6 @@ class DemoRenderer implements GLSurfaceView.Renderer {
     private native void nativeOnSurfaceCreated(int[] textures);
     private static native void nativeResize(int w, int h);
     private static native void nativeRender();
-    private static native void nativeDone();
+
+    //private static native void nativeDone();
 }

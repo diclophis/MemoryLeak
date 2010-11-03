@@ -6,7 +6,7 @@
     <application android:debuggable="true" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
         <activity android:name=".DemoActivity"
                   android:label="@string/app_name"
-                  android:finishOnTaskLaunch="true"
+                  android:clearTaskOnLaunch="true"
                   android:configChanges="orientation"
                   android:launchMode="singleTask">
             <intent-filter>

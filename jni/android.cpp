@@ -24,7 +24,6 @@ extern "C" {
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
-  void Java_com_example_SanAngeles_DemoRenderer_nativeDone(JNIEnv* env);
   void Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv* env);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env);
 }
@@ -32,14 +31,7 @@ extern "C" {
 static std::vector<foo*> models;
 static std::vector<GLuint> sPlayerTextures;
 
-static long sStartTick = 0;
-static long sTick = 0;
 static Engine *gameController;
-int gAppAlive   = 1;
-static int  sDemoStopped  = 0;
-static long sTimeOffset   = 0;
-static int  sTimeOffsetInit = 0;
-static long sTimeStopped  = 0;
 static int  sWindowWidth  = 0;
 static int  sWindowHeight = 0;
 static int gameState;
@@ -72,9 +64,7 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
-
 	for (int i=0; i<5; i++) {
-  LOGV("texture %d", env->GetIntArrayElements(arr, 0)[i]);
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 		
@@ -82,9 +72,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   gameController->go();
 
   gameState = 1;
-  gAppAlive    = 1;
-  sDemoStopped = 0;
-  sTimeOffsetInit = 0;
 }
 
 
@@ -93,17 +80,10 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject 
 }
 
 
-void Java_com_example_SanAngeles_DemoRenderer_nativeDone( JNIEnv*  env ) {
-    delete gameController;
-    importGLDeinit();
-}
-
-
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-    sDemoStopped = !sDemoStopped;
-    if (sDemoStopped) {
-    } else {
-    }
+  LOGV("nativePause");
+  gameController->pause();
+  gameState = 0;
 }
 
 
@@ -114,11 +94,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
-  if (sDemoStopped) {
-  } else {
-    if (gameState) {
-			gameController->draw(0);
-    } else {
-    }
-  }
+  if (gameState) {
+    gameController->draw(0);
+  } 
 }

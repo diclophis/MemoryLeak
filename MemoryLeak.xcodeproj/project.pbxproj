@@ -1474,6 +1474,10 @@
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/jni/",
+					"$(SRCROOT)/jni/assimp/BoostWorkaround/",
+				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = RaptorIsland;

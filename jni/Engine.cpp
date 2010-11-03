@@ -388,11 +388,14 @@ void *Engine::start_thread(void *obj) {
 }
 
 
+void Engine::pause() {
+  LOGV("pausing in engine");
+  gameState = 0;
+}
+
 
 int Engine::tick() {
-	
-	int gameState = -1;
-	
+  gameState = -1;
 	timeval t1, t2;
 	double elapsedTime;
   double interval = 25.0;
@@ -400,6 +403,7 @@ int Engine::tick() {
 	
 	gettimeofday(&t1, NULL);
 
+  float last_waited = 0.0;
   unsigned long waited = 0;
 
   bool checkTime = false;
@@ -410,9 +414,11 @@ int Engine::tick() {
       //if (waited > 1000) {
       //  checkTime = true;
       //}
-      float foo = randf();
-      if (foo > 0.996) {
-        //LOGV("foo: %d %f\n", waited, foo);
+      //float foo = randf();
+      //if (foo > 1.0957) {
+      //  LOGV("foo: %d %f\n", waited, foo);
+      if (waited > (last_waited * 0.95)) {
+        //LOGV("waited: %d", waited);
         checkTime = true;
       }
 
@@ -421,7 +427,6 @@ int Engine::tick() {
         elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
         elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
         if (elapsedTime > interval) {
-          pthread_mutex_lock(&m_mutex);
           gettimeofday(&t1, NULL);
           if (waited == 0) {
           //  //myDeltaTime = (elapsedTime / interval) * .33;
@@ -438,22 +443,24 @@ int Engine::tick() {
             //LOGV("%f %f\n", myDeltaTime, 1.0 / 60.0);
           //for (unsigned int i=0; i<2; i++) {
             mySimulationTime += (myDeltaTime);
+            pthread_mutex_lock(&m_mutex);
             gameState = simulate();
+            pthread_mutex_unlock(&m_mutex);
             checkTime = false;
           } else {
-          LOGV("skip\n");
-          /*
+          //LOGV("skip\n");
             int times = (elapsedTime / interval);
             myDeltaTime = 2.5; //(interval / elapsedTime);
-            LOGV("wtf: %d %f %f\n", times, myDeltaTime, elapsedTime - interval);
-            for (int i=0; i<times-1; i++) {
+            //LOGV("wtf: %d %f %f\n", times, myDeltaTime, elapsedTime - interval);
+            for (int i=0; i<times; i++) {
               mySimulationTime += (myDeltaTime);
+              pthread_mutex_lock(&m_mutex);
               gameState = simulate();
+              pthread_mutex_unlock(&m_mutex);
             }
-          */
           }
           //}
-          pthread_mutex_unlock(&m_mutex);
+          last_waited = waited;
           waited = 0;
         } else {
           //waited = 0;

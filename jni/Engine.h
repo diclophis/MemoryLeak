@@ -186,10 +186,12 @@ public:
 	Engine(int width, int height, std::vector<GLuint> &textures, std::vector<foo*> &models);
 	virtual ~Engine();
   virtual void build() = 0;
+	int gameState;
 	int tick();
 	virtual int simulate() = 0;
 	virtual void render() = 0;
 	void draw(float rotation);
+  void pause();
 	void bindTexture(GLuint texture);
 	void unbindTexture(GLuint texture);
 	void resizeScreen(int width, int height);
