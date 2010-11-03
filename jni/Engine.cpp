@@ -13,150 +13,35 @@
 #include "importgl.h"
 #include "OpenGLCommon.h"
 
-
 #include "assimp.hpp"
 
-
-
-
 #include "Engine.h"
-
 
 
 #include <include/IOStream.h>
 #include <include/IOSystem.h>
 
-// My own implementation of IOStream
-class MyIOStream : public Assimp::IOStream
-{
-	friend class MyIOSyste;
-	
-protected:
-	// Constructor protected for private usage by MyIOSystem
-	MyIOStream(foo &a) : m_Foo(&a) {};
-	
-public:
-	~MyIOStream(void);
-	size_t Read(void* pvBuffer, size_t pSize, size_t pCount) {
-		//read(foo)
-		return 0;
-	}
-	size_t Write(const void* pvBuffer, size_t pSize, size_t pCount) {
-		//write(foo)
-		return 0;
-	}
-	aiReturn Seek(size_t pOffset, aiOrigin pOrigin) {
-		//fseek(foo)
-		return aiReturn_SUCCESS;
-	}
-	size_t Tell() const {
-		//ftell(foo)
-		return 0;
-	}
-	size_t FileSize() const {
-		//return foo.len;
-		return 0;
-	}
-	void Flush () {
-	}
-private:
-	foo *m_Foo;
-};
 
-// Fisher Price - My First Filesystem
-class MyIOSyste : public Assimp::IOSystem
-{
-	std::vector<GLuint> *m_Textures;
-	std::vector<foo*> *m_Models;
-	
-public:
-	//MyIOSystem() {
-	//};
-	
-	MyIOSyste(std::vector<GLuint> &a,std::vector<foo*> &b) : m_Textures(&a), m_Models(&b) {
-	};
-	
-	~MyIOSyste() {
-	};
-	
-	// Check whether a specific file exists
-	bool Exists (const std::string& pFile) const {
-		return true;
-	}
-	
-	// Get the path delimiter character we'd like to see
-	char GetOsSeparator() const { 
-		return '/'; 
-	}
-	
-	// ... and finally a method to open a custom stream
-	Assimp::IOStream* Open( const std::string& pFile, const std::string& pMode) {
-		int index = atoi(pFile.c_str());
-		return new MyIOStream(*m_Models->at(index));
-	}
-		
-	void Close(Assimp::IOStream* pFile) {
-		delete pFile;
-	}
-	
-	bool ComparePaths (const char* one, const char* second) const {
-		return false;
-	}
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class ResourceIOStream : public Assimp::IOStream
-	{
-	public:
-	ResourceIOStream(foo &a) : m_Foo(&a) {
-	};
+class ResourceIOStream : public Assimp::IOStream {
+  public:
+    ResourceIOStream(foo &a) : m_Foo(&a) {
+	  };
 
 	  ~ResourceIOStream()
 	  {}
 	
-	  size_t Read(void* buffer, size_t size, size_t count)
-	  {
-		  LOGV("READ: %d %d %d\n", (int)size, (int)count, (int)sizeof(unsigned char));
-		  //unsigned char* g_data = 0;
-		  //g_data = new unsigned char[count];
-
-
+	  size_t Read(void* buffer, size_t size, size_t count) {
 		  fseek(m_Foo->fp, m_Foo->off, SEEK_SET);
 		  size_t r = fread(buffer, size, count, m_Foo->fp);
-		  LOGV("the fuck: %d\n", r);
 		  return r;
-		  //memcpy(buffer, g_data, size * count);
-
-		  
 	  }
 	
 	  size_t Write( const void* buffer, size_t size, size_t count) {
-		  //ROS_BREAK(); 
 		  return 0;
 	  }
 	
 	  aiReturn Seek( size_t offset, aiOrigin origin)
 	  {
-		  LOGV("seek %d %d", (int)offset, origin);
 		  int seeked;
 	    switch (origin)
 	    {
@@ -175,9 +60,6 @@ class ResourceIOStream : public Assimp::IOStream
 	    default:
 				LOGV("wtf");
 	    }
-	
-
-	
 
 		  if (seeked == 0) {
 			  return aiReturn_SUCCESS;
@@ -189,26 +71,18 @@ class ResourceIOStream : public Assimp::IOStream
 	
 	  size_t Tell() const
 	  {
-	    //return pos_ - res_.data.get();
-		  LOGV("Tell\n");
 		  return ftell(m_Foo->fp);
 	  }
 	
 	  size_t FileSize() const
 	  {
-	    //return res_.size;
-		  LOGV("FileSize\n");
 		  return m_Foo->len;
-
 	  }
 	
 	  void Flush() {
-		  LOGV("damn3");
 	  }
 	
 	private:
-	  //resource_retriever::MemoryResource res_;
-	  //uint8_t* pos_;
 	
 		foo *m_Foo;
 	};
@@ -240,13 +114,11 @@ class ResourceIOStream : public Assimp::IOStream
 	  // ... and finally a method to open a custom stream
 	  Assimp::IOStream* Open(const char* file, const char* mode)
 	  {
-		  LOGV("open\n");
 		int index = atoi(file);
 		  return new ResourceIOStream(*m_Models->at(index));
 	  }
 	
 	  void Close(Assimp::IOStream* stream) {
-		  LOGV("delete\n");
 		  delete stream;
 	  }
 	
@@ -254,39 +126,6 @@ class ResourceIOStream : public Assimp::IOStream
 		std::vector<GLuint> *m_Textures;
 		std::vector<foo*> *m_Models;
 	};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 namespace OpenSteer {
@@ -314,15 +153,6 @@ inline std::string Engine::stringify(double x) {
 
 Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vector<foo*> &x_models) : screenWidth(width), screenHeight(height), textures(&x_textures), models(&x_models) {
 	
-	
-	//foo *wang = new foo;
-	
-	//std::vector<GLuint> x_textures
-	//std::vector<foo> 
-	
-	
-	
-	LOGV("ABC\n");
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
@@ -331,26 +161,12 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
-	//World
-	//textures = x_textures;
-	//models = x_models;
-	
 	
 	// put my custom IO handling in place
 	importer.SetIOHandler(new ResourceIOSystem(*textures, *models));
 	
-	// the import process will now use this implementation to access any file
-	//importer.ReadFile("0", 0);
-	
-
-	
-	
-	
-	
-	
 	buildCamera();
 	buildFont();
-	LOGV("123\n");
 }
 
 
@@ -362,28 +178,16 @@ void Engine::buildCamera() {
 
 
 void Engine::go() {
-	LOGV("wtfA\n");
 	build();
-	LOGV("wtfB\n");
 	mySceneBuilt = true;
 	mySimulationTime = 0.0;		
 	pthread_mutex_init(&m_mutex, 0);
 	pthread_create(&m_thread, 0, Engine::start_thread, this);
-	LOGV("wtfC\n");
-
 }
 
+
 void *Engine::start_thread(void *obj) {
-	//new old
 	reinterpret_cast<Engine *>(obj)->tick();
-	
-	//new busted
-	//(Engine *)obj->tick();
-	//Engine* engine = static_cast<Engine*>(obj);
-	//engine->tick();
-	
-	//old old
-	//Engine *engine = reinterpret_cast<Engine *>(obj);
 	return 0;
 }
 

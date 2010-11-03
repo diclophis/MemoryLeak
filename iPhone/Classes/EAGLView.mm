@@ -8,30 +8,12 @@
 
 #import "EAGLView.h"
 
-/*
-#include "OpenSteer/Vec3.h"
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/Color.h"
-#include "CaptureTheFlag.h"
-
-#include "importgl.h"
-#include "OpenGLCommon.h"
-
-#include "Engine.h"
-#include "MachineGun.h"
-#include "RaptorIsland.h"
-#include "RunAndJump.h"
- */
 
 #include "MemoryLeak.h"
-
 #include "RunAndJump.h"
-
 #import "MemoryLeakAppDelegate.h"
 
-#import <mach/mach_time.h>
 
-#include <unistd.h>
 
 
 static std::vector<GLuint> textures;
@@ -130,7 +112,6 @@ static std::vector<foo*> models;
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//gameController->playerStartedJumping();
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		UITouch* touch;
@@ -138,9 +119,7 @@ static std::vector<foo*> models;
 		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
 		location = [touch locationInView:self];
-		location.y = 480.0 - location.y;
-		
-		//NSLog(@"x=%f y=%f", location.y, location.x);
+		location.y = 480.0 - location.y;		
 		gameController->hitTest(location.x, location.y);
 	}
 }
@@ -156,17 +135,12 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
-		
-		//NSLog(@"x=%f y=%f", location.y, location.x);
-		//gameController->hitTest(location.x, location.y);
 	}
 }
 
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (animating) {
-		//gameController->playerStoppedJumping();
-		
+	if (animating) {		
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		UITouch* touch;
@@ -175,9 +149,6 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
-		
-		//NSLog(@"x=%f y=%f", location.y, location.x);
-		//gameController->hitTest(location.x, location.y);
 	}
 }
 
@@ -277,10 +248,6 @@ GLuint loadTexture(UIImage *image) {
 	gameController->go();
 	
 	gameState = 1;
-	
-
-	//models.clear();
-	//textures.clear();
 }
 
 
