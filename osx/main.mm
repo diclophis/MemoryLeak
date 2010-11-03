@@ -5,7 +5,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "MemoryLeak.h"
-
 #include "RunAndJump.h"
 
 //#define kWindowWidth  1024
@@ -13,9 +12,6 @@
 
 #define kWindowWidth  400
 #define kWindowHeight 240
-
-//#define kWindowWidth  320
-//#define kWindowHeight 480
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -32,7 +28,6 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	
 
 	GLuint width = CGImageGetWidth(image.CGImage);
 	GLuint height = CGImageGetHeight(image.CGImage);
@@ -54,8 +49,12 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 
 
 void draw(void) {
-	gameController->draw(0);
-  glutSwapBuffers();
+  if (gameController->gameState) {
+    gameController->draw(0);
+    glutSwapBuffers();
+  } else {
+    exit(0);
+  }
 }
 
 
@@ -72,13 +71,17 @@ void processMouse(int button, int state, int x, int y) {
 
 
 void processMouseMotion(int x, int y) {
-	//gameController->hitTest(x, y);
-  //LOGV("Wtf2");
+}
+
+
+void processNormalKeys(unsigned char key, int x, int y) {
+  if (key == 27) {
+    gameController->pause();
+  }
 }
 
 
 int main(int argc, char** argv) {
-  LOGV("1\n");
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
   glutInit(&argc, argv);
@@ -108,8 +111,6 @@ int main(int argc, char** argv) {
 		models.push_back(firstModel);
 	}
 
-  LOGV("2 ------- %d\n", models.size());
-
 	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/textures"];
 	for (NSString *path in texture_names) {
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
@@ -124,18 +125,10 @@ int main(int argc, char** argv) {
     [texData release];
   }
 
-  //if (argc > 1) {
-  //  gameController = new RaptorIsland(kWindowWidth, kWindowHeight, textures, models);
-  //} else {
-    gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
-  //}
-
-  LOGV("3\n");
-
+  gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
   gameController->go();
 
-  LOGV("4\n");
-
+  glutKeyboardFunc(processNormalKeys);
 	glutMouseFunc(processMouse);
 	glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);

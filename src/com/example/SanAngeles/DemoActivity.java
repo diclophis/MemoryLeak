@@ -102,7 +102,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
       super.onPause();
       nativePause();
     }

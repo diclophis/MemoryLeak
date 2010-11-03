@@ -125,16 +125,8 @@ int RunAndJump::simulate() {
 	tickPlatform();
 	tickPlayer();
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		
-		//brick
-		//if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (2500.0 * 2) - 2500.0) {
-		//	myTerrains[i]->SetPosition(myPlayerPosition.x + (3 * 2500.0) + 5000.0, 0.0, 0.0);
-		//	//myTerrains[i]->SetRotation(0.0, ((int)randf() * 4.0) * 90.0 + (randf() * 10.0), 0.0);
-		//}
-		
 		if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
 			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
-			//myTerrains[i]->SetRotation(0.0, ((int)randf() * 4.0) * 90.0 + (randf() * 10.0), 0.0);
 		}
 	}
 	return 1;

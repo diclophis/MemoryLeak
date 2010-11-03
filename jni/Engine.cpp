@@ -389,7 +389,7 @@ void *Engine::start_thread(void *obj) {
 
 
 void Engine::pause() {
-  LOGV("pausing in engine");
+  LOGV("pausing in engine\n");
   gameState = 0;
 }
 
@@ -410,15 +410,8 @@ int Engine::tick() {
 
 	while (gameState != 0) {
 		if (mySceneBuilt) {
-      //LOGV("ticking...\n");
-      //if (waited > 1000) {
-      //  checkTime = true;
-      //}
-      //float foo = randf();
-      //if (foo > 1.0957) {
-      //  LOGV("foo: %d %f\n", waited, foo);
+
       if (waited > (last_waited * 0.95)) {
-        //LOGV("waited: %d", waited);
         checkTime = true;
       }
 
@@ -429,29 +422,21 @@ int Engine::tick() {
         if (elapsedTime > interval) {
           gettimeofday(&t1, NULL);
           if (waited == 0) {
-          //  //myDeltaTime = (elapsedTime / interval) * .33;
             if (stalled++ > 2) {
               return 0;
             }
           }
-          //} else {
-          //myDeltaTime = 5.0; //(1.0 / 0.5);
-          //}
-          //LOGV("waited: %d\n", waited);
+
           if ((elapsedTime - interval) < interval) {
             myDeltaTime = ((elapsedTime / interval)) * 2.5;
-            //LOGV("%f %f\n", myDeltaTime, 1.0 / 60.0);
-          //for (unsigned int i=0; i<2; i++) {
             mySimulationTime += (myDeltaTime);
             pthread_mutex_lock(&m_mutex);
             gameState = simulate();
             pthread_mutex_unlock(&m_mutex);
             checkTime = false;
           } else {
-          //LOGV("skip\n");
             int times = (elapsedTime / interval);
             myDeltaTime = 2.5; //(interval / elapsedTime);
-            //LOGV("wtf: %d %f %f\n", times, myDeltaTime, elapsedTime - interval);
             for (int i=0; i<times; i++) {
               mySimulationTime += (myDeltaTime);
               pthread_mutex_lock(&m_mutex);
@@ -459,19 +444,17 @@ int Engine::tick() {
               pthread_mutex_unlock(&m_mutex);
             }
           }
-          //}
+
           last_waited = waited;
           waited = 0;
-        } else {
-          //waited = 0;
         }
       }
       
       waited++;
-		} else {
-      //LOGV("Waiting for build...\n");
-    }
+		}
 	}
+
+  LOGV("exiting tick thread\n");
 	
 	return gameState;
 }
