@@ -17,6 +17,7 @@
 
 #include "importgl.h"
 #include "MemoryLeak.h"
+#include "RunAndJump.h"
 
 extern "C" {
   void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1);

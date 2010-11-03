@@ -7,24 +7,13 @@
 //
 
 
-#include "importgl.h"
-#include "OpenGLCommon.h"
+#include "MemoryLeak.h"
 
-#include "assimp.hpp"
-#include "aiPostProcess.h"
-#include "aiScene.h"
-#include "Model.h"
-
-#include "Engine.h"
 #include "RunAndJump.h"
 
 
 RunAndJump::~RunAndJump() {
 	LOGV("dealloc GameController\n");
-	myPlayerManager.Release();
-	//if (myPlatforms) {
-	//	free(myPlatforms);
-	//}
 }
 
 
@@ -38,42 +27,41 @@ void RunAndJump::tickCamera() {
 	//myCameraTarget = Vector3DMake(playerRenderPosition[0] + 200.0, 0.0, 0.0);
 	//myCameraPosition = Vector3DMake(playerRenderPosition[0] - 300.0, 100.0, 100.0);
 
-  //from begin, persp
+	//from begin, persp
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 300.0, myPlayerPosition.y, 0.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x + 10.0, myPlayerPosition.y + 30.0, 0.0);
 
-  //top down from side, persp
+	//top down from side, persp
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 300.0, 20.0 + myPlayerPosition.y, -300.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 25.0, 325.0, 500.0);
 
-  //top down from side, persp
+	//top down from side, persp
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 1000.0, myPlayerPosition.y - 50.0, -500.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 400.0, 300.0, 450.0);
 
 	//foo bar
-	myCameraTarget = Vector3DMake(myPlayerPosition.x, myPlayerPosition.y, myPlayerPosition.z);
-	myCameraPosition = Vector3DMake(myPlayerPosition.x - 1000.0, 1000.0, 1000.0);
-	
-  //top down from side, ortho
+	myCameraTarget = Vector3DMake(myPlayerPosition.x + 12.0, -3.0, myPlayerPosition.z - 10.0);
+	//myCameraPosition = Vector3DMake(-5.0, 5.0, 5.0);
+	myCameraPosition = Vector3DMake(myPlayerPosition.x - 1.0, 10.0, 12.0);
+
+	//top down from side, ortho
 	//myCameraTarget = Vector3DMake(playerRenderPosition[0], playerRenderPosition[1] - 200.0, playerRenderPosition[2] - 100.0);
 	//myCameraPosition = Vector3DMake(playerRenderPosition[0] - 100.0, playerRenderPosition[1] - 100.0, playerRenderPosition[2] + 50.0);
 
-  //sideview, ortho
+	//sideview, ortho
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x - 100.0, myPlayerPosition.y - 200.0, myPlayerPosition.z - 100.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 100.0, myPlayerPosition.y - 200.0, myPlayerPosition.z + 50.0);
 
-  //
+	//
 	//myCameraTarget = Vector3DMake(playerRenderPosition[0] - 100.0, playerRenderPosition[1] - 200.0, playerRenderPosition[2] - 100.0);
 	//myCameraPosition = Vector3DMake(playerRenderPosition[0] - 100.0, playerRenderPosition[1] - 200.0, playerRenderPosition[2] + 50.0);
 }
 
 
 void RunAndJump::build() {
-
-	myPlayerPosition = Vector3DMake(0.0, 250.0, 0.0);
 	myPlayerSpeed = Vector3DMake(0.0, 0.0, 0.0);
 	
-	myGravity = -0.05;
+	myGravity = -0.005;
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
@@ -84,121 +72,71 @@ void RunAndJump::build() {
 	myPlayerLastJump = -1.0;
 	myPlayerOnPlatform = false;
 
-	LOGV("A %d %d\n", models->size(), textures->size());
+/*
+   aiProcess_TransformUVCoords |
+    aiProcess_GenUVCoords |
+     aiProcess_CalcTangentSpace |
+      aiProcess_GenNormals |
+       aiProcess_GenSmoothNormals |
+        aiProcess_SplitLargeMeshes |
+         aiProcess_ImproveCacheLocality |
+          aiProcess_FixInfacingNormals |
+           aiProcess_OptimizeGraph |
+            aiProcess_Triangulate |
+             aiProcess_JoinIdenticalVertices |
+              aiProcess_SortByPType
+*/
 
-	mySkyBoxHeight = 0.0;
-	mySkyBox = mySkyBoxManager.Load(models->at(0), 1, textures->at(0));
-  LOGV("really??? 1\n");
-	mySkyBox->SetPosition(0.0, mySkyBoxHeight, 0.0);
-  LOGV("really??? 1\n");
-	mySkyBox->SetScale(80.0, 80.0, 80.0);
-  LOGV("really??? 1\n");
-	mySkyBoxManager.Update(myDeltaTime);
-	//mySkyBox->SetRotation(150.0, 0.0);
-  LOGV("B\n");
-
-  LOGV("C\n");
-
-	//myPlayerHeight = 25.0;
-	//myPlayer = myPlayerManager.Load(models[1], 30, textures[4]);
-	//myPlayer->SetScale(1.4, 1.4, 1.4);
-
-	/*
-	myPlayerHeight = 0.0;
-	myPlayer = myPlayerManager.Load(models->at(1), 30, textures->at(2));
-	myPlayer->SetScale(1.0, 1.0, 1.0);
-
-	myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, myPlayerPosition.z);
-	myPlayer->SwitchCycle(1, 0.1, false, -1, 1);
-  
-	for (unsigned int cycle = 0; cycle < myPlayer->GetNumCycles(); cycle++) {
-		LOGV("%d %d %s\n", myPlayer->GetNumCycles(), cycle, myPlayer->GetCycleName(cycle));
-	}
-	 */
+	m_SkyBox = new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals));
+	m_SkyBox->SetPosition(0.0, 0.0, 0.0);
+	m_SkyBox->SetScale(100.0, 100.0, 100.0);
 	
-	m_Player = new Model(importer.ReadFile("0",
-									  aiProcess_FlipUVs
-										   ));
-	
-	
-	
-	
-	/*
-	 
-	 |
-	 aiProcess_TransformUVCoords |
-	 aiProcess_GenUVCoords |
-	 aiProcess_CalcTangentSpace |
-	 aiProcess_GenNormals |
-	 aiProcess_GenSmoothNormals |
-	 aiProcess_SplitLargeMeshes |
-	 aiProcess_ImproveCacheLocality |
-	 aiProcess_FixInfacingNormals |
-	 aiProcess_OptimizeGraph |
-	 aiProcess_Triangulate |
-	 aiProcess_JoinIdenticalVertices |
-	 aiProcess_SortByPType
-
-	 */
-	/*
-	 aiProcess_OptimizeMeshes |
-	 
-aiProcess_OptimizeGraph |
-aiProcess_TransformUVCoords |
-aiProcess_GenUVCoords |
-aiProcess_CalcTangentSpace |
-aiProcess_GenNormals |
-aiProcess_GenSmoothNormals |
-aiProcess_SplitLargeMeshes |
-aiProcess_ImproveCacheLocality |
-aiProcess_FixInfacingNormals |
-	 */
-	LOGV("%s\n", importer.GetErrorString());
-
-
-	LOGV("A %d %d\n", models->size(), textures->size());
-
-  LOGV("D\n");
+	myPlayerHeight = 0.375;
+	m_Player = new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals));
+	m_Player->SetScale(0.5, 0.5, 0.5);
 	
 	buildPlatforms();
 
-	mySegmentCount = 0;
+	mySegmentCount = 30;
 	for (unsigned int i=0; i<mySegmentCount; i++) {
-		mySegments.push_back(mySegmentManager.Load(models->at(0), 1, textures->at(0)));
-		mySegments[i]->SetScale(10.0, 2.0, 3.0);
-		mySegments[i]->SetPosition(0.0, 0.0, 0.0);
-		mySegments[i]->SetRotation(0.0, 0.0);
+		mySegments.push_back(new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals)));
+		//mySegments[i]->SetScale(10.0, 2.0, 3.0);
+		mySegments[i]->SetScale(1.0, 1.0, 1.0);
+		mySegments[i]->SetPosition(i, 0.0, 0.0);
+		mySegments[i]->SetRotation(0.0, 0.0, 0.0);
 	}
-
-  LOGV("E\n");
 
 	myTerrainCount = 0;
+  myTerrainHeight = 0.0;
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		myTerrains.push_back(myTerrainManager.Load(models->at(2), 1, textures->at(3)));
-		myTerrains[i]->SetScale(3.7, 2.1, 3.7);
-		myTerrains[i]->SetPosition(i * 8000.0, 0.0, 0.0);
-		myTerrains[i]->SetRotation(i * 90.0, 0.0);
+		myTerrains.push_back(new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes)));
+		myTerrains[i]->SetScale(20.0, 1.0, 20.0);
+		myTerrains[i]->SetPosition(i * 20.0, myTerrainHeight, 0.0);
+		myTerrains[i]->SetRotation(0.0, 0.0, 0.0);
 	}
-
-  LOGV("F\n");
-	myTerrainManager.Update(myDeltaTime);
-	myPlayerManager.Update(myDeltaTime);
-	mySegmentManager.Update(myDeltaTime);
-  LOGV("G\n");
+	myPlayerPosition = Vector3DMake(0.0, myPlatforms[0].position.y + 2.0, 0.0);
 }
 
 
 int RunAndJump::simulate() {
 	tickCamera();
-	mySkyBox->SetPosition(myPlayerPosition.x, mySkyBoxHeight, 0.0);
+	m_SkyBox->SetPosition(myPlayerPosition.x, 0.0, 0.0);
+  m_SkyBox->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
 	tickPlatform();
 	tickPlayer();
-  for (unsigned int i=0; i<myTerrainCount; i++) {
-    if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (2700.0 * 2)) {
-      myTerrains[i]->SetPosition(myPlayerPosition.x + (3 * 2700.0), 0.0, 0.0);
-		  myTerrains[i]->SetRotation(((int)randf() * 4.0) * 90.0 + (randf() * 10.0), 0.0);
-    }
-  }
+	for (unsigned int i=0; i<myTerrainCount; i++) {
+		
+		//brick
+		//if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (2500.0 * 2) - 2500.0) {
+		//	myTerrains[i]->SetPosition(myPlayerPosition.x + (3 * 2500.0) + 5000.0, 0.0, 0.0);
+		//	//myTerrains[i]->SetRotation(0.0, ((int)randf() * 4.0) * 90.0 + (randf() * 10.0), 0.0);
+		//}
+		
+		if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
+			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
+			//myTerrains[i]->SetRotation(0.0, ((int)randf() * 4.0) * 90.0 + (randf() * 10.0), 0.0);
+		}
+	}
 	return 1;
 }
 
@@ -211,82 +149,31 @@ void RunAndJump::render() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	//mySkyBoxManager.Render();
-	//myPlayerManager.Render();
-	//mySegmentManager.Render();
-	//myTerrainManager.Render();
-	
-
-	glPushMatrix();
-	glTranslatef(myPlayerPosition.x ,myPlayerPosition.y, myPlayerPosition.z);
-	//glRotatef(m_RotateY,0,1,0);
-	//glRotatef(m_RotateZ,1,0,0);
-	glRotatef(mySimulationTime * 0.5,0,1,0);
-
-	glScalef(10.5, 10.5, 10.5);
-	//LOGV("A %d %d\n", models->size(), textures->size());
 
 	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+  glDisable(GL_LIGHTING);
+	m_SkyBox->render(0);
+  glEnable(GL_LIGHTING);
+	glBindTexture(GL_TEXTURE_2D, 1);
 	
+	
+	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	for (unsigned int i=0; i<mySegmentCount; i++) {
+		mySegments[i]->render(0);
+	}
+	glBindTexture(GL_TEXTURE_2D, 1);
+	
+	
+	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	for (unsigned int i=0; i<myTerrainCount; i++) {
+		myTerrains[i]->render(0);
+	}
+	glBindTexture(GL_TEXTURE_2D, 1);
+	
+	
+	glBindTexture(GL_TEXTURE_2D, textures->at(0));
 	m_Player->render(0);
-	/*
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnable(GL_NORMALIZE);
-
-	//float scale = 3.0;
-	
-
-	//struct aiMatrix4x4 m = myPlayerScene->mRootNode->mTransformation;
-	//m.Scaling(aiVector3D(scale, scale, scale), m);
-	// update transform
-	//m.Transpose();
-	//glPushMatrix();
-	//glMultMatrixf((float*)&m);
-	
-
-	//int cnt = myPlayerScene->mNumMeshes;
-	//for (unsigned int mm=0; mm<cnt; mm++) {
-	int mm = (int)(mySimulationTime * 0.075) % myPlayerScene->mNumMeshes;
-		const aiMesh& aimesh = *myPlayerScene->mMeshes[mm];
-		
-		
-		if (aimesh.HasBones()) {
-			LOGV("woo");
-		}
-		
-		if (aimesh.HasTextureCoords(0)) {
-			glTexCoordPointer(3, GL_FLOAT, 0, aimesh.mTextureCoords[0]);
-		}
-		glVertexPointer(3, GL_FLOAT, 0, myPlayerScene->mMeshes[mm]->mVertices);
-		glNormalPointer(GL_FLOAT, 0, myPlayerScene->mMeshes[mm]->mNormals);
-		unsigned short* indices = new unsigned short[myPlayerScene->mMeshes[mm]->mNumFaces * 3];
-		for(unsigned int i=0,j=0; i<myPlayerScene->mMeshes[mm]->mNumFaces; ++i,j+=3)
-		{
-			indices[j]   = myPlayerScene->mMeshes[mm]->mFaces[i].mIndices[0];
-			indices[j+1] = myPlayerScene->mMeshes[mm]->mFaces[i].mIndices[1];
-			indices[j+2] = myPlayerScene->mMeshes[mm]->mFaces[i].mIndices[2];
-		}
-		glDrawElements(GL_TRIANGLES,3 * myPlayerScene->mMeshes[mm]->mNumFaces, GL_UNSIGNED_SHORT, indices);
-		delete indices;
-	//}
-	
-	glDisable(GL_NORMALIZE);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	
-	*/
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glPopMatrix();
-	
-	
-	
-	
-	
-	
-	
 	
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
@@ -318,12 +205,13 @@ void RunAndJump::tickPlayer() {
 	myPlayerAcceleration.y = myGravity;
 	
 	Vector3D oldPosition = myPlayerPosition;
-			
-	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
+  
+  //LOGV("myDeltaTime: %f ", myDeltaTime);
 
- // LOGV("thefuck: %f\n", timeSinceStarted);
+	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
+  //LOGV("tss: %f", timeSinceStarted);
 	
-	if (myPlayerLastJump > 0.0 && timeSinceStarted < (40.0) && timeSinceStarted > 0.0) {
+	if (myPlayerLastJump > 0.0 && timeSinceStarted < (myDeltaTime * 8.0) && timeSinceStarted > 0.0) {
 		//13 is shrink
 		//14 is stay shrunk
 		//15 is grow
@@ -332,13 +220,15 @@ void RunAndJump::tickPlayer() {
 		//myPlayer->SwitchCycle(2, 0.2, false, -1, 1);
 		myPlayerFalling = false;
 		if (myPlayerJumping) {
-			myPlayerAcceleration.x = 0.07;
+      //LOGV(" !!!!! ");
+			myPlayerAcceleration.x = 0.0005;
 			myPlayerAcceleration.y = 0.0;
-      //LOGV(".");
 		} else {
-			myPlayerAcceleration.y = 0.66;
+      if (myPlayerSpeed.y < 0.0) {
+        myPlayerSpeed.y = 0.0;
+      }
+			myPlayerAcceleration.y = 0.035;
 			myPlayerJumping = true;
-      //LOGV("boom\n");
 		}
 	}
 	
@@ -347,10 +237,17 @@ void RunAndJump::tickPlayer() {
 		if (myPlayerOnPlatform) {
 		  myPlayerSpeed.y = 0.0;
 			myPlayerAcceleration.y = 0.0;
+			//myPlayerAcceleration.x = 0.0;
+      float off = myPlayerPosition.y - myPlayerPlatformCorrection.y;
+      if (fabs(off) > 0.05) {
+        myPlayerPosition.y -= (off * 0.7);
+      } else {
+        myPlayerPosition.y = myPlayerPlatformCorrection.y;
+      }
 		}
-		if (myPlayerLastJump > 0) {
-			myPlayerLastJump = -1.0;
-		}
+		//if (myPlayerLastJump > 0) {
+		//	myPlayerLastJump = -1.0;
+		//}
 	}
 	
 	if (myPlayerOnPlatform) {
@@ -360,32 +257,37 @@ void RunAndJump::tickPlayer() {
 	
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x * myDeltaTime, myPlayerAcceleration.y * myDeltaTime, myPlayerAcceleration.z * myDeltaTime));
 
-  float myPlayerDec = 0.0002 * myDeltaTime;
 
-  if (myPlayerSpeed.x > 10.0) {
-    myPlayerSpeed.x = 10.0;
-  } else if (myPlayerSpeed.x < -8.0) {
-    myPlayerSpeed.x = -8.0;
-  } else if (fabs(myPlayerSpeed.x) > 1.1) {
+  float myPlayerDec = 0.01 * myDeltaTime;
+  if (myPlayerSpeed.x > 0.2) {
+    myPlayerSpeed.x = 0.2;
+  } else if (myPlayerSpeed.x < -0.5) {
+    //myPlayerSpeed.x = -0.5;
+  } else if (fabs(myPlayerSpeed.x) > 1.0) {
     if (myPlayerSpeed.x > 0.0) {
-      myPlayerAcceleration.x -= myPlayerDec;
+      //myPlayerAcceleration.x -= myPlayerDec;
     } else {
-      myPlayerAcceleration.x += myPlayerDec;
+      //myPlayerAcceleration.x += myPlayerDec;
     }
   } else if (!myPlayerJumping) {
-    myPlayerSpeed.x = 0.0;
-    myPlayerAcceleration.x = 0.0;
+    //myPlayerSpeed.x = 0.0;
+    //myPlayerAcceleration.x = 0.0;
   }
   
 
-  if (myPlayerSpeed.y > 0.1 || myPlayerSpeed.y < -0.1) {
-    //LOGV("myPlayerSpeed.y %d %f %f\n", myPlayerOnPlatform, myPlayerSpeed.y, myDeltaTime);
-  }
-
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
+  //LOGV("sx: %f\n", myPlayerSpeed.x);
 
-	//myPlayer->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
-	//myPlayer->SetRotation(90.0, -myPlayerRotation);
+	m_Player->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
+
+	//m_Player->SetRotation(0.0, 0.0, -myPlayerRotation);
+
+  if (myPlayerPosition.y < -5.0) {
+    for (unsigned int i=0; i<mySegmentCount; i++) {
+      mySegments[i]->SetPosition(mySegments[i]->GetPosition()[0] + randf(), mySegments[i]->GetPosition()[1] + randf(), + randf());
+    }
+    myPlayerSpeed.x = 0.0;
+  }	
 }
 
 
@@ -403,30 +305,31 @@ void RunAndJump::buildPlatforms() {
 	lastPlatformPosition.y = 0.0;
 
 	for (int i=0; i<myPlatformCount; i++) {
-		randomY = lastPlatformPosition.y;
-		while (fabs(lastPlatformPosition.y - randomY) < 100.0) {
-			randomY = ((random() / (float)RAND_MAX) * 101.0);
-		}
+		//randomY = lastPlatformPosition.y;
+		//while (fabs(lastPlatformPosition.y - randomY) < 2.0) {
+			randomY = ((random() / (float)RAND_MAX) * 4.0) - 0.25;
+	  //}	
 
 		//randomA = ((random() / (float)RAND_MAX) * 12.0);
 		//randomL = 40.0 - (i * randf());
+
     //randomY = 0.0;
-    randomA = 0.0;
-    randomL = ((randf() * 5.0) + 1.0) * 2000.0; //2000.0
+
+    randomA = (randf() * 1.0) + 1.0;
+    randomL = ((randf() * 25.0) + 10.0);
 		
 		length = randomL;
-		//step = 50.0;
-		step = 1000.0; //randomL * 0.5; //100.0;
+		step = 1.0;
 		Platform f;
 		f.position = Vector3DMake(lastPlatformPosition.x, randomY, 0.0);
 		f.length = length;
 		f.amplitude = randomA;
 		
 		f.step = step;
-		f.angular_frequency = 0.030;
+		f.angular_frequency = 0.15;
 		f.phase = 0.0;
 		lastPlatformPosition = f.position;
-		lastPlatformPosition.x += length; // + 100.0;
+		lastPlatformPosition.x += length + randf() + 5.0;
 		myPlatforms.push_back(f);
 	}
 }
@@ -459,19 +362,13 @@ void RunAndJump::iteratePlatform(int operation) {
 
 		float foo = platform.position.x;
 		
-		//Vector3D pos = platform.position;
-		
-	//for (int j=0; j<myPlatformCount; j++) {
-	//	Platform platform = myPlatforms.at(j);
-		//if (&platform) {
-		//if ((platform.position.x > (myPlayerPosition.x - platform.length - 10.0)) && (platform.position.x < (myPlayerPosition.x + platform.length + 10.0))) {
 			for (int i = (int)platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
 
-
-				if ((i < (myPlayerPosition.x + 4000.0)) && (i > (myPlayerPosition.x - 1000.0))) {
+				if ((i < (myPlayerPosition.x + 100.0)) && (i > (myPlayerPosition.x - 5.0))) {
 
 					float beginX = i;
 					float endX = i + platform.step;
+
 					
 					float phaseX = platform.phase;
 					float phaseY = phaseX;
@@ -484,12 +381,11 @@ void RunAndJump::iteratePlatform(int operation) {
           if (!tickedWall) {
             if (platform.position.x > myPlayerPosition.x) {
               //first platform after player
-              float heightDiff = platform.position.y - lastHeight;
-              //LOGV("heightDiff %f\n", heightDiff);
-              if (myPlayerPosition.x > (beginX - (platform.step * 0.2)) && myPlayerPosition.x < (beginX)) {
+              //float heightDiff = platform.position.y - lastHeight;
+              if (myPlayerPosition.x > (beginX - 0.25)) { // && myPlayerPosition.x < (beginX)) {
                 if (myPlayerPosition.y < platform.position.y) {
-                  myPlayerSpeed.x = -(myPlayerSpeed.x);
-                  myPlayerAcceleration.x = 0.2;
+                  myPlayerSpeed.x = -(myPlayerSpeed.x * 0.75);
+                  //myPlayerAcceleration.x = 0.001;
                 }
               }
               tickedWall = true;
@@ -499,9 +395,7 @@ void RunAndJump::iteratePlatform(int operation) {
 					switch (operation) {
 						case 0:
 							if (mySegmentIndex < mySegmentCount) {
-								//mySegments[mySegmentIndex]->SetPosition(beginX, beginY - 50.0, 25.0 * fastSinf(0.01 * (beginX + phaseX)));
-
-								mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY - 100.0, 0.0);
+								mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY, 0.0);
 								mySegmentIndex++;
 							}
 							tickPlatformSegment(beginX, beginY, endX, endY);
@@ -726,8 +620,11 @@ void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, flo
 		Vector3D p1 = Vector3DMake(beginX, beginY, 0.0);
 		Vector3D p2 = Vector3DMake(endX, endY, 0.0);
 		
-		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, 30.0, 0.0));
-		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, -30.0, 0.0));
+		//Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, 30.0, 0.0));
+		//Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, -30.0, 0.0));
+
+		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, 0.5, 0.0));
+		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, -0.5, 0.0));
 		
 		Vector3D p = p1;
 		
@@ -761,7 +658,7 @@ void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, flo
 			//	myPlayerRotation = slope;
 			//}
 			float distanceFromIntersection = myPlayerPosition.y - myPlayerPlatformIntersection.y;
-			myPlayerPlatformCorrection.y = -(distanceFromIntersection / myDeltaTime) - (myPlayerAcceleration.y * myDeltaTime);
+			myPlayerPlatformCorrection.y = beginY + myPlayerHeight;//-(distanceFromIntersection / myDeltaTime) - (myPlayerAcceleration.y * myDeltaTime);
 			myPlayerOnPlatform = true;
 			myGameSpeed = 1;
 		}
@@ -1235,3 +1132,68 @@ void RunAndJump::drawSkyBox() {
 }
 
 */
+
+
+
+
+
+
+//glPushMatrix();
+//glTranslatef(myPlayerPosition.x ,myPlayerPosition.y, myPlayerPosition.z);
+//glRotatef(m_RotateY,0,1,0);
+//glRotatef(m_RotateZ,1,0,0);
+//glRotatef(mySimulationTime * 0.5,0,1,0);
+
+//glScalef(10.5, 10.5, 10.5);
+//LOGV("A %d %d\n", models->size(), textures->size());
+
+/*
+ glEnableClientState(GL_VERTEX_ARRAY);
+ glEnableClientState(GL_NORMAL_ARRAY);
+ glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+ glEnable(GL_NORMALIZE);
+ 
+ //float scale = 3.0;
+ 
+ 
+ //struct aiMatrix4x4 m = myPlayerScene->mRootNode->mTransformation;
+ //m.Scaling(aiVector3D(scale, scale, scale), m);
+ // update transform
+ //m.Transpose();
+ //glPushMatrix();
+ //glMultMatrixf((float*)&m);
+ 
+ 
+ //int cnt = myPlayerScene->mNumMeshes;
+ //for (unsigned int mm=0; mm<cnt; mm++) {
+ int mm = (int)(mySimulationTime * 0.075) % myPlayerScene->mNumMeshes;
+ const aiMesh& aimesh = *myPlayerScene->mMeshes[mm];
+ 
+ 
+ if (aimesh.HasBones()) {
+ LOGV("woo");
+ }
+ 
+ if (aimesh.HasTextureCoords(0)) {
+ glTexCoordPointer(3, GL_FLOAT, 0, aimesh.mTextureCoords[0]);
+ }
+ glVertexPointer(3, GL_FLOAT, 0, myPlayerScene->mMeshes[mm]->mVertices);
+ glNormalPointer(GL_FLOAT, 0, myPlayerScene->mMeshes[mm]->mNormals);
+ unsigned short* indices = new unsigned short[myPlayerScene->mMeshes[mm]->mNumFaces * 3];
+ for(unsigned int i=0,j=0; i<myPlayerScene->mMeshes[mm]->mNumFaces; ++i,j+=3)
+ {
+ indices[j]   = myPlayerScene->mMeshes[mm]->mFaces[i].mIndices[0];
+ indices[j+1] = myPlayerScene->mMeshes[mm]->mFaces[i].mIndices[1];
+ indices[j+2] = myPlayerScene->mMeshes[mm]->mFaces[i].mIndices[2];
+ }
+ glDrawElements(GL_TRIANGLES,3 * myPlayerScene->mMeshes[mm]->mNumFaces, GL_UNSIGNED_SHORT, indices);
+ delete indices;
+ //}
+ 
+ glDisable(GL_NORMALIZE);
+ glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+ glDisableClientState(GL_NORMAL_ARRAY);
+ glDisableClientState(GL_VERTEX_ARRAY);
+ 
+ */
+

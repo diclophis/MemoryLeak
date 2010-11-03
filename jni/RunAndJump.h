@@ -47,17 +47,17 @@ public:
 
   int mySegmentIndex;
   int mySegmentCount;
-	std::vector<Md2Instance *> mySegments;
-	Md2Manager mySegmentManager;
+	std::vector<Model *> mySegments;
 	
 	PlayerState *myPlayerStates;
 	int myPlayerStatesCount;
 	
 	Vector3D myPlayerPlatformIntersection;
 
-  int myTerrainIndex;
-  int myTerrainCount;
-	std::vector<Md2Instance *> myTerrains;
+	int myTerrainIndex;
+	int myTerrainCount;
+	float myTerrainHeight;
+	std::vector<Model *> myTerrains;
 	Md2Manager myTerrainManager;
 	
 	
@@ -151,16 +151,16 @@ public:
 	int myPlayerNeedsTransform;
 	
 	inline std::string stringify(double x);
-		
+
 	GLuint myTreeTextures[1];
 	
 	// SkyBox Engine
-	float mySkyBoxHeight;
-	Md2Instance *mySkyBox;
-	Md2Manager mySkyBoxManager;
+	//float mySkyBoxHeight;
+	//Md2Instance *mySkyBox;
+	//Md2Manager mySkyBoxManager;
 	
 	Model *m_Player;
-	
-	aiScene *myPlayerScene;
+	Model *m_SkyBox;
+
 	
 };

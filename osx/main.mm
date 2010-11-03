@@ -6,6 +6,8 @@
 
 #include "MemoryLeak.h"
 
+#include "RunAndJump.h"
+
 //#define kWindowWidth  1024
 //#define kWindowHeight 600
 
@@ -122,11 +124,11 @@ int main(int argc, char** argv) {
     [texData release];
   }
 
-  if (argc > 1) {
-    gameController = new RaptorIsland(kWindowWidth, kWindowHeight, textures, models);
-  } else {
+  //if (argc > 1) {
+  //  gameController = new RaptorIsland(kWindowWidth, kWindowHeight, textures, models);
+  //} else {
     gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
-  }
+  //}
 
   LOGV("3\n");
 

@@ -25,6 +25,8 @@
 
 #include "MemoryLeak.h"
 
+#include "RunAndJump.h"
+
 #import "MemoryLeakAppDelegate.h"
 
 #import <mach/mach_time.h>
