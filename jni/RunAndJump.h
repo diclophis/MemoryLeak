@@ -42,7 +42,7 @@ public:
 	//PlayerState *myPlayerStates;
 	//int myPlayerStatesCount;
 	
-	Vector3D myPlayerPlatformIntersection;
+	//Vector3D myPlayerPlatformIntersection;
 
 	int myTerrainIndex;
 	int myTerrainCount;
@@ -60,7 +60,7 @@ public:
 	
 	int myPlatformCount;
 	
-	Vector3D myPlayerPlatformCorrection;
+	//Vector3D myPlayerPlatformCorrection;
 	
 	float myPlayerHeight;
 
@@ -127,6 +127,22 @@ public:
 	
 	Model *m_Player;
 	Model *m_SkyBox;
+
+  Vector3D myPlayerPlatformIntersection;
+  Vector3D myPlayerPosition;
+  Vector3D myPlayerSpeed;
+  Vector3D myPlayerAcceleration;
+  Vector3D myPlayerJumpStartPosition;
+  float myPlayerMaxSpeed;
+  float myPlayerJumpSpeed;
+  GLfloat myPlayerRotation;
+  bool myPlayerJumping;
+  bool myPlayerCanDoubleJump;
+  bool myPlayerOnPlatform;
+  bool myPlayerBelowPlatform;
+  float myPlayerLastJump;
+  float myPlayerLastEnd;
+  Vector3D myPlayerPlatformCorrection;
 
 	
 };

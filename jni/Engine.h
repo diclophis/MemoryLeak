@@ -31,7 +31,8 @@ public:
 	
 	Engine(const Engine&);
 	Engine& operator=(const Engine&);
-	
+
+  /*
 	// Fountain Engine
 	#define NUM_PARTICLES 20
 	
@@ -48,7 +49,6 @@ public:
 	void tickFountain();
 	void drawFountain();
 	void reset_life(int idx);
-	float randf();
 	void reset_vertex(int idx);
 	void random_velocity(int idx);
 	void reset_particle(int idx);
@@ -74,6 +74,7 @@ public:
 	void buildFont();
 	void tickFont();
 	void drawFont();
+  */
 	
 // Something Engine	
 //GLfloat *mySomethingVertices;
@@ -96,72 +97,7 @@ public:
 //void buildSpiral();
 //void tickSpiral();
 //void drawSpiral();
-
-
-	// Platform Engine
-	typedef struct {
-		GLfloat step;
-		GLfloat amplitude;
-		GLfloat angular_frequency;
-		GLfloat last_angular_frequency;
-		GLfloat phase;
-		GLfloat length;
-		Vector3D position;
-		Vector3D speed;
-		Vector3D acceleration;
-	} Platform;
-	Platform *myPlatforms;
-	int myPlatformCount;
-	GLuint myGroundTexture;
-	//static const GLfloat myPlatformTextureCoords[];
-	void buildPlatforms();
-	void tickPlatform();
-	void drawPlatform();
-	void iteratePlatform(int operation);
-	void tickPlatformSegment(float beginX, float beginY, float endX, float endY);
-	void drawPlatformSegment(float baseY, float beginX, float beginY, float endX, float endY);
 	
-	// Player Engine
-	GLuint myPlayerTexture;
-	Vector3D myPlayerPlatformIntersection;
-	Vector3D myPlayerPosition;
-	Vector3D myPlayerSpeed;
-	Vector3D myPlayerAcceleration;
-	Vector3D myPlayerJumpStartPosition;
-	float myPlayerMaxSpeed;
-	float myPlayerJumpSpeed;
-	GLfloat myPlayerRotation;
-	int myPlayerAnimationIndex;
-	int myPlayerAnimationDirection;
-	bool myPlayerJumping;
-	bool myPlayerCanDoubleJump;
-	bool myPlayerOnPlatform;
-	bool myPlayerBelowPlatform;
-	float myPlayerLastJump;
-	float myPlayerLastEnd;
-	Vector3D myPlayerPlatformCorrection;
-	int myPlayerRunCycle;
-	int myPlayerJumpCycle;
-	int myPlayerTransformedCycle;
-	int myPlayerTransformUpCycle;
-	int myPlayerTransformDownCycle;
-	int myPlayerIsTransformed;
-	int myPlayerNeedsTransform;
-	//PlayerState *myPlayerStates;
-	//int myPlayerStatesCount;
-	//int myState;
-	//int myStatesToShow;
-	//NSTimeInterval myTimeSinceLastStatePush;
-	//int myLastStateAvailable;
-	//typedef struct {
-	//	Vector3D position;
-	//	GLfloat rotation;
-	//} PlayerState;
-	//void buildPlayer(foo *playerFoo);
-	void tickPlayer();
-	void drawPlayer();
-	void playerStartedJumping();
-	void playerStoppedJumping();
 
 	// World Engine
 	bool mySceneBuilt;
@@ -189,7 +125,7 @@ public:
 	void bindTexture(GLuint texture);
 	void unbindTexture(GLuint texture);
 	void resizeScreen(int width, int height);
-	
+	float randf();
 	void prepareFrame(int width, int height);
 	inline std::string stringify(double x);
 	
@@ -209,24 +145,9 @@ public:
 	virtual void tickCamera() = 0;
 	void drawCamera();
 	
-	// SkyBox Engine	
-	static const GLfloat mySkyBoxVertices[];
-	static const GLfloat cubeTextureCoords[];
-	GLuint mySkyBoxTexture[1];
-	float myBuildSkyBoxDuration;
-	float myBuildPlatformDuration;
-	GLuint *mySkyBoxTextures;
-	GLfloat mySkyBoxRotation;
-	void buildSkyBox();
-	void tickSkyBox();
-	void drawSkyBox();
 
 	virtual void hitTest(float x, float y) = 0;
 
-	//OpenSteer::Vec3 directionFromCameraToScreenPosition (int x, int y, int h);
-
-
-	//void camera_directions(float * out_rgt, float * out_up , float * out_look);
 	
 private:
 

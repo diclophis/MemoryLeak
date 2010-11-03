@@ -5,19 +5,7 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
-//#include "math.h"
-//#include <sstream>
-//#include "pthread.h"
-
-//#include "importgl.h"
-//#include "OpenGLCommon.h"
-
-//#include "assimp.hpp"
-
 #include "MemoryLeak.h"
-
-#include <include/IOStream.h>
-#include <include/IOSystem.h>
 
 #include "Engine.h"
 
@@ -168,7 +156,7 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
 	importer.SetIOHandler(new ResourceIOSystem(*textures, *models));
 	
 	buildCamera();
-	buildFont();
+	//buildFont();
 }
 
 
@@ -242,7 +230,7 @@ int Engine::tick() {
             checkTime = false;
           } else {
             int times = (elapsedTime / interval);
-            myDeltaTime = 2.5; //(interval / elapsedTime);
+            myDeltaTime = 2.5;
             for (int i=0; i<times; i++) {
               mySimulationTime += (myDeltaTime);
               pthread_mutex_lock(&m_mutex);
@@ -369,7 +357,7 @@ void Engine::resizeScreen(int width, int height) {
 	myViewportSet = false;
 }
 
-
+/*
 void Engine::buildFont() {	
 	
 	m_charPixelWidth = m_animPixelWidth = CHAR_PIXEL_W;
@@ -493,6 +481,7 @@ void Engine::drawFont() {
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 }
+*/
 
 
 void Engine::drawCamera() {	
@@ -506,170 +495,5 @@ void Engine::drawCamera() {
 
 //returns a random float between 0 and 1
 float Engine::randf() {
-	//#define ARC4RANDOM_MAX 0x100000000LL
-	//return floorf(((double)arc4random() / ARC4RANDOM_MAX));
 	return (lrand48() % 255) / 255.f;
 }
-
-
-void Engine::reset_vertex(int idx) {
-	int i = idx * 3;
-	vertices[i + 0] = generator[idx].x;
-	vertices[i + 1] = generator[idx].y;
-	vertices[i + 2] = generator[idx].z;
-}
-
-
-void Engine::random_velocity(int idx) {
-	//velocity[idx].x = -0.35 + (randf() * 0.01);
-	//velocity[idx].y = 0.25 - (randf() * 0.5);
-	//velocity[idx].z = 0.25 - (randf() * 0.5);
-	/*
-	velocity[idx].x = -0.35 + (randf() * 0.01);
-	velocity[idx].y = 0.25 - (randf() * 0.5);
-	velocity[idx].z = 0.25 - (0.5) + (randf() * 0.002 * myPlayerSpeed.x);
-	*/
-
-	
-	velocity[idx].x = 1.0 - randf() * 2.0;
-	velocity[idx].y = (randf() * 1.0) + 3.0;
-	velocity[idx].z = 1.0 - randf() * 2.0;
-	
-
-	//velocity[idx].x = 0.1;
-	//velocity[idx].y = 0.1;
-	//velocity[idx].z = 0.1;
-}
-
-
-void Engine::reset_particle(int idx) {
-	generator[idx].x = myFountainPosition.x;
-	generator[idx].y = myFountainPosition.y;
-	generator[idx].z = myFountainPosition.z;
-
-	
-	reset_vertex(idx);
-	random_velocity(idx);
-	reset_life(idx);
-	
-	//LOGV("RESET: %d %f %f\n", idx, vertices[idx * 3], myPlayerPosition.x);
-
-}
-
-void Engine::update_vertex(int idx) {
-	int i = idx * 3;
-	vertices[i] += velocity[idx].x;
-	vertices[i+1] += velocity[idx].y;
-	vertices[i+2] += velocity[idx].z;
-	velocity[idx].y -= 1.0; 
-}
-
-
-/*
-static GLfloat ccolors[12][3]=				// Rainbow Of Colors
-{
-	{1.0f,1.0f,1.0f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},{0.9f,0.9f,0.9f},
-	{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},{0.5f,0.5f,0.5f},
-	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
-};
- */
-
-static GLfloat ccolors[12][3]=				// Rainbow Of Colors
-{
-	{0.0f,1.0f,0.0f},{0.0f,0.9f,0.1f},{0.0f,0.9f,0.1f},{0.0f,0.9f,0.1f},
-	{0.0f,0.5f,0.1f},{0.0f,0.5f,0.1f},{0.0f,0.5f,0.1f},{0.0f,0.5f,0.5f},
-	{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f},{0.25f,0.25f,0.25f}
-};
-
-
-void Engine::update_color(int idx) {
-	int i = idx * 4;
-	//float distanceFromPlayer = myPlayerPosition.x - vertices[idx * 3];
-	//float percentOf = (distanceFromPlayer) / 40.0;
-	int ii = randf() * 11;//(int)(percentOf * 12);
-	//if (ii > 11) {
-	//	ii = 11;
-	//}
-	
-	colors[i+0] = ccolors[ii][0];
-	colors[i+1] = ccolors[ii][1];
-	colors[i+2] = ccolors[ii][2];
-	colors[i+3] = 1.0; //i / (float)11.0;	
-}
-
-
-void Engine::reset_life(int i) {
-	life[i] = 1.0;
-}
-
-
-void Engine::buildFountain() {	
-	srand48(time(NULL));
-	
-	int i = 0;
-	for(i=0;i<NUM_PARTICLES;i++) {
-		elements[i] = i;
-	}
-	
-	for(i=0;i<NUM_PARTICLES;i++) {
-		reset_particle(i);
-		life[i] -= (float)i / (float)NUM_PARTICLES;
-	}	
-}
-
-
-void Engine::tickFountain() {	
-	int i = 0; //particle index
-	for(i=0; i<NUM_PARTICLES; i++) {
-		life[i] -= 0.1;
-		if(life[i] <= 0.0) {
-			reset_particle(i);
-		} else {
-			update_color(i);
-			update_vertex(i);
-		}
-	}
-}
-
-
-void Engine::drawFountain() {
-	glDisable(GL_DEPTH_TEST);
-	if (false) {
-		glBindTexture(GL_TEXTURE_2D, textures->at(5));
-
-#ifdef DESKTOP
-		glEnable(GL_POINT_SPRITE);
-		glPointSize(5.0);
-		glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
-		glEnableClientState(GL_VERTEX_ARRAY); 
-		glVertexPointer(3, GL_FLOAT, 0, vertices); 
-		glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-		glDisable(GL_POINT_SPRITE);
-#else
-		glEnable(GL_POINT_SPRITE_OES);
-		glPointSize(5.0);
-		glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_TRUE);
-		//glTexEnvi(GL_POINT_SPRITE_OES, GL_COORD_REPLACE_OES, GL_FALSE);
-		glEnableClientState(GL_VERTEX_ARRAY); 
-		glVertexPointer(3, GL_FLOAT, 0, vertices); 
-		glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
-		//glColor4f(1.0, 1.0, 1.0, 1.0);
-		glDisable(GL_POINT_SPRITE_OES);
-#endif
-	} else {
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glVertexPointer(3, GL_FLOAT, 0, vertices);
-		glColorPointer(4, GL_FLOAT, 0, colors);
-		glPointSize(4.0);
-		glDrawElements(GL_POINTS, NUM_PARTICLES, GL_UNSIGNED_SHORT, elements);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-	}
-	glEnable(GL_DEPTH_TEST);
-}
-
-
