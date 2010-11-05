@@ -35,10 +35,6 @@ RaptorIsland::~RaptorIsland() {
 }
 
 
-//RaptorIsland::RaptorIsland(int width, int height, std::vector<GLuint> x_textures, std::vector<foo*> x_models) {
-//}
-
-
 void RaptorIsland::build() {
 
 	ctfSeeker = new CtfSeeker;

@@ -6,13 +6,14 @@
 
 #include "MemoryLeak.h"
 #include "Engine.h"
+#include "MachineGun.h"
 #include "RunAndJump.h"
 
 //#define kWindowWidth  1024
 //#define kWindowHeight 600
 
-#define kWindowWidth  400
-#define kWindowHeight 240
+#define kWindowWidth  1400
+#define kWindowHeight 1240
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;

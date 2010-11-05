@@ -269,6 +269,7 @@ void Engine::draw(float rotation) {
 			}
 			glPopMatrix();
 		} else {
+			LOGV("the fuck: %d\n", screenWidth);
 			prepareFrame(screenWidth, screenHeight);
 		}
 	}

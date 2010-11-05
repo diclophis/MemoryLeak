@@ -6,15 +6,16 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
+#import "MemoryLeakAppDelegate.h"
 #import "EAGLView.h"
+#import <CoreAudio/CoreAudioTypes.h>
 
+static OSStatus result;
 
 #include "MemoryLeak.h"
+#include "Engine.h"
+#include "MachineGun.h"
 #include "RunAndJump.h"
-#import "MemoryLeakAppDelegate.h"
-
-
-
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;

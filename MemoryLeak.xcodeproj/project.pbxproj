@@ -22,7 +22,7 @@
 		FC3997B91242C16E008E614D /* TerrainRayTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A01242C16E008E614D /* TerrainRayTest.cpp */; };
 		FC3997BA1242C16E008E614D /* Vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A41242C16E008E614D /* Vec3.cpp */; };
 		FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC3997A61242C16E008E614D /* Vec3Utilities.cpp */; };
-		FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8138B6124413590027435E /* CaptureTheFlag.cpp */; };
+		FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC7020531282309E00BB601D /* CoreAudio.framework */; };
 		FC8771DC124B2FD30028EB2C /* MachineGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8771DA124B2FD30028EB2C /* MachineGun.cpp */; };
 		FC91940C127A7B5A003E0DB5 /* 3DSConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC9192E6127A7B59003E0DB5 /* 3DSConverter.cpp */; };
 		FC91940D127A7B5A003E0DB5 /* 3DSLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC9192E7127A7B59003E0DB5 /* 3DSLoader.cpp */; };
@@ -156,10 +156,6 @@
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
 		FCB1F7A2123E40F700BA41ED /* MemoryLeakAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41451216807900A60972 /* MemoryLeakAppDelegate.mm */; };
 		FCB1F7AD123E412100BA41ED /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41611216811B00A60972 /* Engine.cpp */; };
-		FCB1F7AE123E412200BA41ED /* MD2_File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41651216811B00A60972 /* MD2_File.cpp */; };
-		FCB1F7AF123E412300BA41ED /* MD2_Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41671216811B00A60972 /* MD2_Manager.cpp */; };
-		FCB1F7B0123E412400BA41ED /* MD2_Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41691216811B00A60972 /* MD2_Model.cpp */; };
-		FCB1F7B1123E412500BA41ED /* RaptorIsland.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */; };
 		FCB1F7B2123E412900BA41ED /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41461216807900A60972 /* main.mm */; };
 		FCB1F7B5123E413000BA41ED /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCBE41421216807900A60972 /* EAGLView.mm */; };
 		FCB94686127FCFEE000FE9CE /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCB944F5127FB821000FE9CE /* Model.cpp */; };
@@ -176,8 +172,6 @@
 		FC083460126F88F100D509E2 /* RunAndJump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunAndJump.h; path = jni/RunAndJump.h; sourceTree = "<group>"; };
 		FC08350D126F925600D509E2 /* MemoryLeak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryLeak.h; path = jni/MemoryLeak.h; sourceTree = "<group>"; };
 		FC10A985123C502F002A6142 /* foo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = foo.h; path = jni/foo.h; sourceTree = "<group>"; };
-		FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RaptorIsland.cpp; path = jni/RaptorIsland.cpp; sourceTree = "<group>"; };
-		FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RaptorIsland.h; path = jni/RaptorIsland.h; sourceTree = "<group>"; };
 		FC38F766123DABB50036678B /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		FC3997701242C16E008E614D /* AbstractVehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractVehicle.h; sourceTree = "<group>"; };
 		FC3997711242C16E008E614D /* Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Annotation.h; sourceTree = "<group>"; };
@@ -230,9 +224,7 @@
 		FC3997A71242C16E008E614D /* Vec3Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vec3Utilities.h; sourceTree = "<group>"; };
 		FC39980D1242C4BC008E614D /* Draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Draw.h; sourceTree = "<group>"; };
 		FC3998261242C56C008E614D /* Draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Draw.cpp; sourceTree = "<group>"; };
-		FC8137481243F3840027435E /* CaptureTheFlag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CaptureTheFlag.h; path = jni/CaptureTheFlag.h; sourceTree = "<group>"; };
-		FC8138B6124413590027435E /* CaptureTheFlag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CaptureTheFlag.cpp; path = jni/CaptureTheFlag.cpp; sourceTree = "<group>"; };
-		FC8138D0124415C00027435E /* Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Globals.h; path = jni/Globals.h; sourceTree = "<group>"; };
+		FC7020531282309E00BB601D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		FC8771DA124B2FD30028EB2C /* MachineGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MachineGun.cpp; path = jni/MachineGun.cpp; sourceTree = "<group>"; };
 		FC8771DB124B2FD30028EB2C /* MachineGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MachineGun.h; path = jni/MachineGun.h; sourceTree = "<group>"; };
 		FC9192E6127A7B59003E0DB5 /* 3DSConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 3DSConverter.cpp; sourceTree = "<group>"; };
@@ -561,10 +553,6 @@
 		FC919593127A7C40003E0DB5 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
 		FC919594127A7C40003E0DB5 /* zutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zutil.h; sourceTree = "<group>"; };
 		FC919595127A7C40003E0DB5 /* zlib_note.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zlib_note.txt; sourceTree = "<group>"; };
-		FC919AF1127E9922003E0DB5 /* AnimEvaluator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnimEvaluator.cpp; path = jni/AnimEvaluator.cpp; sourceTree = "<group>"; };
-		FC919AF2127E9922003E0DB5 /* AnimEvaluator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnimEvaluator.h; path = jni/AnimEvaluator.h; sourceTree = "<group>"; };
-		FC919AF3127E9922003E0DB5 /* SceneAnimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneAnimator.cpp; path = jni/SceneAnimator.cpp; sourceTree = "<group>"; };
-		FC919AF4127E9922003E0DB5 /* SceneAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneAnimator.h; path = jni/SceneAnimator.h; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -578,13 +566,6 @@
 		FCBE41471216807900A60972 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = iPhone/MainWindow.xib; sourceTree = "<group>"; };
 		FCBE41611216811B00A60972 /* Engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Engine.cpp; path = jni/Engine.cpp; sourceTree = "<group>"; };
 		FCBE41621216811B00A60972 /* Engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Engine.h; path = jni/Engine.h; sourceTree = "<group>"; };
-		FCBE41641216811B00A60972 /* MD2_Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MD2_Config.h; path = jni/MD2_Config.h; sourceTree = "<group>"; };
-		FCBE41651216811B00A60972 /* MD2_File.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MD2_File.cpp; path = jni/MD2_File.cpp; sourceTree = "<group>"; };
-		FCBE41661216811B00A60972 /* MD2_File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MD2_File.h; path = jni/MD2_File.h; sourceTree = "<group>"; };
-		FCBE41671216811B00A60972 /* MD2_Manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MD2_Manager.cpp; path = jni/MD2_Manager.cpp; sourceTree = "<group>"; };
-		FCBE41681216811B00A60972 /* MD2_Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MD2_Manager.h; path = jni/MD2_Manager.h; sourceTree = "<group>"; };
-		FCBE41691216811B00A60972 /* MD2_Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MD2_Model.cpp; path = jni/MD2_Model.cpp; sourceTree = "<group>"; };
-		FCBE416A1216811B00A60972 /* MD2_Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MD2_Model.h; path = jni/MD2_Model.h; sourceTree = "<group>"; };
 		FCBE416B1216811B00A60972 /* OpenGLCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLCommon.h; path = jni/OpenGLCommon.h; sourceTree = "<group>"; };
 		FCBE416C1216811B00A60972 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = jni/Platform.h; sourceTree = "<group>"; };
 		FCBE416D1216811B00A60972 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = jni/Player.h; sourceTree = "<group>"; };
@@ -607,6 +588,7 @@
 				FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */,
 				FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */,
 				FCFD71AF121E95C800C8F382 /* libpthread.dylib in Frameworks */,
+				FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -643,6 +625,7 @@
 				FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */,
 				FCB14CC612001DFB0010E756 /* CoreGraphics.framework */,
 				FCFD71AE121E95C800C8F382 /* libpthread.dylib */,
+				FC7020531282309E00BB601D /* CoreAudio.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1153,10 +1136,6 @@
 			children = (
 				FCB944F5127FB821000FE9CE /* Model.cpp */,
 				FCB944F6127FB821000FE9CE /* Model.h */,
-				FC919AF1127E9922003E0DB5 /* AnimEvaluator.cpp */,
-				FC919AF2127E9922003E0DB5 /* AnimEvaluator.h */,
-				FC919AF3127E9922003E0DB5 /* SceneAnimator.cpp */,
-				FC919AF4127E9922003E0DB5 /* SceneAnimator.h */,
 				FC91947B127A7C3F003E0DB5 /* contrib */,
 				FC9192E5127A7B59003E0DB5 /* assimp */,
 				FC91935E127A7B59003E0DB5 /* include */,
@@ -1165,23 +1144,11 @@
 				FC083460126F88F100D509E2 /* RunAndJump.h */,
 				FC8771DA124B2FD30028EB2C /* MachineGun.cpp */,
 				FC8771DB124B2FD30028EB2C /* MachineGun.h */,
-				FC8138D0124415C00027435E /* Globals.h */,
-				FC8137481243F3840027435E /* CaptureTheFlag.h */,
-				FC8138B6124413590027435E /* CaptureTheFlag.cpp */,
 				FC39976F1242C16E008E614D /* OpenSteer */,
-				FC10A9C2123C5F6A002A6142 /* RaptorIsland.cpp */,
-				FC10A9C3123C5F6A002A6142 /* RaptorIsland.h */,
 				FC10A985123C502F002A6142 /* foo.h */,
 				FCBE417C121681C600A60972 /* importgl.h */,
 				FCBE41621216811B00A60972 /* Engine.h */,
 				FCBE41611216811B00A60972 /* Engine.cpp */,
-				FCBE41641216811B00A60972 /* MD2_Config.h */,
-				FCBE41651216811B00A60972 /* MD2_File.cpp */,
-				FCBE41661216811B00A60972 /* MD2_File.h */,
-				FCBE41671216811B00A60972 /* MD2_Manager.cpp */,
-				FCBE41681216811B00A60972 /* MD2_Manager.h */,
-				FCBE41691216811B00A60972 /* MD2_Model.cpp */,
-				FCBE416A1216811B00A60972 /* MD2_Model.h */,
 				FCBE416B1216811B00A60972 /* OpenGLCommon.h */,
 				FCBE416C1216811B00A60972 /* Platform.h */,
 				FCBE416D1216811B00A60972 /* Player.h */,
@@ -1280,10 +1247,6 @@
 			files = (
 				FCB1F7A2123E40F700BA41ED /* MemoryLeakAppDelegate.mm in Sources */,
 				FCB1F7AD123E412100BA41ED /* Engine.cpp in Sources */,
-				FCB1F7AE123E412200BA41ED /* MD2_File.cpp in Sources */,
-				FCB1F7AF123E412300BA41ED /* MD2_Manager.cpp in Sources */,
-				FCB1F7B0123E412400BA41ED /* MD2_Model.cpp in Sources */,
-				FCB1F7B1123E412500BA41ED /* RaptorIsland.cpp in Sources */,
 				FCB1F7B2123E412900BA41ED /* main.mm in Sources */,
 				FCB1F7B5123E413000BA41ED /* EAGLView.mm in Sources */,
 				FC3997A91242C16E008E614D /* Clock.cpp in Sources */,
@@ -1299,7 +1262,6 @@
 				FC3997B91242C16E008E614D /* TerrainRayTest.cpp in Sources */,
 				FC3997BA1242C16E008E614D /* Vec3.cpp in Sources */,
 				FC3997BB1242C16E008E614D /* Vec3Utilities.cpp in Sources */,
-				FC8138B7124413590027435E /* CaptureTheFlag.cpp in Sources */,
 				FC8771DC124B2FD30028EB2C /* MachineGun.cpp in Sources */,
 				FC083461126F88F100D509E2 /* RunAndJump.cpp in Sources */,
 				FC91940C127A7B5A003E0DB5 /* 3DSConverter.cpp in Sources */,

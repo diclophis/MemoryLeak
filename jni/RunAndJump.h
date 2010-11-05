@@ -144,5 +144,7 @@ public:
   float myPlayerLastEnd;
   Vector3D myPlayerPlatformCorrection;
 
+  MachineGun *m_Gun;
+
 	
 };

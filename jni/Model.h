@@ -47,7 +47,46 @@ public:
 	}
 	
 	
-private:
+	float Tick(float delta) {
+		m_Position[0] += m_Velocity[0];
+		m_Position[1] += m_Velocity[1];
+		m_Position[2] += m_Velocity[2];
+		m_Life += delta;
+		return m_Life;
+	}
+	
+	
+	void SetLife(float life) {
+		m_Life = life;
+	}
+	
+	float GetLife() {
+		return m_Life;
+	}
+	
+	
+	float sfrand( void )
+	{
+		static unsigned int mirand = 1;
+
+		unsigned int a;
+		
+		mirand *= 16807;
+		
+		a = (mirand&0x007fffff) | 0x40000000;
+		
+		return( *((float*)&a) - 3.0f );
+	}
+	
+	
+	void SetVelocity(float x, float y, float z) {
+		m_Velocity[0] = x;
+		m_Velocity[1] = y;
+		m_Velocity[2] = z;
+	}
+
+	
+protected:
 	
 	bool build();
 	const aiScene *m_Scene;
@@ -57,6 +96,8 @@ private:
 	float m_Scale[3];
 	float m_Position[3];
 	float m_Rotation[3];
+	float m_Life;
+	float m_Velocity[3];
 	int mNumFaces;
   int numFrames;
 };

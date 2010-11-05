@@ -19,4 +19,3 @@
 
 #include "foo.h"
 #include "Model.h"
-#include "MachineGun.h"

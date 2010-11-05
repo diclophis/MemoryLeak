@@ -33,27 +33,7 @@ public:
 	Engine& operator=(const Engine&);
 
   /*
-	// Fountain Engine
-	#define NUM_PARTICLES 20
-	
-	GLfloat vertices[NUM_PARTICLES * 3];
-	GLfloat colors[NUM_PARTICLES * 4];
-	GLushort elements[NUM_PARTICLES];
-	Vector3D generator[NUM_PARTICLES]; //keep track of generator (origin) for each particle
-	Vector3D velocity[NUM_PARTICLES]; //keep track of velocity vector for each particle
-	float alpha[NUM_PARTICLES]; //keep track of alpha for display
-	float life[NUM_PARTICLES]; //keep track of life of particle
-	GLuint myFountainTextures[1];
-	Vector3D myFountainPosition;
-	void buildFountain();
-	void tickFountain();
-	void drawFountain();
-	void reset_life(int idx);
-	void reset_vertex(int idx);
-	void random_velocity(int idx);
-	void reset_particle(int idx);
-	void update_vertex(int idx);
-	void update_color(int idx);
+
 
 	// Font Engine
 	float m_nScalerX;		// To scale texture values based on imported pngs.

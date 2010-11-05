@@ -9,6 +9,7 @@
 
 #include "MemoryLeak.h"
 #include "Engine.h"
+#include "MachineGun.h"
 #include "RunAndJump.h"
 
 
@@ -23,15 +24,19 @@ void RunAndJump::hitTest(float x, float y) {
 
 
 void RunAndJump::tickCamera() {
-	myCameraTarget = Vector3DMake(myPlayerPosition.x + 12.0, -3.0, myPlayerPosition.z - 10.0);
-	myCameraPosition = Vector3DMake(myPlayerPosition.x - 1.0, 10.0, 12.0);
+	myCameraTarget = Vector3DMake(myPlayerPosition.x + 15.0, myPlayerPosition.y - fastSinf(mySimulationTime * 0.01), -10.0);
+	myCameraPosition = Vector3DMake(myPlayerPosition.x - 8.0, myCameraPosition.y + (0.01 * ((myPlayerPosition.y + 5.0) - myCameraPosition.y)), 10.0);
+	
+	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 30.0, 0.0, 0.0);
+	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 2.0, myPlayerPosition.y + 1.5, 0.0);
 }
 
 
 void RunAndJump::build() {
 	myPlayerSpeed = Vector3DMake(0.0, 0.0, 0.0);
 	
-	myGravity = -0.005;
+	myGravity = -0.01;
+	myPlayerJumpSpeed = 0.04;
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
@@ -56,6 +61,9 @@ aiProcess_Triangulate |
 aiProcess_JoinIdenticalVertices |
 aiProcess_SortByPType
 */
+	
+	m_Gun = new MachineGun(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes));
+
 
 	m_SkyBox = new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
 	m_SkyBox->SetPosition(0.0, 0.0, 0.0);
@@ -83,14 +91,20 @@ aiProcess_SortByPType
 		myTerrains[i]->SetPosition(i * 20.0, myTerrainHeight, 0.0);
 		myTerrains[i]->SetRotation(0.0, 0.0, 0.0);
 	}
+
 	myPlayerPosition = Vector3DMake(0.0, myPlatforms[0].position.y + 2.0, 0.0);
+	
+	m_Gun->SetVelocity(myPlayerSpeed.x, myPlayerSpeed.y, myPlayerSpeed.z);
+
+
 }
 
 
 int RunAndJump::simulate() {
 	tickCamera();
 	m_SkyBox->SetPosition(myPlayerPosition.x, 0.0, 0.0);
-  m_SkyBox->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
+	m_SkyBox->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
+	m_Player->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
 	tickPlatform();
 	tickPlayer();
 	for (unsigned int i=0; i<myTerrainCount; i++) {
@@ -98,6 +112,11 @@ int RunAndJump::simulate() {
 			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
 		}
 	}
+	m_Gun->tickFountain();
+	
+	m_Gun->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, myPlayerPosition.z);
+	m_Gun->SetVelocity(myPlayerSpeed.x, myPlayerSpeed.y, myPlayerSpeed.z);
+	
 	return 1;
 }
 
@@ -111,14 +130,14 @@ void RunAndJump::render() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 
-	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	glBindTexture(GL_TEXTURE_2D, textures->at(2));
   glDisable(GL_LIGHTING);
 	m_SkyBox->render(0);
   glEnable(GL_LIGHTING);
 	glBindTexture(GL_TEXTURE_2D, 1);
 	
 	
-	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	glBindTexture(GL_TEXTURE_2D, textures->at(1));
 	for (unsigned int i=0; i<mySegmentCount; i++) {
 		mySegments[i]->render(0);
 	}
@@ -135,7 +154,13 @@ void RunAndJump::render() {
 	glBindTexture(GL_TEXTURE_2D, textures->at(0));
 	m_Player->render(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+
+
+	glBindTexture(GL_TEXTURE_2D, textures->at(3));
+	m_Gun->drawFountain();
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
@@ -143,10 +168,10 @@ void RunAndJump::render() {
 
 
 void RunAndJump::playerStartedJumping() {
-	if (myPlayerCanDoubleJump) {
-		myPlayerCanDoubleJump = false;
-		myPlayerLastJump = mySimulationTime;
-	}
+	//if (myPlayerCanDoubleJump) {
+	//	myPlayerCanDoubleJump = false;
+	//	myPlayerLastJump = mySimulationTime;
+	//}
 	
 	if (myPlayerOnPlatform) {
 		myPlayerLastJump = mySimulationTime;
@@ -170,15 +195,16 @@ void RunAndJump::tickPlayer() {
 	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
 	
 	if (myPlayerLastJump > 0.0 && timeSinceStarted < (myDeltaTime * 8.0) && timeSinceStarted > 0.0) {
-		myPlayerFalling = false;
 		if (myPlayerJumping) {
 			myPlayerAcceleration.x = 0.0005;
-			myPlayerAcceleration.y = 0.0;
+			//myPlayerAcceleration.y = 0.0;
+		  myPlayerFalling = true;
 		} else {
       if (myPlayerSpeed.y < 0.0) {
         myPlayerSpeed.y = 0.0;
       }
-			myPlayerAcceleration.y = 0.035;
+			myPlayerAcceleration.y = myPlayerJumpSpeed;
+		  myPlayerFalling = false;
 			myPlayerJumping = true;
 		}
 	}
@@ -189,34 +215,30 @@ void RunAndJump::tickPlayer() {
 		  myPlayerSpeed.y = 0.0;
 			myPlayerAcceleration.y = 0.0;
       float off = myPlayerPosition.y - myPlayerPlatformCorrection.y;
-      if (fabs(off) > 0.05) {
-        myPlayerPosition.y -= (off * 0.7);
+      if (fabs(off) > 0.01) {
+        myPlayerPosition.y -= (off * 0.5);
       } else {
         myPlayerPosition.y = myPlayerPlatformCorrection.y;
       }
 		}
 	}
 	
-	if (myPlayerOnPlatform) {
-		myPlayerCanDoubleJump = true;
-	}
+	//if (myPlayerOnPlatform) {
+	//	myPlayerCanDoubleJump = true;
+	//}
 
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x * myDeltaTime, myPlayerAcceleration.y * myDeltaTime, myPlayerAcceleration.z * myDeltaTime));
 
-  float myPlayerDec = 0.0001 * myDeltaTime;
-  if (myPlayerSpeed.x > 0.2) {
-    myPlayerSpeed.x = 0.2;
-  } else if (myPlayerSpeed.x < -0.2) {
-    myPlayerSpeed.x = -0.2;
-  } else if (fabs(myPlayerSpeed.x) > 0.1) {
-    if (myPlayerSpeed.x > 0.0) {
-      myPlayerAcceleration.x -= myPlayerDec;
-    } else {
-      myPlayerAcceleration.x += myPlayerDec;
-    }
-  } else if (!myPlayerJumping) {
-    //myPlayerSpeed.x = 0.0;
-    //myPlayerAcceleration.x = 0.0;
+  if (myPlayerSpeed.x > 0.1) {
+    myPlayerSpeed.x = 0.1;
+  } else if (myPlayerSpeed.x < -0.1) {
+    myPlayerSpeed.x = -0.1;
+  }
+
+  if (myPlayerSpeed.y > 0.2) {
+    myPlayerSpeed.y = 0.2;
+  } else if (myPlayerSpeed.y < -0.2) {
+    myPlayerSpeed.y = -0.2;
   }
 
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
@@ -250,7 +272,7 @@ void RunAndJump::buildPlatforms() {
 	for (int i=0; i<myPlatformCount; i++) {
 
 	  randomY = ((random() / (float)RAND_MAX) * 4.0) - 0.25;
-    randomA = (randf() * 1.0) + 1.0;
+		randomA = (randf() * 1.0) + 1.0;
     randomL = ((randf() * 25.0) + 10.0);
 		
 		length = randomL;
@@ -261,10 +283,10 @@ void RunAndJump::buildPlatforms() {
 		f.amplitude = randomA;
 		
 		f.step = step;
-		f.angular_frequency = 0.15;
+		f.angular_frequency = randf() * 0.15;
 		f.phase = 0.0;
 		lastPlatformPosition = f.position;
-		lastPlatformPosition.x += length + randf() + 5.0;
+		lastPlatformPosition.x += length + randf() + 4.0;
 		myPlatforms.push_back(f);
 	}
 }
@@ -337,8 +359,8 @@ void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, flo
 		Vector3D p1 = Vector3DMake(beginX, beginY, 0.0);
 		Vector3D p2 = Vector3DMake(endX, endY, 0.0);
 		
-		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, 0.5, 0.0));
-		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, -0.5, 0.0));
+		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, 1.0, 0.0));
+		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, -1.0, 0.0));
 		
 		Vector3D p = p1;
 		

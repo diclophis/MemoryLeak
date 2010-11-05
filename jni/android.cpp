@@ -17,6 +17,8 @@
 
 #include "importgl.h"
 #include "MemoryLeak.h"
+#include "MachineGun.h"
+#include "Engine.h"
 #include "RunAndJump.h"
 
 extern "C" {

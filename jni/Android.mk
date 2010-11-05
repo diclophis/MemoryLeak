@@ -30,12 +30,7 @@ LOCAL_SRC_FILES := \
     Model.cpp \
     Engine.cpp \
     MachineGun.cpp \
-    RaptorIsland.cpp \
     RunAndJump.cpp \
-    CaptureTheFlag.cpp \
-    MD2_File.cpp \
-    MD2_Manager.cpp \
-    MD2_Model.cpp \
     OpenSteer/Clock.cpp \
     OpenSteer/Color.cpp \
     OpenSteer/Draw.cpp \
@@ -59,18 +54,7 @@ MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/ConvertUTF/*.c)
 MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/unzip/*.c)
 MY_SOURCES += $(wildcard $(MY_PREFIX)/contrib/zlib/*.c)
 
-#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/ConvertUTF/*.c))
-#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/unzip/*.c))
-#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/zlib/*.c))
-
 LOCAL_SRC_FILES += $(MY_SOURCES:$(MY_PREFIX)%=%) 
-
-
-#objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/contrib/irrXML/*.cpp))
-#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/ConvertUTF/*.c))
-#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/unzip/*.c))
-#objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/zlib/*.c))
-
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 

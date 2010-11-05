@@ -86,7 +86,7 @@ void Model::render(int frame) {
     glBindBuffer(GL_ARRAY_BUFFER, m_TextureBuffer[0]);
     glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
     
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[frame + 0]);	
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[frame + 0]);
     glDrawElements(GL_TRIANGLES,3 * mNumFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
   }
 	
