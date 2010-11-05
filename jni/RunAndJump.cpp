@@ -18,8 +18,17 @@ RunAndJump::~RunAndJump() {
 }
 
 
-void RunAndJump::hitTest(float x, float y) {
-	playerStartedJumping();
+void RunAndJump::hitTest(float x, float y, int hitState) {
+	switch (hitState) {
+		case 0:
+			playerStartedJumping();
+			break;
+		case 2:
+			playerStoppedJumping();
+			break;
+		default:
+			break;
+	}
 }
 
 
@@ -35,8 +44,8 @@ void RunAndJump::tickCamera() {
 void RunAndJump::build() {
 	myPlayerSpeed = Vector3DMake(0.0, 0.0, 0.0);
 	
-	myGravity = -0.01;
-	myPlayerJumpSpeed = 0.04;
+	myGravity = 0.0;
+	myPlayerJumpSpeed = 0.0;
 	mySimulationTime = 0.0;
 	myGameStarted = false;
 	myGameSpeed = 1;
@@ -45,6 +54,7 @@ void RunAndJump::build() {
 	myPlayerAcceleration = Vector3DMake(0.0, 0.0, 0.0);
 	myPlayerJumping = false;
 	myPlayerLastJump = -1.0;
+	myPlayerLastEnd =  -1.0;
 	myPlayerOnPlatform = false;
 
 /*
@@ -64,7 +74,6 @@ aiProcess_SortByPType
 	
 	m_Gun = new MachineGun(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes));
 
-
 	m_SkyBox = new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
 	m_SkyBox->SetPosition(0.0, 0.0, 0.0);
 	m_SkyBox->SetScale(100.0, 100.0, 100.0);
@@ -83,13 +92,13 @@ aiProcess_SortByPType
 		mySegments[i]->SetRotation(0.0, 0.0, 0.0);
 	}
 
-	myTerrainCount = 0;
-  myTerrainHeight = 0.0;
+	myTerrainCount = 5;
+	myTerrainHeight = 5.0;
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		myTerrains.push_back(new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes)));
-		myTerrains[i]->SetScale(20.0, 1.0, 20.0);
+		myTerrains.push_back(new Model(importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes)));
+		myTerrains[i]->SetScale(5.0, 5.0, 5.0);
 		myTerrains[i]->SetPosition(i * 20.0, myTerrainHeight, 0.0);
-		myTerrains[i]->SetRotation(0.0, 0.0, 0.0);
+		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
 	}
 
 	myPlayerPosition = Vector3DMake(0.0, myPlatforms[0].position.y + 2.0, 0.0);
@@ -111,6 +120,8 @@ int RunAndJump::simulate() {
 		if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
 			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
 		}
+		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
+
 	}
 	m_Gun->tickFountain();
 	
@@ -144,7 +155,7 @@ void RunAndJump::render() {
 	glBindTexture(GL_TEXTURE_2D, 1);
 	
 	
-	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	glBindTexture(GL_TEXTURE_2D, textures->at(4));
 	for (unsigned int i=0; i<myTerrainCount; i++) {
 		myTerrains[i]->render(0);
 	}
@@ -187,29 +198,43 @@ void RunAndJump::playerStoppedJumping() {
 void RunAndJump::tickPlayer() {
 	bool myPlayerFalling = true;
 	float timeSinceStarted;
-
+	float timeSinceEnded;
+	
 	myPlayerAcceleration.y = myGravity;
 	
 	Vector3D oldPosition = myPlayerPosition;
   
 	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
+	timeSinceEnded = (mySimulationTime - myPlayerLastEnd);
 	
-	if (myPlayerLastJump > 0.0 && timeSinceStarted < (myDeltaTime * 8.0) && timeSinceStarted > 0.0) {
-		if (myPlayerJumping) {
-			myPlayerAcceleration.x = 0.0005;
-			//myPlayerAcceleration.y = 0.0;
-		  myPlayerFalling = true;
-		} else {
-      if (myPlayerSpeed.y < 0.0) {
-        myPlayerSpeed.y = 0.0;
-      }
+	myGravity = -0.01;
+	myPlayerJumpSpeed = 0.0001;
+	
+	//LOGV("%f %f %f\n", (myPlayerSpeed.y), timeSinceStarted, timeSinceEnded);
+	
+	if (myPlayerLastJump >= 0.0 && timeSinceStarted < 25.0 && timeSinceStarted > 0.0) {
+		if (myPlayerJumping && (timeSinceEnded > timeSinceStarted)) {
+			//LOGV("\n..\n");
+			myPlayerFalling = false;
+			myPlayerAcceleration.x = 0.001;
 			myPlayerAcceleration.y = myPlayerJumpSpeed;
-		  myPlayerFalling = false;
+		} else if (myPlayerJumping) {
+			//LOGV("\ndone\n");
+			myPlayerFalling = true;
+		} else {
+			if (myPlayerSpeed.y < 0.0) {
+				myPlayerSpeed.y = 0.0;
+			}
+			myPlayerSpeed.y = 0.2;
+			myPlayerFalling = false;
 			myPlayerJumping = true;
 		}
 	}
 	
-	if (myPlayerFalling) {		
+	if (myPlayerFalling) {
+		//LOGV("fall\n");
+		myPlayerLastEnd = -1.0;
+		myPlayerLastJump = -1.0;
 		myPlayerJumping = false;
 		if (myPlayerOnPlatform) {
 		  myPlayerSpeed.y = 0.0;

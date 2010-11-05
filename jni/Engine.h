@@ -126,7 +126,7 @@ public:
 	void drawCamera();
 	
 
-	virtual void hitTest(float x, float y) = 0;
+	virtual void hitTest(float x, float y, int hitState) = 0;
 
 	
 private:

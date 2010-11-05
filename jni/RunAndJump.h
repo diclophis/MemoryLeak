@@ -14,7 +14,7 @@ public:
   };
 
 	~RunAndJump();
-	void hitTest(float x, float y);
+	void hitTest(float x, float y, int hitState);
 	
 	typedef struct {
 		GLfloat step;

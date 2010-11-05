@@ -12,8 +12,8 @@
 //#define kWindowWidth  1024
 //#define kWindowHeight 600
 
-#define kWindowWidth  1400
-#define kWindowHeight 1240
+#define kWindowWidth  400
+#define kWindowHeight 240
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -66,8 +66,13 @@ void resize(int width, int height) {
 
 
 void processMouse(int button, int state, int x, int y) {
-  if (state == GLUT_DOWN) {
-    gameController->hitTest(x, y);
+  switch (state) {
+    case GLUT_DOWN:
+      gameController->hitTest(x, y, 0);
+      break;
+    case GLUT_UP:
+      gameController->hitTest(x, y, 2);
+      break;
   }
 }
 

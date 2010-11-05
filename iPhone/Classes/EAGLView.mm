@@ -121,7 +121,7 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;		
-		gameController->hitTest(location.x, location.y);
+		gameController->hitTest(location.x, location.y, 0);
 	}
 }
 
@@ -136,6 +136,7 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
+		gameController->hitTest(location.x, location.y, 1);
 	}
 }
 
@@ -150,13 +151,22 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
+		gameController->hitTest(location.x, location.y, 2);
 	}
 }
 
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//gameController->playerStoppedJumping();
+		NSSet *allTouches = [event allTouches];
+		CGRect bounds;
+		UITouch* touch;
+		bounds = [self bounds];
+		touch = [[allTouches allObjects] objectAtIndex:0];
+		CGPoint location;
+		location = [touch locationInView:self];
+		location.y = 480.0 - location.y;
+		gameController->hitTest(location.x, location.y, 2);
 	}
 }
 
