@@ -18,5 +18,5 @@ assets/textures/.DS_Store
 platforms/ios/MemoryLeak.xcodeproj/*.pbxuser
 platforms/ios/MemoryLeak.xcodeproj/*.perspectivev3
 osx/*.o
-jni/assimp/*.o
+src/assimp/*.o
 private
