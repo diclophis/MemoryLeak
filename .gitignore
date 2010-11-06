@@ -9,7 +9,6 @@ build/MemoryLeak.build/
 build/Debug-iphoneos/
 build/Release-iphoneos/
 gen/
-bin/
 libs/armeabi/
 obj/local/
 .DS_Store
