@@ -95,9 +95,15 @@ class DemoGLSurfaceView extends GLSurfaceView {
     }
 
     public boolean onTouchEvent(final MotionEvent event) {
+      float x = event.getRawX();
+      float y = event.getRawY();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            nativeTouch();
+            nativeTouch(x, y, 0);
         }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            nativeTouch(x, y, 2);
+        }
+        event.recycle();
         return true;
     }
 
@@ -110,7 +116,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
     DemoRenderer mRenderer;
 
     private static native void nativePause();
-    private static native void nativeTouch();
+    private static native void nativeTouch(float x, float y, int hitState);
 }
 
 class DemoRenderer implements GLSurfaceView.Renderer {

@@ -202,10 +202,27 @@ int Engine::tick() {
 
   bool checkTime = false;
 
+  int waitedCount = 30;
+  int waitedIndex = 0;
+
+  float waitSum = 0.0;
+  float averageWait = 0.0;
+
+  for (unsigned int i=0; i<waitedCount; i++) {
+    m_Waits[i] = 0.0;
+  }
+
 	while (gameState != 0) {
 		if (mySceneBuilt) {
 
-      if (waited > (last_waited * 0.95)) {
+      waitSum = 0.0; 
+      for (unsigned int i=0; i<waitedCount; i++) {
+        waitSum += m_Waits[i];
+      }
+
+      averageWait = waitSum / (float)waitedCount;
+      
+      if (waited > (averageWait * 0.75)) {
         checkTime = true;
       }
 
@@ -220,6 +237,8 @@ int Engine::tick() {
               return 0;
             }
           }
+
+          //LOGV("averageWait: %f\n", averageWait);
 
           if ((elapsedTime - interval) < interval) {
             myDeltaTime = ((elapsedTime / interval)) * 2.5;
@@ -239,8 +258,12 @@ int Engine::tick() {
             }
           }
 
-          last_waited = waited;
+          m_Waits[waitedIndex] = last_waited = waited;
           waited = 0;
+          waitedIndex++;
+          if ((waitedIndex % waitedCount) == 0) {
+            waitedIndex = 0;
+          }
         }
       }
       
@@ -303,7 +326,7 @@ void Engine::prepareFrame(int width, int height) {
 	glLoadIdentity();
 	//gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
 	//GOOOOOD gluPerspective(45.0, (float) width / (float) height, 100.0, 10000.0);
-	gluPerspective(50.0, (float) width / (float) height, 0.01, 200.0);
+	gluPerspective(20.0, (float) width / (float) height, 0.01, 200.0);
 
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
 

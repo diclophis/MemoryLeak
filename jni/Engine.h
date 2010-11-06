@@ -128,6 +128,8 @@ public:
 
 	virtual void hitTest(float x, float y, int hitState) = 0;
 
+  float m_Waits[30];
+
 	
 private:
 

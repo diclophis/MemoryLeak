@@ -12,8 +12,8 @@
 //#define kWindowWidth  1024
 //#define kWindowHeight 600
 
-#define kWindowWidth  400
-#define kWindowHeight 240
+#define kWindowWidth  480
+#define kWindowHeight 320
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;

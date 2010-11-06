@@ -33,11 +33,21 @@ void RunAndJump::hitTest(float x, float y, int hitState) {
 
 
 void RunAndJump::tickCamera() {
-	myCameraTarget = Vector3DMake(myPlayerPosition.x + 15.0, myPlayerPosition.y - fastSinf(mySimulationTime * 0.01), -10.0);
-	myCameraPosition = Vector3DMake(myPlayerPosition.x - 8.0, myCameraPosition.y + (0.01 * ((myPlayerPosition.y + 5.0) - myCameraPosition.y)), 10.0);
-	
+  //75
+	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 15.0, myPlayerPosition.y - fastSinf(mySimulationTime * 0.01), -10.0);
+	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 8.0, myCameraPosition.y + (0.01 * ((myPlayerPosition.y + 5.0) - myCameraPosition.y)), 10.0);
+
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 30.0, 0.0, 0.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 2.0, myPlayerPosition.y + 1.5, 0.0);
+  //
+
+  //10
+	myCameraTarget = Vector3DMake(myPlayerPosition.x + 7.0, myPlayerPosition.y, 0.0);
+	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, 49.0);
+
+	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 15.0, myPlayerPosition.y, -1.0);
+	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 13.0, myPlayerPosition.y + 3.0, 5.0);
+  //
 }
 
 
@@ -84,7 +94,7 @@ aiProcess_SortByPType
 	
 	buildPlatforms();
 
-	mySegmentCount = 30;
+	mySegmentCount = 50;
 	for (unsigned int i=0; i<mySegmentCount; i++) {
 		mySegments.push_back(new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
 		mySegments[i]->SetScale(1.0, 1.0, 1.0);
@@ -96,7 +106,7 @@ aiProcess_SortByPType
 	myTerrainHeight = 5.0;
 	for (unsigned int i=0; i<myTerrainCount; i++) {
 		myTerrains.push_back(new Model(importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes)));
-		myTerrains[i]->SetScale(5.0, 5.0, 5.0);
+		myTerrains[i]->SetScale(1.5, 1.5, 1.5);
 		myTerrains[i]->SetPosition(i * 20.0, myTerrainHeight, 0.0);
 		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
 	}
@@ -113,15 +123,14 @@ int RunAndJump::simulate() {
 	tickCamera();
 	m_SkyBox->SetPosition(myPlayerPosition.x, 0.0, 0.0);
 	m_SkyBox->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
-	m_Player->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
+	//m_Player->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
 	tickPlatform();
 	tickPlayer();
 	for (unsigned int i=0; i<myTerrainCount; i++) {
 		if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
 			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
 		}
-		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
-
+		myTerrains[i]->SetRotation(0.0, mySimulationTime * 4.0, 0.0);
 	}
 	m_Gun->tickFountain();
 	
@@ -209,14 +218,15 @@ void RunAndJump::tickPlayer() {
 	
 	myGravity = -0.01;
 	myPlayerJumpSpeed = 0.0001;
+
+  //if (timeSinceStarted < 100.0 || timeSinceEnded < 100.0) {
+  //  LOGV("%f %f %f\n", (myPlayerSpeed.y), timeSinceStarted, timeSinceEnded);
+  //}
 	
-	//LOGV("%f %f %f\n", (myPlayerSpeed.y), timeSinceStarted, timeSinceEnded);
-	
-	if (myPlayerLastJump >= 0.0 && timeSinceStarted < 25.0 && timeSinceStarted > 0.0) {
-		if (myPlayerJumping && (timeSinceEnded > timeSinceStarted)) {
+	if (myPlayerLastJump >= 0.0 && timeSinceStarted < 30.0 && timeSinceStarted >= 0.0) {
+		if (myPlayerJumping && (timeSinceEnded >= timeSinceStarted)) {
 			//LOGV("\n..\n");
 			myPlayerFalling = false;
-			myPlayerAcceleration.x = 0.001;
 			myPlayerAcceleration.y = myPlayerJumpSpeed;
 		} else if (myPlayerJumping) {
 			//LOGV("\ndone\n");
@@ -225,6 +235,7 @@ void RunAndJump::tickPlayer() {
 			if (myPlayerSpeed.y < 0.0) {
 				myPlayerSpeed.y = 0.0;
 			}
+			myPlayerAcceleration.x = 0.005;
 			myPlayerSpeed.y = 0.2;
 			myPlayerFalling = false;
 			myPlayerJumping = true;
@@ -240,11 +251,11 @@ void RunAndJump::tickPlayer() {
 		  myPlayerSpeed.y = 0.0;
 			myPlayerAcceleration.y = 0.0;
       float off = myPlayerPosition.y - myPlayerPlatformCorrection.y;
-      if (fabs(off) > 0.01) {
+      //if (fabs(off) > 0.01) {
         myPlayerPosition.y -= (off * 0.5);
-      } else {
-        myPlayerPosition.y = myPlayerPlatformCorrection.y;
-      }
+      //} else {
+      //  myPlayerPosition.y = myPlayerPlatformCorrection.y;
+      //}
 		}
 	}
 	
@@ -338,7 +349,7 @@ void RunAndJump::iteratePlatform(int operation) {
 		
 			for (int i = (int)platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
 
-				if ((i < (myPlayerPosition.x + 100.0)) && (i > (myPlayerPosition.x - 5.0))) {
+				if ((i < (myPlayerPosition.x + 50.0)) && (i > (myPlayerPosition.x - 5.0))) {
 
 					float beginX = i;
 					float endX = i + platform.step;

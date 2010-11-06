@@ -27,7 +27,7 @@ extern "C" {
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
   void Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv* env);
-  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env);
+  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState);
 }
 
 static std::vector<foo*> models;
@@ -89,9 +89,9 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 }
 
 
-void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env) {
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
   LOGV("nativeTouch");
-	gameController->hitTest(10, 10);
+	gameController->hitTest((int)x, (int)y, (int)hitState);
 }
 
 
