@@ -9,9 +9,6 @@
 #include "MachineGun.h"
 #include "RunAndJump.h"
 
-//#define kWindowWidth  1024
-//#define kWindowHeight 600
-
 #define kWindowWidth  480
 #define kWindowHeight 320
 
@@ -21,7 +18,6 @@ static Engine *gameController;
 
 GLuint loadTexture(NSBitmapImageRep *image) {
 	GLuint text = 0;
-	
 	glEnable(GL_TEXTURE_2D);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 	glGenTextures(1, &text);
@@ -30,7 +26,6 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
 	GLuint width = CGImageGetWidth(image.CGImage);
 	GLuint height = CGImageGetHeight(image.CGImage);
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -45,7 +40,6 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 	free(imageData);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-	
 	return text;
 }
 
@@ -84,6 +78,9 @@ void processMouseMotion(int x, int y) {
 void processNormalKeys(unsigned char key, int x, int y) {
   if (key == 27) {
     gameController->pause();
+  } else {
+    gameController->hitTest(x, y, 0);
+    gameController->hitTest(x, y, 2);
   }
 }
 
@@ -93,15 +90,11 @@ int main(int argc, char** argv) {
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutGameModeString("1440x900:32@65");
 
-  //if (argc > 1) {
-  //  glutGameModeString("1440x900:32@65");
-  //  glutEnterGameMode();
-  //} else {
-    glutInitWindowSize(kWindowWidth, kWindowHeight);
-    glutInitWindowPosition(1000, 500);
-    glutCreateWindow(argv[0]);
-  //}
+  glutInitWindowSize(kWindowWidth, kWindowHeight);
+  glutInitWindowPosition(1000, 500);
+  glutCreateWindow(argv[0]);
 
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/models"];
 	for (NSString *path in model_names) {

@@ -1,14 +1,12 @@
-#foobar
+# OSX Makefile, needs to know where the main src root is
 
-#edit: main.o
-
-
-#main.o: main.cpp
+#NOTE: wierd flags for doing static analysis
 #CXX=/Users/jon/llvm/Debug+Asserts/bin/clang++
 #CXX=g++
 #CXX=~/Desktop/checker-249/libexec/c++-analyzer
-build=../build/osx
-CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../jni -I../jni/include -I../jni/assimp/BoostWorkaround
+
+build=../../build/osx
+CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../../src -I../../src/include -I../../src/assimp/BoostWorkaround
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread
 
 objects = $(build)/main.o \
@@ -17,12 +15,11 @@ $(build)/MachineGun.o \
 $(build)/Engine.o \
 $(build)/RunAndJump.o
 
-#OBJECTS   := $(patsubst %.cpp,%.o,  $(wildcard *.cpp)) 
-objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/assimp/*.cpp)) 
-objects   += $(patsubst %.cpp,%.o,  $(wildcard ../jni/contrib/irrXML/*.cpp)) 
-objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/ConvertUTF/*.c))
-objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/unzip/*.c))
-objects   += $(patsubst %.c,%.o,    $(wildcard ../jni/contrib/zlib/*.c))
+objects   += $(patsubst %.cpp,%.o,  $(wildcard ../../src/assimp/*.cpp)) 
+objects   += $(patsubst %.cpp,%.o,  $(wildcard ../../src/contrib/irrXML/*.cpp)) 
+objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/ConvertUTF/*.c))
+objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/unzip/*.c))
+objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/zlib/*.c))
 
 raptor_island: $(build) $(objects)
 	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
@@ -30,10 +27,7 @@ raptor_island: $(build) $(objects)
 $(build)/main.o: main.mm
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(build)/%.o: ../jni/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(build)/%.o: ../jni/OpenSteer/%.cpp
+$(build)/%.o: ../../src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(build):

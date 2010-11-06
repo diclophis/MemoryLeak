@@ -224,19 +224,17 @@ void RunAndJump::tickPlayer() {
   //}
 	
 	if (myPlayerLastJump >= 0.0 && timeSinceStarted < 30.0 && timeSinceStarted >= 0.0) {
-		if (myPlayerJumping && (timeSinceEnded >= timeSinceStarted)) {
-			//LOGV("\n..\n");
+		if (myPlayerJumping && (timeSinceEnded > timeSinceStarted)) {
 			myPlayerFalling = false;
 			myPlayerAcceleration.y = myPlayerJumpSpeed;
 		} else if (myPlayerJumping) {
-			//LOGV("\ndone\n");
 			myPlayerFalling = true;
 		} else {
 			if (myPlayerSpeed.y < 0.0) {
 				myPlayerSpeed.y = 0.0;
 			}
 			myPlayerAcceleration.x = 0.005;
-			myPlayerSpeed.y = 0.2;
+			myPlayerSpeed.y = 0.3;
 			myPlayerFalling = false;
 			myPlayerJumping = true;
 		}
@@ -271,10 +269,10 @@ void RunAndJump::tickPlayer() {
     myPlayerSpeed.x = -0.1;
   }
 
-  if (myPlayerSpeed.y > 0.2) {
-    myPlayerSpeed.y = 0.2;
-  } else if (myPlayerSpeed.y < -0.2) {
-    myPlayerSpeed.y = -0.2;
+  if (myPlayerSpeed.y > 0.3) {
+    myPlayerSpeed.y = 0.3;
+  } else if (myPlayerSpeed.y < -0.3) {
+    myPlayerSpeed.y = -0.3;
   }
 
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
