@@ -45,8 +45,8 @@ void RunAndJump::tickCamera() {
 	myCameraTarget = Vector3DMake(myPlayerPosition.x + 7.0, myPlayerPosition.y, 0.0);
 	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, 49.0);
 
-	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 15.0, myPlayerPosition.y, -1.0);
-	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 13.0, myPlayerPosition.y + 3.0, 5.0);
+	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 10.0, 0.0, -1.0);
+	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 10.0, 10.0, 2.0);
   //
 }
 
@@ -82,21 +82,21 @@ aiProcess_JoinIdenticalVertices |
 aiProcess_SortByPType
 */
 	
-	m_Gun = new MachineGun(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes));
+	m_Gun = new MachineGun(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
 
-	m_SkyBox = new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
+	m_SkyBox = new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
 	m_SkyBox->SetPosition(0.0, 0.0, 0.0);
 	m_SkyBox->SetScale(100.0, 100.0, 100.0);
 	
 	myPlayerHeight = 0.375;
-	m_Player = new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
+	m_Player = new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
 	m_Player->SetScale(0.5, 0.5, 0.5);
 	
 	buildPlatforms();
 
 	mySegmentCount = 50;
 	for (unsigned int i=0; i<mySegmentCount; i++) {
-		mySegments.push_back(new Model(importer.ReadFile("0", aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
+		mySegments.push_back(new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
 		mySegments[i]->SetScale(1.0, 1.0, 1.0);
 		mySegments[i]->SetPosition(i, 0.0, 0.0);
 		mySegments[i]->SetRotation(0.0, 0.0, 0.0);
@@ -105,7 +105,7 @@ aiProcess_SortByPType
 	myTerrainCount = 5;
 	myTerrainHeight = 5.0;
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		myTerrains.push_back(new Model(importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes)));
+		myTerrains.push_back(new Model(importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
 		myTerrains[i]->SetScale(1.5, 1.5, 1.5);
 		myTerrains[i]->SetPosition(i * 20.0, myTerrainHeight, 0.0);
 		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
@@ -148,6 +148,10 @@ void RunAndJump::render() {
 	//glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 
 	glBindTexture(GL_TEXTURE_2D, textures->at(2));
@@ -180,6 +184,9 @@ void RunAndJump::render() {
 	m_Gun->drawFountain();
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);

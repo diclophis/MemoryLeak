@@ -70,10 +70,10 @@ void Model::render(int frame) {
 	glRotatef(m_Rotation[2],1,0,0);
 	glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnable(GL_NORMALIZE);
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_NORMAL_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glEnable(GL_NORMALIZE);
 
   for (unsigned int i=0; i<numFrames; i++) {
     frame = i;
@@ -90,9 +90,9 @@ void Model::render(int frame) {
     glDrawElements(GL_TRIANGLES,3 * mNumFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
   }
 	
-	glDisable(GL_NORMALIZE);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	//glDisable(GL_NORMALIZE);
+	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glDisableClientState(GL_NORMAL_ARRAY);
+	//glDisableClientState(GL_VERTEX_ARRAY);
 	glPopMatrix();
 }

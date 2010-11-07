@@ -1,9 +1,6 @@
 // MemoryLeak Engine
 
-#define NOT_OPENSTEERDEMO
-
 #include <stdio.h>
-
 #include <sys/time.h>
 
 #include <sstream>
