@@ -142,18 +142,12 @@ inline std::string Engine::stringify(double x) {
 
 
 Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vector<foo*> &x_models) : screenWidth(width), screenHeight(height), textures(&x_textures), models(&x_models) {
-	
 	mNeedsTick = false;
 	mySceneBuilt = false;
 	myViewportSet = false;
-
-	//Screen
 	screenWidth = width;
 	screenHeight = height;
-	
-	// put my custom IO handling in place
 	importer.SetIOHandler(new ResourceIOSystem(*textures, *models));
-	
 	buildCamera();
 }
 
@@ -189,15 +183,10 @@ void Engine::pause() {
 
 
 int Engine::tick() {
+  LOGV("starting tick\n");
+
   gameState = -1;
   int tickedGameState = -1;
-
-  /*
-	timeval t1, t2;
-  gettimeofday(&t1, NULL);
-  gettimeofday(&t2, NULL);
-	long double elapsedTime;
-  */
 
   double t1, t2;
   timeval tim;
@@ -252,7 +241,7 @@ int Engine::tick() {
 
       }
 		  pthread_mutex_unlock(&m_mutex);
-		  sched_yield();
+		  //sched_yield();
       }
     }
 
@@ -384,7 +373,7 @@ void Engine::draw(float rotation) {
       }
     }
     pthread_mutex_unlock(&m_mutex);
-    sched_yield();
+    //sched_yield();
   } else {
     //LOGV("no lock in draw\n");
   }
@@ -470,7 +459,7 @@ void Engine::prepareFrame(int width, int height) {
 	glDepthFunc(GL_LESS);
 	
 	
-	glEnable(GL_BLEND);
+	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//glEnable(GL_NORMALIZE);

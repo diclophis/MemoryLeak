@@ -11,6 +11,7 @@ class RunAndJump : public Engine {
 public:
 
   RunAndJump(int width, int height, std::vector<GLuint> &x_textures, std::vector<foo*> &x_models) : Engine(width, height, x_textures, x_models) {
+    LOGV("\n\n\n1234!!!\n\n\n\n");
   };
 
 	~RunAndJump();

@@ -23,6 +23,7 @@ void MachineGun::reset_particle(int idx) {
 	m_Particles[idx]->SetRotation(0.0, 0.0, 0.0);
 	m_Particles[idx]->SetVelocity(0.0, 0.0, 0.0);
 	m_Particles[idx]->SetLife(0.0);
+	m_Particles[idx]->SetScale(0.1, 0.1, 0.1);
 }
 
 

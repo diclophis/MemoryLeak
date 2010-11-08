@@ -30,8 +30,8 @@ extern "C" {
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState);
 }
 
-static std::vector<foo*> models;
 static std::vector<GLuint> sPlayerTextures;
+static std::vector<foo*> models;
 
 static Engine *gameController;
 static int  sWindowWidth  = 0;
@@ -69,7 +69,9 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	for (int i=0; i<5; i++) {
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-		
+
+  LOGV("nativeSurfaceCreated %d %d", sPlayerTextures.size(), models.size());
+
   gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, models);
   gameController->go();
 
@@ -78,6 +80,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
+  LOGV("nativeResize");
   gameController->resizeScreen(width, height);
 }
 

@@ -10,8 +10,6 @@
 #import "EAGLView.h"
 #import <CoreAudio/CoreAudioTypes.h>
 
-static OSStatus result;
-
 #include "MemoryLeak.h"
 #include "Engine.h"
 #include "MachineGun.h"

@@ -64,6 +64,9 @@ void RunAndJump::tickCamera() {
 
 
 void RunAndJump::build() {
+
+  LOGV("fooo\n\n\n\n");
+
 	myPlayerSpeed = Vector3DMake(0.5, 0.0, 0.0);
 	
 	myGravity = 0.0;
@@ -339,7 +342,7 @@ myPlayerSpeed.x = 0.0;
 
 
 void RunAndJump::buildPlatforms() {	
-	myPlatformCount = 100;
+	myPlatformCount = 1;
 	Vector3D lastPlatformPosition = Vector3DMake(0.0, 0.0, 0.0);
 
 	int step;
@@ -355,7 +358,7 @@ void RunAndJump::buildPlatforms() {
 
 		randomY = 0.0; //((random() / (float)RAND_MAX) * 4.0) - 0.25;
 		randomA = 0.0; //(randf() * 1.0) + 1.0;
-		randomL = ((randf() * 25.0) + 10.0);
+		randomL = 10.0; //((randf() * 25.0) + 10.0);
 		
 		length = randomL;
 		step = 1.0;
