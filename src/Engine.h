@@ -98,6 +98,7 @@ public:
   virtual void build() = 0;
 	int gameState;
 	int tick();
+	int tickX();
 	virtual int simulate() = 0;
 	virtual void render() = 0;
 	void draw(float rotation);
@@ -128,10 +129,8 @@ public:
 
 	virtual void hitTest(float x, float y, int hitState) = 0;
 
-  float m_Waits[30];
+  double m_Waits[50];
 
-	
 private:
-
 	
 };

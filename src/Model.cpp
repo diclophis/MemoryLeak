@@ -16,6 +16,10 @@
 
 #include "Model.h"
 
+static GLuint lastV = 0;
+static GLuint lastN = 0;
+static GLuint lastT = 0;
+
 bool Model::build() {
 	
 	numFrames = m_Scene->mNumMeshes;
@@ -70,13 +74,6 @@ void Model::render(int frame) {
 	glRotatef(m_Rotation[2],1,0,0);
 	glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	//glEnable(GL_NORMALIZE);
-
-  for (unsigned int i=0; i<numFrames; i++) {
-    frame = i;
     glBindBuffer(GL_ARRAY_BUFFER, vboID[frame + 1]);
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
     
@@ -88,11 +85,6 @@ void Model::render(int frame) {
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[frame + 0]);
     glDrawElements(GL_TRIANGLES,3 * mNumFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-  }
-	
-	//glDisable(GL_NORMALIZE);
-	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	//glDisableClientState(GL_NORMAL_ARRAY);
-	//glDisableClientState(GL_VERTEX_ARRAY);
+
 	glPopMatrix();
 }

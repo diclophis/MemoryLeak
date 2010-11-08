@@ -48,9 +48,9 @@ public:
 	
 	
 	float Tick(float delta) {
-		m_Position[0] += m_Velocity[0];
-		m_Position[1] += m_Velocity[1];
-		m_Position[2] += m_Velocity[2];
+		m_Position[0] += m_Velocity[0] * delta;
+		m_Position[1] += m_Velocity[1] * delta;
+		m_Position[2] += m_Velocity[2] * delta;
 		m_Life += delta;
 		return m_Life;
 	}

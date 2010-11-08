@@ -10,8 +10,6 @@
 #include "Engine.h"
 
 
-
-
 class ResourceIOStream : public Assimp::IOStream {
   public:
     ResourceIOStream(foo &a) : m_Foo(&a) {
@@ -48,7 +46,7 @@ class ResourceIOStream : public Assimp::IOStream {
 
 	      break;
 	    default:
-				LOGV("wtf");
+        throw 1;
 	    }
 
 		  if (seeked == 0) {
@@ -70,11 +68,13 @@ class ResourceIOStream : public Assimp::IOStream {
 	  }
 	
 	  void Flush() {
+      fflush(m_Foo->fp);
 	  }
 	
 	private:
 	
 		foo *m_Foo;
+
 	};
 	
 	class ResourceIOSystem : public Assimp::IOSystem
@@ -104,7 +104,7 @@ class ResourceIOStream : public Assimp::IOStream {
 	  // ... and finally a method to open a custom stream
 	  Assimp::IOStream* Open(const char* file, const char* mode)
 	  {
-		int index = atoi(file);
+      int index = atoi(file);
 		  return new ResourceIOStream(*m_Models->at(index));
 	  }
 	
@@ -147,7 +147,6 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
 	mySceneBuilt = false;
 	myViewportSet = false;
 
-	// Engine!!!
 	//Screen
 	screenWidth = width;
 	screenHeight = height;
@@ -156,7 +155,6 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
 	importer.SetIOHandler(new ResourceIOSystem(*textures, *models));
 	
 	buildCamera();
-	//buildFont();
 }
 
 
@@ -184,15 +182,97 @@ void *Engine::start_thread(void *obj) {
 
 void Engine::pause() {
   LOGV("pausing in engine\n");
+  pthread_mutex_lock(&m_mutex);
   gameState = 0;
+  pthread_mutex_unlock(&m_mutex);
 }
 
 
 int Engine::tick() {
   gameState = -1;
+  int tickedGameState = -1;
+
+  /*
+	timeval t1, t2;
+  gettimeofday(&t1, NULL);
+  gettimeofday(&t2, NULL);
+	long double elapsedTime;
+  */
+
+  double t1, t2;
+  timeval tim;
+  gettimeofday(&tim, NULL);
+
+  int waitedCount = 50;
+  int waitedIndex = 0;
+
+  double waitSum = 0.0;
+  double averageWait = 0.0;
+
+  for (unsigned int i=0; i<waitedCount; i++) {
+    m_Waits[i] = 0.0;
+  }
+
+  gettimeofday(&tim, NULL);
+  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+
+	while (gameState != 0) {
+		if (mySceneBuilt) {
+      if (pthread_mutex_lock(&m_mutex) == 0) {
+
+      gettimeofday(&tim, NULL);
+      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+
+      m_Waits[waitedIndex] = t2 - t1;
+
+		  gettimeofday(&tim, NULL);
+		  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+		  
+      waitedIndex++;
+      if ((waitedIndex % waitedCount) == 0) {
+        waitedIndex = 0;
+      }
+
+      waitSum = 0.0;
+      for (unsigned int i=0; i<waitedCount; i++) {
+        waitSum += m_Waits[i];
+      }
+
+      averageWait = waitSum / (double)waitedCount;
+	
+      if (averageWait > (1.0 / 30.0)) {
+	    LOGV("slow avg: %f\n", averageWait);
+      } else {
+
+		  myDeltaTime = averageWait; //(averageWait / 0.15) * (1.0);
+
+
+		  mySimulationTime += (myDeltaTime);
+		  tickedGameState = simulate();
+
+      }
+		  pthread_mutex_unlock(&m_mutex);
+		  sched_yield();
+      }
+    }
+
+    if (tickedGameState == 0) {
+      break;
+    }
+
+  }
+
+  LOGV("exiting tick thread\n");
+	
+	return gameState;
+}
+
+
+int Engine::tickX() {
+  gameState = -1;
 	timeval t1, t2;
 	double elapsedTime;
-  double interval = 25.0;
+  double interval = 20.0;
   int stalled = 0;
 	
 	gettimeofday(&t1, NULL);
@@ -205,8 +285,8 @@ int Engine::tick() {
   int waitedCount = 30;
   int waitedIndex = 0;
 
-  float waitSum = 0.0;
-  float averageWait = 0.0;
+  long double waitSum = 0.0;
+  long double averageWait = 0.0;
 
   for (unsigned int i=0; i<waitedCount; i++) {
     m_Waits[i] = 0.0;
@@ -220,9 +300,9 @@ int Engine::tick() {
         waitSum += m_Waits[i];
       }
 
-      averageWait = waitSum / (float)waitedCount;
+      averageWait = waitSum / (long double)waitedCount;
       
-      if (waited > (averageWait * 0.75)) {
+      if (waited > (averageWait * 0.9)) {
         checkTime = true;
       }
 
@@ -241,7 +321,7 @@ int Engine::tick() {
           //LOGV("averageWait: %f\n", averageWait);
 
           if ((elapsedTime - interval) < interval) {
-            myDeltaTime = ((elapsedTime / interval)) * 2.5;
+            myDeltaTime = ((elapsedTime / interval)) * 2.0;
             mySimulationTime += (myDeltaTime);
             pthread_mutex_lock(&m_mutex);
             gameState = simulate();
@@ -249,7 +329,7 @@ int Engine::tick() {
             checkTime = false;
           } else {
             int times = (elapsedTime / interval);
-            myDeltaTime = 2.5;
+            myDeltaTime = 2.0;
             for (int i=0; i<times; i++) {
               mySimulationTime += (myDeltaTime);
               pthread_mutex_lock(&m_mutex);
@@ -278,26 +358,36 @@ int Engine::tick() {
 
 
 void Engine::draw(float rotation) {
-	pthread_mutex_lock(&m_mutex);
-	if (mySceneBuilt) {
-		if (myViewportSet) {
-			glPushMatrix();
-			{
-				glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-				glMatrixMode(GL_MODELVIEW);
-				glLoadIdentity();
-				glRotatef(rotation, 0.0, 0.0, 1.0);
-				drawCamera();
-				render();
-			}
-			glPopMatrix();
-		} else {
-			LOGV("the fuck: %d\n", screenWidth);
-			prepareFrame(screenWidth, screenHeight);
-		}
-	}
-	pthread_mutex_unlock(&m_mutex);
+	if (pthread_mutex_lock(&m_mutex) == 0) {
+    if (mySceneBuilt) {
+      if (myViewportSet) {
+        glPushMatrix();
+        {
+			
+//#ifdef DESKTOP
+//			glClearDepth(1.0);
+//#else
+//			glClearDepthf(1.0);
+//#endif
 
+          glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+          glMatrixMode(GL_MODELVIEW);
+          glLoadIdentity();
+          glRotatef(rotation, 0.0, 0.0, 1.0);
+          drawCamera();
+          render();
+        }
+        glPopMatrix();
+      } else {
+        LOGV("the fuck: %d\n", screenWidth);
+        prepareFrame(screenWidth, screenHeight);
+      }
+    }
+    pthread_mutex_unlock(&m_mutex);
+    sched_yield();
+  } else {
+    //LOGV("no lock in draw\n");
+  }
 }
 
 #ifndef DESKTOP
@@ -326,7 +416,7 @@ void Engine::prepareFrame(int width, int height) {
 	glLoadIdentity();
 	//gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
 	//GOOOOOD gluPerspective(45.0, (float) width / (float) height, 100.0, 10000.0);
-	gluPerspective(20.0, (float) width / (float) height, 0.01, 200.0);
+	gluPerspective(20.0, (float) width / (float) height, 0.1, 500.0);
 
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
 
@@ -340,9 +430,9 @@ void Engine::prepareFrame(int width, int height) {
   //glLightfv(GL_LIGHT0, GL_AMBIENT, light0Ambient);
 
 
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-
+  //glEnable(GL_LIGHTING);
+  //glEnable(GL_LIGHT0);
+/*
   // Define the ambient component of the first light
   const GLfloat light0Ambient[] = {0.75, 0.75, 0.75, 1.0};
   glLightfv(GL_LIGHT0, GL_AMBIENT, light0Ambient);
@@ -369,6 +459,26 @@ void Engine::prepareFrame(int width, int height) {
   // position along the vector supplied in GL_SPOT_DIRECTION above
   //glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.0);
   //glDisable(GL_LIGHTING);
+	*/
+	
+	
+	
+	
+	
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	
+	
+	glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//glEnable(GL_NORMALIZE);
+	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	
 
 	glLoadIdentity();
 	myViewportSet = true;

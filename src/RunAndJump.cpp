@@ -42,9 +42,21 @@ void RunAndJump::tickCamera() {
   //
 
   //10
-	myCameraTarget = Vector3DMake(myPlayerPosition.x + 7.0, myPlayerPosition.y, 0.0);
-	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, 49.0);
+	
+	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 3.0 + (myPlayerSpeed.x * 2.0), myPlayerPosition.y, -20.0);
+	//myCameraPosition = Vector3DMake(myPlayerPosition.x + 0.0 - (myPlayerSpeed.x * 2.0), 4.0 + (myPlayerSpeed.x * 0.0), 15.0 + (myPlayerSpeed.x * 2.0));
+	float lag = 1.0 + (myPlayerSpeed.x * 0.0001);
+	
+	
+	myCameraSpeed = Vector3DMake(myPlayerSpeed.x * lag, myPlayerSpeed.y * lag, 0.0);
 
+	
+	myCameraTarget = Vector3DAdd(myCameraTarget, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
+	myCameraPosition = Vector3DMake(myPlayerPosition.x - 3.0, myPlayerPosition.y, 50.0);
+
+	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 2.0, myPlayerPosition.y, 0.0);
+	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 2.0, myPlayerPosition.y, 50.0);
+	
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 10.0, 0.0, -1.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 10.0, 10.0, 2.0);
   //
@@ -52,7 +64,7 @@ void RunAndJump::tickCamera() {
 
 
 void RunAndJump::build() {
-	myPlayerSpeed = Vector3DMake(0.0, 0.0, 0.0);
+	myPlayerSpeed = Vector3DMake(0.5, 0.0, 0.0);
 	
 	myGravity = 0.0;
 	myPlayerJumpSpeed = 0.0;
@@ -94,7 +106,7 @@ aiProcess_SortByPType
 	
 	buildPlatforms();
 
-	mySegmentCount = 50;
+	mySegmentCount = 40;
 	for (unsigned int i=0; i<mySegmentCount; i++) {
 		mySegments.push_back(new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
 		mySegments[i]->SetScale(1.0, 1.0, 1.0);
@@ -111,10 +123,13 @@ aiProcess_SortByPType
 		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
 	}
 
-	myPlayerPosition = Vector3DMake(0.0, myPlatforms[0].position.y + 2.0, 0.0);
+	myPlayerPosition = Vector3DMake(2.0, myPlatforms[0].position.y + 5.0, 0.0);
 	
 	m_Gun->SetVelocity(myPlayerSpeed.x, myPlayerSpeed.y, myPlayerSpeed.z);
-
+	
+	
+	myCameraTarget = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, -20.0);
+	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, 20.0);
 
 }
 
@@ -130,77 +145,51 @@ int RunAndJump::simulate() {
 		if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
 			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
 		}
-		myTerrains[i]->SetRotation(0.0, mySimulationTime * 4.0, 0.0);
+		myTerrains[i]->SetRotation(0.0, mySimulationTime * 500.0, 0.0);
 	}
-	m_Gun->tickFountain();
+	
+	m_Gun->Tick(myDeltaTime);
 	
 	m_Gun->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, myPlayerPosition.z);
 	m_Gun->SetVelocity(myPlayerSpeed.x, myPlayerSpeed.y, myPlayerSpeed.z);
-	
-	return 1;
+
+  if (myPlayerPosition.y < -5.0) {
+    return 0;
+  } else {
+	  return 1;
+  }
 }
 
 
 void RunAndJump::render() {	
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
-	//glDepthFunc(GL_LEQUAL);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	m_Player->render(0);
 	
-
-	glBindTexture(GL_TEXTURE_2D, textures->at(2));
-  glDisable(GL_LIGHTING);
-	m_SkyBox->render(0);
-  glEnable(GL_LIGHTING);
-	glBindTexture(GL_TEXTURE_2D, 1);
-	
-	
-	glBindTexture(GL_TEXTURE_2D, textures->at(1));
-	for (unsigned int i=0; i<mySegmentCount; i++) {
-		mySegments[i]->render(0);
-	}
-	glBindTexture(GL_TEXTURE_2D, 1);
+	glBindTexture(GL_TEXTURE_2D, textures->at(3));
+	m_Gun->render();
 	
 	
 	glBindTexture(GL_TEXTURE_2D, textures->at(4));
 	for (unsigned int i=0; i<myTerrainCount; i++) {
 		myTerrains[i]->render(0);
 	}
-	glBindTexture(GL_TEXTURE_2D, 1);
 	
+	glBindTexture(GL_TEXTURE_2D, textures->at(1));
+	for (unsigned int i=mySegmentCount; i>0; i--) {
+		mySegments[i - 1]->render(0);
+	}	
+
 	
-	glBindTexture(GL_TEXTURE_2D, textures->at(0));
-	m_Player->render(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-
-	glBindTexture(GL_TEXTURE_2D, textures->at(3));
-	m_Gun->drawFountain();
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures->at(2));
+	m_SkyBox->render(0);	
 }
 
 
 void RunAndJump::playerStartedJumping() {
-	//if (myPlayerCanDoubleJump) {
-	//	myPlayerCanDoubleJump = false;
-	//	myPlayerLastJump = mySimulationTime;
-	//}
-	
 	if (myPlayerOnPlatform) {
+		myPlayerOnPlatform = false;
+		myPlayerJumping = true;
 		myPlayerLastJump = mySimulationTime;
 	}	
 }
@@ -212,88 +201,140 @@ void RunAndJump::playerStoppedJumping() {
 
 
 void RunAndJump::tickPlayer() {
+
 	bool myPlayerFalling = true;
 	float timeSinceStarted;
 	float timeSinceEnded;
 	
-	myPlayerAcceleration.y = myGravity;
+	//myPlayerAcceleration.y = myGravity;
 	
 	Vector3D oldPosition = myPlayerPosition;
   
 	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
 	timeSinceEnded = (mySimulationTime - myPlayerLastEnd);
 	
-	myGravity = -0.01;
-	myPlayerJumpSpeed = 0.0001;
+	myGravity = -20.0 * myDeltaTime;
+	myPlayerJumpSpeed = 12.0;
 
   //if (timeSinceStarted < 100.0 || timeSinceEnded < 100.0) {
   //  LOGV("%f %f %f\n", (myPlayerSpeed.y), timeSinceStarted, timeSinceEnded);
   //}
 	
-	if (myPlayerLastJump >= 0.0 && timeSinceStarted < 30.0 && timeSinceStarted >= 0.0) {
-		if (myPlayerJumping && (timeSinceEnded > timeSinceStarted)) {
-			myPlayerFalling = false;
-			myPlayerAcceleration.y = myPlayerJumpSpeed;
-		} else if (myPlayerJumping) {
-			myPlayerFalling = true;
-		} else {
-			if (myPlayerSpeed.y < 0.0) {
-				myPlayerSpeed.y = 0.0;
-			}
-			myPlayerAcceleration.x = 0.005;
-			myPlayerSpeed.y = 0.3;
-			myPlayerFalling = false;
-			myPlayerJumping = true;
-		}
+	myPlayerAcceleration.y = myGravity;
+
+
+	bool get = false;	
+	if (myPlayerJumping && myPlayerLastJump >= 0.0 && timeSinceStarted < 0.01 && timeSinceStarted >= 0.0) {
+		myPlayerSpeed.y = myPlayerJumpSpeed;
+		myPlayerSpeed.x += 0.5;
+		//LOGV("da %f\n", myPlayerAcceleration.y);
+
+		myPlayerFalling = false;
+		myPlayerJumping = false;
+		
+	/*
+	if (myPlayerJumping && (timeSinceEnded > timeSinceStarted)) {
+	LOGV("da\n");
+	myPlayerFalling = false;
+	myPlayerAcceleration.y = myPlayerJumpSpeed * myDeltaTime;
+	myPlayerAcceleration.x = 0.05;
+	get = true;
+	} else if (myPlayerJumping) {
+	LOGV("la %d\n", myPlayerOnPlatform);
+	myPlayerFalling = true;
+	myPlayerOnPlatform = false;
+	get = true;
+	} else {
+
+
+	//LOGV("fo %f %d\n", timeSinceStarted, myPlayerOnPlatform);
+
+	// myPlayerPosition.y += 2.5;
+	//myPlayerSpeed.y = 10.0;
+	myPlayerAcceleration.y = 50000.0;
+	//myPlayerSpeed.x += 1.0;
+	myPlayerAcceleration.x = 0.1;
+
+	myPlayerJumping = true;
+	myPlayerFalling = false;
+	myPlayerOnPlatform = false;
+	get = true;
+	}
+	 */
 	}
 	
 	if (myPlayerFalling) {
-		//LOGV("fall\n");
+		//myPlayerAcceleration.y = myGravity;
+		myPlayerAcceleration.x = 0.00001;
 		myPlayerLastEnd = -1.0;
 		myPlayerLastJump = -1.0;
 		myPlayerJumping = false;
+		/*
 		if (myPlayerOnPlatform) {
-		  myPlayerSpeed.y = 0.0;
-			myPlayerAcceleration.y = 0.0;
-      float off = myPlayerPosition.y - myPlayerPlatformCorrection.y;
-      //if (fabs(off) > 0.01) {
-        myPlayerPosition.y -= (off * 0.5);
-      //} else {
-      //  myPlayerPosition.y = myPlayerPlatformCorrection.y;
-      //}
+			//if (get) {
+			//LOGV("fark\n");
+			//}
+			//myPlayerSpeed.y = 0.0;
+			if (myPlayerSpeed.y < 0.0) {
+				myPlayerSpeed.y = 0.0;
+				float off = myPlayerPosition.y - myPlayerPlatformCorrection.y;
+				
+				//if (off < 0.0) {
+				myPlayerPosition.y -= (off * 0.01);
+				//}
+			}
+
+			//myPlayerPosition.y = myPlayerPlatformIntersection.y;
 		}
+		 */
 	}
 	
-	//if (myPlayerOnPlatform) {
-	//	myPlayerCanDoubleJump = true;
-	//}
+	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x, myPlayerAcceleration.y, myPlayerAcceleration.z));
 
-	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x * myDeltaTime, myPlayerAcceleration.y * myDeltaTime, myPlayerAcceleration.z * myDeltaTime));
 
-  if (myPlayerSpeed.x > 0.1) {
-    myPlayerSpeed.x = 0.1;
-  } else if (myPlayerSpeed.x < -0.1) {
-    myPlayerSpeed.x = -0.1;
+  if (myPlayerSpeed.x > 20.0) {
+    myPlayerSpeed.x = 20.0;
+  } else if (myPlayerSpeed.x < -20.0) {
+    myPlayerSpeed.x = -20.0;
   }
 
-  if (myPlayerSpeed.y > 0.3) {
-    myPlayerSpeed.y = 0.3;
-  } else if (myPlayerSpeed.y < -0.3) {
-    myPlayerSpeed.y = -0.3;
-  }
+//if (myPlayerSpeed.y > 0.5) {
+//  myPlayerSpeed.y = 0.5;
+//} else if (myPlayerSpeed.y < -0.5) {
+//  myPlayerSpeed.y = -0.5;
+//}
+//if (get) {
+//  LOGV("the fuck: %f %f\n", myPlayerPosition.y, myPlayerSpeed.y);
+//}
 
+	
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
 
+//if (get) {
+//  LOGV("the fuck: %f %f\n", myPlayerPosition.y, myPlayerSpeed.y);
+//}
+
+//if ((myPlayerSpeed.y > 0.0) || ((int)(mySimulationTime * 10000.0) % 2000 < 1)) {
+//LOGV("foo: %f %f\n", myPlayerSpeed.y, myPlayerAcceleration.y);
+//LOGV("foo: %d %f %f %f %f %f %f %f\n", myPlayerOnPlatform, myPlayerPosition.y, myPlayerPlatformIntersection.y, myPlayerSpeed.y, myPlayerAcceleration.y, myDeltaTime, myGravity, myPlayerJumpSpeed);
+//}
+
+
+/*
+if (myPlayerPosition.y < -5.0) {
+for (unsigned int i=0; i<mySegmentCount; i++) {
+mySegments[i]->SetPosition(mySegments[i]->GetPosition()[0] + randf(), mySegments[i]->GetPosition()[1] + randf(), + randf());
+}
+myPlayerSpeed.x = 0.0;
+}
+ */
+ 
+	
+
+
+	
 	m_Player->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
-
-	//m_Player->SetRotation(0.0, 0.0, -myPlayerRotation);
-
-  if (myPlayerPosition.y < -5.0) {
-    for (unsigned int i=0; i<mySegmentCount; i++) {
-      mySegments[i]->SetPosition(mySegments[i]->GetPosition()[0] + randf(), mySegments[i]->GetPosition()[1] + randf(), + randf());
-    }
-    myPlayerSpeed.x = 0.0;
-  }	
+	m_Player->SetRotation(mySimulationTime * 10.0, 0.0, 0);
 }
 
 
@@ -312,9 +353,9 @@ void RunAndJump::buildPlatforms() {
 
 	for (int i=0; i<myPlatformCount; i++) {
 
-	  randomY = ((random() / (float)RAND_MAX) * 4.0) - 0.25;
-		randomA = (randf() * 1.0) + 1.0;
-    randomL = ((randf() * 25.0) + 10.0);
+		randomY = 0.0; //((random() / (float)RAND_MAX) * 4.0) - 0.25;
+		randomA = 0.0; //(randf() * 1.0) + 1.0;
+		randomL = ((randf() * 25.0) + 10.0);
 		
 		length = randomL;
 		step = 1.0;
@@ -327,7 +368,7 @@ void RunAndJump::buildPlatforms() {
 		f.angular_frequency = randf() * 0.15;
 		f.phase = 0.0;
 		lastPlatformPosition = f.position;
-		lastPlatformPosition.x += length + randf() + 4.0;
+		lastPlatformPosition.x += length; // + randf() + 4.0;
 		myPlatforms.push_back(f);
 	}
 }
@@ -354,7 +395,7 @@ void RunAndJump::iteratePlatform(int operation) {
 		
 			for (int i = (int)platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
 
-				if ((i < (myPlayerPosition.x + 50.0)) && (i > (myPlayerPosition.x - 5.0))) {
+				if ((i < (myPlayerPosition.x + 50.0)) && (i > (myPlayerPosition.x - 20.0))) {
 
 					float beginX = i;
 					float endX = i + platform.step;
@@ -372,7 +413,7 @@ void RunAndJump::iteratePlatform(int operation) {
             if (platform.position.x > myPlayerPosition.x) {
               if (myPlayerPosition.x > (beginX - 0.25)) {
                 if (myPlayerPosition.y < platform.position.y) {
-                  myPlayerSpeed.x = -(myPlayerSpeed.x * 0.75);
+                  myPlayerSpeed.x = 0.0;
                 }
               }
               tickedWall = true;
@@ -385,7 +426,9 @@ void RunAndJump::iteratePlatform(int operation) {
 								mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY, 0.0);
 								mySegmentIndex++;
 							}
-							tickPlatformSegment(beginX, beginY, endX, endY);
+							if (myPlayerSpeed.y < 0.0) {
+              tickPlatformSegment(beginX, beginY, endX, endY);
+							}
 							break;
 					}
 				}
@@ -396,12 +439,19 @@ void RunAndJump::iteratePlatform(int operation) {
 
 
 void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, float endY) {
-	if (!myPlayerJumping && !(myPlayerSpeed.y > 250.0)) {
+	if (myPlayerPosition.y < beginY + myPlayerHeight || myPlayerPosition.y < endY + myPlayerHeight) {
+		//myPlayerPlatformCorrection.y = beginY + myPlayerHeight;
+		myPlayerOnPlatform = true;
+		myPlayerPosition.y = beginY + myPlayerHeight;
+		myPlayerSpeed.y = 0.0;
+	}
+	
+	/*
 		Vector3D p1 = Vector3DMake(beginX, beginY, 0.0);
 		Vector3D p2 = Vector3DMake(endX, endY, 0.0);
 		
-		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, 1.0, 0.0));
-		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(0.0, -1.0, 0.0));
+		Vector3D pp1 = Vector3DAdd(myPlayerPosition, Vector3DMake(-0.5, 10.0, 0.0));
+		Vector3D pp2 = Vector3DAdd(myPlayerPosition, Vector3DMake(-0.5, -10.0, 0.0));
 		
 		Vector3D p = p1;
 		
@@ -430,11 +480,18 @@ void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, flo
 			myPlayerPlatformIntersection = Vector3DAdd(p, timesT);
 			float slope = (endY - beginY) / (endX - beginX);
 			float distanceFromIntersection = myPlayerPosition.y - myPlayerPlatformIntersection.y;
-			myPlayerPlatformCorrection.y = beginY + myPlayerHeight;
-			myPlayerOnPlatform = true;
-			myGameSpeed = 1;
+			if (distanceFromIntersection < 0.05) {
+				myPlayerPlatformCorrection.y = beginY + myPlayerHeight;
+				if (myPlayerOnPlatform) {
+				} else {
+					LOGV("foo\n");
+				}
+				myPlayerOnPlatform = true;
+			} else {
+				//LOGV("%f\n", distanceFromIntersection);
+			}
 		}
-	}
+	 */
 }
 
 /*

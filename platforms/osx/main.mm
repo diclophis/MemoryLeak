@@ -9,8 +9,11 @@
 #include "MachineGun.h"
 #include "RunAndJump.h"
 
-#define kWindowWidth  480
-#define kWindowHeight 320
+//#define kWindowWidth  480
+//#define kWindowHeight 320
+
+#define kWindowWidth  320
+#define kWindowHeight 480
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -46,7 +49,7 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 
 void draw(void) {
   if (gameController->gameState) {
-    gameController->draw(0);
+    gameController->draw(90);
     glutSwapBuffers();
   } else {
     exit(0);
@@ -76,12 +79,59 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  if (key == 27) {
+  switch (key) {
+    case 27:
     gameController->pause();
-  } else {
+    break;
+
+    case 13:
     gameController->hitTest(x, y, 0);
     gameController->hitTest(x, y, 2);
+    break;
+
+    case 113:
+    glDepthFunc(GL_NEVER);
+    break;
+
+    case 119:
+    glDepthFunc(GL_LESS);
+    break;
+
+    case 101:
+    glDepthFunc(GL_EQUAL);
+    break;
+
+    case 114:
+    glDepthFunc(GL_LEQUAL);
+    break;
+
+    case 116:
+    glDepthFunc(GL_GREATER);
+    break;
+
+    case 121:
+    glDepthFunc(GL_NOTEQUAL);
+    break;
+
+    case 117:
+    glDepthFunc(GL_GEQUAL);
+    break;
+
+    case 105:
+    glDepthFunc(GL_ALWAYS);
+    break;
+
+    case 111:
+    glDisable(GL_BLEND);
+    break;
+
+    case 112:
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    break;
   }
+
+  LOGV("the fuck: %d\n", key);
 }
 
 
