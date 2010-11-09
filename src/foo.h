@@ -15,14 +15,9 @@ struct foo {
 };
 
 struct foofoo {
-	const aiScene *m_Scene;
-	int numVBO;
-	GLuint *vboID;
+	int m_numBuffers;
+	GLuint *m_VerticeBuffers;
 	GLuint *m_TextureBuffer;
-float m_Scale[3];
-float m_Position[3];
-float m_Rotation[3];
-float m_Life;
-float m_Velocity[3];
-int mNumFaces;
-int numFrames;
+	int m_numFaces;
+	int m_numFrames;
+};

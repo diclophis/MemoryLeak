@@ -464,7 +464,6 @@ void Engine::prepareFrame(int width, int height) {
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-	
 	//glEnable(GL_NORMALIZE);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);

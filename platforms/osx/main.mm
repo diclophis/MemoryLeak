@@ -5,6 +5,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "MemoryLeak.h"
+#include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RunAndJump.h"

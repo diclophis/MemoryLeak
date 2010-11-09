@@ -9,20 +9,15 @@
 
 class Model {
 
-	
 
-	
-	
-	
-	
-	
-	
 public:
-	Model(const aiScene *a) : m_Scene(a) {
+	
+	static foofoo *GetFoo(const aiScene *a);
+	
+	Model(const foofoo *a) : m_FooFoo(a) {
 		SetPosition(0.0, 0.0, 0.0);
 		SetRotation(0.0, 0.0, 0.0);
 		SetScale(1.0, 1.0, 1.0);
-		build();
 	};
 	
 	void render(int frame);
@@ -47,9 +42,7 @@ public:
 		m_Rotation[2] = z;
 	}
 	
-	/// \brief	returns the current position of the model at the current moment
-	/// \return	the position array (3 floats; x,y,z)
-	///
+	
 	const float* GetPosition() const {
 		return m_Position;
 	}
@@ -68,21 +61,17 @@ public:
 		m_Life = life;
 	}
 	
+	
 	float GetLife() {
 		return m_Life;
 	}
 	
 	
-	float sfrand( void )
-	{
+	float sfrand() {
 		static unsigned int mirand = 1;
-
 		unsigned int a;
-		
 		mirand *= 16807;
-		
 		a = (mirand&0x007fffff) | 0x40000000;
-		
 		return( *((float*)&a) - 3.0f );
 	}
 	
@@ -96,18 +85,22 @@ public:
 	
 protected:
 	
-	bool build();
-	const aiScene *m_Scene;
+	const foofoo *m_FooFoo;
+	
+	/*
 	int numVBO;
 	GLuint *vboID;
 	GLuint *m_TextureBuffer;
+
+	int mNumFaces;
+  int numFrames;
+	 */
+	
+	float m_Life;
 	float m_Scale[3];
 	float m_Position[3];
 	float m_Rotation[3];
-	float m_Life;
 	float m_Velocity[3];
-	int mNumFaces;
-  int numFrames;
 };
 
 

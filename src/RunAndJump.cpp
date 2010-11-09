@@ -8,6 +8,7 @@
 
 
 #include "MemoryLeak.h"
+#include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RunAndJump.h"
@@ -45,24 +46,25 @@ void RunAndJump::tickCamera() {
 	
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 3.0 + (myPlayerSpeed.x * 2.0), myPlayerPosition.y, -20.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x + 0.0 - (myPlayerSpeed.x * 2.0), 4.0 + (myPlayerSpeed.x * 0.0), 15.0 + (myPlayerSpeed.x * 2.0));
+	
+	/*
 	float lag = 1.0 + (myPlayerSpeed.x * 0.0001);
-	
-	
 	myCameraSpeed = Vector3DMake(myPlayerSpeed.x * lag, myPlayerSpeed.y * lag, 0.0);
-
-	
 	myCameraTarget = Vector3DAdd(myCameraTarget, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
-	
 	myCameraTarget.y = myPlayerPosition.y - 10.0;
-	
 	myCameraPosition = Vector3DMake(myPlayerPosition.x - 3.0, myPlayerPosition.y + 40.0, 50.0);
-
+	 */
+	
+	
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 2.0, myPlayerPosition.y, 0.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 2.0, myPlayerPosition.y, 50.0);
 	
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 10.0, 0.0, -1.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 10.0, 10.0, 2.0);
   //
+	
+	myCameraTarget = Vector3DMake(myPlayerPosition.x + 3.25, myPlayerPosition.y, myPlayerPosition.z);
+	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.25, myPlayerPosition.y + 1.5, myPlayerPosition.z + 60.0);
 }
 
 
@@ -84,67 +86,51 @@ void RunAndJump::build() {
 	myPlayerLastJump = -1.0;
 	myPlayerLastEnd =  -1.0;
 	myPlayerOnPlatform = false;
+	
+	int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
+	
+	importer.ReadFile("0", m_PostProcessFlags);	
+	foofoo *boxFoo = Model::GetFoo(importer.GetScene());
+	importer.FreeScene();
+	
+	importer.ReadFile("1", m_PostProcessFlags);
+	foofoo *ringFoo = Model::GetFoo(importer.GetScene());
+	importer.FreeScene();
+	
+	importer.ReadFile("0", m_PostProcessFlags);	
+	foofoo *playerFoo = Model::GetFoo(importer.GetScene());
+	importer.FreeScene();
+		
+	m_Gun = new MachineGun(boxFoo);
 
-/*
-aiProcess_TransformUVCoords |
-aiProcess_GenUVCoords |
-aiProcess_CalcTangentSpace |
-aiProcess_GenNormals |
-aiProcess_GenSmoothNormals |
-aiProcess_SplitLargeMeshes |
-aiProcess_ImproveCacheLocality |
-aiProcess_FixInfacingNormals |
-aiProcess_OptimizeGraph |
-aiProcess_Triangulate |
-aiProcess_JoinIdenticalVertices |
-aiProcess_SortByPType
-*/
-	
-	//const aiScene *m_BoxScene = (aiScene*)malloc(sizeof(aiScene));
-	importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
-	
-	//const aiScene *m_RingScene = importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
-	
-	m_Gun = new MachineGun(importer.GetScene());
-
-	m_SkyBox = new Model(importer.GetScene());
+	m_SkyBox = new Model(boxFoo);
 	m_SkyBox->SetPosition(0.0, 0.0, 0.0);
 	m_SkyBox->SetScale(300.0, 300.0, 300.0);
 	
-	myPlayerHeight = 0.375;
-	m_Player = new Model(importer.GetScene());
-	m_Player->SetScale(1.5, 1.5, 1.5);
-	//importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)
+	myPlayerHeight = 1.0;
+	m_Player = new Model(playerFoo);
+	m_Player->SetScale(1.0, 1.0, 1.0);
 	buildPlatforms();
 
-	mySegmentCount = 40 * 5;
+	mySegmentCount = 12 * 4;
 	for (unsigned int i=0; i<mySegmentCount; i++) {
-		mySegments.push_back(new Model(importer.GetScene()));
+		mySegments.push_back(new Model(boxFoo));
 		mySegments[i]->SetScale(1.0, 1.0, 1.0);
 		mySegments[i]->SetPosition(0.0, 0.0, 0.0);
 		mySegments[i]->SetRotation(0.0, 0.0, 0.0);
 	}
-
-	importer.FreeScene();
 	
-	importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
-	
-	myTerrainCount = 20;
+	myTerrainCount = 10;
 	myTerrainHeight = 5.0;
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		myTerrains.push_back(new Model(importer.GetScene()));
+		myTerrains.push_back(new Model(ringFoo));
 		myTerrains[i]->SetScale(1.5, 1.5, 1.5);
 		myTerrains[i]->SetPosition(0.0, 0.0, 0.0);
 		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
 	}
-
-	importer.FreeScene();
 	
 	myPlayerPosition = Vector3DMake(2.0, myPlatforms[0].position.y + 5.0, 0.0);
-	
 	m_Gun->SetVelocity(myPlayerSpeed.x, myPlayerSpeed.y, myPlayerSpeed.z);
-	
-	
 	myCameraTarget = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, -20.0);
 	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, 20.0);
 }
@@ -178,13 +164,8 @@ int RunAndJump::simulate() {
 
 
 void RunAndJump::render() {	
-
-
 	glBindTexture(GL_TEXTURE_2D, textures->at(2));
 	m_SkyBox->render(0);
-	
-
-	
 	
 	glBindTexture(GL_TEXTURE_2D, textures->at(4));
 	for (unsigned int i=0; i<myTerrainCount; i++) {
@@ -310,10 +291,10 @@ void RunAndJump::tickPlayer() {
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x, myPlayerAcceleration.y, myPlayerAcceleration.z));
 
 
-  if (myPlayerSpeed.x > 20.0) {
-    myPlayerSpeed.x = 20.0;
-  } else if (myPlayerSpeed.x < -20.0) {
-    myPlayerSpeed.x = -20.0;
+  if (myPlayerSpeed.x > 5.0) {
+    myPlayerSpeed.x = 5.0;
+  } else if (myPlayerSpeed.x < -5.0) {
+    myPlayerSpeed.x = -5.0;
   }
 
 //if (myPlayerSpeed.y > 0.5) {
@@ -352,7 +333,7 @@ myPlayerSpeed.x = 0.0;
 
 	
 	m_Player->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
-	m_Player->SetRotation(-(mySimulationTime * 70.0 * myPlayerSpeed.x), 0.0, 0);
+	m_Player->SetRotation(0.0, 0.0, 0);
 }
 
 
@@ -410,11 +391,12 @@ void RunAndJump::iteratePlatform(int operation) {
 	for (it=myPlatforms.begin() ; it < myPlatforms.end(); it++ ) {
 		Platform platform = *it;
 
-		//float foo = platform.position.x;
+		float x = platform.position.x;
+		if ((x < (myPlayerPosition.x + 200.0)) &&  (x > (myPlayerPosition.x - 200.0))) {
 		
 			for (int i = (int)platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
 
-				if ((i < (myPlayerPosition.x + 30.0)) && (i > (myPlayerPosition.x - 10.0))) {
+				if ((i < (myPlayerPosition.x + 9.0)) && (i > (myPlayerPosition.x - 3.0))) {
 
 					float beginX = i;
 					float endX = i + platform.step;
@@ -444,7 +426,7 @@ void RunAndJump::iteratePlatform(int operation) {
 					switch (operation) {
 						case 0:
 							if (mySegmentIndex < mySegmentCount) {
-								for (unsigned int ijk=0; ijk < 5; ijk++) {
+								for (unsigned int ijk=0; ijk < 4; ijk++) {
 									//mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY - 5.0 + myPlayerHeight, 0.0);
 									mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY - ijk + myPlayerHeight, 0.0);
 
@@ -464,6 +446,7 @@ void RunAndJump::iteratePlatform(int operation) {
 					}
 				}
 			}
+		}
     lastHeight = platform.position.y;
 	}
 }

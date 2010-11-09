@@ -17,6 +17,7 @@
 
 #include "importgl.h"
 #include "MemoryLeak.h"
+#include "Model.h"
 #include "MachineGun.h"
 #include "Engine.h"
 #include "RunAndJump.h"

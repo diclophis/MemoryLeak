@@ -7,9 +7,10 @@ class MachineGun : public Model {
 public:
 
 	//MachineGun(Assimp::Importer &importer);
-	MachineGun(const aiScene *a) : Model(a) {
+	MachineGun(const foofoo *a) : Model(a) {
 		build();
 	};
+	
 	int m_NumParticles;
 	std::vector<Model *> m_Particles;
 	

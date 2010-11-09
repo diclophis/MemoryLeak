@@ -2,6 +2,7 @@
 
 
 #include "MemoryLeak.h"
+#include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
 
@@ -10,7 +11,7 @@ void MachineGun::build() {
 	m_Life = 0.0;
 	m_NumParticles = 5;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
-		m_Particles.push_back(new Model(m_Scene));
+		m_Particles.push_back(new Model(m_FooFoo));
 		reset_particle(idx);
 		m_Particles[idx]->SetPosition((((float)idx) / (float)m_NumParticles) * (4.0) + m_Position[0], m_Position[1], m_Position[2]);
 		m_Last = idx;
