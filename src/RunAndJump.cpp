@@ -86,6 +86,7 @@ void RunAndJump::build() {
 	myPlayerLastJump = -1.0;
 	myPlayerLastEnd =  -1.0;
 	myPlayerOnPlatform = false;
+	myPlayerCanDoubleJump = false;
 	
 	int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 	
@@ -186,11 +187,8 @@ void RunAndJump::render() {
 
 
 void RunAndJump::playerStartedJumping() {
-	//if (myPlayerOnPlatform) {
-		myPlayerOnPlatform = false;
-		myPlayerJumping = true;
-		myPlayerLastJump = mySimulationTime;
-	//}	
+	myPlayerJumping = true;
+	myPlayerLastJump = mySimulationTime;
 }
 
 
@@ -201,137 +199,46 @@ void RunAndJump::playerStoppedJumping() {
 
 void RunAndJump::tickPlayer() {
 
-	bool myPlayerFalling = true;
 	float timeSinceStarted;
 	float timeSinceEnded;
-	
-	//myPlayerAcceleration.y = myGravity;
-	
+		
 	Vector3D oldPosition = myPlayerPosition;
   
 	timeSinceStarted = (mySimulationTime - myPlayerLastJump);
 	timeSinceEnded = (mySimulationTime - myPlayerLastEnd);
 	
-	myGravity = -20.0 * myDeltaTime;
+	myGravity = -22.0 * myDeltaTime;
 	myPlayerJumpSpeed = 12.0;
 
-  //if (timeSinceStarted < 100.0 || timeSinceEnded < 100.0) {
+  //if (timeSinceStarted < 0.5 || timeSinceEnded < 0.5) {
   //  LOGV("%f %f %f\n", (myPlayerSpeed.y), timeSinceStarted, timeSinceEnded);
   //}
 	
 	myPlayerAcceleration.y = myGravity;
-
-
-	bool get = false;	
-	if (myPlayerJumping && myPlayerLastJump >= 0.0 && timeSinceStarted < 0.01 && timeSinceStarted >= 0.0) {
-		myPlayerSpeed.y = myPlayerJumpSpeed;
-		myPlayerSpeed.x += 2.0;
-		//LOGV("da %f\n", myPlayerAcceleration.y);
-
-		myPlayerFalling = false;
+	if (myPlayerJumping && myPlayerLastEnd > myPlayerLastJump) {
 		myPlayerJumping = false;
-		
-	/*
-	if (myPlayerJumping && (timeSinceEnded > timeSinceStarted)) {
-	LOGV("da\n");
-	myPlayerFalling = false;
-	myPlayerAcceleration.y = myPlayerJumpSpeed * myDeltaTime;
-	myPlayerAcceleration.x = 0.05;
-	get = true;
-	} else if (myPlayerJumping) {
-	LOGV("la %d\n", myPlayerOnPlatform);
-	myPlayerFalling = true;
-	myPlayerOnPlatform = false;
-	get = true;
-	} else {
-
-
-	//LOGV("fo %f %d\n", timeSinceStarted, myPlayerOnPlatform);
-
-	// myPlayerPosition.y += 2.5;
-	//myPlayerSpeed.y = 10.0;
-	myPlayerAcceleration.y = 50000.0;
-	//myPlayerSpeed.x += 1.0;
-	myPlayerAcceleration.x = 0.1;
-
-	myPlayerJumping = true;
-	myPlayerFalling = false;
-	myPlayerOnPlatform = false;
-	get = true;
-	}
-	 */
-	}
-	
-	if (myPlayerFalling) {
-		//myPlayerAcceleration.y = myGravity;
-		myPlayerAcceleration.x = 0.00001;
-		myPlayerLastEnd = -1.0;
-		myPlayerLastJump = -1.0;
-		myPlayerJumping = false;
-		/*
-		if (myPlayerOnPlatform) {
-			//if (get) {
-			//LOGV("fark\n");
-			//}
-			//myPlayerSpeed.y = 0.0;
-			if (myPlayerSpeed.y < 0.0) {
-				myPlayerSpeed.y = 0.0;
-				float off = myPlayerPosition.y - myPlayerPlatformCorrection.y;
-				
-				//if (off < 0.0) {
-				myPlayerPosition.y -= (off * 0.01);
-				//}
-			}
-
-			//myPlayerPosition.y = myPlayerPlatformIntersection.y;
+	} else if (myPlayerJumping && timeSinceStarted < 0.33) {
+		if (myPlayerCanDoubleJump) {
+			myPlayerCanDoubleJump = false;
+			myPlayerSpeed.y = 4.0;
+			myPlayerSpeed.x += 1.0;
 		}
-		 */
+		
+		myPlayerAcceleration.y = -(myGravity * 0.75);
+	} else {
+		myPlayerCanDoubleJump = true;
+		myPlayerJumping = false;
 	}
 	
 	myPlayerSpeed = Vector3DAdd(myPlayerSpeed, Vector3DMake(myPlayerAcceleration.x, myPlayerAcceleration.y, myPlayerAcceleration.z));
 
-
-  if (myPlayerSpeed.x > 5.0) {
-    myPlayerSpeed.x = 5.0;
-  } else if (myPlayerSpeed.x < -5.0) {
-    myPlayerSpeed.x = -5.0;
-  }
-
-//if (myPlayerSpeed.y > 0.5) {
-//  myPlayerSpeed.y = 0.5;
-//} else if (myPlayerSpeed.y < -0.5) {
-//  myPlayerSpeed.y = -0.5;
-//}
-//if (get) {
-//  LOGV("the fuck: %f %f\n", myPlayerPosition.y, myPlayerSpeed.y);
-//}
-
+	if (myPlayerSpeed.x > 10.0) {
+		myPlayerSpeed.x = 10.0;
+	} else if (myPlayerSpeed.x < -10.0) {
+	  myPlayerSpeed.x = -10.0;
+	}
 	
 	myPlayerPosition = Vector3DAdd(myPlayerPosition, Vector3DMake(myPlayerSpeed.x * myDeltaTime, myPlayerSpeed.y * myDeltaTime, myPlayerSpeed.z * myDeltaTime));
-
-//if (get) {
-//  LOGV("the fuck: %f %f\n", myPlayerPosition.y, myPlayerSpeed.y);
-//}
-
-//if ((myPlayerSpeed.y > 0.0) || ((int)(mySimulationTime * 10000.0) % 2000 < 1)) {
-//LOGV("foo: %f %f\n", myPlayerSpeed.y, myPlayerAcceleration.y);
-//LOGV("foo: %d %f %f %f %f %f %f %f\n", myPlayerOnPlatform, myPlayerPosition.y, myPlayerPlatformIntersection.y, myPlayerSpeed.y, myPlayerAcceleration.y, myDeltaTime, myGravity, myPlayerJumpSpeed);
-//}
-
-
-/*
-if (myPlayerPosition.y < -5.0) {
-for (unsigned int i=0; i<mySegmentCount; i++) {
-mySegments[i]->SetPosition(mySegments[i]->GetPosition()[0] + randf(), mySegments[i]->GetPosition()[1] + randf(), + randf());
-}
-myPlayerSpeed.x = 0.0;
-}
- */
- 
-	
-
-
-	
 	m_Player->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
 	m_Player->SetRotation(0.0, 0.0, 0);
 }
@@ -353,8 +260,8 @@ void RunAndJump::buildPlatforms() {
 	for (int i=0; i<myPlatformCount; i++) {
 
 		randomY = 0.0; //((random() / (float)RAND_MAX) * 4.0) - 0.25;
-		randomA = (randf() * 1.5) + 1.0;
-		randomL = ((randf() * 25.0) + 10.0);
+		randomA = (randf() * 1.25) + 1.0;
+		randomL = ((randf() * 30.0) + 15.0);
 		
 		length = randomL;
 		step = 1.0;
@@ -367,7 +274,7 @@ void RunAndJump::buildPlatforms() {
 		f.angular_frequency = randf() * 0.15;
 		f.phase = 0.0;
 		lastPlatformPosition = f.position;
-		lastPlatformPosition.x += length + randf() + 4.0;
+		lastPlatformPosition.x += length + (randf() * 3.0) + 5.0;
 		myPlatforms.push_back(f);
 	}
 }
@@ -456,6 +363,7 @@ void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, flo
 	if (myPlayerPosition.x >= beginX && myPlayerPosition.x <= endX) {
 		if (myPlayerPosition.y < beginY + myPlayerHeight || myPlayerPosition.y < endY + myPlayerHeight) {
 			myPlayerOnPlatform = true;
+			//myPlayerJumping = false;
 			myPlayerPosition.y = beginY + myPlayerHeight;
 			myPlayerSpeed.y = 0.0;
 		}
