@@ -49,7 +49,7 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 
 void draw(void) {
   if (gameController->gameState) {
-    gameController->draw(90);
+    gameController->draw(0);
     glutSwapBuffers();
   } else {
     exit(0);
@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
   glutInitWindowPosition(1000, 500);
   glutCreateWindow(argv[0]);
 
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/models"];
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
 	for (NSString *path in model_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 		models.push_back(firstModel);
 	}
 
-	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../assets/textures"];
+	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/textures"];
 	for (NSString *path in texture_names) {
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
     NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];

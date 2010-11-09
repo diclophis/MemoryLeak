@@ -9,4 +9,4 @@ make clean && make
 
 cd ../../
 
-./build/osx/raptor_island $1
+./platforms/osx/build/raptor_island $1

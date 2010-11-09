@@ -399,13 +399,14 @@ static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat 
 
 void Engine::prepareFrame(int width, int height) {
 	glViewport(0, 0, width, height);
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//gluPerspective(45.0, (float) width / (float) height, 1.0, 5000.0);
 	//GOOOOOD gluPerspective(45.0, (float) width / (float) height, 100.0, 10000.0);
-	gluPerspective(20.0, (float) width / (float) height, 0.1, 500.0);
+	gluPerspective(20.0, (float)width / (float)height, 0.1, 500.0);
+	//gluPerspective(20.0, 1.0, 0.1, 500.0);
 
 	//gluPerspective(90.0, (float) width / (float) height, 1.0, 1000.0);
 
@@ -459,9 +460,11 @@ void Engine::prepareFrame(int width, int height) {
 	glDepthFunc(GL_LESS);
 	
 	
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	//glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+	
 	//glEnable(GL_NORMALIZE);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);

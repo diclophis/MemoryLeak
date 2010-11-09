@@ -9,6 +9,14 @@
 
 class Model {
 
+	
+
+	
+	
+	
+	
+	
+	
 public:
 	Model(const aiScene *a) : m_Scene(a) {
 		SetPosition(0.0, 0.0, 0.0);

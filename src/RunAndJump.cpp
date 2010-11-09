@@ -52,7 +52,10 @@ void RunAndJump::tickCamera() {
 
 	
 	myCameraTarget = Vector3DAdd(myCameraTarget, Vector3DMake(myCameraSpeed.x * myDeltaTime, myCameraSpeed.y * myDeltaTime, myCameraSpeed.z * myDeltaTime));
-	myCameraPosition = Vector3DMake(myPlayerPosition.x - 3.0, myPlayerPosition.y, 50.0);
+	
+	myCameraTarget.y = myPlayerPosition.y - 10.0;
+	
+	myCameraPosition = Vector3DMake(myPlayerPosition.x - 3.0, myPlayerPosition.y + 40.0, 50.0);
 
 	//myCameraTarget = Vector3DMake(myPlayerPosition.x + 2.0, myPlayerPosition.y, 0.0);
 	//myCameraPosition = Vector3DMake(myPlayerPosition.x - 2.0, myPlayerPosition.y, 50.0);
@@ -97,35 +100,46 @@ aiProcess_JoinIdenticalVertices |
 aiProcess_SortByPType
 */
 	
-	m_Gun = new MachineGun(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
+	//const aiScene *m_BoxScene = (aiScene*)malloc(sizeof(aiScene));
+	importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
+	
+	//const aiScene *m_RingScene = importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
+	
+	m_Gun = new MachineGun(importer.GetScene());
 
-	m_SkyBox = new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
+	m_SkyBox = new Model(importer.GetScene());
 	m_SkyBox->SetPosition(0.0, 0.0, 0.0);
-	m_SkyBox->SetScale(100.0, 100.0, 100.0);
+	m_SkyBox->SetScale(300.0, 300.0, 300.0);
 	
 	myPlayerHeight = 0.375;
-	m_Player = new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality));
-	m_Player->SetScale(0.5, 0.5, 0.5);
-	
+	m_Player = new Model(importer.GetScene());
+	m_Player->SetScale(1.5, 1.5, 1.5);
+	//importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)
 	buildPlatforms();
 
-	mySegmentCount = 40;
+	mySegmentCount = 40 * 5;
 	for (unsigned int i=0; i<mySegmentCount; i++) {
-		mySegments.push_back(new Model(importer.ReadFile("0", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
+		mySegments.push_back(new Model(importer.GetScene()));
 		mySegments[i]->SetScale(1.0, 1.0, 1.0);
-		mySegments[i]->SetPosition(i, 0.0, 0.0);
+		mySegments[i]->SetPosition(0.0, 0.0, 0.0);
 		mySegments[i]->SetRotation(0.0, 0.0, 0.0);
 	}
 
-	myTerrainCount = 5;
+	importer.FreeScene();
+	
+	importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
+	
+	myTerrainCount = 20;
 	myTerrainHeight = 5.0;
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		myTerrains.push_back(new Model(importer.ReadFile("1", aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality)));
+		myTerrains.push_back(new Model(importer.GetScene()));
 		myTerrains[i]->SetScale(1.5, 1.5, 1.5);
-		myTerrains[i]->SetPosition(i * 20.0, myTerrainHeight, 0.0);
+		myTerrains[i]->SetPosition(0.0, 0.0, 0.0);
 		myTerrains[i]->SetRotation(0.0, 90.0, 0.0);
 	}
 
+	importer.FreeScene();
+	
 	myPlayerPosition = Vector3DMake(2.0, myPlatforms[0].position.y + 5.0, 0.0);
 	
 	m_Gun->SetVelocity(myPlayerSpeed.x, myPlayerSpeed.y, myPlayerSpeed.z);
@@ -133,21 +147,20 @@ aiProcess_SortByPType
 	
 	myCameraTarget = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, -20.0);
 	myCameraPosition = Vector3DMake(myPlayerPosition.x + 3.0, myPlayerPosition.y, 20.0);
-
 }
 
 
 int RunAndJump::simulate() {
 	tickCamera();
 	m_SkyBox->SetPosition(myPlayerPosition.x, 0.0, 0.0);
-	m_SkyBox->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
+	m_SkyBox->SetRotation(0.0, ((1.1 * mySimulationTime)), 0.0);
 	//m_Player->SetRotation(0.0, ((0.1 * mySimulationTime)), 0.0);
 	tickPlatform();
 	tickPlayer();
 	for (unsigned int i=0; i<myTerrainCount; i++) {
-		if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
-			myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
-		}
+	//	if (myTerrains[i]->GetPosition()[0] < myPlayerPosition.x - (20.0 * 2.0)) {
+	//		myTerrains[i]->SetPosition(myTerrains[i]->GetPosition()[0] + (20.0 * myTerrainCount), myTerrainHeight, 0.0);
+	//	}
 		myTerrains[i]->SetRotation(0.0, mySimulationTime * 500.0, 0.0);
 	}
 	
@@ -166,11 +179,11 @@ int RunAndJump::simulate() {
 
 void RunAndJump::render() {	
 
-	glBindTexture(GL_TEXTURE_2D, textures->at(0));
-	m_Player->render(0);
+
+	glBindTexture(GL_TEXTURE_2D, textures->at(2));
+	m_SkyBox->render(0);
 	
-	glBindTexture(GL_TEXTURE_2D, textures->at(3));
-	m_Gun->render();
+
 	
 	
 	glBindTexture(GL_TEXTURE_2D, textures->at(4));
@@ -183,18 +196,20 @@ void RunAndJump::render() {
 		mySegments[i - 1]->render(0);
 	}	
 
+	glBindTexture(GL_TEXTURE_2D, textures->at(3));
+	m_Gun->render();
 	
-	glBindTexture(GL_TEXTURE_2D, textures->at(2));
-	m_SkyBox->render(0);	
+	glBindTexture(GL_TEXTURE_2D, textures->at(0));
+	m_Player->render(0);
 }
 
 
 void RunAndJump::playerStartedJumping() {
-	if (myPlayerOnPlatform) {
+	//if (myPlayerOnPlatform) {
 		myPlayerOnPlatform = false;
 		myPlayerJumping = true;
 		myPlayerLastJump = mySimulationTime;
-	}	
+	//}	
 }
 
 
@@ -229,7 +244,7 @@ void RunAndJump::tickPlayer() {
 	bool get = false;	
 	if (myPlayerJumping && myPlayerLastJump >= 0.0 && timeSinceStarted < 0.01 && timeSinceStarted >= 0.0) {
 		myPlayerSpeed.y = myPlayerJumpSpeed;
-		myPlayerSpeed.x += 0.5;
+		myPlayerSpeed.x += 2.0;
 		//LOGV("da %f\n", myPlayerAcceleration.y);
 
 		myPlayerFalling = false;
@@ -337,12 +352,12 @@ myPlayerSpeed.x = 0.0;
 
 	
 	m_Player->SetPosition(myPlayerPosition.x, myPlayerPosition.y + myPlayerHeight, 0.0);
-	m_Player->SetRotation(mySimulationTime * 10.0, 0.0, 0);
+	m_Player->SetRotation(-(mySimulationTime * 70.0 * myPlayerSpeed.x), 0.0, 0);
 }
 
 
 void RunAndJump::buildPlatforms() {	
-	myPlatformCount = 1;
+	myPlatformCount = 100;
 	Vector3D lastPlatformPosition = Vector3DMake(0.0, 0.0, 0.0);
 
 	int step;
@@ -357,8 +372,8 @@ void RunAndJump::buildPlatforms() {
 	for (int i=0; i<myPlatformCount; i++) {
 
 		randomY = 0.0; //((random() / (float)RAND_MAX) * 4.0) - 0.25;
-		randomA = 0.0; //(randf() * 1.0) + 1.0;
-		randomL = 10.0; //((randf() * 25.0) + 10.0);
+		randomA = (randf() * 1.5) + 1.0;
+		randomL = ((randf() * 25.0) + 10.0);
 		
 		length = randomL;
 		step = 1.0;
@@ -371,7 +386,7 @@ void RunAndJump::buildPlatforms() {
 		f.angular_frequency = randf() * 0.15;
 		f.phase = 0.0;
 		lastPlatformPosition = f.position;
-		lastPlatformPosition.x += length; // + randf() + 4.0;
+		lastPlatformPosition.x += length + randf() + 4.0;
 		myPlatforms.push_back(f);
 	}
 }
@@ -379,6 +394,7 @@ void RunAndJump::buildPlatforms() {
 
 void RunAndJump::tickPlatform() {
 	mySegmentIndex = 0;
+	myTerrainIndex = 0;
 	myPlayerOnPlatform = false;
 	myPlayerPlatformCorrection = Vector3DMake(0.0, 0.0, 0.0);
 	iteratePlatform(0);
@@ -394,11 +410,11 @@ void RunAndJump::iteratePlatform(int operation) {
 	for (it=myPlatforms.begin() ; it < myPlatforms.end(); it++ ) {
 		Platform platform = *it;
 
-		float foo = platform.position.x;
+		//float foo = platform.position.x;
 		
 			for (int i = (int)platform.position.x; i < platform.position.x + platform.length; i += platform.step) {
 
-				if ((i < (myPlayerPosition.x + 50.0)) && (i > (myPlayerPosition.x - 20.0))) {
+				if ((i < (myPlayerPosition.x + 30.0)) && (i > (myPlayerPosition.x - 10.0))) {
 
 					float beginX = i;
 					float endX = i + platform.step;
@@ -409,6 +425,8 @@ void RunAndJump::iteratePlatform(int operation) {
 					
 					float beginY = platform.position.y + platform.amplitude * fastSinf(platform.angular_frequency * (beginX + phaseX));
 					float endY = platform.position.y + platform.amplitude * fastSinf(platform.angular_frequency * (endX + phaseY));
+					
+					float ringY = (1.5 * fastSinf(0.5 * beginX)); 
 					
 					platform.last_angular_frequency = platform.angular_frequency;
 
@@ -422,13 +440,23 @@ void RunAndJump::iteratePlatform(int operation) {
               tickedWall = true;
             }
           }
-					
+					//LOGV("the fuck: %d", mySegments.size());
 					switch (operation) {
 						case 0:
 							if (mySegmentIndex < mySegmentCount) {
-								mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY, 0.0);
-								mySegmentIndex++;
+								for (unsigned int ijk=0; ijk < 5; ijk++) {
+									//mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY - 5.0 + myPlayerHeight, 0.0);
+									mySegments[mySegmentIndex]->SetPosition(beginX + (platform.step * 0.5), beginY - ijk + myPlayerHeight, 0.0);
+
+									mySegmentIndex++;
+								}
 							}
+							
+							if (myTerrainIndex < myTerrainCount) {
+								myTerrains[myTerrainIndex]->SetPosition(beginX + (platform.step * 0.5), beginY + ringY + 4.0, 0.0);
+								myTerrainIndex++;
+							}
+
 							if (myPlayerSpeed.y < 0.0) {
               tickPlatformSegment(beginX, beginY, endX, endY);
 							}
@@ -442,11 +470,12 @@ void RunAndJump::iteratePlatform(int operation) {
 
 
 void RunAndJump::tickPlatformSegment(float beginX, float beginY, float endX, float endY) {
-	if (myPlayerPosition.y < beginY + myPlayerHeight || myPlayerPosition.y < endY + myPlayerHeight) {
-		//myPlayerPlatformCorrection.y = beginY + myPlayerHeight;
-		myPlayerOnPlatform = true;
-		myPlayerPosition.y = beginY + myPlayerHeight;
-		myPlayerSpeed.y = 0.0;
+	if (myPlayerPosition.x >= beginX && myPlayerPosition.x <= endX) {
+		if (myPlayerPosition.y < beginY + myPlayerHeight || myPlayerPosition.y < endY + myPlayerHeight) {
+			myPlayerOnPlatform = true;
+			myPlayerPosition.y = beginY + myPlayerHeight;
+			myPlayerSpeed.y = 0.0;
+		}
 	}
 	
 	/*

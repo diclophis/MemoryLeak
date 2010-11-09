@@ -16,9 +16,7 @@
 
 #include "Model.h"
 
-static GLuint lastV = 0;
-static GLuint lastN = 0;
-static GLuint lastT = 0;
+
 
 bool Model::build() {
 	

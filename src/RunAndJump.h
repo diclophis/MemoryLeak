@@ -145,6 +145,9 @@ public:
   float myPlayerLastEnd;
   Vector3D myPlayerPlatformCorrection;
 
+	//aiScene *m_BoxScene;
+	//aiScene *m_RingScene;
+	
   MachineGun *m_Gun;
 
 	

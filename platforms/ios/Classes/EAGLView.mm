@@ -174,7 +174,7 @@ static std::vector<foo*> models;
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 		if (gameState) {
-			gameController->draw(90);
+			gameController->draw(0);
 		} else {
 			[self startGame];
 		}
