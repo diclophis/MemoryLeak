@@ -19,6 +19,8 @@ platforms/ios/MemoryLeak.xcodeproj/*.pbxuser
 platforms/ios/MemoryLeak.xcodeproj/*.perspectivev3
 osx/*.o
 src/assimp/*.o
+src/*.o
 private
 platforms/android/bin/
+platforms/osx/*.o
 platforms/android/local.properties

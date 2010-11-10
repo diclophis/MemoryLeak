@@ -5,6 +5,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "MemoryLeak.h"
+#include "Audio.h"
 #include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
@@ -175,6 +176,8 @@ int main(int argc, char** argv) {
     [image release];
     [texData release];
   }
+
+  Audio *foo = new Audio();
 
   gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
   gameController->go();

@@ -6,15 +6,11 @@
 #CXX=~/Desktop/checker-249/libexec/c++-analyzer
 
 build=build
-CXXFLAGS=-Wall -g -D_iPhoneVersion -DDESKTOP -I../../src -I../../src/include -I../../src/assimp/BoostWorkaround
+CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -I../../src -I../../src/include -I../../src/assimp/BoostWorkaround
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread
 
-objects = $(build)/main.o \
-$(build)/Model.o \
-$(build)/MachineGun.o \
-$(build)/Engine.o \
-$(build)/RunAndJump.o
-
+objects   = $(patsubst %.mm,%.o,  $(wildcard ../../platforms/osx/*.mm))
+objects   += $(patsubst %.cpp,%.o,  $(wildcard ../../src/*.cpp))
 objects   += $(patsubst %.cpp,%.o,  $(wildcard ../../src/assimp/*.cpp)) 
 objects   += $(patsubst %.cpp,%.o,  $(wildcard ../../src/contrib/irrXML/*.cpp)) 
 objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/ConvertUTF/*.c))
@@ -24,7 +20,7 @@ objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/zlib/*.c))
 raptor_island: $(build) $(objects)
 	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
 
-$(build)/main.o: main.mm
+../../platforms/osx/main.o: main.mm
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(build)/%.o: ../../src/%.cpp

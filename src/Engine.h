@@ -21,7 +21,14 @@
 #define FONT_TEXTURE_ATLAS_WIDTH 10		// Characters per line in Atlas
 #define FONT_TEXTURE_ATLAS_LINES 10		// Lines of characters in the Atlas
 
-#ifndef LOGV
+#ifdef ANDROID_NDK
+#include <android/log.h>
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "libnav", __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , "libnav", __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO   , "libnav", __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN   , "libnav", __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , "libnav", __VA_ARGS__) 
+#else
 #define LOGV printf
 #endif
 

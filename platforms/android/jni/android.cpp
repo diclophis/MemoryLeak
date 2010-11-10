@@ -9,14 +9,10 @@
 #include <float.h>
 #include <assert.h>
 
-#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "libnav", __VA_ARGS__)
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG  , "libnav", __VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO   , "libnav", __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN   , "libnav", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR  , "libnav", __VA_ARGS__) 
 
 #include "importgl.h"
 #include "MemoryLeak.h"
+#include "Audio.h"
 #include "Model.h"
 #include "MachineGun.h"
 #include "Engine.h"
@@ -72,6 +68,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	}
 
   LOGV("nativeSurfaceCreated %d %d", sPlayerTextures.size(), models.size());
+
+  Audio *foo = new Audio();
 
   gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, models);
   gameController->go();

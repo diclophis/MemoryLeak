@@ -620,5 +620,10 @@ void Engine::drawCamera() {
 
 //returns a random float between 0 and 1
 float Engine::randf() {
-	return (lrand48() % 255) / 255.f;
+	//return (lrand48() % 255) / 255.f;
+		static unsigned int mirand = 1;
+		unsigned int a;
+		mirand *= 16807;
+		a = (mirand&0x007fffff) | 0x40000000;
+		return( *((float*)&a) - 3.0f );
 }

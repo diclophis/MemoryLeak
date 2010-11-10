@@ -34,7 +34,7 @@ float MachineGun::Tick(float deltaTime) {
 		m_Particles[i]->Tick(deltaTime);
 		float d = m_Position[0] - m_Particles[i]->GetPosition()[0];
 		m_Particles[i]->SetScale(d * 0.5, d * 0.5, d * 0.5);
-		if ((d * 0.2) > 1.0) {
+		if ((d * 0.4) > 1.0) {
 			reset_particle(i);
 		}
 	}
