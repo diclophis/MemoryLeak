@@ -255,10 +255,11 @@ void RunAndJump::iteratePlatform(int operation) {
   bool tickedWall = false;
   float lastHeight = 0.0;
 	
-	std::vector<Platform>::iterator it;
+	//std::vector<Platform>::iterator it;
 	
-	for (it=myPlatforms.begin() ; it < myPlatforms.end(); it++ ) {
-		Platform platform = *it;
+	//for (it=myPlatforms.begin() ; it < myPlatforms.end(); it++ ) {
+	for (unsigned int f=0; f<myPlatformCount; f++) {
+		Platform platform = myPlatforms[f];
 
 		float x = platform.position.x;
 		if ((x < (myPlayerPosition.x + 50.0)) &&  (x > (myPlayerPosition.x - 50.0))) {

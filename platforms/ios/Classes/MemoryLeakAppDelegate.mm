@@ -15,10 +15,26 @@
 
 @synthesize window;
 @synthesize glView;
+@synthesize webView;
 
 
 -(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	[webView setBackgroundColor:[UIColor clearColor]];
+	[webView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"assets"] isDirectory:NO]]];
+	
     return YES;
+}
+
+
+-(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+	//NSLog(@"the fuck: %@", [[request mainDocumentURL] scheme]);
+	//NSLog(@"the fuck: %@", [[request mainDocumentURL] path]);
+	NSLog(@"the fuck: %@", [[request mainDocumentURL] fragment]);
+	if ([[[request mainDocumentURL] scheme] isEqualToString:@"file"]) {
+		return YES;
+	} else {
+		return NO;
+	}
 }
 
 

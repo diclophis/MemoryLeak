@@ -296,7 +296,7 @@ static inline GLfloat fastSinf(GLfloat x)
     
 	y = P * (y * fastAbs(y) - y) + y;
     
-	return (k&1) ? -y : y;
+	return (k&1) ? -y : y;	
 }
 
 #if TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR

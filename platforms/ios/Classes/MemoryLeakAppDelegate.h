@@ -10,13 +10,15 @@
 
 @class EAGLView;
 
-@interface MemoryLeakAppDelegate : NSObject <UIApplicationDelegate> {
+@interface MemoryLeakAppDelegate : NSObject <UIApplicationDelegate, UIWebViewDelegate> {
     UIWindow *window;
     EAGLView *glView;
+	UIWebView *webView;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet EAGLView *glView;
+@property (nonatomic, retain) IBOutlet UIWebView *webView;
 
 @end
 

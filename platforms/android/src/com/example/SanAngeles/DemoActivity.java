@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.util.Log;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
@@ -18,11 +20,16 @@ import android.opengl.GLES10;
 import android.content.res.Configuration;
 import java.io.InputStream;
 import java.io.IOException;
+import android.view.ViewGroup.LayoutParams;
+import android.graphics.Color;
+
+
 
 
 public class DemoActivity extends Activity {
 
 	private GLSurfaceView mGLView;
+  private WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +37,29 @@ public class DemoActivity extends Activity {
 
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
 
+    mWebView = new WebView(this);
+    mWebView.setBackgroundColor(Color.TRANSPARENT);
+    mWebView.setBackgroundDrawable(null);
+
+
+    WebSettings webSettings = mWebView.getSettings();
+    //webSettings.setLightTouchEnabled(true);
+    webSettings.setLoadsImagesAutomatically(true);
+    webSettings.setJavaScriptEnabled(true);
+    webSettings.setSupportZoom(false);
+    webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+    webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
+
+
+
+
+
+
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
+
+    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+    mWebView.loadUrl("file:///android_asset/index.html");
 
     AssetManager am = getAssets();
     String path = "models";
