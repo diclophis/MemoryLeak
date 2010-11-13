@@ -82,6 +82,13 @@ public:
 		m_Velocity[2] = z;
 	}
 
+  void SetTexture(int t) {
+    m_Texture = t;
+  }
+
+  void SetFrame(int f) {
+    m_Frame = f;
+  }
 	
 protected:
 	
@@ -101,6 +108,8 @@ protected:
 	float m_Position[3];
 	float m_Rotation[3];
 	float m_Velocity[3];
+  int m_Frame;
+  int m_Texture;
 };
 
 

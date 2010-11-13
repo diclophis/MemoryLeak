@@ -7,7 +7,218 @@
 
 #include "MemoryLeak.h"
 
+//#include <yajl/yajl_parse.h>
+//#include <yajl/yajl_gen.h>
+#include <api/yajl_parse.h>
+#include <api/yajl_gen.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "Model.h"
 #include "Engine.h"
+
+static float xyz[3];
+static int xyz_index = 0;
+static int model_index = 0;
+
+static int command = 0;
+static int next_scene = 1;
+static int set_camera_position = 2;
+static int set_camera_target = 3;
+static int render_models = 4;
+static int render_model = 5;
+static int set_model_position = 6;
+static int set_model_rotation = 7;
+static int set_model_scale = 8;
+static int first_model = 9;
+static int next_model = 10;
+
+static std::vector<Model *> m_Models;
+static std::vector<foofoo *> m_FooFoos;
+static float m_CameraPosition[3];
+static float m_CameraTarget[3];
+
+static int reformat_null(void * ctx)
+{
+    return 1;
+}
+
+static int reformat_boolean(void * ctx, int boolean)
+{
+    return 1;
+}
+
+static int reformat_number(void * ctx, const char * s, unsigned int l)
+{
+  xyz[xyz_index++] = strtof(s, NULL);
+  return 1;
+}
+
+static int reformat_string(void * ctx, const unsigned char * stringVal, unsigned int stringLen)
+{
+    return 1;
+}
+
+static int reformat_map_key(void * ctx, const unsigned char * stringVal, unsigned int stringLen)
+{
+    return 1;
+}
+
+static int reformat_start_map(void * ctx)
+{
+    return 1;
+}
+
+
+static int reformat_end_map(void * ctx)
+{
+    return 1;
+}
+
+static int reformat_start_array(void * ctx)
+{
+  //LOGV("start_array\n");
+  if (command == 0) { //set command = set_camera_position and set xyz_index = 0 if command == 0
+    //LOGV("0\n");
+    command = next_scene;
+  } else if (command == next_scene) {
+    //LOGV("next_scene\n");
+    command = set_camera_position;
+    xyz_index = 0;
+  } else if (command == set_camera_position) { //set command = set_camera_target and set xyz_index = 0 if command == set_camera_position
+    //LOGV("set_camera_position\n");
+    command = set_camera_target;
+    xyz_index = 0;
+  } else if (command == set_camera_target) { //set command = render_models and model_index = 0 if command == set_camera_target
+    //LOGV("set_camera_target\n");
+    command = render_models;
+    model_index = 0;
+  } else if (command == render_models) { //set command = next_model if command == render_models
+    //LOGV("render_models\n");
+    command = first_model;
+  } else if (command == first_model) { //set command = render_model and xyz_index = 0 if command == next_model
+    //LOGV("next_model\n");
+    command = render_model;
+    xyz_index = 0;
+  } else if (command == next_model) { //set command = render_model and xyz_index = 0 if command == next_model
+    //LOGV("next_model\n");
+    command = first_model;
+    xyz_index = 0;
+  } else if (command == render_model) { //set command = set_model_position and xyz_index = 0 if command == render_model
+    //LOGV("render_model\n");
+    command = set_model_position;
+    xyz_index = 0;
+  } else if (command == set_model_position) { //set command = set_model_rotation and set xyz_index = 0 if command == set_model_position
+    //LOGV("set_position\n");
+    command = set_model_rotation;
+    xyz_index = 0;
+  } else if (command == set_model_rotation) { //set command = set_model_scale and set xyz_index = 0 if command == set_model_rotation
+    //LOGV("set_rotation\n");
+    command = set_model_scale;
+    xyz_index = 0;
+  }
+
+  return 1;
+}
+
+static int reformat_end_array(void * ctx)
+{
+  //LOGV("end_array\n");
+  if (command == set_camera_position) { //set camera position = last_vector if command == set_camera_position
+    //LOGV("set camera position\n");
+    m_CameraPosition[0] = xyz[0];
+    m_CameraPosition[1] = xyz[1];
+    m_CameraPosition[2] = xyz[2];
+  } else if (command == set_camera_target) { //set camera target = last_vector if command == set_camera_target
+    //LOGV("set camera target\n");
+    m_CameraTarget[0] = xyz[0];
+    m_CameraTarget[1] = xyz[1];
+    m_CameraTarget[2] = xyz[2];
+  } else if (command == render_model) { //if model_index+1 beyond bounds, create model using last vector x/y/z => model_file, texture_file, frame if command == render_model
+    //LOGV("render_model %d/%d\n", model_index, m_Models.size());
+    if ((model_index + 1) > m_Models.size()) {
+      //LOGV("making model\n");
+      m_Models.push_back(new Model(m_FooFoos[xyz[0]]));
+    }
+    //LOGV("set_texture and set_frame\n");
+	  int t = reinterpret_cast<Engine *>(ctx)->GetTextureAt(xyz[1]);
+    m_Models[model_index]->SetTexture(t);
+    m_Models[model_index]->SetFrame(xyz[2]);
+  } else if (command == set_model_position) { //set current model_index position equal to last_vector if command == set_model_position
+    //LOGV("set_position\n");
+    m_Models[model_index]->SetPosition(xyz[0], xyz[1], xyz[2]);
+  } else if (command == set_model_rotation) { //set current model_index rotation equal to last_vector if command == set_model_rotation
+    //LOGV("set_rotation\n");
+    m_Models[model_index]->SetRotation(xyz[0], xyz[1], xyz[2]);
+  } else if (command == set_model_scale) {//set current model_index scale equal to last_vector and model_index++ and command = next_model if command == set_model_scale
+    //LOGV("set_scale %d\n", model_index);
+    m_Models[model_index]->SetScale(xyz[0], xyz[1], xyz[2]);
+    //LOGV("inc model_index %d\n", model_index);
+    model_index++;
+    command = next_model;
+  } else if (command == first_model) {
+    //LOGV("first_model\n");
+  } else if (command == next_model) {
+    //LOGV("next_model\n");
+    //LOGV("inc model_index %d\n", model_index);
+  } else if (command == next_scene) {
+    //LOGV("next_scene\n");
+  }
+  return 1;
+}
+
+static yajl_callbacks callbacks = {
+    reformat_null,
+    reformat_boolean,
+    NULL,
+    NULL,
+    reformat_number,
+    reformat_string,
+    reformat_start_map,
+    reformat_map_key,
+    reformat_end_map,
+    reformat_start_array,
+    reformat_end_array
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class ResourceIOStream : public Assimp::IOStream {
@@ -125,6 +336,70 @@ namespace OpenSteer {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Engine::~Engine() {
 	pthread_mutex_destroy(&m_mutex);
 	textures->clear();
@@ -148,7 +423,27 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
 	screenWidth = width;
 	screenHeight = height;
 	importer.SetIOHandler(new ResourceIOSystem(*textures, *models));
-	buildCamera();
+
+  buildCamera();
+
+  int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
+  
+  importer.ReadFile("0", m_PostProcessFlags);	
+  m_FooFoos.push_back(Model::GetFoo(importer.GetScene()));
+  importer.FreeScene();
+
+  importer.ReadFile("1", m_PostProcessFlags);	
+  m_FooFoos.push_back(Model::GetFoo(importer.GetScene()));
+  importer.FreeScene();
+
+  importer.ReadFile("2", m_PostProcessFlags);	
+  m_FooFoos.push_back(Model::GetFoo(importer.GetScene()));
+  importer.FreeScene();
+
+	pthread_mutex_init(&m_mutex, 0);
+
+	mySimulationTime = 0.0;		
+  mySceneBuilt = true;
 }
 
 
@@ -162,13 +457,13 @@ void Engine::buildCamera() {
 void Engine::go() {
 	build();
 	mySceneBuilt = true;
-	mySimulationTime = 0.0;		
-	pthread_mutex_init(&m_mutex, 0);
-	pthread_create(&m_thread, 0, Engine::start_thread, this);
+	//pthread_mutex_init(&m_mutex, 0);
+	//pthread_create(&m_thread, 0, Engine::start_thread, this);
 }
 
 
 void *Engine::start_thread(void *obj) {
+  LOGV("no!!!!!!!!!!!\n");
 	reinterpret_cast<Engine *>(obj)->tick();
 	return 0;
 }
@@ -182,8 +477,40 @@ void Engine::pause() {
 }
 
 
+void Engine::parse(const char *fileData, size_t rd) {
+  pthread_mutex_lock(&m_mutex);
+  yajl_handle hand;
+  //static unsigned char fileData[65536];
+  /* generator config */
+  yajl_status stat;
+  //size_t rd;
+  /* allow comments */
+  yajl_parser_config cfg = { 1, 1 };
+  cfg.checkUTF8 = 0;
+  command = 0;
+
+	if (rd > 0) {
+    //LOGV("got interp: %s\n", fileData);
+
+    hand = yajl_alloc(&callbacks, &cfg, NULL, (void *)this);
+    stat = yajl_parse(hand, (const unsigned char*)fileData, rd);
+
+    if (stat != yajl_status_ok && stat != yajl_status_insufficient_data) {
+      unsigned char * str = yajl_get_error(hand, 1, (const unsigned char*)fileData, rd);
+      LOGV("json error: %s", (const char *) str);
+      yajl_free_error(hand, str);
+    }
+
+    stat = yajl_parse_complete(hand);
+    yajl_free(hand);
+  }
+  pthread_mutex_unlock(&m_mutex);
+}
+
+
 int Engine::tick() {
   LOGV("starting tick\n");
+  /*
 
   gameState = -1;
   int tickedGameState = -1;
@@ -209,141 +536,63 @@ int Engine::tick() {
 		if (mySceneBuilt) {
       if (pthread_mutex_lock(&m_mutex) == 0) {
 
-      gettimeofday(&tim, NULL);
-      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+        gettimeofday(&tim, NULL);
+        t2=tim.tv_sec+(tim.tv_usec/1000000.0);
 
-      m_Waits[waitedIndex] = t2 - t1;
+        m_Waits[waitedIndex] = t2 - t1;
 
-		  gettimeofday(&tim, NULL);
-		  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-		  
-      waitedIndex++;
-      if ((waitedIndex % waitedCount) == 0) {
-        waitedIndex = 0;
-      }
+        gettimeofday(&tim, NULL);
+        t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+        
+        waitedIndex++;
+        if ((waitedIndex % waitedCount) == 0) {
+          waitedIndex = 0;
+        }
 
-      waitSum = 0.0;
-      for (unsigned int i=0; i<waitedCount; i++) {
-        waitSum += m_Waits[i];
-      }
+        waitSum = 0.0;
+        for (unsigned int i=0; i<waitedCount; i++) {
+          waitSum += m_Waits[i];
+        }
 
-      averageWait = waitSum / (double)waitedCount;
-	
-      if (averageWait > (1.0 / 30.0)) {
-	    LOGV("slow avg: %f\n", averageWait);
-      } else {
+        averageWait = waitSum / (double)waitedCount;
 
-		  myDeltaTime = averageWait; //(averageWait / 0.15) * (1.0);
+        if (averageWait > (1.0 / 30.0)) {
+          LOGV("slow avg: %f\n", averageWait);
+        } else {
+          myDeltaTime = averageWait; //(averageWait / 0.15) * (1.0);
+          //mySimulationTime += (myDeltaTime);
+          //tickedGameState = simulate();
+          //rd = fread((void *) fileData, 1, sizeof(fileData) - 1, stdin);
 
+          command = 0;
 
-		  mySimulationTime += (myDeltaTime);
-		  tickedGameState = simulate();
+          //function set_p(i, x,y,y) {
+          //world[2][i][1][0] = x;
+          //world[2][i][1][1] = y;
+          //world[2][i][1][2] = z;
+          //}
 
-      }
-		  pthread_mutex_unlock(&m_mutex);
-		  //sched_yield();
+			}
+          //LOGV("done parsing json\n");
+        }
+        pthread_mutex_unlock(&m_mutex);
+        //sched_yield();
       }
     }
 
     if (tickedGameState == 0) {
       break;
     }
-
   }
+
 
   LOGV("exiting tick thread\n");
 	
 	return gameState;
+  */
 }
 
 
-int Engine::tickX() {
-  gameState = -1;
-	timeval t1, t2;
-	double elapsedTime;
-  double interval = 20.0;
-  int stalled = 0;
-	
-	gettimeofday(&t1, NULL);
-
-  float last_waited = 0.0;
-  unsigned long waited = 0;
-
-  bool checkTime = false;
-
-  int waitedCount = 30;
-  int waitedIndex = 0;
-
-  long double waitSum = 0.0;
-  long double averageWait = 0.0;
-
-  for (unsigned int i=0; i<waitedCount; i++) {
-    m_Waits[i] = 0.0;
-  }
-
-	while (gameState != 0) {
-		if (mySceneBuilt) {
-
-      waitSum = 0.0; 
-      for (unsigned int i=0; i<waitedCount; i++) {
-        waitSum += m_Waits[i];
-      }
-
-      averageWait = waitSum / (long double)waitedCount;
-      
-      if (waited > (averageWait * 0.9)) {
-        checkTime = true;
-      }
-
-      if (checkTime) {
-        gettimeofday(&t2, NULL);
-        elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
-        elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-        if (elapsedTime > interval) {
-          gettimeofday(&t1, NULL);
-          if (waited == 0) {
-            if (stalled++ > 2) {
-              return 0;
-            }
-          }
-
-          //LOGV("averageWait: %f\n", averageWait);
-
-          if ((elapsedTime - interval) < interval) {
-            myDeltaTime = ((elapsedTime / interval)) * 2.0;
-            mySimulationTime += (myDeltaTime);
-            pthread_mutex_lock(&m_mutex);
-            gameState = simulate();
-            pthread_mutex_unlock(&m_mutex);
-            checkTime = false;
-          } else {
-            int times = (elapsedTime / interval);
-            myDeltaTime = 2.0;
-            for (int i=0; i<times; i++) {
-              mySimulationTime += (myDeltaTime);
-              pthread_mutex_lock(&m_mutex);
-              gameState = simulate();
-              pthread_mutex_unlock(&m_mutex);
-            }
-          }
-
-          m_Waits[waitedIndex] = last_waited = waited;
-          waited = 0;
-          waitedIndex++;
-          if ((waitedIndex % waitedCount) == 0) {
-            waitedIndex = 0;
-          }
-        }
-      }
-      
-      waited++;
-		}
-	}
-
-  LOGV("exiting tick thread\n");
-	
-	return gameState;
-}
 
 
 void Engine::draw(float rotation) {
@@ -352,30 +601,28 @@ void Engine::draw(float rotation) {
       if (myViewportSet) {
         glPushMatrix();
         {
-			
-//#ifdef DESKTOP
-//			glClearDepth(1.0);
-//#else
-//			glClearDepthf(1.0);
-//#endif
-
           glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
           glMatrixMode(GL_MODELVIEW);
           glLoadIdentity();
           glRotatef(rotation, 0.0, 0.0, 1.0);
-          drawCamera();
-          render();
+
+          gluLookAt(
+            m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2],
+            m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2],
+            0.0, 1.0, 0.0
+          );
+
+          for (unsigned int i=0; i<m_Models.size(); i++) {
+            m_Models[i]->render(0);
+          }
         }
         glPopMatrix();
       } else {
-        LOGV("the fuck: %d\n", screenWidth);
         prepareFrame(screenWidth, screenHeight);
       }
     }
     pthread_mutex_unlock(&m_mutex);
-    //sched_yield();
-  } else {
-    //LOGV("no lock in draw\n");
+    sched_yield();
   }
 }
 
@@ -451,10 +698,6 @@ void Engine::prepareFrame(int width, int height) {
   //glDisable(GL_LIGHTING);
 	*/
 	
-	
-	
-	
-	
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -482,133 +725,6 @@ void Engine::resizeScreen(int width, int height) {
 	myViewportSet = false;
 }
 
-/*
-void Engine::buildFont() {	
-	
-	m_charPixelWidth = m_animPixelWidth = CHAR_PIXEL_W;
-	m_charPixelHeight = m_animPixelHeight = CHAR_PIXEL_H;
-	
-	for(int i=0; i<12; i++)
-	{
-		charGeomV[i] = 0.0;
-	}
-	
-	// Pre-generate all possible texture coords
-	for(int c=FONT_TEXTURE_ATLAS_WIDTH * FONT_TEXTURE_ATLAS_LINES; c>=0; c--)
-	{
-		int character = c * ONE_CHAR_SIZE_T;
-		charTexCoords[character] = charTexCoords[character+4] = (c % FONT_TEXTURE_ATLAS_WIDTH) * CHAR_WIDTH;	
-		charTexCoords[character+1] = charTexCoords[character+3] = 1.0 - (c / FONT_TEXTURE_ATLAS_WIDTH) * CHAR_HEIGHT;
-		charTexCoords[character+2] = charTexCoords[character+6] = charTexCoords[character+0] + CHAR_WIDTH;
-		charTexCoords[character+7] = charTexCoords[character+5] = 1.0 - (c / FONT_TEXTURE_ATLAS_WIDTH + 1) * CHAR_HEIGHT;
-	}		
-}
-
-
-void Engine::tickFont() {
-}
-
-
-void Engine::drawFont() {
-		
-	float _scaleX = 1.0;
-	float _scaleY = 1.0;
-
-	if (m_animPixelWidth > m_charPixelWidth) {
-		m_animPixelWidth /= 1.5;
-	} else {
-		m_animPixelWidth = m_charPixelWidth;
-	}
-
-	if (m_animPixelHeight > m_charPixelHeight) {
-		m_animPixelHeight /= 1.5;
-	} else {
-		m_animPixelHeight = m_charPixelHeight;
-	}
-
-	m_ntextWidth = screenWidth / m_animPixelWidth;
-	m_ntextHeight = screenHeight / m_animPixelHeight;
-	m_fCharacterWidth = 1.0 / m_ntextWidth;
-	m_fCharacterHeight = 1.0 / m_ntextHeight;
-
-	//glBindTexture(GL_TEXTURE_2D, textures->at(1));
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();	
-	glLoadIdentity();
-
-#ifdef DESKTOP
-	glOrtho(0, _scaleX, 0, _scaleY, -1, 1);
-#else
-	glOrthof(0, _scaleX, 0, _scaleY, -1, 1);
-#endif
-	
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	float x;
-	std::string fps;
-
-	if (myGameStarted) {
-		x = 0.05;
-		fps = "S:" + stringify((int)myPlayerSpeed.x) + " D:" + stringify((int)myPlayerPosition.x);
-	} else {
-		x = 0.0;
-		fps = "Escape from Raptor Island";
-	}
-	 
-	float y = 0.875;
-	
-	for (unsigned int i=0; i<fps.length(); i++) {
-		
-		int c = fps.at(i);
-
-		if (c == ' ') {
-			if (myGameStarted) {
-				x = 0.0;
-			} else {
-				x = -m_fCharacterWidth;
-			}
-			y -= 0.055;
-		}
-		
-		c -= ' ';
-
-		m_nCurrentChar = 0;
-
-		// TexCoords
-		int offsetT = m_nCurrentChar - (m_nCurrentChar / 3);	// 12 / 3 = 4 So 12 - 4 = 8
-		memcpy(&charGeomT[offsetT], &charTexCoords[c * ONE_CHAR_SIZE_T], ONE_CHAR_SIZE_T * sizeof(GLfloat));
-		
-		// Vertex Xs
-		charGeomV[m_nCurrentChar + 0] = charGeomV[m_nCurrentChar + 6] = x;
-		charGeomV[m_nCurrentChar + 3] = charGeomV[m_nCurrentChar + 9] = x + m_fCharacterWidth;
-
-		// Vertex Ys
-		charGeomV[m_nCurrentChar + 1] = charGeomV[m_nCurrentChar + 4] = y;
-		charGeomV[m_nCurrentChar + 10] = charGeomV[m_nCurrentChar + 7] = y + m_fCharacterHeight;
-		charGeomV[m_nCurrentChar + 2] = charGeomV[m_nCurrentChar + 5] = charGeomV[m_nCurrentChar + 8] = charGeomV[m_nCurrentChar + 11] = 0.0;
-
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT,0, &charGeomT);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_FLOAT, 0, &charGeomV);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		x += m_fCharacterWidth;
-	}
-	 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();		
-
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-}
-*/
-
-
 void Engine::drawCamera() {	
 	gluLookAt(
 		myCameraPosition.x, myCameraPosition.y, myCameraPosition.z,
@@ -626,4 +742,107 @@ float Engine::randf() {
 		mirand *= 16807;
 		a = (mirand&0x007fffff) | 0x40000000;
 		return( *((float*)&a) - 3.0f );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//DEPC
+int Engine::tickX() {
+  gameState = -1;
+	timeval t1, t2;
+	double elapsedTime;
+  double interval = 20.0;
+  int stalled = 0;
+	
+	gettimeofday(&t1, NULL);
+
+  float last_waited = 0.0;
+  unsigned long waited = 0;
+
+  bool checkTime = false;
+
+  int waitedCount = 30;
+  int waitedIndex = 0;
+
+  long double waitSum = 0.0;
+  long double averageWait = 0.0;
+
+  for (unsigned int i=0; i<waitedCount; i++) {
+    m_Waits[i] = 0.0;
+  }
+
+	while (gameState != 0) {
+		if (mySceneBuilt) {
+
+      waitSum = 0.0; 
+      for (unsigned int i=0; i<waitedCount; i++) {
+        waitSum += m_Waits[i];
+      }
+
+      averageWait = waitSum / (long double)waitedCount;
+      
+      if (waited > (averageWait * 0.9)) {
+        checkTime = true;
+      }
+
+      if (checkTime) {
+        gettimeofday(&t2, NULL);
+        elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
+        elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
+        if (elapsedTime > interval) {
+          gettimeofday(&t1, NULL);
+          if (waited == 0) {
+            if (stalled++ > 2) {
+              return 0;
+            }
+          }
+
+          if ((elapsedTime - interval) < interval) {
+            myDeltaTime = ((elapsedTime / interval)) * 2.0;
+            mySimulationTime += (myDeltaTime);
+            pthread_mutex_lock(&m_mutex);
+            gameState = simulate();
+            pthread_mutex_unlock(&m_mutex);
+            checkTime = false;
+          } else {
+            int times = (elapsedTime / interval);
+            myDeltaTime = 2.0;
+            for (int i=0; i<times; i++) {
+              mySimulationTime += (myDeltaTime);
+              pthread_mutex_lock(&m_mutex);
+              gameState = simulate();
+              pthread_mutex_unlock(&m_mutex);
+            }
+          }
+
+          m_Waits[waitedIndex] = last_waited = waited;
+          waited = 0;
+          waitedIndex++;
+          if ((waitedIndex % waitedCount) == 0) {
+            waitedIndex = 0;
+          }
+        }
+      }
+      
+      waited++;
+		}
+	}
+
+  LOGV("exiting tick thread\n");
+	
+	return gameState;
 }

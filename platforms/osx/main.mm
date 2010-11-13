@@ -3,25 +3,148 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSImage.h>
 #import <QuartzCore/QuartzCore.h>
+#import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
+
+#import "GLView.h"
 
 #include "MemoryLeak.h"
 #include "Audio.h"
 #include "Model.h"
+#include "Interpretator.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RunAndJump.h"
 
 //#define kWindowWidth  480
 //#define kWindowHeight 320
-
 #define kWindowWidth  320
 #define kWindowHeight 480
 
-static std::vector<GLuint> textures;
-static std::vector<foo*> models;
-static Engine *gameController;
 
-GLuint loadTexture(NSBitmapImageRep *image) {
+@interface Skeleton : NSObject {
+  Engine *game;
+  std::vector<GLuint> textures;
+  std::vector<foo*> models;
+}
+
+-(id)init;
+-(GLuint)loadTexture:(NSBitmapImageRep *)image;
+-(void)draw:(id)userInfo;
+
+@end
+
+@implementation Skeleton
+
+-(id)init {
+  self = [super init];
+
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  [NSApplication sharedApplication];
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
+  id menubar = [[NSMenu new] autorelease];
+  id appMenuItem = [[NSMenuItem new] autorelease];
+  [menubar addItem:appMenuItem];
+  [NSApp setMainMenu:menubar];
+  id appMenu = [[NSMenu new] autorelease];
+  id appName = [[NSProcessInfo processInfo] processName];
+  id quitTitle = [@"Quit " stringByAppendingString:appName];
+  id quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+  [appMenu addItem:quitMenuItem];
+  [appMenuItem setSubmenu:appMenu];
+  id glWindow = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, kWindowWidth, kWindowHeight) styleMask:NSTitledWindowMask | NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
+  [glWindow cascadeTopLeftFromPoint:NSMakePoint(0,0)];
+  [glWindow setTitle:appName];
+
+  id webWindow = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, kWindowWidth, kWindowHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
+
+  [webWindow setOpaque:NO];
+  [webWindow setBackgroundColor:[NSColor clearColor]];
+
+  WebView *webView = [[WebView alloc] initWithFrame:NSMakeRect(0, 0, 320, 480)];
+  [webView setPolicyDelegate:self];
+  [webView setWantsLayer:YES];
+  [webView setDrawsBackground:NO];
+
+  WebFrame *mainFrame = [webView mainFrame];
+  NSURL *url = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"html" subdirectory:@"../../../assets"];
+  [[webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
+  
+  NSOpenGLPixelFormatAttribute attributes[] = { NSOpenGLPFADoubleBuffer, NSOpenGLPFADepthSize, 32, 0 };
+
+  NSOpenGLPixelFormat *format; format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attributes] autorelease];
+  GLView *glView = [[GLView alloc] initWithFrame:NSMakeRect(0, 0, 320, 480) pixelFormat:format]; 
+
+  ///////////////////
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
+	for (NSString *path in model_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
+		
+		models.push_back(firstModel);
+	}
+
+	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/textures"];
+	for (NSString *path in texture_names) {
+    NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+    NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
+
+    if (image == nil) {
+      throw 1;
+    }
+
+	  textures.push_back([self loadTexture:image]);
+    [image release];
+    [texData release];
+  }
+  ////////////////////
+
+  ///////////////////////
+  game = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
+  [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(draw:) userInfo:nil repeats:YES];
+  //////////////////////
+
+
+  [glWindow setContentView:glView];
+  [webWindow setContentView:webView];
+  [glWindow addChildWindow:webWindow ordered:NSWindowAbove];
+
+  
+  [glWindow makeKeyAndOrderFront:nil];
+  [NSApp activateIgnoringOtherApps:YES];
+  [NSApp run];
+  [pool release];
+}
+
+
+-(void)draw:(id)userInfo {
+  game->draw(0);
+}
+
+
+- (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id)listener {
+  NSLog(@"the fuck: %@", [request URL]);
+  NSString *fragment = [[[request mainDocumentURL] fragment] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+	//NSLog(@"the fuck: %@", [[request mainDocumentURL] scheme]);
+	//NSLog(@"the fuck: %@", [[request mainDocumentURL] path]);
+	NSLog(@"the fuck: %@", fragment);
+	if ([fragment length] == 0 && [[[request mainDocumentURL] scheme] isEqualToString:@"file"]) {
+    [listener use];
+	} else {
+    game->parse([fragment cStringUsingEncoding:NSUTF8StringEncoding], [fragment length]);
+    [listener ignore];
+	}
+}
+
+-(GLuint)loadTexture:(NSBitmapImageRep *)image {
 	GLuint text = 0;
 	glEnable(GL_TEXTURE_2D);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
@@ -49,148 +172,49 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 }
 
 
-void draw(void) {
-  if (gameController->gameState) {
-    gameController->draw(0);
-    glutSwapBuffers();
-  } else {
-    exit(0);
-  }
-}
-
-
-void resize(int width, int height) {
-  gameController->resizeScreen(width, height);
-}
-
-
-void processMouse(int button, int state, int x, int y) {
-  switch (state) {
-    case GLUT_DOWN:
-      gameController->hitTest(x, y, 0);
-      break;
-    case GLUT_UP:
-      gameController->hitTest(x, y, 2);
-      break;
-  }
-}
-
-
-void processMouseMotion(int x, int y) {
-}
-
-
-void processNormalKeys(unsigned char key, int x, int y) {
-  switch (key) {
-    case 27:
-    gameController->pause();
-    break;
-
-    case 13:
-    gameController->hitTest(x, y, 0);
-    gameController->hitTest(x, y, 2);
-    break;
-
-    case 113:
-    glDepthFunc(GL_NEVER);
-    break;
-
-    case 119:
-    glDepthFunc(GL_LESS);
-    break;
-
-    case 101:
-    glDepthFunc(GL_EQUAL);
-    break;
-
-    case 114:
-    glDepthFunc(GL_LEQUAL);
-    break;
-
-    case 116:
-    glDepthFunc(GL_GREATER);
-    break;
-
-    case 121:
-    glDepthFunc(GL_NOTEQUAL);
-    break;
-
-    case 117:
-    glDepthFunc(GL_GEQUAL);
-    break;
-
-    case 105:
-    glDepthFunc(GL_ALWAYS);
-    break;
-
-    case 111:
-    glDisable(GL_BLEND);
-    break;
-
-    case 112:
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    break;
-  }
-
-  LOGV("the fuck: %d\n", key);
-}
+@end
 
 
 int main(int argc, char** argv) {
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  glutGameModeString("1440x900:32@65");
+  //glutInit(&argc, argv);
+  //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  //glutGameModeString("1440x900:32@65");
 
-  glutInitWindowSize(kWindowWidth, kWindowHeight);
-  glutInitWindowPosition(1000, 500);
-  glutCreateWindow(argv[0]);
+  //glutInitWindowSize(kWindowWidth, kWindowHeight);
+  //glutInitWindowPosition(1000, 500);
+  //glutCreateWindow(argv[0]);
 
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
-	for (NSString *path in model_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
+  /*
+  */
 
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		
-		models.push_back(firstModel);
-	}
 
-	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/textures"];
-	for (NSString *path in texture_names) {
-    NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-    NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
 
-    if (image == nil) {
-      throw 1;
-    }
 
-	  textures.push_back(loadTexture(image));
-    [image release];
-    [texData release];
-  }
 
-  Audio *foo = new Audio();
 
-  gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
-  gameController->go();
 
-  glutKeyboardFunc(processNormalKeys);
-	glutMouseFunc(processMouse);
-	glutMotionFunc(processMouseMotion);
-  glutDisplayFunc(draw);
-	glutIdleFunc(draw);
-  glutReshapeFunc(resize);
-  glutMainLoop();
 
-	[pool release];
 
+
+
+
+
+//  Audio *foo = new Audio();
+
+  //gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models, js);
+  //gameController->go();
+
+//  glutKeyboardFunc(processNormalKeys);
+//	glutMouseFunc(processMouse);
+//	glutMotionFunc(processMouseMotion);
+//  glutDisplayFunc(draw);
+//	glutIdleFunc(draw);
+//  glutReshapeFunc(resize);
+//  glutMainLoop();
+
+  LOGV("the fuck\n");
+
+  [[Skeleton alloc] init];
   return 0;
 }

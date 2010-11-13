@@ -64,6 +64,7 @@ typedef struct RunAndJump RunAndJump;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
 -(void)startGame;
+-(void)parse:(const char*)json withLength:(size_t)length;
 
 
 @end

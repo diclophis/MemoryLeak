@@ -12,6 +12,7 @@
 
 #include "MemoryLeak.h"
 #include "Model.h"
+#include "Interpretator.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RunAndJump.h"
@@ -87,7 +88,7 @@ static std::vector<foo*> models;
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 2;
+	animationFrameInterval = 1;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -103,7 +104,7 @@ static std::vector<foo*> models;
 
 -(id)initWithCoder:(NSCoder*)coder {
     if ((self = [super initWithCoder:coder])) {
-		[self build];
+		//[self build];
 	}
 
     return self;
@@ -253,9 +254,7 @@ GLuint loadTexture(UIImage *image) {
 		[texData release];
 	}
 
-	
 	gameController = new RunAndJump(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
-	gameController->go();
 	
 	gameState = 1;
 }
@@ -263,6 +262,11 @@ GLuint loadTexture(UIImage *image) {
 
 -(void)reset {
 	[self stopAnimation];	
+}
+
+
+-(void)parse:(const char*)json withLength:(size_t)length {
+	gameController->parse(json, length);
 }
 
 
@@ -294,6 +298,7 @@ GLuint loadTexture(UIImage *image) {
 
 -(void)startAnimation {
     if (!animating) {
+		[self build];
 		animating = TRUE;
         if (displayLinkSupported) {
             displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];

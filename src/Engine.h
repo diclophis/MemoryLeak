@@ -39,9 +39,11 @@ public:
 	Engine(const Engine&);
 	Engine& operator=(const Engine&);
 
+  GLuint GetTextureAt(int t) {
+    return textures->at(t);
+  }
+
   /*
-
-
 	// Font Engine
 	float m_nScalerX;		// To scale texture values based on imported pngs.
 	float m_nScalerY;		// To scale texture values based on imported pngs.
@@ -101,6 +103,7 @@ public:
 	std::vector<foo*> *models;
 	Assimp::Importer importer;
 	Engine(int width, int height, std::vector<GLuint> &textures, std::vector<foo*> &models);
+  void parse(const char *fileData, size_t rd);
 	virtual ~Engine();
   virtual void build() = 0;
 	int gameState;

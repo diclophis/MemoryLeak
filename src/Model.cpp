@@ -9,11 +9,12 @@
 
 
 #include "MemoryLeak.h"
+#include "Interpretator.h"
 #include "Engine.h"
 #include "aiScene.h"
 #include "Model.h"
 
-
+static GLuint g_lastTexture = 0;
 static GLuint g_lastVertexBuffer = 0;
 static GLuint g_lastNormalBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
@@ -75,7 +76,12 @@ void Model::render(int frame) {
 		glRotatef(m_Rotation[1],0,1,0);
 		glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
-		
+	
+    if (m_Texture != g_lastTexture) {
+      glBindTexture(GL_TEXTURE_2D, m_Texture);
+      g_lastTexture = m_Texture;
+    }
+
 		if (m_FooFoo->m_VerticeBuffers[frame + 1] != g_lastVertexBuffer) {
 			g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[frame + 1];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
@@ -97,9 +103,10 @@ void Model::render(int frame) {
 		if (m_FooFoo->m_VerticeBuffers[frame + 0] != g_lastElementBuffer) {
 			g_lastElementBuffer = m_FooFoo->m_VerticeBuffers[frame + 0];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-		}		
+		}
 		
-		glDrawElements(GL_TRIANGLES,3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+		glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
 	}
 	glPopMatrix();
 }
