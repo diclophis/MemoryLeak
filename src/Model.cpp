@@ -9,7 +9,6 @@
 
 
 #include "MemoryLeak.h"
-#include "Interpretator.h"
 #include "Engine.h"
 #include "aiScene.h"
 #include "Model.h"
@@ -104,9 +103,8 @@ void Model::render(int frame) {
 			g_lastElementBuffer = m_FooFoo->m_VerticeBuffers[frame + 0];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
 		}
-		
-		glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
+		glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 	}
 	glPopMatrix();
 }

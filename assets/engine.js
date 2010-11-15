@@ -3,13 +3,23 @@ var FrameTimer = function() {
 };
 
 FrameTimer.prototype = {
-    getSeconds: function() {
-        var seconds = this._frameSpacing / 1000;
-        if(isNaN(seconds)) {
+    getMilliseconds: function() {
+        var milliseconds = this._frameSpacing;
+        if(isNaN(milliseconds)) {
             return 0;
         }
 
-        return seconds;
+        return milliseconds;
+    },
+
+    getMillisecondsSinceTick: function() {
+        var currentTick = (new Date()).getTime();
+        var milliseconds = currentTick - this._lastTick;
+        if(isNaN(milliseconds)) {
+            return 0;
+        }
+
+        return milliseconds;
     },
 
     tick: function() {

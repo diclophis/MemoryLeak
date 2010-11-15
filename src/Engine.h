@@ -122,8 +122,8 @@ public:
 	
 	void go();
 	
-	pthread_mutex_t m_mutex;
-	pthread_t m_thread;
+	//pthread_mutex_t m_mutex;
+	//pthread_t m_thread;
 	static void *start_thread(void *);
 	bool mNeedsTick;
 	

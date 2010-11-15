@@ -20,6 +20,11 @@
 
       var simulation = 0.0;
 
+      var kunioImage = new Image();
+      var timer;
+      var sprites;
+      var walk;
+
       var world = [
         [-5.0, 20.0, 20.0], //camera position
         [0.0, 0.0, 0.0], //camera target
@@ -109,25 +114,36 @@
             }
 
             setInterval(function() {
-              ctx.drawTextCenter(font, fontsize, canvas.width/2, Math.floor(Math.random() * 480.0), "Canvas Text Functions");
+              //ctx.drawTextCenter(font, fontsize, canvas.width/2, Math.floor(Math.random() * 480.0), "Canvas Text Functions");
             }, 1.0 * 1000.0);
 
+            timer = new FrameTimer();
+            timer.tick();
+
             setInterval(function() {
-              dt = 1.0 / 30.0;
-              simulation += dt;
-              ////
+              ideal_dt = (1.0 / 30.0) * 1000.0;
+              dt = timer.getMillisecondsSinceTick();
+              ticked_dt = 0.0;
+              sub_divided = 0;
+              while (ticked_dt < dt) {
+                ticked_dt += ideal_dt;
+                simulation += ideal_dt;
+                set_camera_position(world[0][0] + (0.01 * ideal_dt), world[0][1], world[0][2]);
+                window.location = "#" + JSON.stringify(world);
+                sub_divided++;
+              }
+              ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+              ctx.drawTextCenter(font, fontsize, canvasWidth / 2, canvasHeight / 2, "dt: " + dt + " sd:" + sub_divided);
+              timer.tick();
+            }, 15);
 
-              set_camera_position(world[0][0] + 0.1, world[0][1], world[0][2]);
-
-              ////
-              window.location = "#" + JSON.stringify(world);
-            }, (1.0 / 30.0) * 1000.0);
           }
         }
       };
     </script>
   </head>
   <body onload="init(event);">
+    <img src='kunio.gif'></img>
     <canvas id="canvas" onclick="touchstartCanvas(event);" ontouchstart="touchstartCanvas(event);" ontouchmove="touchmoveCanvas(event);"></canvas>
   </body>
 </html>

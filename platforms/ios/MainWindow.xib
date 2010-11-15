@@ -184,7 +184,6 @@
 					<string>13.CustomClassName</string>
 					<string>13.IBPluginDependency</string>
 					<string>13.IBViewBoundsToFrameTransform</string>
-					<string>15.CustomClassName</string>
 					<string>15.IBPluginDependency</string>
 					<string>15.IBViewBoundsToFrameTransform</string>
 					<string>2.IBAttributePlaceholdersKey</string>
@@ -200,7 +199,6 @@
 					<string>EAGLView</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform"/>
-					<string>ThreadedUIWebView</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform"/>
 					<object class="NSMutableDictionary">
@@ -281,7 +279,7 @@
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>EAGLView</string>
-							<string>ThreadedUIWebView</string>
+							<string>UIWebView</string>
 							<string>UIWindow</string>
 						</object>
 					</object>
@@ -301,7 +299,7 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">webView</string>
-								<string key="candidateClassName">ThreadedUIWebView</string>
+								<string key="candidateClassName">UIWebView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">window</string>
@@ -312,14 +310,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">Classes/MemoryLeakAppDelegate.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">ThreadedUIWebView</string>
-					<string key="superclassName">UIWebView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">Classes/ThreadedUIWebView.h</string>
 					</object>
 				</object>
 			</object>

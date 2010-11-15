@@ -267,7 +267,6 @@
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
-		FCFD71AF121E95C800C8F382 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFD71AE121E95C800C8F382 /* libpthread.dylib */; };
 		FCFECB6411EC0D2000BBBE2A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */; };
 		FCFECB6C11EC0D5200BBBE2A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6B11EC0D5200BBBE2A /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
@@ -756,7 +755,6 @@
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		FCFD71AE121E95C800C8F382 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
 		FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		FCFECB6B11EC0D5200BBBE2A /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -771,7 +769,6 @@
 				FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */,
 				FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */,
 				FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */,
-				FCFD71AF121E95C800C8F382 /* libpthread.dylib in Frameworks */,
 				FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */,
 				FC141A911285415900166578 /* 3DSConverter.o in Frameworks */,
 				FC141A931285415900166578 /* 3DSLoader.o in Frameworks */,
@@ -922,7 +919,6 @@
 				FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */,
 				FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */,
 				FCB14CC612001DFB0010E756 /* CoreGraphics.framework */,
-				FCFD71AE121E95C800C8F382 /* libpthread.dylib */,
 				FC7020531282309E00BB601D /* CoreAudio.framework */,
 			);
 			name = Frameworks;

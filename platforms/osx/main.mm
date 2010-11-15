@@ -11,7 +11,6 @@
 #include "MemoryLeak.h"
 #include "Audio.h"
 #include "Model.h"
-#include "Interpretator.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "RunAndJump.h"
@@ -26,6 +25,8 @@
   Engine *game;
   std::vector<GLuint> textures;
   std::vector<foo*> models;
+  GLView *glView;
+  int built;
 }
 
 -(id)init;
@@ -38,6 +39,8 @@
 
 -(id)init {
   self = [super init];
+
+  built = 0;
 
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   [NSApplication sharedApplication];
@@ -74,7 +77,7 @@
   NSOpenGLPixelFormatAttribute attributes[] = { NSOpenGLPFADoubleBuffer, NSOpenGLPFADepthSize, 32, 0 };
 
   NSOpenGLPixelFormat *format; format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attributes] autorelease];
-  GLView *glView = [[GLView alloc] initWithFrame:NSMakeRect(0, 0, 320, 480) pixelFormat:format]; 
+  glView = [[GLView alloc] initWithFrame:NSMakeRect(0, 0, 320, 480) pixelFormat:format]; 
 
   ///////////////////
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
@@ -108,7 +111,6 @@
   ////////////////////
 
   ///////////////////////
-  game = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
   [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(draw:) userInfo:nil repeats:YES];
   //////////////////////
 
@@ -126,23 +128,31 @@
 
 
 -(void)draw:(id)userInfo {
-  game->draw(0);
+  [[glView openGLContext] makeCurrentContext];
+  if (built == 1) {
+    //[glView setNeedsDisplay:YES];
+    game->draw(0);
+  } else {
+    game = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
+    built = 1;
+  }
+  [[glView openGLContext] flushBuffer];
 }
 
 
 - (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id)listener {
-  NSLog(@"the fuck: %@", [request URL]);
-  NSString *fragment = [[[request mainDocumentURL] fragment] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-	//NSLog(@"the fuck: %@", [[request mainDocumentURL] scheme]);
-	//NSLog(@"the fuck: %@", [[request mainDocumentURL] path]);
-	NSLog(@"the fuck: %@", fragment);
-	if ([fragment length] == 0 && [[[request mainDocumentURL] scheme] isEqualToString:@"file"]) {
+  NSString *fragment = [[[request mainDocumentURL] path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  NSLog(@"the: %@", fragment);
+	if ([[[request mainDocumentURL] scheme] isEqualToString:@"file"]) {
     [listener use];
 	} else {
-    game->parse([fragment cStringUsingEncoding:NSUTF8StringEncoding], [fragment length]);
+    if (built == 1) {
+      game->parse([fragment cStringUsingEncoding:NSUTF8StringEncoding], [fragment length]);
+    }
     [listener ignore];
 	}
 }
+
 
 -(GLuint)loadTexture:(NSBitmapImageRep *)image {
 	GLuint text = 0;
@@ -176,45 +186,6 @@
 
 
 int main(int argc, char** argv) {
-
-  //glutInit(&argc, argv);
-  //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  //glutGameModeString("1440x900:32@65");
-
-  //glutInitWindowSize(kWindowWidth, kWindowHeight);
-  //glutInitWindowPosition(1000, 500);
-  //glutCreateWindow(argv[0]);
-
-  /*
-  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-//  Audio *foo = new Audio();
-
-  //gameController = new RunAndJump(kWindowWidth, kWindowHeight, textures, models, js);
-  //gameController->go();
-
-//  glutKeyboardFunc(processNormalKeys);
-//	glutMouseFunc(processMouse);
-//	glutMotionFunc(processMouseMotion);
-//  glutDisplayFunc(draw);
-//	glutIdleFunc(draw);
-//  glutReshapeFunc(resize);
-//  glutMainLoop();
-
-  LOGV("the fuck\n");
-
   [[Skeleton alloc] init];
   return 0;
 }

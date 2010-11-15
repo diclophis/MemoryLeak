@@ -3,7 +3,6 @@
 
 #include "MemoryLeak.h"
 #include "Model.h"
-#include "Interpretator.h"
 #include "Engine.h"
 #include "MachineGun.h"
 

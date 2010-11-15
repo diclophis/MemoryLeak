@@ -401,7 +401,7 @@ namespace OpenSteer {
 
 
 Engine::~Engine() {
-	pthread_mutex_destroy(&m_mutex);
+	//pthread_mutex_destroy(&m_mutex);
 	textures->clear();
 	models->clear();
 }
@@ -436,11 +436,7 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
   m_FooFoos.push_back(Model::GetFoo(importer.GetScene()));
   importer.FreeScene();
 
-  importer.ReadFile("2", m_PostProcessFlags);	
-  m_FooFoos.push_back(Model::GetFoo(importer.GetScene()));
-  importer.FreeScene();
-
-	pthread_mutex_init(&m_mutex, 0);
+	//pthread_mutex_init(&m_mutex, 0);
 
 	mySimulationTime = 0.0;		
   mySceneBuilt = true;
@@ -471,14 +467,14 @@ void *Engine::start_thread(void *obj) {
 
 void Engine::pause() {
   LOGV("pausing in engine\n");
-  pthread_mutex_lock(&m_mutex);
+  //pthread_mutex_lock(&m_mutex);
   gameState = 0;
-  pthread_mutex_unlock(&m_mutex);
+  //pthread_mutex_unlock(&m_mutex);
 }
 
 
 void Engine::parse(const char *fileData, size_t rd) {
-  pthread_mutex_lock(&m_mutex);
+  //pthread_mutex_lock(&m_mutex);
   yajl_handle hand;
   //static unsigned char fileData[65536];
   /* generator config */
@@ -504,7 +500,7 @@ void Engine::parse(const char *fileData, size_t rd) {
     stat = yajl_parse_complete(hand);
     yajl_free(hand);
   }
-  pthread_mutex_unlock(&m_mutex);
+  //pthread_mutex_unlock(&m_mutex);
 }
 
 
@@ -596,7 +592,7 @@ int Engine::tick() {
 
 
 void Engine::draw(float rotation) {
-	if (pthread_mutex_lock(&m_mutex) == 0) {
+	//if (pthread_mutex_lock(&m_mutex) == 0) {
     if (mySceneBuilt) {
       if (myViewportSet) {
         glPushMatrix();
@@ -621,9 +617,9 @@ void Engine::draw(float rotation) {
         prepareFrame(screenWidth, screenHeight);
       }
     }
-    pthread_mutex_unlock(&m_mutex);
-    sched_yield();
-  }
+    //pthread_mutex_unlock(&m_mutex);
+    //sched_yield();
+  //}
 }
 
 #ifndef DESKTOP
@@ -762,6 +758,7 @@ float Engine::randf() {
 
 //DEPC
 int Engine::tickX() {
+	/*
   gameState = -1;
 	timeval t1, t2;
 	double elapsedTime;
@@ -843,6 +840,6 @@ int Engine::tickX() {
 	}
 
   LOGV("exiting tick thread\n");
-	
+	*/
 	return gameState;
 }
