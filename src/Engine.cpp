@@ -143,7 +143,7 @@ static int reformat_end_array(void * ctx)
       m_Models.push_back(new Model(m_FooFoos[xyz[0]]));
     }
     //LOGV("set_texture and set_frame\n");
-	  int t = reinterpret_cast<Engine *>(ctx)->GetTextureAt(xyz[1]);
+	int t = reinterpret_cast<Engine *>(ctx)->GetTextureAt(xyz[1]);
     m_Models[model_index]->SetTexture(t);
     m_Models[model_index]->SetFrame(xyz[2]);
   } else if (command == set_model_position) { //set current model_index position equal to last_vector if command == set_model_position

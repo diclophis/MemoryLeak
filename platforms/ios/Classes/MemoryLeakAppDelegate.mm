@@ -36,11 +36,12 @@
 		return YES;
 	} else {
 		[glView parse:[fragment cStringUsingEncoding:NSUTF8StringEncoding] withLength:[fragment length]];
-		return NO;
+		return YES;
 	}
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView {
+	NSLog(@"foo\n");
 	[glView startAnimation];
 }
 
