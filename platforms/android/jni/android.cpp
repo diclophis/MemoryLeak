@@ -16,7 +16,7 @@
 #include "Model.h"
 #include "MachineGun.h"
 #include "Engine.h"
-#include "RunAndJump.h"
+#include "PixelPusher.h"
 
 extern "C" {
   void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1);
@@ -67,38 +67,38 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 
-  LOGV("nativeSurfaceCreated %d %d", sPlayerTextures.size(), models.size());
+  //LOGV("nativeSurfaceCreated %d %d", sPlayerTextures.size(), models.size());
 
   Audio *foo = new Audio();
 
-  gameController = new RunAndJump(sWindowWidth, sWindowHeight, sPlayerTextures, models);
-  gameController->go();
+  gameController = new PixelPusher(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+  gameController->CreateThread();
 
   gameState = 1;
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
-  LOGV("nativeResize");
-  gameController->resizeScreen(width, height);
+  //LOGV("nativeResize");
+  gameController->ResizeScreen(width, height);
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-  LOGV("nativePause");
-  gameController->pause();
+  //LOGV("nativePause");
+  gameController->PauseThread();
   gameState = 0;
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
-  LOGV("nativeTouch");
-	gameController->hitTest((int)x, (int)y, (int)hitState);
+  //LOGV("nativeTouch");
+	gameController->Hit(x, -y, (int)hitState);
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
   if (gameState) {
-    gameController->draw(0);
+    gameController->DrawScreen(0);
   } 
 }

@@ -29,7 +29,7 @@ import android.graphics.Color;
 public class DemoActivity extends Activity {
 
 	private GLSurfaceView mGLView;
-  private WebView mWebView;
+  //private WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class DemoActivity extends Activity {
 
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
 
+    /*
     mWebView = new WebView(this);
     mWebView.setBackgroundColor(Color.TRANSPARENT);
     mWebView.setBackgroundDrawable(null);
@@ -49,7 +50,7 @@ public class DemoActivity extends Activity {
     webSettings.setSupportZoom(false);
     webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
     webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
-
+    */
 
 
 
@@ -58,8 +59,8 @@ public class DemoActivity extends Activity {
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
 
-    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    mWebView.loadUrl("file:///android_asset/index.html");
+    //addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+    //mWebView.loadUrl("file:///android_asset/index.html");
 
     AssetManager am = getAssets();
     String path = "models";
@@ -126,6 +127,9 @@ class DemoGLSurfaceView extends GLSurfaceView {
       float y = event.getRawY();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             nativeTouch(x, y, 0);
+        }
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            nativeTouch(x, y, 1);
         }
         if (event.getAction() == MotionEvent.ACTION_UP) {
             nativeTouch(x, y, 2);

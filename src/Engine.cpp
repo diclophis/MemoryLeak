@@ -83,7 +83,7 @@ int Engine::RunThread() {
   timeval tim;
   gettimeofday(&tim, NULL);
 
-  int waitedCount = 50;
+  int waitedCount = 5;
   int waitedIndex = 0;
 
   double waitSum = 0.0;

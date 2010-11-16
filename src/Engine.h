@@ -59,7 +59,7 @@ public:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
   int m_GameState;
-  double m_Waits[50];
+  double m_Waits[5];
 	pthread_mutex_t m_Mutex;
 	pthread_t m_Thread;
 	std::vector<GLuint> *m_Textures;

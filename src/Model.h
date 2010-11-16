@@ -77,21 +77,12 @@ public:
 	bool IsCollidedWith(Model *other);
 	
 	bool IsMovable () {
-		if (IsMoving()) {
+		if (m_IsMoving) {
 			return false;
 		} else if (m_IsStuck) {
 			return false;
 		} else {
 			return true;
-		}
-	}
-	
-	bool IsMoving () {
-		//if (m_Velocity[0] != 0.0 || m_Velocity[1] != 0.0 || m_Velocity[2] != 0.0) {
-		if (m_Velocity[0] != 0.0 || m_Velocity[2] != 0.0) {
-			return true;
-		} else {
-			return false;
 		}
 	}
 	
@@ -104,7 +95,7 @@ public:
 	}
 
   bool IsClimbable (Model *other) {
-    if (IsClimbing() || IsMoving()) {
+    if (IsClimbing() || m_IsMoving) {
       return false;
     } else {
       if (m_Position[1] >= other->m_Position[1]) {
@@ -141,6 +132,7 @@ public:
 	bool m_IsHelpfulToEnemies;
 	bool m_NeedsClimbBeforeMove;
 	bool m_NeedsClimbAfterMove;
+	bool m_IsMoving;
   bool m_IsFalling;
 	
 	const foofoo *m_FooFoo;
@@ -153,6 +145,8 @@ public:
 	int m_Frame;
 	int m_Texture;
 
+
   Model *m_Climbing;
+	int m_Direction;
 
 };

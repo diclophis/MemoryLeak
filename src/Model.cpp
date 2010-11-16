@@ -33,7 +33,8 @@ Model::Model(const foofoo *a) : m_FooFoo(a) {
 	m_IsHelpfulToEnemies = false;
 	m_NeedsClimbBeforeMove = false;
 	m_NeedsClimbAfterMove = false;
-
+	m_IsMoving = false;
+	
 	m_Scale = (float *)malloc(3 * sizeof(float));
 	m_Position = (float *)malloc(3 * sizeof(float));
 	m_Rotation = (float *)malloc(3 * sizeof(float));
@@ -97,9 +98,9 @@ void Model::Render() {
 	glPushMatrix();
 	{
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
-		glRotatef(m_Rotation[0],0,0,1);
-		glRotatef(m_Rotation[1],0,1,0);
-		glRotatef(m_Rotation[2],1,0,0);
+		//glRotatef(m_Rotation[0],0,0,1);
+		//glRotatef(m_Rotation[1],0,1,0);
+		//glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
 		if (m_Texture != g_lastTexture) {
@@ -137,22 +138,70 @@ void Model::Render() {
 
 
 bool Model::IsCollidedWith(Model *other) {
+	
+	float other_s; // = (0.5); // * other->m_Scale[0]);
+	float other_b; // = (0.4); // * other->m_Scale[0]);
+	
+	/*
+	if (m_IsPlayer || other->m_IsPlayer) {
+		if (m_IsStuck) {
+			other_s = 0.4;
+			other_b = 0.5;
+		} else {
+			other_s = 0.5;
+			other_b = 0.5;
+		}
+	} else {
+	*/
+	other_s = 0.4;
+	other_b = 0.4;
+	
+	/*
+	if (m_IsPlayer) {
+		other_s = 0.4;
+		if (other->m_IsMoving) {
+			other_b = 0.4;
+		} else {
+			other_b = 0.51;
+		}
+	}
+	
+	if (other->m_IsPlayer) {
+		if (m_IsMoving) {
+			other_s = 0.4;
+		} else {
+			other_s = 0.51;
+		}
+		other_b = 0.4;
+	}
+	*/
+	
+	//}
+	
+	
+	float mlx = m_Position[0] - other_s;
+	float mrx = m_Position[0] + other_s;
+	float olx = other->m_Position[0] - other_b; 
+	float orx = other->m_Position[0] + other_b; 
+	bool cx = ((olx > mlx && olx < mrx) || (orx > mlx && orx < mrx));
 
-	float mlx = m_Position[0] - (0.5 * m_Scale[0]);
-	float mrx = m_Position[0] + (0.5 * m_Scale[0]);
-	float olx = other->m_Position[0] - (0.5 * other->m_Scale[0]); 
-	float orx = other->m_Position[0] + (0.5 * other->m_Scale[0]); 
-  bool cx = ((olx >= mlx && olx <= mrx) || (orx >= mlx && orx <= mrx));
+	float mly = m_Position[1] - 0.5;
+	float mry = m_Position[1] + 0.5;
+	float oly = other->m_Position[1] - 0.5; 
+	float ory = other->m_Position[1] + 0.5; 
+	bool cy = ((oly > mly && oly < mry) || (ory > mly && ory < mry));
 
-	float mly = m_Position[1] - (0.5 * m_Scale[0]);
-	float mry = m_Position[1] + (0.5 * m_Scale[0]);
-	float oly = other->m_Position[1] - (0.5 * other->m_Scale[1]); 
-	float ory = other->m_Position[1] + (0.5 * other->m_Scale[1]); 
-  bool cy = ((oly >= mly && oly <= mry) || (ory >= mly && ory <= mry));
+	float mlz = m_Position[2] - other_s;
+	float mrz = m_Position[2] + other_s;
+	float olz = other->m_Position[2] - other_b; 
+	float orz = other->m_Position[2] + other_b; 
+	bool cz = ((olz > mlz && olz < mrz) || (orz > mlz && orz < mrz));
+	
+	//if (other->m_IsPlayer) {
+	//	LOGV("%f %f %f %f %d %d\n", mly, mry, oly, ory, cx, cy);
+	//}
 
-  //LOGV("%f %f %f %f %d %d\n", mly, mry, oly, ory, cx, cy);
-
-	if (cx && cy) {
+	if (cx && cy && cz) {
 		return true;
 	} else {
 		return false;
@@ -189,12 +238,13 @@ void Model::Live(float dt) {
     //m_Position[0] += m_Velocity[0] * dt;
     //m_Position[1] += m_Velocity[1] * dt;
     //m_Position[2] += m_Velocity[2] * dt;
-	  if (m_IsPlayer) {
-		  if (m_Velocity[0] != 0.0 || m_Velocity[2] != 0.0) {
+	  //if (m_IsPlayer) {
+		  //if (m_Velocity[0] != 0.0 || m_Velocity[2] != 0.0) {
 			  //LOGV("(%f, %f) => MoveTo(%f, %f) => Over(%f)\n", m_Position[0], m_Position[2], m_Velocity[0], m_Velocity[2], dt);
+		  if (m_IsMoving) {
 			  MoveTo(m_Velocity[0], m_Velocity[2], dt);
 		  }
-	  }
+	  //}
   }
 }
 
@@ -212,8 +262,9 @@ void Model::CollideWith(Model *other, float dt) {
 }
 
 void Model::Move(int direction) {
-	LOGV("move(%d)\n", direction);
-	if (!IsMoving()) {
+	//LOGV("move(%d)\n", direction);
+	if (IsMovable()) {
+
   switch (direction) {
     case 0:
 		  SetVelocity(m_Position[0] + 1.0, 0.0, m_Position[2]);
@@ -230,6 +281,8 @@ void Model::Move(int direction) {
     default:
       break;
   }
+		m_Direction = direction;
+		m_IsMoving = true;
 	}
 }
 
@@ -238,14 +291,15 @@ bool Model::MoveTo(float x, float z, float dt) {
 	float dz = m_Position[2] - z;
 	if (fabs(dx) > 0.05 || fabs(dz) > 0.05) {
 		//LOGV("tween\n");
-		m_Position[0] = m_Position[0] - ((dx) * dt * 10.0);
-		m_Position[2] = m_Position[2] - ((dz) * dt * 10.0);
+		m_Position[0] = m_Position[0] - ((dx) * dt * 20.0);
+		m_Position[2] = m_Position[2] - ((dz) * dt * 20.0);
 		return false;
 	} else {
 		m_Position[0] = x;
 		m_Position[2] = z;
 		m_Velocity[0] = 0;
 		m_Velocity[2] = 0;
+		m_IsMoving = false;
 		return true;
 	}
 }

@@ -1735,8 +1735,10 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/jni/",
-					"$(SRCROOT)/jni/assimp/BoostWorkaround/",
+					"$(SRCROOT)/../../src/",
+					"$(SRCROOT)/../../src/assimp/BoostWorkaround/",
+					"$(SRCROOT)/../../src/yajl",
+					"$(SRCROOT)/../../src/yajl/api",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;

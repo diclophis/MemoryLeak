@@ -16,6 +16,7 @@ public:
 	int m_TerrainStartIndex;
 	int m_TerrainEndIndex;
 	int m_SwipeState;
-	
+	float m_CameraRotation;
 	float *m_Touches;
+	float m_CameraRotationSpeed;
 };
