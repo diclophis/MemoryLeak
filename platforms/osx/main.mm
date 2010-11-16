@@ -13,7 +13,7 @@
 #include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
-#include "RunAndJump.h"
+#include "PixelPusher.h"
 
 //#define kWindowWidth  480
 //#define kWindowHeight 320
@@ -42,9 +42,6 @@
 
   built = 0;
 
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  [NSApplication sharedApplication];
-  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
   id menubar = [[NSMenu new] autorelease];
   id appMenuItem = [[NSMenuItem new] autorelease];
@@ -60,6 +57,7 @@
   [glWindow cascadeTopLeftFromPoint:NSMakePoint(0,0)];
   [glWindow setTitle:appName];
 
+  /*
   id webWindow = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, kWindowWidth, kWindowHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO] autorelease];
 
   [webWindow setOpaque:NO];
@@ -73,6 +71,7 @@
   WebFrame *mainFrame = [webView mainFrame];
   NSURL *url = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"html" subdirectory:@"../../../assets"];
   [[webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
+  */
   
   NSOpenGLPixelFormatAttribute attributes[] = { NSOpenGLPFADoubleBuffer, NSOpenGLPFADepthSize, 32, 0 };
 
@@ -108,22 +107,12 @@
     [image release];
     [texData release];
   }
-  ////////////////////
 
-  ///////////////////////
   [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(draw:) userInfo:nil repeats:YES];
-  //////////////////////
-
-
   [glWindow setContentView:glView];
-  [webWindow setContentView:webView];
-  [glWindow addChildWindow:webWindow ordered:NSWindowAbove];
-
-  
   [glWindow makeKeyAndOrderFront:nil];
-  [NSApp activateIgnoringOtherApps:YES];
-  [NSApp run];
-  [pool release];
+
+  return self;
 }
 
 
@@ -131,26 +120,13 @@
   [[glView openGLContext] makeCurrentContext];
   if (built == 1) {
     //[glView setNeedsDisplay:YES];
-    game->draw(0);
+    game->DrawScreen(0);
   } else {
-    game = new RunAndJump(kWindowWidth, kWindowHeight, textures, models);
+    game = new PixelPusher(kWindowWidth, kWindowHeight, textures, models);
+    game->CreateThread();
     built = 1;
   }
   [[glView openGLContext] flushBuffer];
-}
-
-
-- (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id)listener {
-  NSString *fragment = [[[request mainDocumentURL] path] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-  NSLog(@"the: %@", fragment);
-	if ([[[request mainDocumentURL] scheme] isEqualToString:@"file"]) {
-    [listener use];
-	} else {
-    if (built == 1) {
-      game->parse([fragment cStringUsingEncoding:NSUTF8StringEncoding], [fragment length]);
-    }
-    [listener ignore];
-	}
 }
 
 
@@ -186,6 +162,12 @@
 
 
 int main(int argc, char** argv) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  [NSApplication sharedApplication];
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
   [[Skeleton alloc] init];
+  [NSApp activateIgnoringOtherApps:YES];
+  [NSApp run];
+  [pool release];
   return 0;
 }

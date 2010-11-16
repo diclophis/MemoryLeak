@@ -34,4 +34,4 @@ $(build):
 	mkdir -p $(build)
 
 clean:
-	touch $(build) && rm -R $(build) 
+	touch $(build) && rm -R $(build) && rm -R ../../src/*.o

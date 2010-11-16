@@ -14,7 +14,7 @@
 #include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
-#include "RunAndJump.h"
+#include "PixelPusher.h"
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -120,7 +120,7 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;		
-		gameController->hitTest(location.x, location.y, 0);
+		game->Hit(location.x, location.y, 0);
 	}
 }
 
@@ -135,7 +135,7 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
-		gameController->hitTest(location.x, location.y, 1);
+		game->Hit(location.x, location.y, 1);
 	}
 }
 
@@ -150,7 +150,7 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
-		gameController->hitTest(location.x, location.y, 2);
+		game->Hit(location.x, location.y, 2);
 	}
 }
 
@@ -165,7 +165,7 @@ static std::vector<foo*> models;
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = 480.0 - location.y;
-		gameController->hitTest(location.x, location.y, 2);
+		game->Hit(location.x, location.y, 0);
 	}
 }
 
@@ -174,12 +174,7 @@ static std::vector<foo*> models;
 	if (animating) {
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-		if (gameState) {
-			gameController->draw(0);
-		} else {
-			[self startGame];
-		}
-		
+		game->DrawScreen(0);
 		glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
 	}
@@ -221,8 +216,8 @@ GLuint loadTexture(UIImage *image) {
 
 -(void)startGame {
 	
-	if (gameController != NULL) {
-		delete gameController;
+	if (game != NULL) {
+		delete game;
 	}
 
 	
@@ -253,7 +248,8 @@ GLuint loadTexture(UIImage *image) {
 		[texData release];
 	}
 
-	gameController = new RunAndJump(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+	game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+	game->CreateThread();
 	
 	gameState = 1;
 }
@@ -265,7 +261,6 @@ GLuint loadTexture(UIImage *image) {
 
 
 -(void)parse:(const char*)json withLength:(size_t)length {
-	gameController->parse(json, length);
 }
 
 
@@ -310,7 +305,7 @@ GLuint loadTexture(UIImage *image) {
 
 -(void)stopAnimation {
     if (animating) {
-		gameController->pause();
+		game->PauseThread();
         if (displayLinkSupported) {
             [displayLink invalidate];
             displayLink = nil;

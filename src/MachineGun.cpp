@@ -21,7 +21,7 @@ void MachineGun::build() {
 
 void MachineGun::reset_particle(int idx) {
 	m_Particles[idx]->SetPosition(m_Position[0], m_Position[1], m_Position[2]);
-	m_Particles[idx]->SetRotation(sfrand() * 360, sfrand() * 360.0, sfrand() * 360.0);
+	m_Particles[idx]->SetRotation(randf() * 360, randf() * 360.0, randf() * 360.0);
 	m_Particles[idx]->SetVelocity(0.0, 0.0, 0.0);
 	m_Particles[idx]->SetLife(0.0);
 	m_Particles[idx]->SetScale(0.1, 0.1, 0.1);
@@ -31,8 +31,8 @@ void MachineGun::reset_particle(int idx) {
 float MachineGun::Tick(float deltaTime) {
 	m_Life += deltaTime;
 	for (unsigned int i=0; i<m_NumParticles; i++) {
-		m_Particles[i]->Tick(deltaTime);
-		float d = m_Position[0] - m_Particles[i]->GetPosition()[0];
+		m_Particles[i]->Simulate(deltaTime);
+		float d = m_Position[0] - m_Particles[i]->m_Position[0];
 		m_Particles[i]->SetScale(d * 0.5, d * 0.5, d * 0.5);
 		if ((d * 0.4) > 1.0) {
 			reset_particle(i);
@@ -45,6 +45,6 @@ float MachineGun::Tick(float deltaTime) {
 
 void MachineGun::render() {
 	for (unsigned int i=0; i<m_NumParticles; i++) {
-		m_Particles[i]->render(0);
+		m_Particles[i]->Render();
 	}
 }

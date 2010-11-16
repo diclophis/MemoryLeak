@@ -15,35 +15,12 @@
 
 @synthesize window;
 @synthesize glView;
-@synthesize webView;
 
 
--(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-	[webView setBackgroundColor:[UIColor clearColor]];
-	[webView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"assets"] isDirectory:NO]]];
-	
+-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {	
     return YES;
 }
 
-
--(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	//NSLog(@"the fuck: %@", [request URL]);
-	NSString *fragment = [[[request mainDocumentURL] fragment] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-	//NSLog(@"the fuck: %@", [[request mainDocumentURL] scheme]);
-	//NSLog(@"the fuck: %@", [[request mainDocumentURL] path]);
-	//NSLog(@"the fuck: %@", fragment);
-	if ([fragment length] == 0 && [[[request mainDocumentURL] scheme] isEqualToString:@"file"]) {
-		return YES;
-	} else {
-		[glView parse:[fragment cStringUsingEncoding:NSUTF8StringEncoding] withLength:[fragment length]];
-		return YES;
-	}
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)theWebView {
-	NSLog(@"foo\n");
-	[glView startAnimation];
-}
 
 -(void)applicationWillResignActive:(UIApplication *)application {
     [glView stopAnimation];
@@ -51,7 +28,7 @@
 
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
-    //[glView startAnimation];
+    [glView startAnimation];
 }
 
 
