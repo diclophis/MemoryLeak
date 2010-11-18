@@ -13,6 +13,7 @@
 #include "Model.h"
 #include "Engine.h"
 
+
 static GLuint g_lastTexture = 0;
 static GLuint g_lastVertexBuffer = 0;
 static GLuint g_lastNormalBuffer = 0;
@@ -132,77 +133,52 @@ void Model::Render() {
 		}
 
 		glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+	
+		//glTranslatef(-m_Position[0],-m_Position[1],-m_Position[2]);
+		//glScalef(-m_Scale[0],-m_Scale[1],1.0 / m_Scale[2]);
+
 	}
 	glPopMatrix();
 }
 
 
 bool Model::IsCollidedWith(Model *other) {
-	
-	float other_s; // = (0.5); // * other->m_Scale[0]);
-	float other_b; // = (0.4); // * other->m_Scale[0]);
-	
-	/*
-	if (m_IsPlayer || other->m_IsPlayer) {
-		if (m_IsStuck) {
-			other_s = 0.4;
-			other_b = 0.5;
-		} else {
-			other_s = 0.5;
-			other_b = 0.5;
-		}
-	} else {
-	*/
+  bool cx = false;
+  bool cy = false;
+  bool cz = false;
+
+	float other_s;
+	float other_b;
+
 	other_s = 0.4;
 	other_b = 0.4;
-	
-	/*
-	if (m_IsPlayer) {
-		other_s = 0.4;
-		if (other->m_IsMoving) {
-			other_b = 0.4;
-		} else {
-			other_b = 0.51;
-		}
-	}
-	
-	if (other->m_IsPlayer) {
-		if (m_IsMoving) {
-			other_s = 0.4;
-		} else {
-			other_s = 0.51;
-		}
-		other_b = 0.4;
-	}
-	*/
-	
-	//}
-	
 	
 	float mlx = m_Position[0] - other_s;
 	float mrx = m_Position[0] + other_s;
 	float olx = other->m_Position[0] - other_b; 
 	float orx = other->m_Position[0] + other_b; 
-	bool cx = ((olx > mlx && olx < mrx) || (orx > mlx && orx < mrx));
-
-	float mly = m_Position[1] - 0.5;
-	float mry = m_Position[1] + 0.5;
-	float oly = other->m_Position[1] - 0.5; 
-	float ory = other->m_Position[1] + 0.5; 
-	bool cy = ((oly > mly && oly < mry) || (ory > mly && ory < mry));
+	cx = ((olx >= mlx && olx <= mrx) || (orx >= mlx && orx <= mrx));
 
 	float mlz = m_Position[2] - other_s;
 	float mrz = m_Position[2] + other_s;
 	float olz = other->m_Position[2] - other_b; 
 	float orz = other->m_Position[2] + other_b; 
-	bool cz = ((olz > mlz && olz < mrz) || (orz > mlz && orz < mrz));
-	
-	//if (other->m_IsPlayer) {
-	//	LOGV("%f %f %f %f %d %d\n", mly, mry, oly, ory, cx, cy);
-	//}
+	cz = ((olz >= mlz && olz <= mrz) || (orz >= mlz && orz <= mrz));
 
-	if (cx && cy && cz) {
-		return true;
+	float mly = m_Position[1] - 0.5;
+	float mry = m_Position[1] + 0.5;
+	float oly = other->m_Position[1] - 0.5; 
+	float ory = other->m_Position[1] + 0.5; 
+	cy = ((oly >= mly && oly <= mry) || (ory >= mly && ory <= mry));
+	
+	if (cx && cz && cy) {
+		if (other->m_IsStuck) {
+			if ((m_Position[1] - 0.5) < (other->m_Position[1] + 0.5)) {
+				float dy = (other->m_Position[1] + 0.5) - (m_Position[1] - 0.5);
+				m_Position[1] += dy;
+			}
+		}
+    return true;
 	} else {
 		return false;
 	}
@@ -229,22 +205,15 @@ void Model::Live(float dt) {
   m_Life += dt;
 
   if (m_Climbing) {
-    if (ClimbTo(m_Climbing->m_Position[1] + m_Climbing->m_Scale[1], dt)) {
-      m_Climbing = NULL;
-    }
+    //if (ClimbTo(m_Climbing->m_Position[1] + m_Climbing->m_Scale[1], dt)) {
+    //  m_Climbing = NULL;
+    //}
   } else if (m_IsFalling) {
-    ClimbTo(m_Position[1] - 1.0, dt);
+    ClimbTo(-10.0, dt);
   } else {
-    //m_Position[0] += m_Velocity[0] * dt;
-    //m_Position[1] += m_Velocity[1] * dt;
-    //m_Position[2] += m_Velocity[2] * dt;
-	  //if (m_IsPlayer) {
-		  //if (m_Velocity[0] != 0.0 || m_Velocity[2] != 0.0) {
-			  //LOGV("(%f, %f) => MoveTo(%f, %f) => Over(%f)\n", m_Position[0], m_Position[2], m_Velocity[0], m_Velocity[2], dt);
-		  if (m_IsMoving) {
-			  MoveTo(m_Velocity[0], m_Velocity[2], dt);
-		  }
-	  //}
+    if (m_IsMoving) {
+      MoveTo(m_Velocity[0], m_Velocity[2], dt);
+    }
   }
 }
 
@@ -289,30 +258,45 @@ void Model::Move(int direction) {
 bool Model::MoveTo(float x, float z, float dt) {
 	float dx = m_Position[0] - x;
 	float dz = m_Position[2] - z;
-	if (fabs(dx) > 0.05 || fabs(dz) > 0.05) {
+  float tx = 0;
+  float tz = 0;
+  bool done = false;
+
+	if (fabs(dx) > 0.04 || fabs(dz) > 0.04) {
 		//LOGV("tween\n");
-		m_Position[0] = m_Position[0] - ((dx) * dt * 20.0);
-		m_Position[2] = m_Position[2] - ((dz) * dt * 20.0);
-		return false;
+		//m_Position[0] = m_Position[0] - ((dx) * dt * 20.0);
+		//m_Position[2] = m_Position[2] - ((dz) * dt * 20.0);
+    tx = -((dx) * dt * 15.0);
+    tz = -((dz) * dt * 15.0);
+		//return false;
+    done = false;
 	} else {
-		m_Position[0] = x;
-		m_Position[2] = z;
+		//m_Position[0] = x;
+		//m_Position[2] = z;
+    tx = -dx;
+    tz = -dz;
 		m_Velocity[0] = 0;
 		m_Velocity[2] = 0;
 		m_IsMoving = false;
-		return true;
+		//return true;
+    done = true;
 	}
+
+  m_Position[0] += tx;
+  m_Position[2] += tz;
+
+  return done;
 }
 
 bool Model::ClimbTo(float y, float dt) {
   //lerp from here to there at sx
-  float dy = m_Position[1] - y;
+  //float dy = m_Position[1] - y;
   //LOGV("%f\n", dy);
-  if (fabs(dy) > 0.05) {
-    m_Position[1] = m_Position[1] - ((1.1 * dy) * dt);
-    return false;
-  } else {
-    m_Position[1] = y;
-    return true;
-  }
+  //if (fabs(dy) > 0.1) {
+	m_Position[1] = m_Position[1] + (y * dt);
+  //  return false;
+  //} else {
+  //  m_Position[1] = y;
+  //  return true;
+  //}
 }

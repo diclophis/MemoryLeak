@@ -38,6 +38,10 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
   m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
   m_Importer.FreeScene();
 
+  m_Importer.ReadFile("2", m_PostProcessFlags);	
+  m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
+  m_Importer.FreeScene();
+
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
 	glMatrixMode(GL_MODELVIEW);

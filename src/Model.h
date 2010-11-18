@@ -95,15 +95,22 @@ public:
 	}
 
   bool IsClimbable (Model *other) {
+	/*
     if (IsClimbing() || m_IsMoving) {
       return false;
     } else {
-      if (m_Position[1] >= other->m_Position[1]) {
+      if ((m_Position[1] >= other->m_Position[1])) {
         return true;
       } else {
         return false;
       }
     }
+	*/
+	  if (m_IsStuck) {
+		  return true;
+	  } else {
+		  return false;
+	  }
   }
 
   void Climb(Model *other) {
@@ -137,7 +144,7 @@ public:
 	
 	const foofoo *m_FooFoo;
 	float m_Life;
-	float *m_Scale;
+	GLfloat *m_Scale;
 	float *m_Position;
 	float *m_Rotation;
 	float *m_Velocity;
@@ -148,5 +155,5 @@ public:
 
   Model *m_Climbing;
 	int m_Direction;
-
+	
 };

@@ -673,6 +673,29 @@ static inline float randf() {
 		a = (mirand&0x007fffff) | 0x40000000;
 		return( *((float*)&a) - 3.0f );
 }
+
+#ifndef __MACTYPES__
+typedef long	       Boolean;
+#endif
+
+#define FUZZ	       (0.00001)
+#define TRUE	       (1)
+#define FALSE	       (0)
+#define MAX_VERTS      (1026)
+
+#define ABS(x)	       ( (x) > 0 ? (x) : -(x) )
+#define EQZ(x)	       ( ABS((x)) < FUZZ ? TRUE : FALSE )
+
+#define DOT3(u,v)      ( u[0]*v[0] + u[1]*v[1] + u[2]*v[2])
+#define VECADD3(r,u,v) { r[0]=u[0]+v[0]; r[1]=u[1]+v[1]; r[2]=u[2]+v[2]; }
+#define VECADDS3(r,a,u,v){r[0]=a*u[0]+v[0]; r[1]=a*u[1]+v[1]; r[2]=a*u[2]+v[2];}
+#define VECSMULT3(a,u) { u[0]= a * u[0]; u[1]= a * u[1]; u[2]= a * u[2]; }
+#define VECSUB3(r,u,v) { r[0]=u[0]-v[0]; r[1]=u[1]-v[1]; r[2]=u[2]-v[2]; }
+#define CPVECTOR3(u,v) { u[0]=v[0];	 u[1]=v[1];	 u[2]=v[2]; }
+#define VECNEGATE3(u)  { u[0]=(-u[0]);	 u[1]=(-u[1]);	 u[2]=(-u[2]); }
+
+#define GET(u,i,j,s) (*(u+i*s+j))
+#define GET3(u,i,j,k,s) (*(u+i*(s*2)+(j*2)+k))
 	
 #ifdef __cplusplus
 }
