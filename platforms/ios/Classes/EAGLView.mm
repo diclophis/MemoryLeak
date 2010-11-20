@@ -18,6 +18,7 @@
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
+static std::vector<foo*> levels;
 
 @implementation EAGLView
 
@@ -233,6 +234,19 @@ GLuint loadTexture(UIImage *image) {
 		firstModel->len = len;
 		models.push_back(firstModel);
 	}
+	
+	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
+	for (NSString *path in level_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+		foo *firstLevel = new foo;
+		firstLevel->fp = fd;
+		firstLevel->off = 0;
+		firstLevel->len = len;
+		levels.push_back(firstLevel);
+	}
 
 	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
 	for (NSString *path in texture_names) {
@@ -248,7 +262,7 @@ GLuint loadTexture(UIImage *image) {
 		[texData release];
 	}
 
-	game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models);
+	game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels);
 	game->CreateThread();
 	
 	gameState = 1;

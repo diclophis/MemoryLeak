@@ -30,7 +30,7 @@ public:
 	//Engine& operator=(const Engine&);
 
 
-	Engine(int width, int height, std::vector<GLuint> &textures, std::vector<foo*> &models);
+	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo *> &l);
 	virtual ~Engine();
 
  
@@ -60,16 +60,16 @@ public:
 	int m_ScreenHeight;
   int m_GameState;
   double m_Waits[5];
-	pthread_mutex_t m_Mutex;
-	pthread_t m_Thread;
-	std::vector<GLuint> *m_Textures;
-	std::vector<foo *> *m_Foos;
-	Assimp::Importer m_Importer;
-
-  std::vector<Model *> m_Models;
-  std::vector<foofoo *> m_FooFoos;
   float m_CameraPosition[3];
   float m_CameraTarget[3];
 
+	pthread_mutex_t m_Mutex;
+	pthread_t m_Thread;
 
+	std::vector<GLuint> *m_Textures;
+	std::vector<foo *> *m_ModelFoos;
+	std::vector<foo *> *m_LevelFoos;
+	Assimp::Importer m_Importer;
+  std::vector<Model *> m_Models;
+  std::vector<foofoo *> m_FooFoos;
 };

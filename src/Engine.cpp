@@ -17,7 +17,7 @@ Engine::~Engine() {
 }
 
 
-Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vector<foo*> &x_models) : m_ScreenWidth(width), m_ScreenHeight(height), m_Textures(&x_textures), m_Foos(&x_models) {
+Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l) {
 	LOGV("Engine::Engine\n");
 	
 	pthread_mutex_init(&m_Mutex, 0);
@@ -25,15 +25,20 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
 	m_SimulationTime = 0.0;		
   m_GameState = -1;
 
-	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_Foos));
+	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
+
+  char s[128];
 
   int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 
-  //TODO: fix this
-  m_Importer.ReadFile("0", m_PostProcessFlags);	
-  m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
-  m_Importer.FreeScene();
+  for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
+    snprintf(s, sizeof(s), "%d", i);
+    m_Importer.ReadFile(s, m_PostProcessFlags);	
+    m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
+    m_Importer.FreeScene();
+  }
 
+/*
   m_Importer.ReadFile("1", m_PostProcessFlags);	
   m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
   m_Importer.FreeScene();
@@ -41,6 +46,7 @@ Engine::Engine(int width, int height, std::vector<GLuint> &x_textures, std::vect
   m_Importer.ReadFile("2", m_PostProcessFlags);	
   m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
   m_Importer.FreeScene();
+*/
 
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
