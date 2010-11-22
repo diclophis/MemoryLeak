@@ -63,28 +63,53 @@ public class DemoActivity extends Activity {
     //mWebView.loadUrl("file:///android_asset/index.html");
 
     AssetManager am = getAssets();
-    String path = "models";
-    String[] texture_file_names;
+    String path;
+    String[] files;
 
+    int model_count;
     java.io.FileDescriptor[] fd1;
     int[] off1;
     int[] len1;
 
+    int level_count;
+    java.io.FileDescriptor[] fd2;
+    int[] off2;
+    int[] len2;
+
     try {
-      texture_file_names = am.list(path);
+      path = "models";
+      files = am.list(path);
+      model_count = files.length;
       android.content.res.AssetFileDescriptor afd1;
-      fd1 = new java.io.FileDescriptor[texture_file_names.length];
-      off1 = new int[texture_file_names.length];
-      len1 = new int[texture_file_names.length];
-      for (int i=0; i<texture_file_names.length; i++) {
-        afd1 = getAssets().openFd(path + "/" + texture_file_names[i]);
+      fd1 = new java.io.FileDescriptor[model_count];
+      off1 = new int[model_count];
+      len1 = new int[model_count];
+      for (int i=0; i<model_count; i++) {
+        afd1 = getAssets().openFd(path + "/" + files[i]);
         if (afd1 != null) {
             fd1[i] = afd1.getFileDescriptor();
             off1[i] = (int)afd1.getStartOffset();
             len1[i] = (int)afd1.getLength();
         }
       }
-		  int res = initNative(texture_file_names.length, fd1, off1, len1);
+      
+      path = "levels";
+      files = am.list(path);
+      level_count = files.length;
+      android.content.res.AssetFileDescriptor afd2;
+      fd2 = new java.io.FileDescriptor[level_count];
+      off2 = new int[level_count];
+      len2 = new int[level_count];
+      for (int i=0; i<level_count; i++) {
+        afd2 = getAssets().openFd(path + "/" + files[i]);
+        if (afd2 != null) {
+            fd2[i] = afd2.getFileDescriptor();
+            off2[i] = (int)afd2.getStartOffset();
+            len2[i] = (int)afd2.getLength();
+        }
+      }
+
+		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2);
     } catch(java.io.IOException e) {
       System.out.println(e);
     }
@@ -96,7 +121,7 @@ public class DemoActivity extends Activity {
   }
 
 
-	private static native int initNative(int count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1);
+	private static native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2);
 
     @Override
     protected void onPause() {

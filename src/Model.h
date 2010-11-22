@@ -9,7 +9,6 @@
 
 class Model {
 
-
 public:
 	
 	static foofoo *GetFoo(const aiScene *a);
@@ -48,13 +47,13 @@ public:
 		m_Life = life;
 	}
 
-  void SetTexture(int t) {
-    m_Texture = t;
-  }
+	void SetTexture(int t) {
+		m_Texture = t;
+	}
 
-  void SetFrame(int f) {
-    m_Frame = f;
-  }
+	void SetFrame(int f) {
+		m_Frame = f;
+	}
 
 	void ScaleTo(float x, float y, float z, float dt) {
 		float dx = m_Scale[0] - x;
@@ -87,47 +86,36 @@ public:
 	}
 	
 	bool IsClimbing () {
-    if (m_Climbing) {
-      return true;
-    } else {
-      return false;
-    }
+		if (m_Climbing) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-  bool IsClimbable (Model *other) {
-	/*
-    if (IsClimbing() || m_IsMoving) {
-      return false;
-    } else {
-      if ((m_Position[1] >= other->m_Position[1])) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-	*/
-	  if (m_IsStuck) {
-		  return true;
-	  } else {
-		  return false;
-	  }
-  }
+	bool IsClimbable (Model *other) {
+		if (m_IsStuck) {
+		return true;
+		} else {
+		return false;
+		}
+	}
 
-  void Climb(Model *other) {
-    if (m_IsStuck || m_Climbing) {
-    } else {
-      m_Climbing = other;
-    }
-  }
+	void Climb(Model *other) {
+		if (m_IsStuck || m_Climbing) {
+		} else {
+		m_Climbing = other;
+		}
+	}
 
-  void Fall() {
-    m_IsFalling = true;
-  }
+	void Fall() {
+		m_IsFalling = true;
+	}
 
-  void Stand() {
-    m_IsFalling = false;
-  }
-	
+	void Stand() {
+		m_IsFalling = false;
+	}
+
 	bool m_IsPlayer;
 	bool m_IsEnemy;
 	bool m_IsBomb;
@@ -140,20 +128,15 @@ public:
 	bool m_NeedsClimbBeforeMove;
 	bool m_NeedsClimbAfterMove;
 	bool m_IsMoving;
-  bool m_IsFalling;
-	
+	bool m_IsFalling;
 	const foofoo *m_FooFoo;
 	float m_Life;
 	GLfloat *m_Scale;
 	float *m_Position;
 	float *m_Rotation;
 	float *m_Velocity;
-
 	int m_Frame;
 	int m_Texture;
-
-
-  Model *m_Climbing;
+	Model *m_Climbing;
 	int m_Direction;
-	
 };

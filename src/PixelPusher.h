@@ -19,5 +19,5 @@ public:
 	float *m_Touches;
 	float m_CameraRotationSpeed;
 	float m_CameraClimbSpeed;
-
+	Octree<int> *m_Space;
 };

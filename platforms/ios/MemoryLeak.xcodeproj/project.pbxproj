@@ -12,248 +12,98 @@
 		FC14176D1285413100166578 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1417661285413100166578 /* Default.png */; };
 		FC14176E1285413100166578 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417671285413100166578 /* main.mm */; };
 		FC14176F1285413100166578 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC1417681285413100166578 /* MainWindow.xib */; };
-		FC1417701285413100166578 /* MemoryLeak-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FC14176A1285413100166578 /* MemoryLeak-Info.plist */; };
-		FC141A901285415900166578 /* 3DSConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417751285415800166578 /* 3DSConverter.cpp */; };
-		FC141A911285415900166578 /* 3DSConverter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417761285415800166578 /* 3DSConverter.o */; };
-		FC141A921285415900166578 /* 3DSLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417771285415800166578 /* 3DSLoader.cpp */; };
-		FC141A931285415900166578 /* 3DSLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417781285415800166578 /* 3DSLoader.o */; };
-		FC141A941285415900166578 /* ACLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417791285415800166578 /* ACLoader.cpp */; };
-		FC141A951285415900166578 /* ACLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14177A1285415800166578 /* ACLoader.o */; };
 		FC141A961285415900166578 /* aiAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14177B1285415800166578 /* aiAssert.cpp */; };
-		FC141A971285415900166578 /* aiAssert.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14177C1285415800166578 /* aiAssert.o */; };
-		FC141A981285415900166578 /* ASELoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14177D1285415800166578 /* ASELoader.cpp */; };
-		FC141A991285415900166578 /* ASELoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14177E1285415800166578 /* ASELoader.o */; };
-		FC141A9A1285415900166578 /* ASEParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14177F1285415800166578 /* ASEParser.cpp */; };
-		FC141A9B1285415900166578 /* ASEParser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417801285415800166578 /* ASEParser.o */; };
 		FC141A9C1285415900166578 /* Assimp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417811285415800166578 /* Assimp.cpp */; };
-		FC141A9D1285415900166578 /* Assimp.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417821285415800166578 /* Assimp.o */; };
 		FC141A9E1285415900166578 /* AssimpPCH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417831285415800166578 /* AssimpPCH.cpp */; };
-		FC141A9F1285415900166578 /* AssimpPCH.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417841285415800166578 /* AssimpPCH.o */; };
-		FC141AA01285415900166578 /* B3DImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417851285415800166578 /* B3DImporter.cpp */; };
-		FC141AA11285415900166578 /* B3DImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417861285415800166578 /* B3DImporter.o */; };
 		FC141AA21285415900166578 /* BaseImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417871285415800166578 /* BaseImporter.cpp */; };
-		FC141AA31285415900166578 /* BaseImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417881285415800166578 /* BaseImporter.o */; };
 		FC141AA41285415900166578 /* BaseProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417891285415800166578 /* BaseProcess.cpp */; };
-		FC141AA51285415900166578 /* BaseProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14178A1285415800166578 /* BaseProcess.o */; };
-		FC141AA61285415900166578 /* BlenderDNA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14178B1285415800166578 /* BlenderDNA.cpp */; };
-		FC141AA71285415900166578 /* BlenderDNA.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14178C1285415800166578 /* BlenderDNA.o */; };
-		FC141AA81285415900166578 /* BlenderLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14178D1285415800166578 /* BlenderLoader.cpp */; };
-		FC141AA91285415900166578 /* BlenderLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14178E1285415800166578 /* BlenderLoader.o */; };
-		FC141AAA1285415900166578 /* BlenderModifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14178F1285415800166578 /* BlenderModifier.cpp */; };
-		FC141AAB1285415900166578 /* BlenderModifier.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417901285415800166578 /* BlenderModifier.o */; };
-		FC141AAC1285415900166578 /* BlenderScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417911285415800166578 /* BlenderScene.cpp */; };
-		FC141AAD1285415900166578 /* BlenderScene.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417921285415800166578 /* BlenderScene.o */; };
-		FC141AAE1285415900166578 /* LICENSE_1_0.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1417981285415800166578 /* LICENSE_1_0.txt */; };
-		FC141AAF1285415900166578 /* BVHLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417A41285415800166578 /* BVHLoader.cpp */; };
-		FC141AB01285415900166578 /* BVHLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417A51285415800166578 /* BVHLoader.o */; };
 		FC141AB11285415900166578 /* CalcTangentsProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417A61285415800166578 /* CalcTangentsProcess.cpp */; };
-		FC141AB21285415900166578 /* CalcTangentsProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417A71285415800166578 /* CalcTangentsProcess.o */; };
-		FC141AB31285415900166578 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1417A81285415800166578 /* CMakeLists.txt */; };
-		FC141AB41285415900166578 /* COBLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417A91285415800166578 /* COBLoader.cpp */; };
-		FC141AB51285415900166578 /* COBLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417AA1285415800166578 /* COBLoader.o */; };
 		FC141AB61285415900166578 /* ColladaLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417AB1285415800166578 /* ColladaLoader.cpp */; };
-		FC141AB71285415900166578 /* ColladaLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417AC1285415800166578 /* ColladaLoader.o */; };
 		FC141AB81285415900166578 /* ColladaParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417AD1285415800166578 /* ColladaParser.cpp */; };
-		FC141AB91285415900166578 /* ColladaParser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417AE1285415800166578 /* ColladaParser.o */; };
 		FC141ABA1285415900166578 /* ComputeUVMappingProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417AF1285415800166578 /* ComputeUVMappingProcess.cpp */; };
-		FC141ABB1285415900166578 /* ComputeUVMappingProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417B01285415800166578 /* ComputeUVMappingProcess.o */; };
 		FC141ABC1285415900166578 /* ConvertToLHProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417B11285415800166578 /* ConvertToLHProcess.cpp */; };
-		FC141ABD1285415900166578 /* ConvertToLHProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417B21285415800166578 /* ConvertToLHProcess.o */; };
-		FC141ABE1285415900166578 /* CSMLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417B31285415800166578 /* CSMLoader.cpp */; };
-		FC141ABF1285415900166578 /* CSMLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417B41285415800166578 /* CSMLoader.o */; };
 		FC141AC01285415900166578 /* DefaultIOStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417B51285415800166578 /* DefaultIOStream.cpp */; };
-		FC141AC11285415900166578 /* DefaultIOStream.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417B61285415800166578 /* DefaultIOStream.o */; };
 		FC141AC21285415900166578 /* DefaultIOSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417B71285415800166578 /* DefaultIOSystem.cpp */; };
-		FC141AC31285415900166578 /* DefaultIOSystem.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417B81285415800166578 /* DefaultIOSystem.o */; };
 		FC141AC41285415900166578 /* DefaultLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417B91285415800166578 /* DefaultLogger.cpp */; };
-		FC141AC51285415900166578 /* DefaultLogger.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417BA1285415800166578 /* DefaultLogger.o */; };
-		FC141AC61285415900166578 /* DXFLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417BB1285415800166578 /* DXFLoader.cpp */; };
-		FC141AC71285415900166578 /* DXFLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417BC1285415800166578 /* DXFLoader.o */; };
 		FC141AC81285415900166578 /* FindDegenerates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417BD1285415800166578 /* FindDegenerates.cpp */; };
-		FC141AC91285415900166578 /* FindDegenerates.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417BE1285415800166578 /* FindDegenerates.o */; };
 		FC141ACA1285415900166578 /* FindInstancesProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417BF1285415800166578 /* FindInstancesProcess.cpp */; };
-		FC141ACB1285415900166578 /* FindInstancesProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417C01285415800166578 /* FindInstancesProcess.o */; };
 		FC141ACC1285415900166578 /* FindInvalidDataProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417C11285415800166578 /* FindInvalidDataProcess.cpp */; };
-		FC141ACD1285415900166578 /* FindInvalidDataProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417C21285415800166578 /* FindInvalidDataProcess.o */; };
 		FC141ACE1285415900166578 /* FixNormalsStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417C31285415800166578 /* FixNormalsStep.cpp */; };
-		FC141ACF1285415900166578 /* FixNormalsStep.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417C41285415800166578 /* FixNormalsStep.o */; };
 		FC141AD01285415900166578 /* GenFaceNormalsProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417C51285415800166578 /* GenFaceNormalsProcess.cpp */; };
-		FC141AD11285415900166578 /* GenFaceNormalsProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417C61285415800166578 /* GenFaceNormalsProcess.o */; };
 		FC141AD21285415900166578 /* GenVertexNormalsProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417C71285415800166578 /* GenVertexNormalsProcess.cpp */; };
-		FC141AD31285415900166578 /* GenVertexNormalsProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417C81285415800166578 /* GenVertexNormalsProcess.o */; };
-		FC141AD41285415900166578 /* HMPLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417C91285415800166578 /* HMPLoader.cpp */; };
-		FC141AD51285415900166578 /* HMPLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417CA1285415800166578 /* HMPLoader.o */; };
 		FC141AD61285415900166578 /* Importer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417CB1285415800166578 /* Importer.cpp */; };
-		FC141AD71285415900166578 /* Importer.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417CC1285415800166578 /* Importer.o */; };
 		FC141AD81285415900166578 /* ImproveCacheLocality.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417CD1285415800166578 /* ImproveCacheLocality.cpp */; };
-		FC141AD91285415900166578 /* ImproveCacheLocality.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417CE1285415800166578 /* ImproveCacheLocality.o */; };
-		FC141ADA1285415900166578 /* IRRLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417CF1285415800166578 /* IRRLoader.cpp */; };
-		FC141ADB1285415900166578 /* IRRLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417D01285415800166578 /* IRRLoader.o */; };
-		FC141ADC1285415900166578 /* IRRMeshLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417D11285415800166578 /* IRRMeshLoader.cpp */; };
-		FC141ADD1285415900166578 /* IRRMeshLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417D21285415800166578 /* IRRMeshLoader.o */; };
-		FC141ADE1285415900166578 /* IRRShared.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417D31285415800166578 /* IRRShared.cpp */; };
-		FC141ADF1285415900166578 /* IRRShared.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417D41285415800166578 /* IRRShared.o */; };
 		FC141AE01285415900166578 /* JoinVerticesProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417D51285415800166578 /* JoinVerticesProcess.cpp */; };
-		FC141AE11285415900166578 /* JoinVerticesProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417D61285415800166578 /* JoinVerticesProcess.o */; };
 		FC141AE21285415900166578 /* LimitBoneWeightsProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417D71285415800166578 /* LimitBoneWeightsProcess.cpp */; };
-		FC141AE31285415900166578 /* LimitBoneWeightsProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417D81285415800166578 /* LimitBoneWeightsProcess.o */; };
-		FC141AE41285415900166578 /* LWOAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417D91285415800166578 /* LWOAnimation.cpp */; };
-		FC141AE51285415900166578 /* LWOAnimation.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417DA1285415800166578 /* LWOAnimation.o */; };
-		FC141AE61285415900166578 /* LWOBLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417DB1285415800166578 /* LWOBLoader.cpp */; };
-		FC141AE71285415900166578 /* LWOBLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417DC1285415800166578 /* LWOBLoader.o */; };
-		FC141AE81285415900166578 /* LWOLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417DD1285415800166578 /* LWOLoader.cpp */; };
-		FC141AE91285415900166578 /* LWOLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417DE1285415800166578 /* LWOLoader.o */; };
-		FC141AEA1285415900166578 /* LWOMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417DF1285415800166578 /* LWOMaterial.cpp */; };
-		FC141AEB1285415900166578 /* LWOMaterial.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417E01285415800166578 /* LWOMaterial.o */; };
-		FC141AEC1285415900166578 /* LWSLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E11285415800166578 /* LWSLoader.cpp */; };
-		FC141AED1285415900166578 /* LWSLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417E21285415800166578 /* LWSLoader.o */; };
-		FC141AEE1285415900166578 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E31285415800166578 /* makefile */; };
-		FC141AEF1285415900166578 /* makefile.mingw in Resources */ = {isa = PBXBuildFile; fileRef = FC1417E41285415800166578 /* makefile.mingw */; };
 		FC141AF01285415900166578 /* MakeVerboseFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E51285415800166578 /* MakeVerboseFormat.cpp */; };
-		FC141AF11285415900166578 /* MakeVerboseFormat.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417E61285415800166578 /* MakeVerboseFormat.o */; };
 		FC141AF21285415900166578 /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E71285415800166578 /* MaterialSystem.cpp */; };
-		FC141AF31285415900166578 /* MaterialSystem.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417E81285415800166578 /* MaterialSystem.o */; };
 		FC141AF41285415900166578 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E91285415800166578 /* MD2Loader.cpp */; };
-		FC141AF51285415900166578 /* MD2Loader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417EA1285415800166578 /* MD2Loader.o */; };
 		FC141AF61285415900166578 /* MD3Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417EB1285415800166578 /* MD3Loader.cpp */; };
-		FC141AF71285415900166578 /* MD3Loader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417EC1285415800166578 /* MD3Loader.o */; };
 		FC141AF81285415900166578 /* MD5Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417ED1285415800166578 /* MD5Loader.cpp */; };
-		FC141AF91285415900166578 /* MD5Loader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417EE1285415800166578 /* MD5Loader.o */; };
 		FC141AFA1285415900166578 /* MD5Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417EF1285415800166578 /* MD5Parser.cpp */; };
-		FC141AFB1285415900166578 /* MD5Parser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417F01285415800166578 /* MD5Parser.o */; };
 		FC141AFC1285415900166578 /* MDCLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F11285415800166578 /* MDCLoader.cpp */; };
-		FC141AFD1285415900166578 /* MDCLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417F21285415800166578 /* MDCLoader.o */; };
 		FC141AFE1285415900166578 /* MDLLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F31285415800166578 /* MDLLoader.cpp */; };
-		FC141AFF1285415900166578 /* MDLLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417F41285415800166578 /* MDLLoader.o */; };
 		FC141B001285415900166578 /* MDLMaterialLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F51285415800166578 /* MDLMaterialLoader.cpp */; };
-		FC141B011285415900166578 /* MDLMaterialLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417F61285415800166578 /* MDLMaterialLoader.o */; };
 		FC141B021285415900166578 /* MS3DLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F71285415800166578 /* MS3DLoader.cpp */; };
-		FC141B031285415900166578 /* MS3DLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417F81285415800166578 /* MS3DLoader.o */; };
 		FC141B041285415900166578 /* NDOLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F91285415800166578 /* NDOLoader.cpp */; };
-		FC141B051285415900166578 /* NDOLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417FA1285415800166578 /* NDOLoader.o */; };
 		FC141B061285415900166578 /* NFFLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417FB1285415800166578 /* NFFLoader.cpp */; };
-		FC141B071285415900166578 /* NFFLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417FC1285415800166578 /* NFFLoader.o */; };
 		FC141B081285415900166578 /* ObjFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417FD1285415800166578 /* ObjFileImporter.cpp */; };
-		FC141B091285415900166578 /* ObjFileImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1417FE1285415800166578 /* ObjFileImporter.o */; };
 		FC141B0A1285415900166578 /* ObjFileMtlImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417FF1285415800166578 /* ObjFileMtlImporter.cpp */; };
-		FC141B0B1285415900166578 /* ObjFileMtlImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418001285415800166578 /* ObjFileMtlImporter.o */; };
 		FC141B0C1285415900166578 /* ObjFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418011285415800166578 /* ObjFileParser.cpp */; };
-		FC141B0D1285415900166578 /* ObjFileParser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418021285415800166578 /* ObjFileParser.o */; };
 		FC141B0E1285415900166578 /* OFFLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418031285415800166578 /* OFFLoader.cpp */; };
-		FC141B0F1285415900166578 /* OFFLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418041285415800166578 /* OFFLoader.o */; };
 		FC141B101285415900166578 /* OgreImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418051285415800166578 /* OgreImporter.cpp */; };
-		FC141B111285415900166578 /* OgreImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418061285415800166578 /* OgreImporter.o */; };
 		FC141B121285415900166578 /* OgreImporterMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418071285415800166578 /* OgreImporterMaterial.cpp */; };
-		FC141B131285415900166578 /* OgreImporterMaterial.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418081285415800166578 /* OgreImporterMaterial.o */; };
 		FC141B141285415900166578 /* OptimizeGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418091285415800166578 /* OptimizeGraph.cpp */; };
-		FC141B151285415900166578 /* OptimizeGraph.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14180A1285415800166578 /* OptimizeGraph.o */; };
 		FC141B161285415900166578 /* OptimizeMeshes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14180B1285415800166578 /* OptimizeMeshes.cpp */; };
-		FC141B171285415900166578 /* OptimizeMeshes.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14180C1285415800166578 /* OptimizeMeshes.o */; };
 		FC141B181285415900166578 /* PlyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14180D1285415800166578 /* PlyLoader.cpp */; };
-		FC141B191285415900166578 /* PlyLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14180E1285415800166578 /* PlyLoader.o */; };
 		FC141B1A1285415900166578 /* PlyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14180F1285415800166578 /* PlyParser.cpp */; };
-		FC141B1B1285415900166578 /* PlyParser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418101285415800166578 /* PlyParser.o */; };
 		FC141B1C1285415900166578 /* PretransformVertices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418111285415800166578 /* PretransformVertices.cpp */; };
-		FC141B1D1285415900166578 /* PretransformVertices.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418121285415800166578 /* PretransformVertices.o */; };
 		FC141B1E1285415900166578 /* Q3BSPFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418131285415800166578 /* Q3BSPFileImporter.cpp */; };
-		FC141B1F1285415900166578 /* Q3BSPFileImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418141285415800166578 /* Q3BSPFileImporter.o */; };
 		FC141B201285415900166578 /* Q3BSPFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418151285415800166578 /* Q3BSPFileParser.cpp */; };
-		FC141B211285415900166578 /* Q3BSPFileParser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418161285415800166578 /* Q3BSPFileParser.o */; };
 		FC141B221285415900166578 /* Q3BSPZipArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418171285415800166578 /* Q3BSPZipArchive.cpp */; };
-		FC141B231285415900166578 /* Q3BSPZipArchive.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418181285415800166578 /* Q3BSPZipArchive.o */; };
 		FC141B241285415900166578 /* Q3DLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418191285415800166578 /* Q3DLoader.cpp */; };
-		FC141B251285415900166578 /* Q3DLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14181A1285415800166578 /* Q3DLoader.o */; };
 		FC141B261285415900166578 /* RawLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14181B1285415800166578 /* RawLoader.cpp */; };
-		FC141B271285415900166578 /* RawLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14181C1285415800166578 /* RawLoader.o */; };
 		FC141B281285415900166578 /* RemoveComments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14181D1285415800166578 /* RemoveComments.cpp */; };
-		FC141B291285415900166578 /* RemoveComments.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14181E1285415800166578 /* RemoveComments.o */; };
 		FC141B2A1285415900166578 /* RemoveRedundantMaterials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */; };
-		FC141B2B1285415900166578 /* RemoveRedundantMaterials.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418201285415800166578 /* RemoveRedundantMaterials.o */; };
 		FC141B2C1285415900166578 /* RemoveVCProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418211285415800166578 /* RemoveVCProcess.cpp */; };
-		FC141B2D1285415900166578 /* RemoveVCProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418221285415800166578 /* RemoveVCProcess.o */; };
-		FC141B2E1285415900166578 /* assimp.rc in Resources */ = {isa = PBXBuildFile; fileRef = FC1418241285415800166578 /* assimp.rc */; };
 		FC141B2F1285415900166578 /* SceneCombiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418261285415800166578 /* SceneCombiner.cpp */; };
-		FC141B301285415900166578 /* SceneCombiner.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418271285415800166578 /* SceneCombiner.o */; };
 		FC141B311285415900166578 /* ScenePreprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418281285415800166578 /* ScenePreprocessor.cpp */; };
-		FC141B321285415900166578 /* ScenePreprocessor.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418291285415800166578 /* ScenePreprocessor.o */; };
 		FC141B331285415900166578 /* SGSpatialSort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14182A1285415800166578 /* SGSpatialSort.cpp */; };
-		FC141B341285415900166578 /* SGSpatialSort.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14182B1285415800166578 /* SGSpatialSort.o */; };
 		FC141B351285415900166578 /* SkeletonMeshBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14182C1285415800166578 /* SkeletonMeshBuilder.cpp */; };
-		FC141B361285415900166578 /* SkeletonMeshBuilder.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14182D1285415800166578 /* SkeletonMeshBuilder.o */; };
 		FC141B371285415900166578 /* SMDLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14182E1285415800166578 /* SMDLoader.cpp */; };
-		FC141B381285415900166578 /* SMDLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14182F1285415800166578 /* SMDLoader.o */; };
 		FC141B391285415900166578 /* SortByPTypeProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418301285415800166578 /* SortByPTypeProcess.cpp */; };
-		FC141B3A1285415900166578 /* SortByPTypeProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418311285415800166578 /* SortByPTypeProcess.o */; };
 		FC141B3B1285415900166578 /* SpatialSort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418321285415800166578 /* SpatialSort.cpp */; };
-		FC141B3C1285415900166578 /* SpatialSort.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418331285415800166578 /* SpatialSort.o */; };
 		FC141B3D1285415900166578 /* SplitLargeMeshes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418341285415800166578 /* SplitLargeMeshes.cpp */; };
-		FC141B3E1285415900166578 /* SplitLargeMeshes.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418351285415800166578 /* SplitLargeMeshes.o */; };
 		FC141B3F1285415900166578 /* StandardShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418361285415800166578 /* StandardShapes.cpp */; };
-		FC141B401285415900166578 /* StandardShapes.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418371285415800166578 /* StandardShapes.o */; };
 		FC141B411285415900166578 /* STLLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418381285415800166578 /* STLLoader.cpp */; };
-		FC141B421285415900166578 /* STLLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418391285415800166578 /* STLLoader.o */; };
 		FC141B431285415900166578 /* Subdivision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14183A1285415800166578 /* Subdivision.cpp */; };
-		FC141B441285415900166578 /* Subdivision.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14183B1285415800166578 /* Subdivision.o */; };
 		FC141B451285415900166578 /* TargetAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14183C1285415800166578 /* TargetAnimation.cpp */; };
-		FC141B461285415900166578 /* TargetAnimation.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14183D1285415800166578 /* TargetAnimation.o */; };
 		FC141B471285415900166578 /* TerragenLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14183E1285415800166578 /* TerragenLoader.cpp */; };
-		FC141B481285415900166578 /* TerragenLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14183F1285415800166578 /* TerragenLoader.o */; };
 		FC141B491285415900166578 /* TextureTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418401285415800166578 /* TextureTransform.cpp */; };
-		FC141B4A1285415900166578 /* TextureTransform.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418411285415800166578 /* TextureTransform.o */; };
 		FC141B4B1285415900166578 /* TriangulateProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418421285415800166578 /* TriangulateProcess.cpp */; };
-		FC141B4C1285415900166578 /* TriangulateProcess.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418431285415800166578 /* TriangulateProcess.o */; };
 		FC141B4D1285415900166578 /* UnrealLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418441285415800166578 /* UnrealLoader.cpp */; };
-		FC141B4E1285415900166578 /* UnrealLoader.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418451285415800166578 /* UnrealLoader.o */; };
 		FC141B4F1285415900166578 /* ValidateDataStructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418461285415800166578 /* ValidateDataStructure.cpp */; };
-		FC141B501285415900166578 /* ValidateDataStructure.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418471285415800166578 /* ValidateDataStructure.o */; };
 		FC141B511285415900166578 /* VertexTriangleAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */; };
-		FC141B521285415900166578 /* VertexTriangleAdjacency.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418491285415800166578 /* VertexTriangleAdjacency.o */; };
 		FC141B531285415900166578 /* XFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14184A1285415800166578 /* XFileImporter.cpp */; };
-		FC141B541285415900166578 /* XFileImporter.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14184B1285415800166578 /* XFileImporter.o */; };
 		FC141B551285415900166578 /* XFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14184C1285415800166578 /* XFileParser.cpp */; };
-		FC141B561285415900166578 /* XFileParser.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14184D1285415800166578 /* XFileParser.o */; };
 		FC141B6C1285415900166578 /* ConvertUTF.c in Sources */ = {isa = PBXBuildFile; fileRef = FC14188E1285415800166578 /* ConvertUTF.c */; };
-		FC141B6D1285415900166578 /* ConvertUTF.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1418901285415800166578 /* ConvertUTF.o */; };
-		FC141B6E1285415900166578 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1418911285415800166578 /* readme.txt */; };
-		FC141BF91285415900166578 /* cppunit_note.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1419811285415900166578 /* cppunit_note.txt */; };
 		FC141BFA1285415900166578 /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1419881285415900166578 /* irrXML.cpp */; };
-		FC141BFB1285415900166578 /* irrXML.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14198A1285415900166578 /* irrXML.o */; };
-		FC141BFC1285415900166578 /* irrXML_note.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC14198B1285415900166578 /* irrXML_note.txt */; };
 		FC141BFD1285415900166578 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = FC14198E1285415900166578 /* ioapi.c */; };
-		FC141BFE1285415900166578 /* ioapi.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419901285415900166578 /* ioapi.o */; };
 		FC141BFF1285415900166578 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419911285415900166578 /* unzip.c */; };
-		FC141C001285415900166578 /* unzip.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419931285415900166578 /* unzip.o */; };
 		FC141C011285415900166578 /* adler32.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419951285415900166578 /* adler32.c */; };
-		FC141C021285415900166578 /* adler32.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419961285415900166578 /* adler32.o */; };
 		FC141C031285415900166578 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419971285415900166578 /* compress.c */; };
-		FC141C041285415900166578 /* compress.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419981285415900166578 /* compress.o */; };
 		FC141C051285415900166578 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419991285415900166578 /* crc32.c */; };
-		FC141C061285415900166578 /* crc32.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14199B1285415900166578 /* crc32.o */; };
 		FC141C071285415900166578 /* deflate.c in Sources */ = {isa = PBXBuildFile; fileRef = FC14199C1285415900166578 /* deflate.c */; };
-		FC141C081285415900166578 /* deflate.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC14199E1285415900166578 /* deflate.o */; };
 		FC141C091285415900166578 /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = FC14199F1285415900166578 /* inffast.c */; };
-		FC141C0A1285415900166578 /* inffast.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419A11285415900166578 /* inffast.o */; };
 		FC141C0B1285415900166578 /* inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419A31285415900166578 /* inflate.c */; };
-		FC141C0C1285415900166578 /* inflate.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419A51285415900166578 /* inflate.o */; };
 		FC141C0D1285415900166578 /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419A61285415900166578 /* inftrees.c */; };
-		FC141C0E1285415900166578 /* inftrees.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419A81285415900166578 /* inftrees.o */; };
-		FC141C0F1285415900166578 /* README in Resources */ = {isa = PBXBuildFile; fileRef = FC1419A91285415900166578 /* README */; };
 		FC141C101285415900166578 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419AA1285415900166578 /* trees.c */; };
-		FC141C111285415900166578 /* trees.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419AC1285415900166578 /* trees.o */; };
 		FC141C121285415900166578 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419B01285415900166578 /* zutil.c */; };
-		FC141C131285415900166578 /* zutil.o in Frameworks */ = {isa = PBXBuildFile; fileRef = FC1419B21285415900166578 /* zutil.o */; };
-		FC141C141285415900166578 /* zlib_note.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1419B31285415900166578 /* zlib_note.txt */; };
 		FC141C151285415900166578 /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1419B41285415900166578 /* Engine.cpp */; };
-		FC141C171285415900166578 /* aiColor4D.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC1419C11285415900166578 /* aiColor4D.inl */; };
-		FC141C181285415900166578 /* aiMaterial.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC1419C71285415900166578 /* aiMaterial.inl */; };
-		FC141C191285415900166578 /* aiMatrix3x3.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC1419C91285415900166578 /* aiMatrix3x3.inl */; };
-		FC141C1A1285415900166578 /* aiMatrix4x4.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC1419CB1285415900166578 /* aiMatrix4x4.inl */; };
-		FC141C1B1285415900166578 /* aiVector3D.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC1419D41285415900166578 /* aiVector3D.inl */; };
-		FC141C1C1285415900166578 /* BlenderDNA.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC1419E01285415900166578 /* BlenderDNA.inl */; };
-		FC141C1D1285415900166578 /* SmoothingGroups.inl in Resources */ = {isa = PBXBuildFile; fileRef = FC141A501285415900166578 /* SmoothingGroups.inl */; };
 		FC141C351285415900166578 /* MachineGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A851285415900166578 /* MachineGun.cpp */; };
 		FC141C361285415900166578 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A881285415900166578 /* Model.cpp */; };
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
+		FC1CDCAF129A330500CAFC54 /* LICENSE_1_0.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1CDCA3129A330500CAFC54 /* LICENSE_1_0.txt */; };
 		FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC7020531282309E00BB601D /* CoreAudio.framework */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
@@ -275,218 +125,80 @@
 		FC1417681285413100166578 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		FC1417691285413100166578 /* MemoryLeak_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeak_Prefix.pch; sourceTree = "<group>"; };
 		FC14176A1285413100166578 /* MemoryLeak-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MemoryLeak-Info.plist"; sourceTree = "<group>"; };
-		FC1417751285415800166578 /* 3DSConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 3DSConverter.cpp; sourceTree = "<group>"; };
-		FC1417761285415800166578 /* 3DSConverter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = 3DSConverter.o; sourceTree = "<group>"; };
-		FC1417771285415800166578 /* 3DSLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 3DSLoader.cpp; sourceTree = "<group>"; };
-		FC1417781285415800166578 /* 3DSLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = 3DSLoader.o; sourceTree = "<group>"; };
-		FC1417791285415800166578 /* ACLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ACLoader.cpp; sourceTree = "<group>"; };
-		FC14177A1285415800166578 /* ACLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ACLoader.o; sourceTree = "<group>"; };
 		FC14177B1285415800166578 /* aiAssert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aiAssert.cpp; sourceTree = "<group>"; };
-		FC14177C1285415800166578 /* aiAssert.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = aiAssert.o; sourceTree = "<group>"; };
-		FC14177D1285415800166578 /* ASELoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASELoader.cpp; sourceTree = "<group>"; };
-		FC14177E1285415800166578 /* ASELoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ASELoader.o; sourceTree = "<group>"; };
-		FC14177F1285415800166578 /* ASEParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASEParser.cpp; sourceTree = "<group>"; };
-		FC1417801285415800166578 /* ASEParser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ASEParser.o; sourceTree = "<group>"; };
 		FC1417811285415800166578 /* Assimp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Assimp.cpp; sourceTree = "<group>"; };
-		FC1417821285415800166578 /* Assimp.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Assimp.o; sourceTree = "<group>"; };
 		FC1417831285415800166578 /* AssimpPCH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssimpPCH.cpp; sourceTree = "<group>"; };
-		FC1417841285415800166578 /* AssimpPCH.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = AssimpPCH.o; sourceTree = "<group>"; };
-		FC1417851285415800166578 /* B3DImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = B3DImporter.cpp; sourceTree = "<group>"; };
-		FC1417861285415800166578 /* B3DImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = B3DImporter.o; sourceTree = "<group>"; };
 		FC1417871285415800166578 /* BaseImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseImporter.cpp; sourceTree = "<group>"; };
-		FC1417881285415800166578 /* BaseImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BaseImporter.o; sourceTree = "<group>"; };
 		FC1417891285415800166578 /* BaseProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseProcess.cpp; sourceTree = "<group>"; };
-		FC14178A1285415800166578 /* BaseProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BaseProcess.o; sourceTree = "<group>"; };
-		FC14178B1285415800166578 /* BlenderDNA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlenderDNA.cpp; sourceTree = "<group>"; };
-		FC14178C1285415800166578 /* BlenderDNA.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BlenderDNA.o; sourceTree = "<group>"; };
-		FC14178D1285415800166578 /* BlenderLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlenderLoader.cpp; sourceTree = "<group>"; };
-		FC14178E1285415800166578 /* BlenderLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BlenderLoader.o; sourceTree = "<group>"; };
-		FC14178F1285415800166578 /* BlenderModifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlenderModifier.cpp; sourceTree = "<group>"; };
-		FC1417901285415800166578 /* BlenderModifier.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BlenderModifier.o; sourceTree = "<group>"; };
-		FC1417911285415800166578 /* BlenderScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlenderScene.cpp; sourceTree = "<group>"; };
-		FC1417921285415800166578 /* BlenderScene.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BlenderScene.o; sourceTree = "<group>"; };
-		FC1417951285415800166578 /* foreach.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = foreach.hpp; sourceTree = "<group>"; };
-		FC1417961285415800166578 /* format.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = format.hpp; sourceTree = "<group>"; };
-		FC1417971285415800166578 /* lexical_cast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lexical_cast.hpp; sourceTree = "<group>"; };
-		FC1417981285415800166578 /* LICENSE_1_0.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_1_0.txt; sourceTree = "<group>"; };
-		FC14179A1285415800166578 /* common_factor_rt.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common_factor_rt.hpp; sourceTree = "<group>"; };
-		FC14179B1285415800166578 /* pointer_cast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pointer_cast.hpp; sourceTree = "<group>"; };
-		FC14179C1285415800166578 /* scoped_array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = scoped_array.hpp; sourceTree = "<group>"; };
-		FC14179D1285415800166578 /* scoped_ptr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = scoped_ptr.hpp; sourceTree = "<group>"; };
-		FC14179E1285415800166578 /* shared_array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared_array.hpp; sourceTree = "<group>"; };
-		FC14179F1285415800166578 /* shared_ptr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared_ptr.hpp; sourceTree = "<group>"; };
-		FC1417A01285415800166578 /* static_assert.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = static_assert.hpp; sourceTree = "<group>"; };
-		FC1417A11285415800166578 /* timer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
-		FC1417A31285415800166578 /* tuple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tuple.hpp; sourceTree = "<group>"; };
-		FC1417A41285415800166578 /* BVHLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BVHLoader.cpp; sourceTree = "<group>"; };
-		FC1417A51285415800166578 /* BVHLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = BVHLoader.o; sourceTree = "<group>"; };
 		FC1417A61285415800166578 /* CalcTangentsProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CalcTangentsProcess.cpp; sourceTree = "<group>"; };
-		FC1417A71285415800166578 /* CalcTangentsProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = CalcTangentsProcess.o; sourceTree = "<group>"; };
-		FC1417A81285415800166578 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		FC1417A91285415800166578 /* COBLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COBLoader.cpp; sourceTree = "<group>"; };
-		FC1417AA1285415800166578 /* COBLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = COBLoader.o; sourceTree = "<group>"; };
 		FC1417AB1285415800166578 /* ColladaLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColladaLoader.cpp; sourceTree = "<group>"; };
-		FC1417AC1285415800166578 /* ColladaLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ColladaLoader.o; sourceTree = "<group>"; };
 		FC1417AD1285415800166578 /* ColladaParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColladaParser.cpp; sourceTree = "<group>"; };
-		FC1417AE1285415800166578 /* ColladaParser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ColladaParser.o; sourceTree = "<group>"; };
 		FC1417AF1285415800166578 /* ComputeUVMappingProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComputeUVMappingProcess.cpp; sourceTree = "<group>"; };
-		FC1417B01285415800166578 /* ComputeUVMappingProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ComputeUVMappingProcess.o; sourceTree = "<group>"; };
 		FC1417B11285415800166578 /* ConvertToLHProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvertToLHProcess.cpp; sourceTree = "<group>"; };
-		FC1417B21285415800166578 /* ConvertToLHProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ConvertToLHProcess.o; sourceTree = "<group>"; };
-		FC1417B31285415800166578 /* CSMLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSMLoader.cpp; sourceTree = "<group>"; };
-		FC1417B41285415800166578 /* CSMLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = CSMLoader.o; sourceTree = "<group>"; };
 		FC1417B51285415800166578 /* DefaultIOStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefaultIOStream.cpp; sourceTree = "<group>"; };
-		FC1417B61285415800166578 /* DefaultIOStream.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = DefaultIOStream.o; sourceTree = "<group>"; };
 		FC1417B71285415800166578 /* DefaultIOSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefaultIOSystem.cpp; sourceTree = "<group>"; };
-		FC1417B81285415800166578 /* DefaultIOSystem.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = DefaultIOSystem.o; sourceTree = "<group>"; };
 		FC1417B91285415800166578 /* DefaultLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefaultLogger.cpp; sourceTree = "<group>"; };
-		FC1417BA1285415800166578 /* DefaultLogger.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = DefaultLogger.o; sourceTree = "<group>"; };
-		FC1417BB1285415800166578 /* DXFLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DXFLoader.cpp; sourceTree = "<group>"; };
-		FC1417BC1285415800166578 /* DXFLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = DXFLoader.o; sourceTree = "<group>"; };
 		FC1417BD1285415800166578 /* FindDegenerates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FindDegenerates.cpp; sourceTree = "<group>"; };
-		FC1417BE1285415800166578 /* FindDegenerates.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = FindDegenerates.o; sourceTree = "<group>"; };
 		FC1417BF1285415800166578 /* FindInstancesProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FindInstancesProcess.cpp; sourceTree = "<group>"; };
-		FC1417C01285415800166578 /* FindInstancesProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = FindInstancesProcess.o; sourceTree = "<group>"; };
 		FC1417C11285415800166578 /* FindInvalidDataProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FindInvalidDataProcess.cpp; sourceTree = "<group>"; };
-		FC1417C21285415800166578 /* FindInvalidDataProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = FindInvalidDataProcess.o; sourceTree = "<group>"; };
 		FC1417C31285415800166578 /* FixNormalsStep.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FixNormalsStep.cpp; sourceTree = "<group>"; };
-		FC1417C41285415800166578 /* FixNormalsStep.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = FixNormalsStep.o; sourceTree = "<group>"; };
 		FC1417C51285415800166578 /* GenFaceNormalsProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenFaceNormalsProcess.cpp; sourceTree = "<group>"; };
-		FC1417C61285415800166578 /* GenFaceNormalsProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = GenFaceNormalsProcess.o; sourceTree = "<group>"; };
 		FC1417C71285415800166578 /* GenVertexNormalsProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GenVertexNormalsProcess.cpp; sourceTree = "<group>"; };
-		FC1417C81285415800166578 /* GenVertexNormalsProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = GenVertexNormalsProcess.o; sourceTree = "<group>"; };
-		FC1417C91285415800166578 /* HMPLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HMPLoader.cpp; sourceTree = "<group>"; };
-		FC1417CA1285415800166578 /* HMPLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = HMPLoader.o; sourceTree = "<group>"; };
 		FC1417CB1285415800166578 /* Importer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Importer.cpp; sourceTree = "<group>"; };
-		FC1417CC1285415800166578 /* Importer.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Importer.o; sourceTree = "<group>"; };
 		FC1417CD1285415800166578 /* ImproveCacheLocality.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImproveCacheLocality.cpp; sourceTree = "<group>"; };
-		FC1417CE1285415800166578 /* ImproveCacheLocality.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ImproveCacheLocality.o; sourceTree = "<group>"; };
-		FC1417CF1285415800166578 /* IRRLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IRRLoader.cpp; sourceTree = "<group>"; };
-		FC1417D01285415800166578 /* IRRLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = IRRLoader.o; sourceTree = "<group>"; };
-		FC1417D11285415800166578 /* IRRMeshLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IRRMeshLoader.cpp; sourceTree = "<group>"; };
-		FC1417D21285415800166578 /* IRRMeshLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = IRRMeshLoader.o; sourceTree = "<group>"; };
-		FC1417D31285415800166578 /* IRRShared.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IRRShared.cpp; sourceTree = "<group>"; };
-		FC1417D41285415800166578 /* IRRShared.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = IRRShared.o; sourceTree = "<group>"; };
 		FC1417D51285415800166578 /* JoinVerticesProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JoinVerticesProcess.cpp; sourceTree = "<group>"; };
-		FC1417D61285415800166578 /* JoinVerticesProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = JoinVerticesProcess.o; sourceTree = "<group>"; };
 		FC1417D71285415800166578 /* LimitBoneWeightsProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LimitBoneWeightsProcess.cpp; sourceTree = "<group>"; };
-		FC1417D81285415800166578 /* LimitBoneWeightsProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = LimitBoneWeightsProcess.o; sourceTree = "<group>"; };
-		FC1417D91285415800166578 /* LWOAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LWOAnimation.cpp; sourceTree = "<group>"; };
-		FC1417DA1285415800166578 /* LWOAnimation.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = LWOAnimation.o; sourceTree = "<group>"; };
-		FC1417DB1285415800166578 /* LWOBLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LWOBLoader.cpp; sourceTree = "<group>"; };
-		FC1417DC1285415800166578 /* LWOBLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = LWOBLoader.o; sourceTree = "<group>"; };
-		FC1417DD1285415800166578 /* LWOLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LWOLoader.cpp; sourceTree = "<group>"; };
-		FC1417DE1285415800166578 /* LWOLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = LWOLoader.o; sourceTree = "<group>"; };
-		FC1417DF1285415800166578 /* LWOMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LWOMaterial.cpp; sourceTree = "<group>"; };
-		FC1417E01285415800166578 /* LWOMaterial.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = LWOMaterial.o; sourceTree = "<group>"; };
-		FC1417E11285415800166578 /* LWSLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LWSLoader.cpp; sourceTree = "<group>"; };
-		FC1417E21285415800166578 /* LWSLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = LWSLoader.o; sourceTree = "<group>"; };
-		FC1417E31285415800166578 /* makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
-		FC1417E41285415800166578 /* makefile.mingw */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = makefile.mingw; sourceTree = "<group>"; };
 		FC1417E51285415800166578 /* MakeVerboseFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MakeVerboseFormat.cpp; sourceTree = "<group>"; };
-		FC1417E61285415800166578 /* MakeVerboseFormat.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MakeVerboseFormat.o; sourceTree = "<group>"; };
 		FC1417E71285415800166578 /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
-		FC1417E81285415800166578 /* MaterialSystem.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MaterialSystem.o; sourceTree = "<group>"; };
 		FC1417E91285415800166578 /* MD2Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD2Loader.cpp; sourceTree = "<group>"; };
-		FC1417EA1285415800166578 /* MD2Loader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MD2Loader.o; sourceTree = "<group>"; };
 		FC1417EB1285415800166578 /* MD3Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD3Loader.cpp; sourceTree = "<group>"; };
-		FC1417EC1285415800166578 /* MD3Loader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MD3Loader.o; sourceTree = "<group>"; };
 		FC1417ED1285415800166578 /* MD5Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD5Loader.cpp; sourceTree = "<group>"; };
-		FC1417EE1285415800166578 /* MD5Loader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MD5Loader.o; sourceTree = "<group>"; };
 		FC1417EF1285415800166578 /* MD5Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD5Parser.cpp; sourceTree = "<group>"; };
-		FC1417F01285415800166578 /* MD5Parser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MD5Parser.o; sourceTree = "<group>"; };
 		FC1417F11285415800166578 /* MDCLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MDCLoader.cpp; sourceTree = "<group>"; };
-		FC1417F21285415800166578 /* MDCLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MDCLoader.o; sourceTree = "<group>"; };
 		FC1417F31285415800166578 /* MDLLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MDLLoader.cpp; sourceTree = "<group>"; };
-		FC1417F41285415800166578 /* MDLLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MDLLoader.o; sourceTree = "<group>"; };
 		FC1417F51285415800166578 /* MDLMaterialLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MDLMaterialLoader.cpp; sourceTree = "<group>"; };
-		FC1417F61285415800166578 /* MDLMaterialLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MDLMaterialLoader.o; sourceTree = "<group>"; };
 		FC1417F71285415800166578 /* MS3DLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MS3DLoader.cpp; sourceTree = "<group>"; };
-		FC1417F81285415800166578 /* MS3DLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = MS3DLoader.o; sourceTree = "<group>"; };
 		FC1417F91285415800166578 /* NDOLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NDOLoader.cpp; sourceTree = "<group>"; };
-		FC1417FA1285415800166578 /* NDOLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = NDOLoader.o; sourceTree = "<group>"; };
 		FC1417FB1285415800166578 /* NFFLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NFFLoader.cpp; sourceTree = "<group>"; };
-		FC1417FC1285415800166578 /* NFFLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = NFFLoader.o; sourceTree = "<group>"; };
 		FC1417FD1285415800166578 /* ObjFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileImporter.cpp; sourceTree = "<group>"; };
-		FC1417FE1285415800166578 /* ObjFileImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ObjFileImporter.o; sourceTree = "<group>"; };
 		FC1417FF1285415800166578 /* ObjFileMtlImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileMtlImporter.cpp; sourceTree = "<group>"; };
-		FC1418001285415800166578 /* ObjFileMtlImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ObjFileMtlImporter.o; sourceTree = "<group>"; };
 		FC1418011285415800166578 /* ObjFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileParser.cpp; sourceTree = "<group>"; };
-		FC1418021285415800166578 /* ObjFileParser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ObjFileParser.o; sourceTree = "<group>"; };
 		FC1418031285415800166578 /* OFFLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OFFLoader.cpp; sourceTree = "<group>"; };
-		FC1418041285415800166578 /* OFFLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = OFFLoader.o; sourceTree = "<group>"; };
 		FC1418051285415800166578 /* OgreImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OgreImporter.cpp; sourceTree = "<group>"; };
-		FC1418061285415800166578 /* OgreImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = OgreImporter.o; sourceTree = "<group>"; };
 		FC1418071285415800166578 /* OgreImporterMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OgreImporterMaterial.cpp; sourceTree = "<group>"; };
-		FC1418081285415800166578 /* OgreImporterMaterial.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = OgreImporterMaterial.o; sourceTree = "<group>"; };
 		FC1418091285415800166578 /* OptimizeGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizeGraph.cpp; sourceTree = "<group>"; };
-		FC14180A1285415800166578 /* OptimizeGraph.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = OptimizeGraph.o; sourceTree = "<group>"; };
 		FC14180B1285415800166578 /* OptimizeMeshes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizeMeshes.cpp; sourceTree = "<group>"; };
-		FC14180C1285415800166578 /* OptimizeMeshes.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = OptimizeMeshes.o; sourceTree = "<group>"; };
 		FC14180D1285415800166578 /* PlyLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyLoader.cpp; sourceTree = "<group>"; };
-		FC14180E1285415800166578 /* PlyLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = PlyLoader.o; sourceTree = "<group>"; };
 		FC14180F1285415800166578 /* PlyParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyParser.cpp; sourceTree = "<group>"; };
-		FC1418101285415800166578 /* PlyParser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = PlyParser.o; sourceTree = "<group>"; };
 		FC1418111285415800166578 /* PretransformVertices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PretransformVertices.cpp; sourceTree = "<group>"; };
-		FC1418121285415800166578 /* PretransformVertices.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = PretransformVertices.o; sourceTree = "<group>"; };
 		FC1418131285415800166578 /* Q3BSPFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3BSPFileImporter.cpp; sourceTree = "<group>"; };
-		FC1418141285415800166578 /* Q3BSPFileImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Q3BSPFileImporter.o; sourceTree = "<group>"; };
 		FC1418151285415800166578 /* Q3BSPFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3BSPFileParser.cpp; sourceTree = "<group>"; };
-		FC1418161285415800166578 /* Q3BSPFileParser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Q3BSPFileParser.o; sourceTree = "<group>"; };
 		FC1418171285415800166578 /* Q3BSPZipArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3BSPZipArchive.cpp; sourceTree = "<group>"; };
-		FC1418181285415800166578 /* Q3BSPZipArchive.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Q3BSPZipArchive.o; sourceTree = "<group>"; };
 		FC1418191285415800166578 /* Q3DLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3DLoader.cpp; sourceTree = "<group>"; };
-		FC14181A1285415800166578 /* Q3DLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Q3DLoader.o; sourceTree = "<group>"; };
 		FC14181B1285415800166578 /* RawLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RawLoader.cpp; sourceTree = "<group>"; };
-		FC14181C1285415800166578 /* RawLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = RawLoader.o; sourceTree = "<group>"; };
 		FC14181D1285415800166578 /* RemoveComments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveComments.cpp; sourceTree = "<group>"; };
-		FC14181E1285415800166578 /* RemoveComments.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = RemoveComments.o; sourceTree = "<group>"; };
 		FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveRedundantMaterials.cpp; sourceTree = "<group>"; };
-		FC1418201285415800166578 /* RemoveRedundantMaterials.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = RemoveRedundantMaterials.o; sourceTree = "<group>"; };
 		FC1418211285415800166578 /* RemoveVCProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveVCProcess.cpp; sourceTree = "<group>"; };
-		FC1418221285415800166578 /* RemoveVCProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = RemoveVCProcess.o; sourceTree = "<group>"; };
-		FC1418241285415800166578 /* assimp.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = assimp.rc; sourceTree = "<group>"; };
-		FC1418251285415800166578 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource.h; sourceTree = "<group>"; };
 		FC1418261285415800166578 /* SceneCombiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneCombiner.cpp; sourceTree = "<group>"; };
-		FC1418271285415800166578 /* SceneCombiner.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SceneCombiner.o; sourceTree = "<group>"; };
 		FC1418281285415800166578 /* ScenePreprocessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreprocessor.cpp; sourceTree = "<group>"; };
-		FC1418291285415800166578 /* ScenePreprocessor.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ScenePreprocessor.o; sourceTree = "<group>"; };
 		FC14182A1285415800166578 /* SGSpatialSort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SGSpatialSort.cpp; sourceTree = "<group>"; };
-		FC14182B1285415800166578 /* SGSpatialSort.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SGSpatialSort.o; sourceTree = "<group>"; };
 		FC14182C1285415800166578 /* SkeletonMeshBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkeletonMeshBuilder.cpp; sourceTree = "<group>"; };
-		FC14182D1285415800166578 /* SkeletonMeshBuilder.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SkeletonMeshBuilder.o; sourceTree = "<group>"; };
 		FC14182E1285415800166578 /* SMDLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SMDLoader.cpp; sourceTree = "<group>"; };
-		FC14182F1285415800166578 /* SMDLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SMDLoader.o; sourceTree = "<group>"; };
 		FC1418301285415800166578 /* SortByPTypeProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SortByPTypeProcess.cpp; sourceTree = "<group>"; };
-		FC1418311285415800166578 /* SortByPTypeProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SortByPTypeProcess.o; sourceTree = "<group>"; };
 		FC1418321285415800166578 /* SpatialSort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpatialSort.cpp; sourceTree = "<group>"; };
-		FC1418331285415800166578 /* SpatialSort.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SpatialSort.o; sourceTree = "<group>"; };
 		FC1418341285415800166578 /* SplitLargeMeshes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SplitLargeMeshes.cpp; sourceTree = "<group>"; };
-		FC1418351285415800166578 /* SplitLargeMeshes.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SplitLargeMeshes.o; sourceTree = "<group>"; };
 		FC1418361285415800166578 /* StandardShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StandardShapes.cpp; sourceTree = "<group>"; };
-		FC1418371285415800166578 /* StandardShapes.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = StandardShapes.o; sourceTree = "<group>"; };
 		FC1418381285415800166578 /* STLLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = STLLoader.cpp; sourceTree = "<group>"; };
-		FC1418391285415800166578 /* STLLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = STLLoader.o; sourceTree = "<group>"; };
 		FC14183A1285415800166578 /* Subdivision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Subdivision.cpp; sourceTree = "<group>"; };
-		FC14183B1285415800166578 /* Subdivision.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Subdivision.o; sourceTree = "<group>"; };
 		FC14183C1285415800166578 /* TargetAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TargetAnimation.cpp; sourceTree = "<group>"; };
-		FC14183D1285415800166578 /* TargetAnimation.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TargetAnimation.o; sourceTree = "<group>"; };
 		FC14183E1285415800166578 /* TerragenLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TerragenLoader.cpp; sourceTree = "<group>"; };
-		FC14183F1285415800166578 /* TerragenLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TerragenLoader.o; sourceTree = "<group>"; };
 		FC1418401285415800166578 /* TextureTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureTransform.cpp; sourceTree = "<group>"; };
-		FC1418411285415800166578 /* TextureTransform.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TextureTransform.o; sourceTree = "<group>"; };
 		FC1418421285415800166578 /* TriangulateProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateProcess.cpp; sourceTree = "<group>"; };
-		FC1418431285415800166578 /* TriangulateProcess.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = TriangulateProcess.o; sourceTree = "<group>"; };
 		FC1418441285415800166578 /* UnrealLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnrealLoader.cpp; sourceTree = "<group>"; };
-		FC1418451285415800166578 /* UnrealLoader.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = UnrealLoader.o; sourceTree = "<group>"; };
 		FC1418461285415800166578 /* ValidateDataStructure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValidateDataStructure.cpp; sourceTree = "<group>"; };
-		FC1418471285415800166578 /* ValidateDataStructure.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ValidateDataStructure.o; sourceTree = "<group>"; };
 		FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VertexTriangleAdjacency.cpp; sourceTree = "<group>"; };
-		FC1418491285415800166578 /* VertexTriangleAdjacency.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = VertexTriangleAdjacency.o; sourceTree = "<group>"; };
 		FC14184A1285415800166578 /* XFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XFileImporter.cpp; sourceTree = "<group>"; };
-		FC14184B1285415800166578 /* XFileImporter.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = XFileImporter.o; sourceTree = "<group>"; };
 		FC14184C1285415800166578 /* XFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XFileParser.cpp; sourceTree = "<group>"; };
-		FC14184D1285415800166578 /* XFileParser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = XFileParser.o; sourceTree = "<group>"; };
 		FC14188E1285415800166578 /* ConvertUTF.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ConvertUTF.c; sourceTree = "<group>"; };
 		FC14188F1285415800166578 /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
 		FC1418901285415800166578 /* ConvertUTF.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ConvertUTF.o; sourceTree = "<group>"; };
@@ -724,6 +436,27 @@
 		FC141A8C1285415900166578 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
 		FC141A8D1285415900166578 /* revision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = revision.h; sourceTree = "<group>"; };
 		FC141C4A1285429700166578 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../../assets; sourceTree = SOURCE_ROOT; };
+		FC1CDCA0129A330500CAFC54 /* foreach.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = foreach.hpp; sourceTree = "<group>"; };
+		FC1CDCA1129A330500CAFC54 /* format.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = format.hpp; sourceTree = "<group>"; };
+		FC1CDCA2129A330500CAFC54 /* lexical_cast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lexical_cast.hpp; sourceTree = "<group>"; };
+		FC1CDCA3129A330500CAFC54 /* LICENSE_1_0.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_1_0.txt; sourceTree = "<group>"; };
+		FC1CDCA5129A330500CAFC54 /* common_factor_rt.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common_factor_rt.hpp; sourceTree = "<group>"; };
+		FC1CDCA6129A330500CAFC54 /* pointer_cast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pointer_cast.hpp; sourceTree = "<group>"; };
+		FC1CDCA7129A330500CAFC54 /* scoped_array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = scoped_array.hpp; sourceTree = "<group>"; };
+		FC1CDCA8129A330500CAFC54 /* scoped_ptr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = scoped_ptr.hpp; sourceTree = "<group>"; };
+		FC1CDCA9129A330500CAFC54 /* shared_array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared_array.hpp; sourceTree = "<group>"; };
+		FC1CDCAA129A330500CAFC54 /* shared_ptr.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared_ptr.hpp; sourceTree = "<group>"; };
+		FC1CDCAB129A330500CAFC54 /* static_assert.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = static_assert.hpp; sourceTree = "<group>"; };
+		FC1CDCAC129A330500CAFC54 /* timer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
+		FC1CDCAE129A330500CAFC54 /* tuple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tuple.hpp; sourceTree = "<group>"; };
+		FC5F1EB6129A13FD00E5F9FB /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
+		FC5F1EB7129A13FD00E5F9FB /* array2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array2d.h; sourceTree = "<group>"; };
+		FC5F1EB8129A13FD00E5F9FB /* numtraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numtraits.h; sourceTree = "<group>"; };
+		FC5F1EB9129A13FD00E5F9FB /* octree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = octree.h; sourceTree = "<group>"; };
+		FC5F1EBA129A13FD00E5F9FB /* octree.tcc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = octree.tcc; sourceTree = "<group>"; };
+		FC5F1EBB129A13FD00E5F9FB /* point3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = point3d.h; sourceTree = "<group>"; };
+		FC5F1EBC129A13FD00E5F9FB /* shareddata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shareddata.h; sourceTree = "<group>"; };
+		FC5F1EBD129A13FD00E5F9FB /* tinyvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyvector.h; sourceTree = "<group>"; };
 		FC7020531282309E00BB601D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -746,116 +479,6 @@
 				FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */,
 				FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */,
 				FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */,
-				FC141A911285415900166578 /* 3DSConverter.o in Frameworks */,
-				FC141A931285415900166578 /* 3DSLoader.o in Frameworks */,
-				FC141A951285415900166578 /* ACLoader.o in Frameworks */,
-				FC141A971285415900166578 /* aiAssert.o in Frameworks */,
-				FC141A991285415900166578 /* ASELoader.o in Frameworks */,
-				FC141A9B1285415900166578 /* ASEParser.o in Frameworks */,
-				FC141A9D1285415900166578 /* Assimp.o in Frameworks */,
-				FC141A9F1285415900166578 /* AssimpPCH.o in Frameworks */,
-				FC141AA11285415900166578 /* B3DImporter.o in Frameworks */,
-				FC141AA31285415900166578 /* BaseImporter.o in Frameworks */,
-				FC141AA51285415900166578 /* BaseProcess.o in Frameworks */,
-				FC141AA71285415900166578 /* BlenderDNA.o in Frameworks */,
-				FC141AA91285415900166578 /* BlenderLoader.o in Frameworks */,
-				FC141AAB1285415900166578 /* BlenderModifier.o in Frameworks */,
-				FC141AAD1285415900166578 /* BlenderScene.o in Frameworks */,
-				FC141AB01285415900166578 /* BVHLoader.o in Frameworks */,
-				FC141AB21285415900166578 /* CalcTangentsProcess.o in Frameworks */,
-				FC141AB51285415900166578 /* COBLoader.o in Frameworks */,
-				FC141AB71285415900166578 /* ColladaLoader.o in Frameworks */,
-				FC141AB91285415900166578 /* ColladaParser.o in Frameworks */,
-				FC141ABB1285415900166578 /* ComputeUVMappingProcess.o in Frameworks */,
-				FC141ABD1285415900166578 /* ConvertToLHProcess.o in Frameworks */,
-				FC141ABF1285415900166578 /* CSMLoader.o in Frameworks */,
-				FC141AC11285415900166578 /* DefaultIOStream.o in Frameworks */,
-				FC141AC31285415900166578 /* DefaultIOSystem.o in Frameworks */,
-				FC141AC51285415900166578 /* DefaultLogger.o in Frameworks */,
-				FC141AC71285415900166578 /* DXFLoader.o in Frameworks */,
-				FC141AC91285415900166578 /* FindDegenerates.o in Frameworks */,
-				FC141ACB1285415900166578 /* FindInstancesProcess.o in Frameworks */,
-				FC141ACD1285415900166578 /* FindInvalidDataProcess.o in Frameworks */,
-				FC141ACF1285415900166578 /* FixNormalsStep.o in Frameworks */,
-				FC141AD11285415900166578 /* GenFaceNormalsProcess.o in Frameworks */,
-				FC141AD31285415900166578 /* GenVertexNormalsProcess.o in Frameworks */,
-				FC141AD51285415900166578 /* HMPLoader.o in Frameworks */,
-				FC141AD71285415900166578 /* Importer.o in Frameworks */,
-				FC141AD91285415900166578 /* ImproveCacheLocality.o in Frameworks */,
-				FC141ADB1285415900166578 /* IRRLoader.o in Frameworks */,
-				FC141ADD1285415900166578 /* IRRMeshLoader.o in Frameworks */,
-				FC141ADF1285415900166578 /* IRRShared.o in Frameworks */,
-				FC141AE11285415900166578 /* JoinVerticesProcess.o in Frameworks */,
-				FC141AE31285415900166578 /* LimitBoneWeightsProcess.o in Frameworks */,
-				FC141AE51285415900166578 /* LWOAnimation.o in Frameworks */,
-				FC141AE71285415900166578 /* LWOBLoader.o in Frameworks */,
-				FC141AE91285415900166578 /* LWOLoader.o in Frameworks */,
-				FC141AEB1285415900166578 /* LWOMaterial.o in Frameworks */,
-				FC141AED1285415900166578 /* LWSLoader.o in Frameworks */,
-				FC141AF11285415900166578 /* MakeVerboseFormat.o in Frameworks */,
-				FC141AF31285415900166578 /* MaterialSystem.o in Frameworks */,
-				FC141AF51285415900166578 /* MD2Loader.o in Frameworks */,
-				FC141AF71285415900166578 /* MD3Loader.o in Frameworks */,
-				FC141AF91285415900166578 /* MD5Loader.o in Frameworks */,
-				FC141AFB1285415900166578 /* MD5Parser.o in Frameworks */,
-				FC141AFD1285415900166578 /* MDCLoader.o in Frameworks */,
-				FC141AFF1285415900166578 /* MDLLoader.o in Frameworks */,
-				FC141B011285415900166578 /* MDLMaterialLoader.o in Frameworks */,
-				FC141B031285415900166578 /* MS3DLoader.o in Frameworks */,
-				FC141B051285415900166578 /* NDOLoader.o in Frameworks */,
-				FC141B071285415900166578 /* NFFLoader.o in Frameworks */,
-				FC141B091285415900166578 /* ObjFileImporter.o in Frameworks */,
-				FC141B0B1285415900166578 /* ObjFileMtlImporter.o in Frameworks */,
-				FC141B0D1285415900166578 /* ObjFileParser.o in Frameworks */,
-				FC141B0F1285415900166578 /* OFFLoader.o in Frameworks */,
-				FC141B111285415900166578 /* OgreImporter.o in Frameworks */,
-				FC141B131285415900166578 /* OgreImporterMaterial.o in Frameworks */,
-				FC141B151285415900166578 /* OptimizeGraph.o in Frameworks */,
-				FC141B171285415900166578 /* OptimizeMeshes.o in Frameworks */,
-				FC141B191285415900166578 /* PlyLoader.o in Frameworks */,
-				FC141B1B1285415900166578 /* PlyParser.o in Frameworks */,
-				FC141B1D1285415900166578 /* PretransformVertices.o in Frameworks */,
-				FC141B1F1285415900166578 /* Q3BSPFileImporter.o in Frameworks */,
-				FC141B211285415900166578 /* Q3BSPFileParser.o in Frameworks */,
-				FC141B231285415900166578 /* Q3BSPZipArchive.o in Frameworks */,
-				FC141B251285415900166578 /* Q3DLoader.o in Frameworks */,
-				FC141B271285415900166578 /* RawLoader.o in Frameworks */,
-				FC141B291285415900166578 /* RemoveComments.o in Frameworks */,
-				FC141B2B1285415900166578 /* RemoveRedundantMaterials.o in Frameworks */,
-				FC141B2D1285415900166578 /* RemoveVCProcess.o in Frameworks */,
-				FC141B301285415900166578 /* SceneCombiner.o in Frameworks */,
-				FC141B321285415900166578 /* ScenePreprocessor.o in Frameworks */,
-				FC141B341285415900166578 /* SGSpatialSort.o in Frameworks */,
-				FC141B361285415900166578 /* SkeletonMeshBuilder.o in Frameworks */,
-				FC141B381285415900166578 /* SMDLoader.o in Frameworks */,
-				FC141B3A1285415900166578 /* SortByPTypeProcess.o in Frameworks */,
-				FC141B3C1285415900166578 /* SpatialSort.o in Frameworks */,
-				FC141B3E1285415900166578 /* SplitLargeMeshes.o in Frameworks */,
-				FC141B401285415900166578 /* StandardShapes.o in Frameworks */,
-				FC141B421285415900166578 /* STLLoader.o in Frameworks */,
-				FC141B441285415900166578 /* Subdivision.o in Frameworks */,
-				FC141B461285415900166578 /* TargetAnimation.o in Frameworks */,
-				FC141B481285415900166578 /* TerragenLoader.o in Frameworks */,
-				FC141B4A1285415900166578 /* TextureTransform.o in Frameworks */,
-				FC141B4C1285415900166578 /* TriangulateProcess.o in Frameworks */,
-				FC141B4E1285415900166578 /* UnrealLoader.o in Frameworks */,
-				FC141B501285415900166578 /* ValidateDataStructure.o in Frameworks */,
-				FC141B521285415900166578 /* VertexTriangleAdjacency.o in Frameworks */,
-				FC141B541285415900166578 /* XFileImporter.o in Frameworks */,
-				FC141B561285415900166578 /* XFileParser.o in Frameworks */,
-				FC141B6D1285415900166578 /* ConvertUTF.o in Frameworks */,
-				FC141BFB1285415900166578 /* irrXML.o in Frameworks */,
-				FC141BFE1285415900166578 /* ioapi.o in Frameworks */,
-				FC141C001285415900166578 /* unzip.o in Frameworks */,
-				FC141C021285415900166578 /* adler32.o in Frameworks */,
-				FC141C041285415900166578 /* compress.o in Frameworks */,
-				FC141C061285415900166578 /* crc32.o in Frameworks */,
-				FC141C081285415900166578 /* deflate.o in Frameworks */,
-				FC141C0A1285415900166578 /* inffast.o in Frameworks */,
-				FC141C0C1285415900166578 /* inflate.o in Frameworks */,
-				FC141C0E1285415900166578 /* inftrees.o in Frameworks */,
-				FC141C111285415900166578 /* trees.o in Frameworks */,
-				FC141C131285415900166578 /* zutil.o in Frameworks */,
 				FCE2EE1312913F2D00A82A88 /* libpthread.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -916,6 +539,7 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FC5F1EB5129A13FD00E5F9FB /* octree */,
 				FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */,
 				FCE2EE2312913FCA00A82A88 /* PixelPusher.h */,
 				FC1417741285415800166578 /* assimp */,
@@ -941,258 +565,89 @@
 		FC1417741285415800166578 /* assimp */ = {
 			isa = PBXGroup;
 			children = (
-				FC1417751285415800166578 /* 3DSConverter.cpp */,
-				FC1417761285415800166578 /* 3DSConverter.o */,
-				FC1417771285415800166578 /* 3DSLoader.cpp */,
-				FC1417781285415800166578 /* 3DSLoader.o */,
-				FC1417791285415800166578 /* ACLoader.cpp */,
-				FC14177A1285415800166578 /* ACLoader.o */,
+				FC1CDC9E129A330500CAFC54 /* BoostWorkaround */,
 				FC14177B1285415800166578 /* aiAssert.cpp */,
-				FC14177C1285415800166578 /* aiAssert.o */,
-				FC14177D1285415800166578 /* ASELoader.cpp */,
-				FC14177E1285415800166578 /* ASELoader.o */,
-				FC14177F1285415800166578 /* ASEParser.cpp */,
-				FC1417801285415800166578 /* ASEParser.o */,
 				FC1417811285415800166578 /* Assimp.cpp */,
-				FC1417821285415800166578 /* Assimp.o */,
 				FC1417831285415800166578 /* AssimpPCH.cpp */,
-				FC1417841285415800166578 /* AssimpPCH.o */,
-				FC1417851285415800166578 /* B3DImporter.cpp */,
-				FC1417861285415800166578 /* B3DImporter.o */,
 				FC1417871285415800166578 /* BaseImporter.cpp */,
-				FC1417881285415800166578 /* BaseImporter.o */,
 				FC1417891285415800166578 /* BaseProcess.cpp */,
-				FC14178A1285415800166578 /* BaseProcess.o */,
-				FC14178B1285415800166578 /* BlenderDNA.cpp */,
-				FC14178C1285415800166578 /* BlenderDNA.o */,
-				FC14178D1285415800166578 /* BlenderLoader.cpp */,
-				FC14178E1285415800166578 /* BlenderLoader.o */,
-				FC14178F1285415800166578 /* BlenderModifier.cpp */,
-				FC1417901285415800166578 /* BlenderModifier.o */,
-				FC1417911285415800166578 /* BlenderScene.cpp */,
-				FC1417921285415800166578 /* BlenderScene.o */,
-				FC1417931285415800166578 /* BoostWorkaround */,
-				FC1417A41285415800166578 /* BVHLoader.cpp */,
-				FC1417A51285415800166578 /* BVHLoader.o */,
 				FC1417A61285415800166578 /* CalcTangentsProcess.cpp */,
-				FC1417A71285415800166578 /* CalcTangentsProcess.o */,
-				FC1417A81285415800166578 /* CMakeLists.txt */,
-				FC1417A91285415800166578 /* COBLoader.cpp */,
-				FC1417AA1285415800166578 /* COBLoader.o */,
 				FC1417AB1285415800166578 /* ColladaLoader.cpp */,
-				FC1417AC1285415800166578 /* ColladaLoader.o */,
 				FC1417AD1285415800166578 /* ColladaParser.cpp */,
-				FC1417AE1285415800166578 /* ColladaParser.o */,
 				FC1417AF1285415800166578 /* ComputeUVMappingProcess.cpp */,
-				FC1417B01285415800166578 /* ComputeUVMappingProcess.o */,
 				FC1417B11285415800166578 /* ConvertToLHProcess.cpp */,
-				FC1417B21285415800166578 /* ConvertToLHProcess.o */,
-				FC1417B31285415800166578 /* CSMLoader.cpp */,
-				FC1417B41285415800166578 /* CSMLoader.o */,
 				FC1417B51285415800166578 /* DefaultIOStream.cpp */,
-				FC1417B61285415800166578 /* DefaultIOStream.o */,
 				FC1417B71285415800166578 /* DefaultIOSystem.cpp */,
-				FC1417B81285415800166578 /* DefaultIOSystem.o */,
 				FC1417B91285415800166578 /* DefaultLogger.cpp */,
-				FC1417BA1285415800166578 /* DefaultLogger.o */,
-				FC1417BB1285415800166578 /* DXFLoader.cpp */,
-				FC1417BC1285415800166578 /* DXFLoader.o */,
 				FC1417BD1285415800166578 /* FindDegenerates.cpp */,
-				FC1417BE1285415800166578 /* FindDegenerates.o */,
 				FC1417BF1285415800166578 /* FindInstancesProcess.cpp */,
-				FC1417C01285415800166578 /* FindInstancesProcess.o */,
 				FC1417C11285415800166578 /* FindInvalidDataProcess.cpp */,
-				FC1417C21285415800166578 /* FindInvalidDataProcess.o */,
 				FC1417C31285415800166578 /* FixNormalsStep.cpp */,
-				FC1417C41285415800166578 /* FixNormalsStep.o */,
 				FC1417C51285415800166578 /* GenFaceNormalsProcess.cpp */,
-				FC1417C61285415800166578 /* GenFaceNormalsProcess.o */,
 				FC1417C71285415800166578 /* GenVertexNormalsProcess.cpp */,
-				FC1417C81285415800166578 /* GenVertexNormalsProcess.o */,
-				FC1417C91285415800166578 /* HMPLoader.cpp */,
-				FC1417CA1285415800166578 /* HMPLoader.o */,
 				FC1417CB1285415800166578 /* Importer.cpp */,
-				FC1417CC1285415800166578 /* Importer.o */,
 				FC1417CD1285415800166578 /* ImproveCacheLocality.cpp */,
-				FC1417CE1285415800166578 /* ImproveCacheLocality.o */,
-				FC1417CF1285415800166578 /* IRRLoader.cpp */,
-				FC1417D01285415800166578 /* IRRLoader.o */,
-				FC1417D11285415800166578 /* IRRMeshLoader.cpp */,
-				FC1417D21285415800166578 /* IRRMeshLoader.o */,
-				FC1417D31285415800166578 /* IRRShared.cpp */,
-				FC1417D41285415800166578 /* IRRShared.o */,
 				FC1417D51285415800166578 /* JoinVerticesProcess.cpp */,
-				FC1417D61285415800166578 /* JoinVerticesProcess.o */,
 				FC1417D71285415800166578 /* LimitBoneWeightsProcess.cpp */,
-				FC1417D81285415800166578 /* LimitBoneWeightsProcess.o */,
-				FC1417D91285415800166578 /* LWOAnimation.cpp */,
-				FC1417DA1285415800166578 /* LWOAnimation.o */,
-				FC1417DB1285415800166578 /* LWOBLoader.cpp */,
-				FC1417DC1285415800166578 /* LWOBLoader.o */,
-				FC1417DD1285415800166578 /* LWOLoader.cpp */,
-				FC1417DE1285415800166578 /* LWOLoader.o */,
-				FC1417DF1285415800166578 /* LWOMaterial.cpp */,
-				FC1417E01285415800166578 /* LWOMaterial.o */,
-				FC1417E11285415800166578 /* LWSLoader.cpp */,
-				FC1417E21285415800166578 /* LWSLoader.o */,
-				FC1417E31285415800166578 /* makefile */,
-				FC1417E41285415800166578 /* makefile.mingw */,
 				FC1417E51285415800166578 /* MakeVerboseFormat.cpp */,
-				FC1417E61285415800166578 /* MakeVerboseFormat.o */,
 				FC1417E71285415800166578 /* MaterialSystem.cpp */,
-				FC1417E81285415800166578 /* MaterialSystem.o */,
 				FC1417E91285415800166578 /* MD2Loader.cpp */,
-				FC1417EA1285415800166578 /* MD2Loader.o */,
 				FC1417EB1285415800166578 /* MD3Loader.cpp */,
-				FC1417EC1285415800166578 /* MD3Loader.o */,
 				FC1417ED1285415800166578 /* MD5Loader.cpp */,
-				FC1417EE1285415800166578 /* MD5Loader.o */,
 				FC1417EF1285415800166578 /* MD5Parser.cpp */,
-				FC1417F01285415800166578 /* MD5Parser.o */,
 				FC1417F11285415800166578 /* MDCLoader.cpp */,
-				FC1417F21285415800166578 /* MDCLoader.o */,
 				FC1417F31285415800166578 /* MDLLoader.cpp */,
-				FC1417F41285415800166578 /* MDLLoader.o */,
 				FC1417F51285415800166578 /* MDLMaterialLoader.cpp */,
-				FC1417F61285415800166578 /* MDLMaterialLoader.o */,
 				FC1417F71285415800166578 /* MS3DLoader.cpp */,
-				FC1417F81285415800166578 /* MS3DLoader.o */,
 				FC1417F91285415800166578 /* NDOLoader.cpp */,
-				FC1417FA1285415800166578 /* NDOLoader.o */,
 				FC1417FB1285415800166578 /* NFFLoader.cpp */,
-				FC1417FC1285415800166578 /* NFFLoader.o */,
 				FC1417FD1285415800166578 /* ObjFileImporter.cpp */,
-				FC1417FE1285415800166578 /* ObjFileImporter.o */,
 				FC1417FF1285415800166578 /* ObjFileMtlImporter.cpp */,
-				FC1418001285415800166578 /* ObjFileMtlImporter.o */,
 				FC1418011285415800166578 /* ObjFileParser.cpp */,
-				FC1418021285415800166578 /* ObjFileParser.o */,
 				FC1418031285415800166578 /* OFFLoader.cpp */,
-				FC1418041285415800166578 /* OFFLoader.o */,
 				FC1418051285415800166578 /* OgreImporter.cpp */,
-				FC1418061285415800166578 /* OgreImporter.o */,
 				FC1418071285415800166578 /* OgreImporterMaterial.cpp */,
-				FC1418081285415800166578 /* OgreImporterMaterial.o */,
 				FC1418091285415800166578 /* OptimizeGraph.cpp */,
-				FC14180A1285415800166578 /* OptimizeGraph.o */,
 				FC14180B1285415800166578 /* OptimizeMeshes.cpp */,
-				FC14180C1285415800166578 /* OptimizeMeshes.o */,
 				FC14180D1285415800166578 /* PlyLoader.cpp */,
-				FC14180E1285415800166578 /* PlyLoader.o */,
 				FC14180F1285415800166578 /* PlyParser.cpp */,
-				FC1418101285415800166578 /* PlyParser.o */,
 				FC1418111285415800166578 /* PretransformVertices.cpp */,
-				FC1418121285415800166578 /* PretransformVertices.o */,
 				FC1418131285415800166578 /* Q3BSPFileImporter.cpp */,
-				FC1418141285415800166578 /* Q3BSPFileImporter.o */,
 				FC1418151285415800166578 /* Q3BSPFileParser.cpp */,
-				FC1418161285415800166578 /* Q3BSPFileParser.o */,
 				FC1418171285415800166578 /* Q3BSPZipArchive.cpp */,
-				FC1418181285415800166578 /* Q3BSPZipArchive.o */,
 				FC1418191285415800166578 /* Q3DLoader.cpp */,
-				FC14181A1285415800166578 /* Q3DLoader.o */,
 				FC14181B1285415800166578 /* RawLoader.cpp */,
-				FC14181C1285415800166578 /* RawLoader.o */,
 				FC14181D1285415800166578 /* RemoveComments.cpp */,
-				FC14181E1285415800166578 /* RemoveComments.o */,
 				FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */,
-				FC1418201285415800166578 /* RemoveRedundantMaterials.o */,
 				FC1418211285415800166578 /* RemoveVCProcess.cpp */,
-				FC1418221285415800166578 /* RemoveVCProcess.o */,
 				FC1418231285415800166578 /* res */,
 				FC1418261285415800166578 /* SceneCombiner.cpp */,
-				FC1418271285415800166578 /* SceneCombiner.o */,
 				FC1418281285415800166578 /* ScenePreprocessor.cpp */,
-				FC1418291285415800166578 /* ScenePreprocessor.o */,
 				FC14182A1285415800166578 /* SGSpatialSort.cpp */,
-				FC14182B1285415800166578 /* SGSpatialSort.o */,
 				FC14182C1285415800166578 /* SkeletonMeshBuilder.cpp */,
-				FC14182D1285415800166578 /* SkeletonMeshBuilder.o */,
 				FC14182E1285415800166578 /* SMDLoader.cpp */,
-				FC14182F1285415800166578 /* SMDLoader.o */,
 				FC1418301285415800166578 /* SortByPTypeProcess.cpp */,
-				FC1418311285415800166578 /* SortByPTypeProcess.o */,
 				FC1418321285415800166578 /* SpatialSort.cpp */,
-				FC1418331285415800166578 /* SpatialSort.o */,
 				FC1418341285415800166578 /* SplitLargeMeshes.cpp */,
-				FC1418351285415800166578 /* SplitLargeMeshes.o */,
 				FC1418361285415800166578 /* StandardShapes.cpp */,
-				FC1418371285415800166578 /* StandardShapes.o */,
 				FC1418381285415800166578 /* STLLoader.cpp */,
-				FC1418391285415800166578 /* STLLoader.o */,
 				FC14183A1285415800166578 /* Subdivision.cpp */,
-				FC14183B1285415800166578 /* Subdivision.o */,
 				FC14183C1285415800166578 /* TargetAnimation.cpp */,
-				FC14183D1285415800166578 /* TargetAnimation.o */,
 				FC14183E1285415800166578 /* TerragenLoader.cpp */,
-				FC14183F1285415800166578 /* TerragenLoader.o */,
 				FC1418401285415800166578 /* TextureTransform.cpp */,
-				FC1418411285415800166578 /* TextureTransform.o */,
 				FC1418421285415800166578 /* TriangulateProcess.cpp */,
-				FC1418431285415800166578 /* TriangulateProcess.o */,
 				FC1418441285415800166578 /* UnrealLoader.cpp */,
-				FC1418451285415800166578 /* UnrealLoader.o */,
 				FC1418461285415800166578 /* ValidateDataStructure.cpp */,
-				FC1418471285415800166578 /* ValidateDataStructure.o */,
 				FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */,
-				FC1418491285415800166578 /* VertexTriangleAdjacency.o */,
 				FC14184A1285415800166578 /* XFileImporter.cpp */,
-				FC14184B1285415800166578 /* XFileImporter.o */,
 				FC14184C1285415800166578 /* XFileParser.cpp */,
-				FC14184D1285415800166578 /* XFileParser.o */,
 			);
 			path = assimp;
-			sourceTree = "<group>";
-		};
-		FC1417931285415800166578 /* BoostWorkaround */ = {
-			isa = PBXGroup;
-			children = (
-				FC1417941285415800166578 /* boost */,
-			);
-			path = BoostWorkaround;
-			sourceTree = "<group>";
-		};
-		FC1417941285415800166578 /* boost */ = {
-			isa = PBXGroup;
-			children = (
-				FC1417951285415800166578 /* foreach.hpp */,
-				FC1417961285415800166578 /* format.hpp */,
-				FC1417971285415800166578 /* lexical_cast.hpp */,
-				FC1417981285415800166578 /* LICENSE_1_0.txt */,
-				FC1417991285415800166578 /* math */,
-				FC14179B1285415800166578 /* pointer_cast.hpp */,
-				FC14179C1285415800166578 /* scoped_array.hpp */,
-				FC14179D1285415800166578 /* scoped_ptr.hpp */,
-				FC14179E1285415800166578 /* shared_array.hpp */,
-				FC14179F1285415800166578 /* shared_ptr.hpp */,
-				FC1417A01285415800166578 /* static_assert.hpp */,
-				FC1417A11285415800166578 /* timer.hpp */,
-				FC1417A21285415800166578 /* tuple */,
-			);
-			path = boost;
-			sourceTree = "<group>";
-		};
-		FC1417991285415800166578 /* math */ = {
-			isa = PBXGroup;
-			children = (
-				FC14179A1285415800166578 /* common_factor_rt.hpp */,
-			);
-			path = math;
-			sourceTree = "<group>";
-		};
-		FC1417A21285415800166578 /* tuple */ = {
-			isa = PBXGroup;
-			children = (
-				FC1417A31285415800166578 /* tuple.hpp */,
-			);
-			path = tuple;
 			sourceTree = "<group>";
 		};
 		FC1418231285415800166578 /* res */ = {
 			isa = PBXGroup;
 			children = (
-				FC1418241285415800166578 /* assimp.rc */,
-				FC1418251285415800166578 /* resource.h */,
 			);
 			path = res;
 			sourceTree = "<group>";
@@ -1475,6 +930,65 @@
 			path = Compiler;
 			sourceTree = "<group>";
 		};
+		FC1CDC9E129A330500CAFC54 /* BoostWorkaround */ = {
+			isa = PBXGroup;
+			children = (
+				FC1CDC9F129A330500CAFC54 /* boost */,
+			);
+			path = BoostWorkaround;
+			sourceTree = "<group>";
+		};
+		FC1CDC9F129A330500CAFC54 /* boost */ = {
+			isa = PBXGroup;
+			children = (
+				FC1CDCA0129A330500CAFC54 /* foreach.hpp */,
+				FC1CDCA1129A330500CAFC54 /* format.hpp */,
+				FC1CDCA2129A330500CAFC54 /* lexical_cast.hpp */,
+				FC1CDCA3129A330500CAFC54 /* LICENSE_1_0.txt */,
+				FC1CDCA4129A330500CAFC54 /* math */,
+				FC1CDCA6129A330500CAFC54 /* pointer_cast.hpp */,
+				FC1CDCA7129A330500CAFC54 /* scoped_array.hpp */,
+				FC1CDCA8129A330500CAFC54 /* scoped_ptr.hpp */,
+				FC1CDCA9129A330500CAFC54 /* shared_array.hpp */,
+				FC1CDCAA129A330500CAFC54 /* shared_ptr.hpp */,
+				FC1CDCAB129A330500CAFC54 /* static_assert.hpp */,
+				FC1CDCAC129A330500CAFC54 /* timer.hpp */,
+				FC1CDCAD129A330500CAFC54 /* tuple */,
+			);
+			path = boost;
+			sourceTree = "<group>";
+		};
+		FC1CDCA4129A330500CAFC54 /* math */ = {
+			isa = PBXGroup;
+			children = (
+				FC1CDCA5129A330500CAFC54 /* common_factor_rt.hpp */,
+			);
+			path = math;
+			sourceTree = "<group>";
+		};
+		FC1CDCAD129A330500CAFC54 /* tuple */ = {
+			isa = PBXGroup;
+			children = (
+				FC1CDCAE129A330500CAFC54 /* tuple.hpp */,
+			);
+			path = tuple;
+			sourceTree = "<group>";
+		};
+		FC5F1EB5129A13FD00E5F9FB /* octree */ = {
+			isa = PBXGroup;
+			children = (
+				FC5F1EB6129A13FD00E5F9FB /* array.h */,
+				FC5F1EB7129A13FD00E5F9FB /* array2d.h */,
+				FC5F1EB8129A13FD00E5F9FB /* numtraits.h */,
+				FC5F1EB9129A13FD00E5F9FB /* octree.h */,
+				FC5F1EBA129A13FD00E5F9FB /* octree.tcc */,
+				FC5F1EBB129A13FD00E5F9FB /* point3d.h */,
+				FC5F1EBC129A13FD00E5F9FB /* shareddata.h */,
+				FC5F1EBD129A13FD00E5F9FB /* tinyvector.h */,
+			);
+			path = octree;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1526,24 +1040,8 @@
 			files = (
 				FC14176D1285413100166578 /* Default.png in Resources */,
 				FC14176F1285413100166578 /* MainWindow.xib in Resources */,
-				FC1417701285413100166578 /* MemoryLeak-Info.plist in Resources */,
-				FC141AAE1285415900166578 /* LICENSE_1_0.txt in Resources */,
-				FC141AB31285415900166578 /* CMakeLists.txt in Resources */,
-				FC141AEF1285415900166578 /* makefile.mingw in Resources */,
-				FC141B2E1285415900166578 /* assimp.rc in Resources */,
-				FC141B6E1285415900166578 /* readme.txt in Resources */,
-				FC141BF91285415900166578 /* cppunit_note.txt in Resources */,
-				FC141BFC1285415900166578 /* irrXML_note.txt in Resources */,
-				FC141C0F1285415900166578 /* README in Resources */,
-				FC141C141285415900166578 /* zlib_note.txt in Resources */,
-				FC141C171285415900166578 /* aiColor4D.inl in Resources */,
-				FC141C181285415900166578 /* aiMaterial.inl in Resources */,
-				FC141C191285415900166578 /* aiMatrix3x3.inl in Resources */,
-				FC141C1A1285415900166578 /* aiMatrix4x4.inl in Resources */,
-				FC141C1B1285415900166578 /* aiVector3D.inl in Resources */,
-				FC141C1C1285415900166578 /* BlenderDNA.inl in Resources */,
-				FC141C1D1285415900166578 /* SmoothingGroups.inl in Resources */,
 				FC141C571285429700166578 /* assets in Resources */,
+				FC1CDCAF129A330500CAFC54 /* LICENSE_1_0.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1557,53 +1055,29 @@
 				FC14176B1285413100166578 /* EAGLView.mm in Sources */,
 				FC14176C1285413100166578 /* MemoryLeakAppDelegate.mm in Sources */,
 				FC14176E1285413100166578 /* main.mm in Sources */,
-				FC141A901285415900166578 /* 3DSConverter.cpp in Sources */,
-				FC141A921285415900166578 /* 3DSLoader.cpp in Sources */,
-				FC141A941285415900166578 /* ACLoader.cpp in Sources */,
 				FC141A961285415900166578 /* aiAssert.cpp in Sources */,
-				FC141A981285415900166578 /* ASELoader.cpp in Sources */,
-				FC141A9A1285415900166578 /* ASEParser.cpp in Sources */,
 				FC141A9C1285415900166578 /* Assimp.cpp in Sources */,
 				FC141A9E1285415900166578 /* AssimpPCH.cpp in Sources */,
-				FC141AA01285415900166578 /* B3DImporter.cpp in Sources */,
 				FC141AA21285415900166578 /* BaseImporter.cpp in Sources */,
 				FC141AA41285415900166578 /* BaseProcess.cpp in Sources */,
-				FC141AA61285415900166578 /* BlenderDNA.cpp in Sources */,
-				FC141AA81285415900166578 /* BlenderLoader.cpp in Sources */,
-				FC141AAA1285415900166578 /* BlenderModifier.cpp in Sources */,
-				FC141AAC1285415900166578 /* BlenderScene.cpp in Sources */,
-				FC141AAF1285415900166578 /* BVHLoader.cpp in Sources */,
 				FC141AB11285415900166578 /* CalcTangentsProcess.cpp in Sources */,
-				FC141AB41285415900166578 /* COBLoader.cpp in Sources */,
 				FC141AB61285415900166578 /* ColladaLoader.cpp in Sources */,
 				FC141AB81285415900166578 /* ColladaParser.cpp in Sources */,
 				FC141ABA1285415900166578 /* ComputeUVMappingProcess.cpp in Sources */,
 				FC141ABC1285415900166578 /* ConvertToLHProcess.cpp in Sources */,
-				FC141ABE1285415900166578 /* CSMLoader.cpp in Sources */,
 				FC141AC01285415900166578 /* DefaultIOStream.cpp in Sources */,
 				FC141AC21285415900166578 /* DefaultIOSystem.cpp in Sources */,
 				FC141AC41285415900166578 /* DefaultLogger.cpp in Sources */,
-				FC141AC61285415900166578 /* DXFLoader.cpp in Sources */,
 				FC141AC81285415900166578 /* FindDegenerates.cpp in Sources */,
 				FC141ACA1285415900166578 /* FindInstancesProcess.cpp in Sources */,
 				FC141ACC1285415900166578 /* FindInvalidDataProcess.cpp in Sources */,
 				FC141ACE1285415900166578 /* FixNormalsStep.cpp in Sources */,
 				FC141AD01285415900166578 /* GenFaceNormalsProcess.cpp in Sources */,
 				FC141AD21285415900166578 /* GenVertexNormalsProcess.cpp in Sources */,
-				FC141AD41285415900166578 /* HMPLoader.cpp in Sources */,
 				FC141AD61285415900166578 /* Importer.cpp in Sources */,
 				FC141AD81285415900166578 /* ImproveCacheLocality.cpp in Sources */,
-				FC141ADA1285415900166578 /* IRRLoader.cpp in Sources */,
-				FC141ADC1285415900166578 /* IRRMeshLoader.cpp in Sources */,
-				FC141ADE1285415900166578 /* IRRShared.cpp in Sources */,
 				FC141AE01285415900166578 /* JoinVerticesProcess.cpp in Sources */,
 				FC141AE21285415900166578 /* LimitBoneWeightsProcess.cpp in Sources */,
-				FC141AE41285415900166578 /* LWOAnimation.cpp in Sources */,
-				FC141AE61285415900166578 /* LWOBLoader.cpp in Sources */,
-				FC141AE81285415900166578 /* LWOLoader.cpp in Sources */,
-				FC141AEA1285415900166578 /* LWOMaterial.cpp in Sources */,
-				FC141AEC1285415900166578 /* LWSLoader.cpp in Sources */,
-				FC141AEE1285415900166578 /* makefile in Sources */,
 				FC141AF01285415900166578 /* MakeVerboseFormat.cpp in Sources */,
 				FC141AF21285415900166578 /* MaterialSystem.cpp in Sources */,
 				FC141AF41285415900166578 /* MD2Loader.cpp in Sources */,
@@ -1711,6 +1185,7 @@
 					"$(SRCROOT)/../../src/assimp/BoostWorkaround/",
 					"$(SRCROOT)/../../src/yajl",
 					"$(SRCROOT)/../../src/yajl/api",
+					"$(SRCROOT)/../../src/octree",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
@@ -1739,6 +1214,7 @@
 					"$(SRCROOT)/../../src/assimp/BoostWorkaround/",
 					"$(SRCROOT)/../../src/yajl",
 					"$(SRCROOT)/../../src/yajl/api",
+					"$(SRCROOT)/../../src/octree",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;

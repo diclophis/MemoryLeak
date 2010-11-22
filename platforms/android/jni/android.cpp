@@ -16,10 +16,11 @@
 #include "Model.h"
 #include "MachineGun.h"
 #include "Engine.h"
+#include "octree.h"
 #include "PixelPusher.h"
 
 extern "C" {
-  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1);
+  void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1, int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2);
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
@@ -27,8 +28,9 @@ extern "C" {
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState);
 }
 
-static std::vector<GLuint> sPlayerTextures;
+static std::vector<GLuint> textures;
 static std::vector<foo*> models;
+static std::vector<foo*> levels;
 
 static Engine *gameController;
 static int  sWindowWidth  = 0;
@@ -41,21 +43,30 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
 }
 
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int count, jobjectArray fd_sys1, jintArray off1, jintArray len1) {
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1, int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2) {
 	importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
 		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
 		if (fdClassDescriptorFieldID != NULL) {
-      for (int i=0; i<count; i++) {
+      for (int i=0; i<model_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        foo *firstModel = new foo;
-        firstModel->fp = fdopen(myfdx, "rb");
-        firstModel->off = env->GetIntArrayElements(off1, 0)[i];
-        firstModel->len = env->GetIntArrayElements(len1, 0)[i];
-        models.push_back(firstModel);
+        foo *f = new foo;
+        f->fp = fdopen(myfdx, "rb");
+        f->off = env->GetIntArrayElements(off1, 0)[i];
+        f->len = env->GetIntArrayElements(len1, 0)[i];
+        models.push_back(f);
+      }
+      for (int i=0; i<level_count; i++) {
+        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys2, i), fdClassDescriptorFieldID);
+        int myfdx = dup(fdx);
+        foo *f = new foo;
+        f->fp = fdopen(myfdx, "rb");
+        f->off = env->GetIntArrayElements(off2, 0)[i];
+        f->len = env->GetIntArrayElements(len2, 0)[i];
+        levels.push_back(f);
       }
 		}
 	} 
@@ -64,14 +75,11 @@ void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass en
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, jintArray arr) {
 	for (int i=0; i<5; i++) {
-		sPlayerTextures.push_back(env->GetIntArrayElements(arr, 0)[i]);
+		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 
-  //LOGV("nativeSurfaceCreated %d %d", sPlayerTextures.size(), models.size());
-
   Audio *foo = new Audio();
-
-  gameController = new PixelPusher(sWindowWidth, sWindowHeight, sPlayerTextures, models);
+  gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels);
   gameController->CreateThread();
 
   gameState = 1;

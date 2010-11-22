@@ -14,6 +14,7 @@
 #include "Model.h"
 #include "Engine.h"
 #include "MachineGun.h"
+#include "octree.h"
 #include "PixelPusher.h"
 
 static std::vector<GLuint> textures;
@@ -237,6 +238,7 @@ GLuint loadTexture(UIImage *image) {
 	
 	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
 	for (NSString *path in level_names) {
+		NSLog(@"the fuck %@", level_names);
 		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);

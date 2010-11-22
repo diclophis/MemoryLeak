@@ -35,14 +35,16 @@ Model::Model(const foofoo *a) : m_FooFoo(a) {
 	m_NeedsClimbBeforeMove = false;
 	m_NeedsClimbAfterMove = false;
 	m_IsMoving = false;
-	
+
 	m_Scale = (float *)malloc(3 * sizeof(float));
 	m_Position = (float *)malloc(3 * sizeof(float));
 	m_Rotation = (float *)malloc(3 * sizeof(float));
 	m_Velocity = (float *)malloc(3 * sizeof(float));
-  m_Climbing = NULL;
-  m_IsFalling = false;
-	
+	m_Climbing = NULL;
+	m_IsFalling = false;
+
+	m_Life = 100.0;
+
 	SetScale(1.0, 1.0, 1.0);
 	SetPosition(0.0, 0.0, 0.0);
 	SetRotation(0.0, 0.0, 0.0);
@@ -143,16 +145,16 @@ void Model::Render() {
 
 
 bool Model::IsCollidedWith(Model *other) {
-  bool cx = false;
-  bool cy = false;
-  bool cz = false;
+	bool cx = false;
+	bool cy = false;
+	bool cz = false;
 
 	float other_s;
 	float other_b;
 
 	other_s = 0.4;
 	other_b = 0.4;
-	
+
 	float mlx = m_Position[0] - other_s;
 	float mrx = m_Position[0] + other_s;
 	float olx = other->m_Position[0] - other_b; 
@@ -170,7 +172,7 @@ bool Model::IsCollidedWith(Model *other) {
 	float oly = other->m_Position[1] - 0.5; 
 	float ory = other->m_Position[1] + 0.5; 
 	cy = ((oly >= mly && oly <= mry) || (ory >= mly && ory <= mry));
-	
+
 	if (cx && cz && cy) {
 		if (other->m_IsStuck) {
 			if ((m_Position[1] - 0.5) < (other->m_Position[1] + 0.5)) {
@@ -178,49 +180,45 @@ bool Model::IsCollidedWith(Model *other) {
 				m_Position[1] += dy;
 			}
 		}
-    return true;
+		return true;
 	} else {
 		return false;
 	}
 }
 
 float Model::Simulate(float dt) {
-  if (m_Life < 0.0) {
-    Die(dt);
-  } else {
-    Live(dt);
-  }
-  
-  return m_Life;
+	if (m_Life < 0.0) {
+		Die(dt);
+	} else {
+		Live(dt);
+	}
+
+	return m_Life;
 }
 
 void Model::Die(float dt) {
-  //shrink and disappear
-  SetVelocity(0.0, 0.0, 0.0);
-  ScaleTo(0.1, 0.1, 0.1, dt);
+	//shrink and disappear
+	SetVelocity(0.0, 0.0, 0.0);
+	ScaleTo(0.1, 0.1, 0.1, dt);
 }
 
 void Model::Live(float dt) {
-  //move and what not
-  m_Life += dt;
-
-  if (m_Climbing) {
-    //if (ClimbTo(m_Climbing->m_Position[1] + m_Climbing->m_Scale[1], dt)) {
-    //  m_Climbing = NULL;
-    //}
-  } else if (m_IsFalling) {
-    ClimbTo(-10.0, dt);
-  } else {
-    if (m_IsMoving) {
-      MoveTo(m_Velocity[0], m_Velocity[2], dt);
-    }
-  }
+	//move and what not
+	m_Life += dt;
+	if (m_Climbing) {
+	} else if (m_IsFalling) {
+		ClimbTo(-10.0, dt);
+	} else {
+		if (m_IsMoving) {
+			MoveTo(m_Velocity[0], m_Velocity[2], dt);
+		}
+	}
 }
 
 void Model::Harm(Model *other) {
-  //do damage and stuff
-  other->SetVelocity(0.0, 0.0, 0.0);
-  other->m_Life -= 100.0;
+	//do damage and stuff
+	other->SetVelocity(0.0, 0.0, 0.0);
+	other->m_Life -= 100.0;
 }
 
 void Model::Help(Model *other, float dt) {
@@ -231,25 +229,23 @@ void Model::CollideWith(Model *other, float dt) {
 }
 
 void Model::Move(int direction) {
-	//LOGV("move(%d)\n", direction);
 	if (IsMovable()) {
-
-  switch (direction) {
-    case 0:
-		  SetVelocity(m_Position[0] + 1.0, 0.0, m_Position[2]);
-      break;
-	case 1:
-		  SetVelocity(m_Position[0], 0.0, m_Position[2] + 1.0);
-	  break;
-	case 2:
-		  SetVelocity(m_Position[0] - 1.0, 0.0, m_Position[2]);
-	  break;
-	case 3:
-		  SetVelocity(m_Position[0], 0.0, m_Position[2] - 1.0);
-	  break;
-    default:
-      break;
-  }
+		switch (direction) {
+			case 0:
+				SetVelocity(m_Position[0] + 1.0, 0.0, m_Position[2]);
+				break;
+			case 1:
+				SetVelocity(m_Position[0], 0.0, m_Position[2] + 1.0);
+				break;
+			case 2:
+				SetVelocity(m_Position[0] - 1.0, 0.0, m_Position[2]);
+				break;
+			case 3:
+				SetVelocity(m_Position[0], 0.0, m_Position[2] - 1.0);
+				break;
+			default:
+				break;
+		}
 		m_Direction = direction;
 		m_IsMoving = true;
 	}
@@ -258,45 +254,30 @@ void Model::Move(int direction) {
 bool Model::MoveTo(float x, float z, float dt) {
 	float dx = m_Position[0] - x;
 	float dz = m_Position[2] - z;
-  float tx = 0;
-  float tz = 0;
-  bool done = false;
+	float tx = 0;
+	float tz = 0;
+	bool done = false;
 
 	if (fabs(dx) > 0.04 || fabs(dz) > 0.04) {
-		//LOGV("tween\n");
-		//m_Position[0] = m_Position[0] - ((dx) * dt * 20.0);
-		//m_Position[2] = m_Position[2] - ((dz) * dt * 20.0);
-    tx = -((dx) * dt * 15.0);
-    tz = -((dz) * dt * 15.0);
-		//return false;
-    done = false;
+		tx = -((dx) * dt * 15.0);
+		tz = -((dz) * dt * 15.0);
+		done = false;
 	} else {
-		//m_Position[0] = x;
-		//m_Position[2] = z;
-    tx = -dx;
-    tz = -dz;
+		tx = -dx;
+		tz = -dz;
 		m_Velocity[0] = 0;
 		m_Velocity[2] = 0;
 		m_IsMoving = false;
-		//return true;
-    done = true;
+		done = true;
 	}
 
-  m_Position[0] += tx;
-  m_Position[2] += tz;
+	m_Position[0] += tx;
+	m_Position[2] += tz;
 
-  return done;
+	return done;
 }
 
 bool Model::ClimbTo(float y, float dt) {
-  //lerp from here to there at sx
-  //float dy = m_Position[1] - y;
-  //LOGV("%f\n", dy);
-  //if (fabs(dy) > 0.1) {
 	m_Position[1] = m_Position[1] + (y * dt);
-  //  return false;
-  //} else {
-  //  m_Position[1] = y;
-  //  return true;
-  //}
+	return true;
 }
