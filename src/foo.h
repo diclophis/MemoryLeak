@@ -17,6 +17,8 @@ struct foo {
 struct foofoo {
 	int m_numBuffers;
 	GLuint *m_VerticeBuffers;
+	GLuint *m_NormalBuffers;
+	GLuint *m_IndexBuffers;
 	GLuint *m_TextureBuffer;
 	int m_numFaces;
 	int m_numFrames;

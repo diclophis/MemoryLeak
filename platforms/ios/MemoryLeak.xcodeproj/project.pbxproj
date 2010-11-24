@@ -37,32 +37,9 @@
 		FC141AE21285415900166578 /* LimitBoneWeightsProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417D71285415800166578 /* LimitBoneWeightsProcess.cpp */; };
 		FC141AF01285415900166578 /* MakeVerboseFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E51285415800166578 /* MakeVerboseFormat.cpp */; };
 		FC141AF21285415900166578 /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E71285415800166578 /* MaterialSystem.cpp */; };
-		FC141AF41285415900166578 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417E91285415800166578 /* MD2Loader.cpp */; };
-		FC141AF61285415900166578 /* MD3Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417EB1285415800166578 /* MD3Loader.cpp */; };
-		FC141AF81285415900166578 /* MD5Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417ED1285415800166578 /* MD5Loader.cpp */; };
-		FC141AFA1285415900166578 /* MD5Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417EF1285415800166578 /* MD5Parser.cpp */; };
-		FC141AFC1285415900166578 /* MDCLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F11285415800166578 /* MDCLoader.cpp */; };
-		FC141AFE1285415900166578 /* MDLLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F31285415800166578 /* MDLLoader.cpp */; };
-		FC141B001285415900166578 /* MDLMaterialLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F51285415800166578 /* MDLMaterialLoader.cpp */; };
-		FC141B021285415900166578 /* MS3DLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F71285415800166578 /* MS3DLoader.cpp */; };
-		FC141B041285415900166578 /* NDOLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417F91285415800166578 /* NDOLoader.cpp */; };
-		FC141B061285415900166578 /* NFFLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417FB1285415800166578 /* NFFLoader.cpp */; };
-		FC141B081285415900166578 /* ObjFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417FD1285415800166578 /* ObjFileImporter.cpp */; };
-		FC141B0A1285415900166578 /* ObjFileMtlImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1417FF1285415800166578 /* ObjFileMtlImporter.cpp */; };
-		FC141B0C1285415900166578 /* ObjFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418011285415800166578 /* ObjFileParser.cpp */; };
-		FC141B0E1285415900166578 /* OFFLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418031285415800166578 /* OFFLoader.cpp */; };
-		FC141B101285415900166578 /* OgreImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418051285415800166578 /* OgreImporter.cpp */; };
-		FC141B121285415900166578 /* OgreImporterMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418071285415800166578 /* OgreImporterMaterial.cpp */; };
 		FC141B141285415900166578 /* OptimizeGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418091285415800166578 /* OptimizeGraph.cpp */; };
 		FC141B161285415900166578 /* OptimizeMeshes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14180B1285415800166578 /* OptimizeMeshes.cpp */; };
-		FC141B181285415900166578 /* PlyLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14180D1285415800166578 /* PlyLoader.cpp */; };
-		FC141B1A1285415900166578 /* PlyParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14180F1285415800166578 /* PlyParser.cpp */; };
 		FC141B1C1285415900166578 /* PretransformVertices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418111285415800166578 /* PretransformVertices.cpp */; };
-		FC141B1E1285415900166578 /* Q3BSPFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418131285415800166578 /* Q3BSPFileImporter.cpp */; };
-		FC141B201285415900166578 /* Q3BSPFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418151285415800166578 /* Q3BSPFileParser.cpp */; };
-		FC141B221285415900166578 /* Q3BSPZipArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418171285415800166578 /* Q3BSPZipArchive.cpp */; };
-		FC141B241285415900166578 /* Q3DLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418191285415800166578 /* Q3DLoader.cpp */; };
-		FC141B261285415900166578 /* RawLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14181B1285415800166578 /* RawLoader.cpp */; };
 		FC141B281285415900166578 /* RemoveComments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14181D1285415800166578 /* RemoveComments.cpp */; };
 		FC141B2A1285415900166578 /* RemoveRedundantMaterials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */; };
 		FC141B2C1285415900166578 /* RemoveVCProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418211285415800166578 /* RemoveVCProcess.cpp */; };
@@ -70,22 +47,16 @@
 		FC141B311285415900166578 /* ScenePreprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418281285415800166578 /* ScenePreprocessor.cpp */; };
 		FC141B331285415900166578 /* SGSpatialSort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14182A1285415800166578 /* SGSpatialSort.cpp */; };
 		FC141B351285415900166578 /* SkeletonMeshBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14182C1285415800166578 /* SkeletonMeshBuilder.cpp */; };
-		FC141B371285415900166578 /* SMDLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14182E1285415800166578 /* SMDLoader.cpp */; };
 		FC141B391285415900166578 /* SortByPTypeProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418301285415800166578 /* SortByPTypeProcess.cpp */; };
 		FC141B3B1285415900166578 /* SpatialSort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418321285415800166578 /* SpatialSort.cpp */; };
 		FC141B3D1285415900166578 /* SplitLargeMeshes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418341285415800166578 /* SplitLargeMeshes.cpp */; };
 		FC141B3F1285415900166578 /* StandardShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418361285415800166578 /* StandardShapes.cpp */; };
-		FC141B411285415900166578 /* STLLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418381285415800166578 /* STLLoader.cpp */; };
 		FC141B431285415900166578 /* Subdivision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14183A1285415800166578 /* Subdivision.cpp */; };
 		FC141B451285415900166578 /* TargetAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14183C1285415800166578 /* TargetAnimation.cpp */; };
-		FC141B471285415900166578 /* TerragenLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14183E1285415800166578 /* TerragenLoader.cpp */; };
 		FC141B491285415900166578 /* TextureTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418401285415800166578 /* TextureTransform.cpp */; };
 		FC141B4B1285415900166578 /* TriangulateProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418421285415800166578 /* TriangulateProcess.cpp */; };
-		FC141B4D1285415900166578 /* UnrealLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418441285415800166578 /* UnrealLoader.cpp */; };
 		FC141B4F1285415900166578 /* ValidateDataStructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418461285415800166578 /* ValidateDataStructure.cpp */; };
 		FC141B511285415900166578 /* VertexTriangleAdjacency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */; };
-		FC141B531285415900166578 /* XFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14184A1285415800166578 /* XFileImporter.cpp */; };
-		FC141B551285415900166578 /* XFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC14184C1285415800166578 /* XFileParser.cpp */; };
 		FC141B6C1285415900166578 /* ConvertUTF.c in Sources */ = {isa = PBXBuildFile; fileRef = FC14188E1285415800166578 /* ConvertUTF.c */; };
 		FC141BFA1285415900166578 /* irrXML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1419881285415900166578 /* irrXML.cpp */; };
 		FC141BFD1285415900166578 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = FC14198E1285415900166578 /* ioapi.c */; };
@@ -103,7 +74,7 @@
 		FC141C351285415900166578 /* MachineGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A851285415900166578 /* MachineGun.cpp */; };
 		FC141C361285415900166578 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A881285415900166578 /* Model.cpp */; };
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
-		FC1CDCAF129A330500CAFC54 /* LICENSE_1_0.txt in Resources */ = {isa = PBXBuildFile; fileRef = FC1CDCA3129A330500CAFC54 /* LICENSE_1_0.txt */; };
+		FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */; };
 		FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC7020531282309E00BB601D /* CoreAudio.framework */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
@@ -150,32 +121,9 @@
 		FC1417D71285415800166578 /* LimitBoneWeightsProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LimitBoneWeightsProcess.cpp; sourceTree = "<group>"; };
 		FC1417E51285415800166578 /* MakeVerboseFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MakeVerboseFormat.cpp; sourceTree = "<group>"; };
 		FC1417E71285415800166578 /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
-		FC1417E91285415800166578 /* MD2Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD2Loader.cpp; sourceTree = "<group>"; };
-		FC1417EB1285415800166578 /* MD3Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD3Loader.cpp; sourceTree = "<group>"; };
-		FC1417ED1285415800166578 /* MD5Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD5Loader.cpp; sourceTree = "<group>"; };
-		FC1417EF1285415800166578 /* MD5Parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD5Parser.cpp; sourceTree = "<group>"; };
-		FC1417F11285415800166578 /* MDCLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MDCLoader.cpp; sourceTree = "<group>"; };
-		FC1417F31285415800166578 /* MDLLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MDLLoader.cpp; sourceTree = "<group>"; };
-		FC1417F51285415800166578 /* MDLMaterialLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MDLMaterialLoader.cpp; sourceTree = "<group>"; };
-		FC1417F71285415800166578 /* MS3DLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MS3DLoader.cpp; sourceTree = "<group>"; };
-		FC1417F91285415800166578 /* NDOLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NDOLoader.cpp; sourceTree = "<group>"; };
-		FC1417FB1285415800166578 /* NFFLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NFFLoader.cpp; sourceTree = "<group>"; };
-		FC1417FD1285415800166578 /* ObjFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileImporter.cpp; sourceTree = "<group>"; };
-		FC1417FF1285415800166578 /* ObjFileMtlImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileMtlImporter.cpp; sourceTree = "<group>"; };
-		FC1418011285415800166578 /* ObjFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileParser.cpp; sourceTree = "<group>"; };
-		FC1418031285415800166578 /* OFFLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OFFLoader.cpp; sourceTree = "<group>"; };
-		FC1418051285415800166578 /* OgreImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OgreImporter.cpp; sourceTree = "<group>"; };
-		FC1418071285415800166578 /* OgreImporterMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OgreImporterMaterial.cpp; sourceTree = "<group>"; };
 		FC1418091285415800166578 /* OptimizeGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizeGraph.cpp; sourceTree = "<group>"; };
 		FC14180B1285415800166578 /* OptimizeMeshes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptimizeMeshes.cpp; sourceTree = "<group>"; };
-		FC14180D1285415800166578 /* PlyLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyLoader.cpp; sourceTree = "<group>"; };
-		FC14180F1285415800166578 /* PlyParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlyParser.cpp; sourceTree = "<group>"; };
 		FC1418111285415800166578 /* PretransformVertices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PretransformVertices.cpp; sourceTree = "<group>"; };
-		FC1418131285415800166578 /* Q3BSPFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3BSPFileImporter.cpp; sourceTree = "<group>"; };
-		FC1418151285415800166578 /* Q3BSPFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3BSPFileParser.cpp; sourceTree = "<group>"; };
-		FC1418171285415800166578 /* Q3BSPZipArchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3BSPZipArchive.cpp; sourceTree = "<group>"; };
-		FC1418191285415800166578 /* Q3DLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Q3DLoader.cpp; sourceTree = "<group>"; };
-		FC14181B1285415800166578 /* RawLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RawLoader.cpp; sourceTree = "<group>"; };
 		FC14181D1285415800166578 /* RemoveComments.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveComments.cpp; sourceTree = "<group>"; };
 		FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveRedundantMaterials.cpp; sourceTree = "<group>"; };
 		FC1418211285415800166578 /* RemoveVCProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoveVCProcess.cpp; sourceTree = "<group>"; };
@@ -183,22 +131,16 @@
 		FC1418281285415800166578 /* ScenePreprocessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScenePreprocessor.cpp; sourceTree = "<group>"; };
 		FC14182A1285415800166578 /* SGSpatialSort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SGSpatialSort.cpp; sourceTree = "<group>"; };
 		FC14182C1285415800166578 /* SkeletonMeshBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkeletonMeshBuilder.cpp; sourceTree = "<group>"; };
-		FC14182E1285415800166578 /* SMDLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SMDLoader.cpp; sourceTree = "<group>"; };
 		FC1418301285415800166578 /* SortByPTypeProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SortByPTypeProcess.cpp; sourceTree = "<group>"; };
 		FC1418321285415800166578 /* SpatialSort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpatialSort.cpp; sourceTree = "<group>"; };
 		FC1418341285415800166578 /* SplitLargeMeshes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SplitLargeMeshes.cpp; sourceTree = "<group>"; };
 		FC1418361285415800166578 /* StandardShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StandardShapes.cpp; sourceTree = "<group>"; };
-		FC1418381285415800166578 /* STLLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = STLLoader.cpp; sourceTree = "<group>"; };
 		FC14183A1285415800166578 /* Subdivision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Subdivision.cpp; sourceTree = "<group>"; };
 		FC14183C1285415800166578 /* TargetAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TargetAnimation.cpp; sourceTree = "<group>"; };
-		FC14183E1285415800166578 /* TerragenLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TerragenLoader.cpp; sourceTree = "<group>"; };
 		FC1418401285415800166578 /* TextureTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureTransform.cpp; sourceTree = "<group>"; };
 		FC1418421285415800166578 /* TriangulateProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateProcess.cpp; sourceTree = "<group>"; };
-		FC1418441285415800166578 /* UnrealLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnrealLoader.cpp; sourceTree = "<group>"; };
 		FC1418461285415800166578 /* ValidateDataStructure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ValidateDataStructure.cpp; sourceTree = "<group>"; };
 		FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VertexTriangleAdjacency.cpp; sourceTree = "<group>"; };
-		FC14184A1285415800166578 /* XFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XFileImporter.cpp; sourceTree = "<group>"; };
-		FC14184C1285415800166578 /* XFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XFileParser.cpp; sourceTree = "<group>"; };
 		FC14188E1285415800166578 /* ConvertUTF.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ConvertUTF.c; sourceTree = "<group>"; };
 		FC14188F1285415800166578 /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
 		FC1418901285415800166578 /* ConvertUTF.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = ConvertUTF.o; sourceTree = "<group>"; };
@@ -436,10 +378,10 @@
 		FC141A8C1285415900166578 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
 		FC141A8D1285415900166578 /* revision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = revision.h; sourceTree = "<group>"; };
 		FC141C4A1285429700166578 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../../assets; sourceTree = SOURCE_ROOT; };
+		FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD2Loader.cpp; sourceTree = "<group>"; };
 		FC1CDCA0129A330500CAFC54 /* foreach.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = foreach.hpp; sourceTree = "<group>"; };
 		FC1CDCA1129A330500CAFC54 /* format.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = format.hpp; sourceTree = "<group>"; };
 		FC1CDCA2129A330500CAFC54 /* lexical_cast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = lexical_cast.hpp; sourceTree = "<group>"; };
-		FC1CDCA3129A330500CAFC54 /* LICENSE_1_0.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE_1_0.txt; sourceTree = "<group>"; };
 		FC1CDCA5129A330500CAFC54 /* common_factor_rt.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common_factor_rt.hpp; sourceTree = "<group>"; };
 		FC1CDCA6129A330500CAFC54 /* pointer_cast.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pointer_cast.hpp; sourceTree = "<group>"; };
 		FC1CDCA7129A330500CAFC54 /* scoped_array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = scoped_array.hpp; sourceTree = "<group>"; };
@@ -565,6 +507,7 @@
 		FC1417741285415800166578 /* assimp */ = {
 			isa = PBXGroup;
 			children = (
+				FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */,
 				FC1CDC9E129A330500CAFC54 /* BoostWorkaround */,
 				FC14177B1285415800166578 /* aiAssert.cpp */,
 				FC1417811285415800166578 /* Assimp.cpp */,
@@ -591,32 +534,9 @@
 				FC1417D71285415800166578 /* LimitBoneWeightsProcess.cpp */,
 				FC1417E51285415800166578 /* MakeVerboseFormat.cpp */,
 				FC1417E71285415800166578 /* MaterialSystem.cpp */,
-				FC1417E91285415800166578 /* MD2Loader.cpp */,
-				FC1417EB1285415800166578 /* MD3Loader.cpp */,
-				FC1417ED1285415800166578 /* MD5Loader.cpp */,
-				FC1417EF1285415800166578 /* MD5Parser.cpp */,
-				FC1417F11285415800166578 /* MDCLoader.cpp */,
-				FC1417F31285415800166578 /* MDLLoader.cpp */,
-				FC1417F51285415800166578 /* MDLMaterialLoader.cpp */,
-				FC1417F71285415800166578 /* MS3DLoader.cpp */,
-				FC1417F91285415800166578 /* NDOLoader.cpp */,
-				FC1417FB1285415800166578 /* NFFLoader.cpp */,
-				FC1417FD1285415800166578 /* ObjFileImporter.cpp */,
-				FC1417FF1285415800166578 /* ObjFileMtlImporter.cpp */,
-				FC1418011285415800166578 /* ObjFileParser.cpp */,
-				FC1418031285415800166578 /* OFFLoader.cpp */,
-				FC1418051285415800166578 /* OgreImporter.cpp */,
-				FC1418071285415800166578 /* OgreImporterMaterial.cpp */,
 				FC1418091285415800166578 /* OptimizeGraph.cpp */,
 				FC14180B1285415800166578 /* OptimizeMeshes.cpp */,
-				FC14180D1285415800166578 /* PlyLoader.cpp */,
-				FC14180F1285415800166578 /* PlyParser.cpp */,
 				FC1418111285415800166578 /* PretransformVertices.cpp */,
-				FC1418131285415800166578 /* Q3BSPFileImporter.cpp */,
-				FC1418151285415800166578 /* Q3BSPFileParser.cpp */,
-				FC1418171285415800166578 /* Q3BSPZipArchive.cpp */,
-				FC1418191285415800166578 /* Q3DLoader.cpp */,
-				FC14181B1285415800166578 /* RawLoader.cpp */,
 				FC14181D1285415800166578 /* RemoveComments.cpp */,
 				FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */,
 				FC1418211285415800166578 /* RemoveVCProcess.cpp */,
@@ -625,22 +545,16 @@
 				FC1418281285415800166578 /* ScenePreprocessor.cpp */,
 				FC14182A1285415800166578 /* SGSpatialSort.cpp */,
 				FC14182C1285415800166578 /* SkeletonMeshBuilder.cpp */,
-				FC14182E1285415800166578 /* SMDLoader.cpp */,
 				FC1418301285415800166578 /* SortByPTypeProcess.cpp */,
 				FC1418321285415800166578 /* SpatialSort.cpp */,
 				FC1418341285415800166578 /* SplitLargeMeshes.cpp */,
 				FC1418361285415800166578 /* StandardShapes.cpp */,
-				FC1418381285415800166578 /* STLLoader.cpp */,
 				FC14183A1285415800166578 /* Subdivision.cpp */,
 				FC14183C1285415800166578 /* TargetAnimation.cpp */,
-				FC14183E1285415800166578 /* TerragenLoader.cpp */,
 				FC1418401285415800166578 /* TextureTransform.cpp */,
 				FC1418421285415800166578 /* TriangulateProcess.cpp */,
-				FC1418441285415800166578 /* UnrealLoader.cpp */,
 				FC1418461285415800166578 /* ValidateDataStructure.cpp */,
 				FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */,
-				FC14184A1285415800166578 /* XFileImporter.cpp */,
-				FC14184C1285415800166578 /* XFileParser.cpp */,
 			);
 			path = assimp;
 			sourceTree = "<group>";
@@ -944,7 +858,6 @@
 				FC1CDCA0129A330500CAFC54 /* foreach.hpp */,
 				FC1CDCA1129A330500CAFC54 /* format.hpp */,
 				FC1CDCA2129A330500CAFC54 /* lexical_cast.hpp */,
-				FC1CDCA3129A330500CAFC54 /* LICENSE_1_0.txt */,
 				FC1CDCA4129A330500CAFC54 /* math */,
 				FC1CDCA6129A330500CAFC54 /* pointer_cast.hpp */,
 				FC1CDCA7129A330500CAFC54 /* scoped_array.hpp */,
@@ -1041,7 +954,6 @@
 				FC14176D1285413100166578 /* Default.png in Resources */,
 				FC14176F1285413100166578 /* MainWindow.xib in Resources */,
 				FC141C571285429700166578 /* assets in Resources */,
-				FC1CDCAF129A330500CAFC54 /* LICENSE_1_0.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1080,32 +992,9 @@
 				FC141AE21285415900166578 /* LimitBoneWeightsProcess.cpp in Sources */,
 				FC141AF01285415900166578 /* MakeVerboseFormat.cpp in Sources */,
 				FC141AF21285415900166578 /* MaterialSystem.cpp in Sources */,
-				FC141AF41285415900166578 /* MD2Loader.cpp in Sources */,
-				FC141AF61285415900166578 /* MD3Loader.cpp in Sources */,
-				FC141AF81285415900166578 /* MD5Loader.cpp in Sources */,
-				FC141AFA1285415900166578 /* MD5Parser.cpp in Sources */,
-				FC141AFC1285415900166578 /* MDCLoader.cpp in Sources */,
-				FC141AFE1285415900166578 /* MDLLoader.cpp in Sources */,
-				FC141B001285415900166578 /* MDLMaterialLoader.cpp in Sources */,
-				FC141B021285415900166578 /* MS3DLoader.cpp in Sources */,
-				FC141B041285415900166578 /* NDOLoader.cpp in Sources */,
-				FC141B061285415900166578 /* NFFLoader.cpp in Sources */,
-				FC141B081285415900166578 /* ObjFileImporter.cpp in Sources */,
-				FC141B0A1285415900166578 /* ObjFileMtlImporter.cpp in Sources */,
-				FC141B0C1285415900166578 /* ObjFileParser.cpp in Sources */,
-				FC141B0E1285415900166578 /* OFFLoader.cpp in Sources */,
-				FC141B101285415900166578 /* OgreImporter.cpp in Sources */,
-				FC141B121285415900166578 /* OgreImporterMaterial.cpp in Sources */,
 				FC141B141285415900166578 /* OptimizeGraph.cpp in Sources */,
 				FC141B161285415900166578 /* OptimizeMeshes.cpp in Sources */,
-				FC141B181285415900166578 /* PlyLoader.cpp in Sources */,
-				FC141B1A1285415900166578 /* PlyParser.cpp in Sources */,
 				FC141B1C1285415900166578 /* PretransformVertices.cpp in Sources */,
-				FC141B1E1285415900166578 /* Q3BSPFileImporter.cpp in Sources */,
-				FC141B201285415900166578 /* Q3BSPFileParser.cpp in Sources */,
-				FC141B221285415900166578 /* Q3BSPZipArchive.cpp in Sources */,
-				FC141B241285415900166578 /* Q3DLoader.cpp in Sources */,
-				FC141B261285415900166578 /* RawLoader.cpp in Sources */,
 				FC141B281285415900166578 /* RemoveComments.cpp in Sources */,
 				FC141B2A1285415900166578 /* RemoveRedundantMaterials.cpp in Sources */,
 				FC141B2C1285415900166578 /* RemoveVCProcess.cpp in Sources */,
@@ -1113,22 +1002,16 @@
 				FC141B311285415900166578 /* ScenePreprocessor.cpp in Sources */,
 				FC141B331285415900166578 /* SGSpatialSort.cpp in Sources */,
 				FC141B351285415900166578 /* SkeletonMeshBuilder.cpp in Sources */,
-				FC141B371285415900166578 /* SMDLoader.cpp in Sources */,
 				FC141B391285415900166578 /* SortByPTypeProcess.cpp in Sources */,
 				FC141B3B1285415900166578 /* SpatialSort.cpp in Sources */,
 				FC141B3D1285415900166578 /* SplitLargeMeshes.cpp in Sources */,
 				FC141B3F1285415900166578 /* StandardShapes.cpp in Sources */,
-				FC141B411285415900166578 /* STLLoader.cpp in Sources */,
 				FC141B431285415900166578 /* Subdivision.cpp in Sources */,
 				FC141B451285415900166578 /* TargetAnimation.cpp in Sources */,
-				FC141B471285415900166578 /* TerragenLoader.cpp in Sources */,
 				FC141B491285415900166578 /* TextureTransform.cpp in Sources */,
 				FC141B4B1285415900166578 /* TriangulateProcess.cpp in Sources */,
-				FC141B4D1285415900166578 /* UnrealLoader.cpp in Sources */,
 				FC141B4F1285415900166578 /* ValidateDataStructure.cpp in Sources */,
 				FC141B511285415900166578 /* VertexTriangleAdjacency.cpp in Sources */,
-				FC141B531285415900166578 /* XFileImporter.cpp in Sources */,
-				FC141B551285415900166578 /* XFileParser.cpp in Sources */,
 				FC141B6C1285415900166578 /* ConvertUTF.c in Sources */,
 				FC141BFA1285415900166578 /* irrXML.cpp in Sources */,
 				FC141BFD1285415900166578 /* ioapi.c in Sources */,
@@ -1146,6 +1029,7 @@
 				FC141C351285415900166578 /* MachineGun.cpp in Sources */,
 				FC141C361285415900166578 /* Model.cpp in Sources */,
 				FCE2EE2412913FCA00A82A88 /* PixelPusher.cpp in Sources */,
+				FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1176,7 +1060,7 @@
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
-				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SHADOW = NO;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VALUE = YES;
@@ -1209,6 +1093,7 @@
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../src/",
 					"$(SRCROOT)/../../src/assimp/BoostWorkaround/",
@@ -1235,7 +1120,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Debug;
 		};
@@ -1248,7 +1133,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Release;
 		};

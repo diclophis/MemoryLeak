@@ -8,6 +8,15 @@
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : Engine(w, h, t, m, l) {
 	LOGV("PixelPusher::PixelPusher\n");
+	
+	//m_Importer.ReadFile(s, m_PostProcessFlags);	
+    //m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
+    //m_Importer.FreeScene();
+	
+	m_Menu = new Model(m_FooFoos.at(3));
+	m_Menu->SetTexture(6);
+	m_Menu->SetFrame(0);
+	
 	m_Space = new Octree<int>(1024, -1);
 	m_Touches = (float *)malloc(sizeof(float) * 4);
 	m_Touches[0] = m_Touches[1] = m_Touches[2] = m_Touches[3] = 0;
@@ -25,12 +34,17 @@ void PixelPusher::Build() {
 	m_CameraPosition[0] = 0.0;
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
-	Load(1);
+	Load(2);
 }
 
 
 PixelPusher::~PixelPusher() {
 	LOGV("dealloc GameController\n");
+}
+
+
+void PixelPusher::Render() {
+	m_Menu->Render();
 }
 
 
@@ -78,17 +92,33 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 				d2 = 1;
 				d3 = 2;
 				d4 = 0;
-			} else if ((r >= 45 && r <= 135) || (r <= -45 && r >= -135)) {
+			} else if ((r >= 45 && r <= 135)) {
+				d1 = 0;
+				d2 = 2;
+				d3 = 3;
+				d4 = 1;
+			} else if ((r <= -45 && r >= -135)) {
 				d1 = 2;
 				d2 = 0;
 				d3 = 1;
 				d4 = 3;
-			} else if ((r >= 135 && r <= 225) || (r <= -135 && r >= -225)) {
+			} else if ((r >= 135 && r <= 225)) {
 				d1 = 1;
 				d2 = 3;
 				d3 = 0;
 				d4 = 2;
-			} else if ((r >= 225 && r <= 315) || (r <= -225 && r >= -315)) {
+			} else if ((r <= -135 && r >= -225)) {
+				d1 = 3;
+				d2 = 1;
+				d3 = 2;
+				d4 = 0;			
+			} else if ((r >= 225 && r <= 315)) {
+				d1 = 2;
+				d2 = 0;
+				d3 = 1;
+				d4 = 3;	
+			} else if ((r <= -225 && r >= -315)) {
+				d1 = 0;
 				d2 = 2;
 				d3 = 3;
 				d4 = 1;
@@ -124,36 +154,58 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 }
 
 
-int PixelPusher::Simulate() {	
-	bool collided = false;
+int PixelPusher::Simulate() {
+	for (unsigned int mm=0; mm<m_SimulatedModels.size(); mm++) {
+		int m = m_SimulatedModels.at(mm);
 
-	int bx = m_Models[m_PlayerIndex]->m_Position[0] + 32;
-	int by = m_Models[m_PlayerIndex]->m_Position[1] - 1 + 32;
-	int bz = m_Models[m_PlayerIndex]->m_Position[2] + 32;
-	m_Models[m_PlayerIndex]->Simulate(m_DeltaTime);
-	int colliding_index = -1;
-	for (unsigned int i=(bx - 2); i<=(bx + 2); i++) {
-		for (unsigned int j=(by - 2); j<=(by + 2); j++) {
-			for (unsigned int k=(bz - 2); k<=(bz + 2); k++) {
-				colliding_index = m_Space->at(i, j, k);
-				if (colliding_index >= 0 && colliding_index != m_PlayerIndex) {
-					if (m_Models[m_PlayerIndex]->IsCollidedWith(m_Models[colliding_index])) {
-						collided = true;
-						if (m_Models[m_PlayerIndex]->m_IsPlayer && m_Models[colliding_index]->m_IsHarmfulToPlayers) {
-							m_Models[colliding_index]->Harm(m_Models[m_PlayerIndex]);
-						} else if (m_Models[colliding_index]->IsMovable() && m_Models[m_PlayerIndex]->m_Position[1] <= m_Models[colliding_index]->m_Position[1]) {
-							m_Models[colliding_index]->Move(m_Models[m_PlayerIndex]->m_Direction);
-						} else {
-							m_Models[m_PlayerIndex]->Stand();
+		
+		bool collided = false;
+		int bx = m_Models[m]->m_Position[0] + 32;
+		int by = m_Models[m]->m_Position[1] + 32;
+		int bz = m_Models[m]->m_Position[2] + 32;
+
+		
+		int colliding_index = -1;
+		for (unsigned int i=(bx - 2); i<=(bx + 2); i++) {
+			for (unsigned int j=(by - 2); j<=(by + 2); j++) {
+				for (unsigned int k=(bz - 2); k<=(bz + 2); k++) {
+					colliding_index = m_Space->at(i, j, k);
+					if (colliding_index >= 0 && colliding_index != m) {
+						if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
+							collided = true;
+							if (m_Models[m]->m_IsPlayer && m_Models[colliding_index]->m_IsHarmfulToPlayers) {
+								m_Models[colliding_index]->Harm(m_Models[m]);
+							} else if (m_Models[colliding_index]->IsMovable() && m_Models[m]->m_Position[1] <= m_Models[colliding_index]->m_Position[1]) {
+								//if (m_Models[m]->m_IsPlayer) {
+									m_Models[colliding_index]->Move(m_Models[m]->m_Direction);
+								//}
+							} else {
+								//LOGV("foo :%d is standing\n", m);
+								m_Models[m]->Stand();
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	
-	if (!collided) {
-		m_Models[m_PlayerIndex]->Fall();
+		
+		if (!collided) {
+			//LOGV("foo :%d is fall\n", m);
+			m_Models[m]->Fall();
+		}
+		
+		m_Models[m]->Simulate(m_DeltaTime);
+		if (m_Models[m]->m_IsMoving) {
+			//
+		} else {
+			m_Space->erase(bx, by, bz);
+			bx = m_Models[m]->m_Position[0] + 32;
+			by = m_Models[m]->m_Position[1] + 32;
+			bz = m_Models[m]->m_Position[2] + 32;
+			if (by > 0) {
+				m_Space->set(bx, by, bz, m);
+			}
+		}
 	}
 	
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
@@ -164,13 +216,15 @@ int PixelPusher::Simulate() {
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
-	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
-	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
-	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
+	m_CameraTarget[0] = 0.0; //m_Models[m_PlayerIndex]->m_Position[0];
+	m_CameraTarget[1] = 0.0; //m_Models[m_PlayerIndex]->m_Position[1];
+	m_CameraTarget[2] = 0.0; //m_Models[m_PlayerIndex]->m_Position[2];
 	
 	m_CameraPosition[0] = cx;
 	m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;
 	m_CameraPosition[2] = cz;
+	
+	m_Menu->Simulate(m_DeltaTime);
 	
 	return 1;
 }
@@ -235,14 +289,21 @@ void PixelPusher::Load(int level_index) {
 					m_PlayerIndex = m_TerrainEndIndex;
 					t = 1;
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = true;
+					m_SimulatedModels.push_back(m_TerrainEndIndex);
 					break;
 
+				case 0:
+					t = 2;
+					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
+					m_SimulatedModels.push_back(m_TerrainEndIndex);
+					break;
+					
 				default:
 					break;
 			}
 
-			m_Space->set(current[0] + 32, current[1] - 1 + 32, current[2] + 32, m_TerrainEndIndex);
-			m_Models[m_TerrainEndIndex]->SetPosition(current[0], current[1] - 1, current[2]);
+			m_Space->set(current[0] + 32, current[1] + 32, current[2] + 32, m_TerrainEndIndex);
+			m_Models[m_TerrainEndIndex]->SetPosition(current[0], current[1], current[2]);
 			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 			m_Models[m_TerrainEndIndex]->SetScale(0.97, 0.97, 0.97);

@@ -49,6 +49,7 @@ public:
   virtual void Build() = 0;
 	virtual int Simulate() = 0;
 	virtual void Hit(float x, float y, int hitState) = 0;
+	virtual void Render() = 0;
 
 
 	// World Engine

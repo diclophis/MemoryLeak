@@ -280,6 +280,7 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 
 	// allocate output storage
 	pcMesh->mNumVertices = (unsigned int)pcMesh->mNumFaces*3;
+		//printf("FOOO: %d\n", pcMesh->mNumVertices);
 	pcMesh->mVertices = new aiVector3D[pcMesh->mNumVertices];
 	pcMesh->mNormals = new aiVector3D[pcMesh->mNumVertices];
 
@@ -400,6 +401,7 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 			std::swap((float&)vec.z,(float&)vec.y);
 
 			if (m_pcHeader->numTexCoords)	{
+				if (iii == 0) {
 				// validate texture coordinates
 				iIndex = pcTriangles[i].textureIndices[c];
 				if (iIndex >= m_pcHeader->numTexCoords)	{
@@ -413,6 +415,7 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 				// need relative values between 0 and 1
 				pcOut.x = pcTexCoords[iIndex].s / fDivisorU;
 				pcOut.y = 1.f-pcTexCoords[iIndex].t / fDivisorV;
+				}
 			}
 			pScene->mMeshes[iii]->mFaces[i].mIndices[c] = iCurrent;
 		}

@@ -28,8 +28,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 
   char s[128];
-
-  int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
+//aiProcess_JoinIdenticalVertices fuck you
+  int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 
   for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
     snprintf(s, sizeof(s), "%d", i);
@@ -165,6 +165,8 @@ void Engine::DrawScreen(float rotation) {
       for (unsigned int i=0; i<m_Models.size(); i++) {
         m_Models[i]->Render();
       }
+		
+	  Render();
     }
     glPopMatrix();
     pthread_mutex_unlock(&m_Mutex);

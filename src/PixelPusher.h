@@ -11,6 +11,7 @@ public:
 	int Simulate();
 	void Load(int level_index);
 	const char *byte_to_binary(int x);
+	void Render();
 	int m_PlayerIndex;
 	int m_TerrainStartIndex;
 	int m_TerrainEndIndex;
@@ -19,5 +20,7 @@ public:
 	float *m_Touches;
 	float m_CameraRotationSpeed;
 	float m_CameraClimbSpeed;
+	std::vector<int>m_SimulatedModels;
 	Octree<int> *m_Space;
+	Model *m_Menu;
 };
