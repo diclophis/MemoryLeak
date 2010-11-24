@@ -29,7 +29,6 @@ import android.graphics.Color;
 public class DemoActivity extends Activity {
 
 	private GLSurfaceView mGLView;
-  //private WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,30 +36,8 @@ public class DemoActivity extends Activity {
 
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
 
-    /*
-    mWebView = new WebView(this);
-    mWebView.setBackgroundColor(Color.TRANSPARENT);
-    mWebView.setBackgroundDrawable(null);
-
-
-    WebSettings webSettings = mWebView.getSettings();
-    //webSettings.setLightTouchEnabled(true);
-    webSettings.setLoadsImagesAutomatically(true);
-    webSettings.setJavaScriptEnabled(true);
-    webSettings.setSupportZoom(false);
-    webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-    webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
-    */
-
-
-
-
-
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
-
-    //addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    //mWebView.loadUrl("file:///android_asset/index.html");
 
     AssetManager am = getAssets();
     String path;
@@ -202,7 +179,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
           GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
           gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
         }
-        nativeOnSurfaceCreated(textures);
+        nativeOnSurfaceCreated(texture_file_names.length, textures);
       } catch(IOException e) {
       }
     }
@@ -215,9 +192,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
         nativeRender();
     }
 
-    private native void nativeOnSurfaceCreated(int[] textures);
+    private native void nativeOnSurfaceCreated(int count, int[] textures);
     private static native void nativeResize(int w, int h);
     private static native void nativeRender();
-
-    //private static native void nativeDone();
 }

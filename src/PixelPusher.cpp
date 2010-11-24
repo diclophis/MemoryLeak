@@ -8,15 +8,9 @@
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : Engine(w, h, t, m, l) {
 	LOGV("PixelPusher::PixelPusher\n");
-	
-	//m_Importer.ReadFile(s, m_PostProcessFlags);	
-    //m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
-    //m_Importer.FreeScene();
-	
 	m_Menu = new Model(m_FooFoos.at(3));
-	m_Menu->SetTexture(6);
+	m_Menu->SetTexture(m_Textures->at(5));
 	m_Menu->SetFrame(0);
-	
 	m_Space = new Octree<int>(1024, -1);
 	m_Touches = (float *)malloc(sizeof(float) * 4);
 	m_Touches[0] = m_Touches[1] = m_Touches[2] = m_Touches[3] = 0;
@@ -57,6 +51,8 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	int d4 = 0;
 	int r = (((int)RadiansToDegrees(m_CameraRotation)) % 360);
 	
+	LOGV("x:%f, y:%f\n", x, y);
+	
 	switch (hitState) {
 		case 0:
 			m_Touches[0] = x;
@@ -90,43 +86,43 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			if ((r >= 0 && r <= 45) || (r <= 0 && r >= -45)) {
 				d1 = 3;
 				d2 = 1;
-				d3 = 2;
-				d4 = 0;
+				d3 = 0;
+				d4 = 2;
 			} else if ((r >= 45 && r <= 135)) {
 				d1 = 0;
 				d2 = 2;
-				d3 = 3;
-				d4 = 1;
+				d3 = 1;
+				d4 = 3;
 			} else if ((r <= -45 && r >= -135)) {
 				d1 = 2;
 				d2 = 0;
-				d3 = 1;
-				d4 = 3;
+				d3 = 3;
+				d4 = 1;
 			} else if ((r >= 135 && r <= 225)) {
 				d1 = 1;
 				d2 = 3;
-				d3 = 0;
-				d4 = 2;
+				d3 = 2;
+				d4 = 0;
 			} else if ((r <= -135 && r >= -225)) {
 				d1 = 3;
 				d2 = 1;
-				d3 = 2;
-				d4 = 0;			
+				d3 = 0;
+				d4 = 2;			
 			} else if ((r >= 225 && r <= 315)) {
 				d1 = 2;
 				d2 = 0;
-				d3 = 1;
-				d4 = 3;	
+				d3 = 3;
+				d4 = 1;	
 			} else if ((r <= -225 && r >= -315)) {
 				d1 = 0;
 				d2 = 2;
-				d3 = 3;
-				d4 = 1;
+				d3 = 1;
+				d4 = 3;
 			} else if ((r >= 315 && r <= 360) || (r <= -315 && r >= -360)) {
 				d1 = 3;
 				d2 = 1;
-				d3 = 2;
-				d4 = 0;
+				d3 = 0;
+				d4 = 2;
 			} else {
 				LOGV("the fuck\n");
 			}

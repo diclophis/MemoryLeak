@@ -121,7 +121,7 @@ static std::vector<foo*> levels;
 		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
 		location = [touch locationInView:self];
-		location.y = 480.0 - location.y;		
+		location.y = location.y;		
 		game->Hit(location.x, location.y, 0);
 	}
 }
@@ -136,7 +136,7 @@ static std::vector<foo*> levels;
 		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
 		location = [touch locationInView:self];
-		location.y = 480.0 - location.y;
+		location.y = location.y;
 		game->Hit(location.x, location.y, 1);
 	}
 }
@@ -151,7 +151,7 @@ static std::vector<foo*> levels;
 		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
 		location = [touch locationInView:self];
-		location.y = 480.0 - location.y;
+		location.y = location.y;
 		game->Hit(location.x, location.y, 2);
 	}
 }
@@ -166,7 +166,7 @@ static std::vector<foo*> levels;
 		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
 		location = [touch locationInView:self];
-		location.y = 480.0 - location.y;
+		location.y = location.y;
 		game->Hit(location.x, location.y, 0);
 	}
 }
