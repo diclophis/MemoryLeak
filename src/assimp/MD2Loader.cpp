@@ -218,6 +218,7 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 	pScene->mNumMaterials = 1;
 	pScene->mRootNode = new aiNode();
 	pScene->mRootNode->mNumMeshes = m_pcHeader->numFrames;
+	
 	pScene->mRootNode->mMeshes = new unsigned int[pScene->mRootNode->mNumMeshes];
 	for (unsigned int i=0; i<pScene->mRootNode->mNumMeshes; i++) {
 	  pScene->mRootNode->mMeshes[i] = 0;
@@ -231,6 +232,8 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 	for (unsigned int iii=0; iii<pScene->mRootNode->mNumMeshes; iii++) {
 		
 		aiMesh* pcMesh = pScene->mMeshes[iii] = new aiMesh();
+		//pScene->mMeshes.push_back(new aiMesh());
+		
 		pcMesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
 		
 
@@ -363,64 +366,63 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 		else fDivisorV = (float)m_pcHeader->skinHeight;
 	}
 
-	for (unsigned int i = 0; i < (unsigned int)m_pcHeader->numTriangles;++i)	{
-		// Allocate the face
-		pScene->mMeshes[iii]->mFaces[i].mIndices = new unsigned int[3];
-		pScene->mMeshes[iii]->mFaces[i].mNumIndices = 3;
+		for (unsigned int i = 0; i < (unsigned int)m_pcHeader->numTriangles;++i)	{
+			// Allocate the face
+			pScene->mMeshes[iii]->mFaces[i].mIndices = new unsigned int[3];
+			pScene->mMeshes[iii]->mFaces[i].mNumIndices = 3;
 
-		// copy texture coordinates
-		// check whether they are different from the previous value at this index.
-		// In this case, create a full separate set of vertices/normals/texcoords
-		for (unsigned int c = 0; c < 3;++c,++iCurrent)	{
+			// copy texture coordinates
+			// check whether they are different from the previous value at this index.
+			// In this case, create a full separate set of vertices/normals/texcoords
+			for (unsigned int c = 0; c < 3;++c,++iCurrent)	{
 
-			// validate vertex indices
-			register unsigned int iIndex = (unsigned int)pcTriangles[i].vertexIndices[c];
-			if (iIndex >= m_pcHeader->numVertices)	{
-				DefaultLogger::get()->error("MD2: Vertex index is outside the allowed range");
-				iIndex = m_pcHeader->numVertices-1;
-			}
-
-			// read x,y, and z component of the vertex
-			aiVector3D& vec = pcMesh->mVertices[iCurrent];
-
-			vec.x = (float)pcVerts[iIndex].vertex[0] * pcFrame->scale[0];
-			vec.x += pcFrame->translate[0];
-
-			vec.y = (float)pcVerts[iIndex].vertex[1] * pcFrame->scale[1];
-			vec.y += pcFrame->translate[1];
-
-			vec.z = (float)pcVerts[iIndex].vertex[2] * pcFrame->scale[2];
-			vec.z += pcFrame->translate[2];
-
-			// read the normal vector from the precalculated normal table
-			aiVector3D& vNormal = pcMesh->mNormals[iCurrent];
-			LookupNormalIndex(pcVerts[iIndex].lightNormalIndex,vNormal);
-
-			// flip z and y to become right-handed
-			std::swap((float&)vNormal.z,(float&)vNormal.y);
-			std::swap((float&)vec.z,(float&)vec.y);
-
-			if (m_pcHeader->numTexCoords)	{
-				if (iii == 0) {
-				// validate texture coordinates
-				iIndex = pcTriangles[i].textureIndices[c];
-				if (iIndex >= m_pcHeader->numTexCoords)	{
-					DefaultLogger::get()->error("MD2: UV index is outside the allowed range");
-					iIndex = m_pcHeader->numTexCoords-1;
+				// validate vertex indices
+				register unsigned int iIndex = (unsigned int)pcTriangles[i].vertexIndices[c];
+				if (iIndex >= m_pcHeader->numVertices)	{
+					DefaultLogger::get()->error("MD2: Vertex index is outside the allowed range");
+					iIndex = m_pcHeader->numVertices-1;
 				}
 
-				aiVector3D& pcOut = pcMesh->mTextureCoords[0][iCurrent];
+				// read x,y, and z component of the vertex
+				aiVector3D& vec = pcMesh->mVertices[iCurrent];
 
-				// the texture coordinates are absolute values but we
-				// need relative values between 0 and 1
-				pcOut.x = pcTexCoords[iIndex].s / fDivisorU;
-				pcOut.y = 1.f-pcTexCoords[iIndex].t / fDivisorV;
+				vec.x = (float)pcVerts[iIndex].vertex[0] * pcFrame->scale[0];
+				vec.x += pcFrame->translate[0];
+
+				vec.y = (float)pcVerts[iIndex].vertex[1] * pcFrame->scale[1];
+				vec.y += pcFrame->translate[1];
+
+				vec.z = (float)pcVerts[iIndex].vertex[2] * pcFrame->scale[2];
+				vec.z += pcFrame->translate[2];
+
+				// read the normal vector from the precalculated normal table
+				aiVector3D& vNormal = pcMesh->mNormals[iCurrent];
+				LookupNormalIndex(pcVerts[iIndex].lightNormalIndex,vNormal);
+
+				// flip z and y to become right-handed
+				std::swap((float&)vNormal.z,(float&)vNormal.y);
+				std::swap((float&)vec.z,(float&)vec.y);
+
+				if (m_pcHeader->numTexCoords)	{
+					if (iii == 0) {
+					// validate texture coordinates
+					iIndex = pcTriangles[i].textureIndices[c];
+					if (iIndex >= m_pcHeader->numTexCoords)	{
+						DefaultLogger::get()->error("MD2: UV index is outside the allowed range");
+						iIndex = m_pcHeader->numTexCoords-1;
+					}
+
+					aiVector3D& pcOut = pcMesh->mTextureCoords[0][iCurrent];
+
+					// the texture coordinates are absolute values but we
+					// need relative values between 0 and 1
+					pcOut.x = pcTexCoords[iIndex].s / fDivisorU;
+					pcOut.y = 1.f-pcTexCoords[iIndex].t / fDivisorV;
+					}
 				}
+				pScene->mMeshes[iii]->mFaces[i].mIndices[c] = iCurrent;
 			}
-			pScene->mMeshes[iii]->mFaces[i].mIndices[c] = iCurrent;
 		}
-	}
-		
 	}
 }
 

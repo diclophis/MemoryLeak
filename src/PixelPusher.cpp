@@ -29,6 +29,7 @@ void PixelPusher::Build() {
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
 	Load(2);
+	m_FooFoos.clear();
 }
 
 
@@ -306,5 +307,7 @@ void PixelPusher::Load(int level_index) {
 		}
 		m_TerrainEndIndex++;
 	}
+	
+	free(level);
 	free(data);
 }
