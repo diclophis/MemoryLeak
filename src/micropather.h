@@ -41,7 +41,6 @@ distribution.
 #include <vector>
 #include <float.h>
 
-#define _DEBUG
 
 #ifdef _DEBUG
 	#ifndef DEBUG

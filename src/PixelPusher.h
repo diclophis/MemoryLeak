@@ -24,4 +24,5 @@ public:
 	Octree<int> *m_Space;
 	Model *m_Menu;
 	int m_TargetIndex;
+	micropather::MicroPather *m_Pather;
 };

@@ -301,24 +301,22 @@ void Model::Live(float dt) {
 		if (m_IsMoving) {
 			MoveTo(m_Velocity[0], m_Velocity[2], dt);
 		} else {
-			if (m_Steps->size() > 0) {
-			aiVector3D *next_step = (aiVector3D *)m_Steps->front();
-			if (next_step) {
-				float sx = m_Position[0];
-				float sy = m_Position[1];
-				float sz = m_Position[2];
+			if (m_Steps->size() > 1) {
+				aiVector3D *next_step = (aiVector3D *)m_Steps->at(1);
+				if (next_step) {
+					float sx = m_Position[0];
+					float sy = m_Position[1];
+					float sz = m_Position[2];
 
-				float dx = next_step->x - sx;
-				float dy = next_step->y - sy;
-				float dz = next_step->z - sz;
-				
-				SetVelocity(sx + dx, sy + dy, sz + dz);
-				m_Steps->erase(m_Steps->begin());
+					float dx = next_step->x - sx;
+					float dy = next_step->y - sy;
+					float dz = next_step->z - sz;
+					
+					SetVelocity(sx + dx, sy + dy, sz + dz);
+					m_Steps->erase(m_Steps->begin());
 
-				m_IsMoving = true;
-				
-				LOGV("yea?\n");
-			}
+					m_IsMoving = true;
+				}
 			}
 		}
 	}

@@ -141,7 +141,4 @@ public:
 	int m_Direction;
 	
 	std::vector<void *> *m_Steps;
-	void SetSteps(std::vector<void *> *s) {
-		m_Steps = s;
-	}
 };

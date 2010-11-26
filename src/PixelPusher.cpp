@@ -36,86 +36,17 @@ void PixelPusher::Build() {
 
 
 	
-
-
-	
-	
-	
-	
-	
-	
-	
-	//std::vector<void *> path;
-	//m_Models[m_PlayerIndex]->SetSteps(&path);
-	
-	//Model *m = m_Models.at(m_PlayerIndex);
 	ModelOctree *model_octree = new ModelOctree(m_Models, *m_Space, m_PlayerIndex);
-	MicroPather micro_pather(model_octree);
+	m_Pather = new MicroPather(model_octree);
+
 	
-	float totalCost;
 	
-	int x1 = 0;
-	int y1 = 0;
-	int z1 = 0;
-	int x2 = 2;
-	int y2 = 1;
-	int z2 = 1;
 	
-	x1 = m_Models.at(m_PlayerIndex)->m_Position[0];
-	y1 = m_Models.at(m_PlayerIndex)->m_Position[1];
-	z1 = m_Models.at(m_PlayerIndex)->m_Position[2];
 	
-	x2 = m_Models.at(m_TargetIndex)->m_Position[0];
-	y2 = m_Models.at(m_TargetIndex)->m_Position[1];
-	z2 = m_Models.at(m_TargetIndex)->m_Position[2];
 	
-	aiVector3D *startState = new aiVector3D;
-	startState->x = x1;
-	startState->y = y1;
-	startState->z = z1;
 	
-	aiVector3D *endState = new aiVector3D;
-	endState->x = x2;
-	endState->y = y2;
-	endState->z = z2;
 	
-	int result = micro_pather.Solve(startState, endState, m_Models[m_PlayerIndex]->m_Steps, &totalCost);
-	if (result == MicroPather::SOLVED) {
-		LOGV("SOLVED\n");
-		
-		
-		LOGV("MicroPather returned %d\n", result);
-		
-		
-		unsigned k;
-		// Wildly inefficient demo code.
-		unsigned size = m_Models[m_PlayerIndex]->m_Steps->size();
-		for (k=0; k<size; ++k) {
-			
-			aiVector3D *step = (aiVector3D *)m_Models[m_PlayerIndex]->m_Steps->at(k);
-			
-			LOGV("path %f, %f, %f\n", step->x, step->y, step->z);
-			
-			int path_index = m_Space->at(step->x + 32, step->y + 32 - 1, step->z + 32);
-			if (path_index >= 0) {
-				m_Models.at(path_index)->SetScale(1.5, 1.5, 1.5);
-			}
-			
-			
-			/*
-			 x = index / 64;
-			 y = index - x * 64;			
-			 LOGV("path %d, %d\n", x, y);
-			 
-			 
-			 
-			 //CGPoint p = [layer positionAt:ccp(x,y)];
-			 //p.x += 16;
-			 //p.y += 16;
-			 */
-		}
-	}
-	
+
 
 
 	
@@ -364,6 +295,53 @@ int PixelPusher::Simulate() {
 	
 	
 	
+	
+
+	
+	float totalCost;
+	
+	int x1 = 0;
+	int y1 = 0;
+	int z1 = 0;
+	int x2 = 2;
+	int y2 = 1;
+	int z2 = 1;
+	
+	x1 = m_Models.at(m_PlayerIndex)->m_Position[0];
+	y1 = m_Models.at(m_PlayerIndex)->m_Position[1];
+	z1 = m_Models.at(m_PlayerIndex)->m_Position[2];
+	
+	x2 = m_Models.at(m_TargetIndex)->m_Position[0];
+	y2 = m_Models.at(m_TargetIndex)->m_Position[1];
+	z2 = m_Models.at(m_TargetIndex)->m_Position[2];
+	
+	aiVector3D *startState = new aiVector3D;
+	startState->x = x1;
+	startState->y = y1;
+	startState->z = z1;
+	
+	aiVector3D *endState = new aiVector3D;
+	endState->x = x2;
+	endState->y = y2;
+	endState->z = z2;
+	
+	m_Pather->Reset();
+	int result = m_Pather->Solve(startState, endState, m_Models[m_PlayerIndex]->m_Steps, &totalCost);
+	//m_Models[m_PlayerIndex]->m_Steps->
+	if (result == MicroPather::SOLVED) {		
+		/*
+		 unsigned k;
+		 unsigned size = m_Models[m_PlayerIndex]->m_Steps->size();
+		 for (k=0; k<size; ++k) {
+		 aiVector3D *step = (aiVector3D *)m_Models[m_PlayerIndex]->m_Steps->at(k);
+		 LOGV("path %f, %f, %f\n", step->x, step->y, step->z);
+		 int path_index = m_Space->at(step->x + 32, step->y + 32 - 1, step->z + 32);
+		 if (path_index >= 0) {
+		 m_Models.at(path_index)->SetScale(1.5, 1.5, 1.5);
+		 }
+		 }
+		 */
+	}
 	
 	
 	

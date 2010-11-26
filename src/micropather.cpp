@@ -34,9 +34,9 @@ distribution.
 #include <memory.h>
 #include <stdio.h>
 
-#define DEBUG_PATH
+//#define DEBUG_PATH
 //#define DEBUG_PATH_DEEP
-#define TRACK_COLLISION
+//#define TRACK_COLLISION
 
 
 #include "micropather.h"
