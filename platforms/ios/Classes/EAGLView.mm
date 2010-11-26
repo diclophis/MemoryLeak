@@ -105,7 +105,6 @@ static std::vector<foo*> levels;
 
 -(id)initWithCoder:(NSCoder*)coder {
     if ((self = [super initWithCoder:coder])) {
-		//[self build];
 	}
 
     return self;
@@ -219,55 +218,62 @@ GLuint loadTexture(UIImage *image) {
 -(void)startGame {
 	
 	if (game != NULL) {
+		models.clear();
+		textures.clear();
+		levels.clear();
 		delete game;
-	}
 
-	
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
-	for (NSString *path in model_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		models.push_back(firstModel);
 	}
 	
-	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
-	for (NSString *path in level_names) {
-		NSLog(@"the fuck %@", level_names);
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
-		foo *firstLevel = new foo;
-		firstLevel->fp = fd;
-		firstLevel->off = 0;
-		firstLevel->len = len;
-		levels.push_back(firstLevel);
-	}
+	{
 
-	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
-	for (NSString *path in texture_names) {
-		NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-		UIImage *image = [[UIImage alloc] initWithData:texData];		
-
-		if (image == nil) {
-			throw 1;
+	
+		NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
+		for (NSString *path in model_names) {
+			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+			fseek(fd, 0, SEEK_END);
+			unsigned int len = ftell(fd);
+			rewind(fd);
+			foo *firstModel = new foo;
+			firstModel->fp = fd;
+			firstModel->off = 0;
+			firstModel->len = len;
+			models.push_back(firstModel);
+		}
+		
+		NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
+		for (NSString *path in level_names) {
+			NSLog(@"the fuck %@", level_names);
+			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+			fseek(fd, 0, SEEK_END);
+			unsigned int len = ftell(fd);
+			rewind(fd);
+			foo *firstLevel = new foo;
+			firstLevel->fp = fd;
+			firstLevel->off = 0;
+			firstLevel->len = len;
+			levels.push_back(firstLevel);
 		}
 
-		textures.push_back(loadTexture(image));
-		[image release];
-		[texData release];
-	}
+		NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
+		for (NSString *path in texture_names) {
+			NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+			UIImage *image = [[UIImage alloc] initWithData:texData];		
 
-	game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels);
-	game->CreateThread();
-	
-	gameState = 1;
+			if (image == nil) {
+				throw 1;
+			}
+
+			textures.push_back(loadTexture(image));
+			[image release];
+			[texData release];
+		}
+
+		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels);
+		game->CreateThread();
+		
+		gameState = 1;
+	}
 }
 
 

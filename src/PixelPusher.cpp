@@ -4,6 +4,8 @@
 #include "Model.h"
 #include "Engine.h"
 #include "octree.h"
+#include "micropather.h"
+#include "ModelOctree.h"
 #include "PixelPusher.h"
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : Engine(w, h, t, m, l) {
@@ -18,9 +20,9 @@ PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*>
 
 
 void PixelPusher::Build() {
-	m_CameraRotation = 0.0;
+	m_CameraRotation = -45.0;
 	m_CameraRotationSpeed = 0.0;
-	m_CameraHeight = 0.0;
+	m_CameraHeight = 50.0;
 	m_CameraClimbSpeed = 0.0;
 	m_CameraTarget[0] = 0.0;
 	m_CameraTarget[1] = 0.0;
@@ -28,8 +30,111 @@ void PixelPusher::Build() {
 	m_CameraPosition[0] = 0.0;
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
-	Load(2);
+	Load(0);
 	m_FooFoos.clear();
+
+
+
+	
+
+
+	
+	
+	
+	
+	
+	
+	
+	//std::vector<void *> path;
+	//m_Models[m_PlayerIndex]->SetSteps(&path);
+	
+	//Model *m = m_Models.at(m_PlayerIndex);
+	ModelOctree *model_octree = new ModelOctree(m_Models, *m_Space, m_PlayerIndex);
+	MicroPather micro_pather(model_octree);
+	
+	float totalCost;
+	
+	int x1 = 0;
+	int y1 = 0;
+	int z1 = 0;
+	int x2 = 2;
+	int y2 = 1;
+	int z2 = 1;
+	
+	x1 = m_Models.at(m_PlayerIndex)->m_Position[0];
+	y1 = m_Models.at(m_PlayerIndex)->m_Position[1];
+	z1 = m_Models.at(m_PlayerIndex)->m_Position[2];
+	
+	x2 = m_Models.at(m_TargetIndex)->m_Position[0];
+	y2 = m_Models.at(m_TargetIndex)->m_Position[1];
+	z2 = m_Models.at(m_TargetIndex)->m_Position[2];
+	
+	aiVector3D *startState = new aiVector3D;
+	startState->x = x1;
+	startState->y = y1;
+	startState->z = z1;
+	
+	aiVector3D *endState = new aiVector3D;
+	endState->x = x2;
+	endState->y = y2;
+	endState->z = z2;
+	
+	int result = micro_pather.Solve(startState, endState, m_Models[m_PlayerIndex]->m_Steps, &totalCost);
+	if (result == MicroPather::SOLVED) {
+		LOGV("SOLVED\n");
+		
+		
+		LOGV("MicroPather returned %d\n", result);
+		
+		
+		unsigned k;
+		// Wildly inefficient demo code.
+		unsigned size = m_Models[m_PlayerIndex]->m_Steps->size();
+		for (k=0; k<size; ++k) {
+			
+			aiVector3D *step = (aiVector3D *)m_Models[m_PlayerIndex]->m_Steps->at(k);
+			
+			LOGV("path %f, %f, %f\n", step->x, step->y, step->z);
+			
+			int path_index = m_Space->at(step->x + 32, step->y + 32 - 1, step->z + 32);
+			if (path_index >= 0) {
+				m_Models.at(path_index)->SetScale(1.5, 1.5, 1.5);
+			}
+			
+			
+			/*
+			 x = index / 64;
+			 y = index - x * 64;			
+			 LOGV("path %d, %d\n", x, y);
+			 
+			 
+			 
+			 //CGPoint p = [layer positionAt:ccp(x,y)];
+			 //p.x += 16;
+			 //p.y += 16;
+			 */
+		}
+	}
+	
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
 }
 
 
@@ -39,7 +144,7 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
-	m_Menu->Render();
+	//m_Menu->Render();
 }
 
 
@@ -52,7 +157,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	int d4 = 0;
 	int r = (((int)RadiansToDegrees(m_CameraRotation)) % 360);
 	
-	LOGV("x:%f, y:%f\n", x, y);
+	//LOGV("x:%f, y:%f\n", x, y);
 	
 	switch (hitState) {
 		case 0:
@@ -152,6 +257,24 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 
 
 int PixelPusher::Simulate() {
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	for (unsigned int mm=0; mm<m_SimulatedModels.size(); mm++) {
 		int m = m_SimulatedModels.at(mm);
 
@@ -163,21 +286,27 @@ int PixelPusher::Simulate() {
 
 		
 		int colliding_index = -1;
-		for (unsigned int i=(bx - 2); i<=(bx + 2); i++) {
-			for (unsigned int j=(by - 2); j<=(by + 2); j++) {
-				for (unsigned int k=(bz - 2); k<=(bz + 2); k++) {
+		int d = 1;
+		for (unsigned int i=(bx - d); i<=(bx + d); i++) {
+			for (unsigned int j=(by - d); j<=(by + d); j++) {
+				for (unsigned int k=(bz - d); k<=(bz + d); k++) {
+					//LOGV("xyz %d %d %d\n", i, j, k);
 					colliding_index = m_Space->at(i, j, k);
 					if (colliding_index >= 0 && colliding_index != m) {
 						if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
 							collided = true;
 							if (m_Models[m]->m_IsPlayer && m_Models[colliding_index]->m_IsHarmfulToPlayers) {
 								m_Models[colliding_index]->Harm(m_Models[m]);
-							} else if (m_Models[colliding_index]->IsMovable() && m_Models[m]->m_Position[1] <= m_Models[colliding_index]->m_Position[1]) {
-								//if (m_Models[m]->m_IsPlayer) {
+							} else if (m_Models[colliding_index]->IsMovable()) {
+
+								if (m_Models[m]->m_IsPlayer) {
 									m_Models[colliding_index]->Move(m_Models[m]->m_Direction);
-								//}
+								} else if (m_Models[colliding_index]->m_IsPlayer) {
+									m_Models[m]->Move(m_Models[colliding_index]->m_Direction);
+								} else {
+									m_Models[colliding_index]->Move(m_Models[m]->m_Direction);
+								}
 							} else {
-								//LOGV("foo :%d is standing\n", m);
 								m_Models[m]->Stand();
 							}
 						}
@@ -209,7 +338,7 @@ int PixelPusher::Simulate() {
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
 
-	float m_CameraDiameter = 42.0;
+	float m_CameraDiameter = 75.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
@@ -217,11 +346,38 @@ int PixelPusher::Simulate() {
 	m_CameraTarget[1] = 0.0; //m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = 0.0; //m_Models[m_PlayerIndex]->m_Position[2];
 	
+	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
+	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
+	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
+	
 	m_CameraPosition[0] = cx;
 	m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;
 	m_CameraPosition[2] = cz;
 	
 	m_Menu->Simulate(m_DeltaTime);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	return 1;
 }
@@ -290,6 +446,7 @@ void PixelPusher::Load(int level_index) {
 					break;
 
 				case 0:
+					m_TargetIndex = m_TerrainEndIndex;
 					t = 2;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
@@ -304,6 +461,7 @@ void PixelPusher::Load(int level_index) {
 			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 			m_Models[m_TerrainEndIndex]->SetScale(0.97, 0.97, 0.97);
+			LOGV("wha %d %d %d %d\n", current[0], current[1], current[2], current[3]);
 		}
 		m_TerrainEndIndex++;
 	}

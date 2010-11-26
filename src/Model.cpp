@@ -49,6 +49,7 @@ Model::Model(const foofoo *a) : m_FooFoo(a) {
 	SetPosition(0.0, 0.0, 0.0);
 	SetRotation(0.0, 0.0, 0.0);
 	SetVelocity(0.0, 0.0, 0.0);
+	m_Steps = new std::vector<void *>;
 }
 
 
@@ -68,7 +69,7 @@ for( ; firstFrame != frameEnd; ++firstFrame,++secondFrame,++outputVertex)
 foofoo *Model::GetFoo(const aiScene *a) {
 	
 	foofoo *ff = new foofoo;
-	int interp = 10;
+	int interp = 15;
 
 	if (a->mRootNode->mNumMeshes > 1) {
 		ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp) + 1;
@@ -262,7 +263,7 @@ float Model::Simulate(float dt) {
 	if (m_FooFoo->m_numFrames > 1) {
 
 		m_Life += dt;
-		float fps = 30.0;
+		float fps = 60.0;
 		if (m_Life > (1.0 / (float)fps)) {
 			//LOGV("%d\n", m_Frame);
 			m_Frame++;
@@ -299,6 +300,26 @@ void Model::Live(float dt) {
 	} else {
 		if (m_IsMoving) {
 			MoveTo(m_Velocity[0], m_Velocity[2], dt);
+		} else {
+			if (m_Steps->size() > 0) {
+			aiVector3D *next_step = (aiVector3D *)m_Steps->front();
+			if (next_step) {
+				float sx = m_Position[0];
+				float sy = m_Position[1];
+				float sz = m_Position[2];
+
+				float dx = next_step->x - sx;
+				float dy = next_step->y - sy;
+				float dz = next_step->z - sz;
+				
+				SetVelocity(sx + dx, sy + dy, sz + dz);
+				m_Steps->erase(m_Steps->begin());
+
+				m_IsMoving = true;
+				
+				LOGV("yea?\n");
+			}
+			}
 		}
 	}
 }

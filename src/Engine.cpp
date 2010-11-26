@@ -23,30 +23,18 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	pthread_mutex_init(&m_Mutex, 0);
 
 	m_SimulationTime = 0.0;		
-  m_GameState = -1;
+	m_GameState = -1;
 
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 
-  char s[128];
-//aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes fuck you
-  int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
-
-  for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
-    snprintf(s, sizeof(s), "%d", i);
-    m_Importer.ReadFile(s, m_PostProcessFlags);	
-    m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
-    m_Importer.FreeScene();
-  }
-
-/*
-  m_Importer.ReadFile("1", m_PostProcessFlags);	
-  m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
-  m_Importer.FreeScene();
-
-  m_Importer.ReadFile("2", m_PostProcessFlags);	
-  m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
-  m_Importer.FreeScene();
-*/
+	char s[128];
+	int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
+	for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
+		snprintf(s, sizeof(s), "%d", i);
+		m_Importer.ReadFile(s, m_PostProcessFlags);	
+		m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
+		m_Importer.FreeScene();
+	}
 
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
@@ -149,28 +137,28 @@ int Engine::RunThread() {
 
 void Engine::DrawScreen(float rotation) {
 	if (pthread_mutex_lock(&m_Mutex) == 0) {
-    glPushMatrix();
-    {
-      glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-      glRotatef(rotation, 0.0, 0.0, 1.0);
+		glPushMatrix();
+		{
+			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glRotatef(rotation, 0.0, 0.0, 1.0);
 
-      gluLookAt(
-        m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2],
-        m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2],
-        0.0, 1.0, 0.0
-      );
+			gluLookAt(
+			m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2],
+			m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2],
+			0.0, 1.0, 0.0
+			);
 
-      for (unsigned int i=0; i<m_Models.size(); i++) {
-        m_Models[i]->Render();
-      }
-		
-	  Render();
-    }
-    glPopMatrix();
-    pthread_mutex_unlock(&m_Mutex);
-  }
+			for (unsigned int i=0; i<m_Models.size(); i++) {
+				m_Models[i]->Render();
+			}
+
+			Render();
+		}
+		glPopMatrix();
+		pthread_mutex_unlock(&m_Mutex);
+	}
 }
 
 

@@ -23,4 +23,5 @@ public:
 	std::vector<int>m_SimulatedModels;
 	Octree<int> *m_Space;
 	Model *m_Menu;
+	int m_TargetIndex;
 };
