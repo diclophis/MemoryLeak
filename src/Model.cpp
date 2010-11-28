@@ -10,7 +10,10 @@
 
 #include "MemoryLeak.h"
 #include "aiScene.h"
+#include "micropather.h"
+#include "octree.h"
 #include "Model.h"
+#include "ModelOctree.h"
 #include "Engine.h"
 
 
@@ -20,9 +23,12 @@ static GLuint g_lastNormalBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
 
+static GLuint g_staticVertexBuffer = 0;
+static GLuint g_staticNormalBuffer = 0;
+static GLuint g_staticTexcoordBuffer = 0;
+static GLuint g_staticElementBuffer = 0;
 
-
-Model::Model(const foofoo *a) : m_FooFoo(a) {
+Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 	m_IsPlayer = false;
 	m_IsEnemy = false;
 	m_IsBomb = false;
@@ -53,19 +59,8 @@ Model::Model(const foofoo *a) : m_FooFoo(a) {
 }
 
 
-/*
-for( ; firstFrame != frameEnd; ++firstFrame,++secondFrame,++outputVertex)
-{
-	// do interpolation
-	outputVertex->vx = firstFrame->vx + t * static_cast<float>( secondFrame->vx - firstFrame->vx );
-	outputVertex->vy = firstFrame->vy + t * static_cast<float>( secondFrame->vy - firstFrame->vy );
-	outputVertex->vz = firstFrame->vz + t * static_cast<float>( secondFrame->vz - firstFrame->vz );
-	
-
-	
-}
- */
-
+//foofoos must contain #of frame info, look into replace interp
+//implement addverticestofoofoobuffersatposition,rotation,scale,frame
 foofoo *Model::GetFoo(const aiScene *a) {
 	
 	foofoo *ff = new foofoo;
@@ -258,7 +253,9 @@ bool Model::IsCollidedWith(Model *other) {
 	}
 }
 
-float Model::Simulate(float dt) {
+float Model::Simulate(float dt, bool pushing) {
+	
+	m_IsPushing = pushing;
 	
 	if (m_FooFoo->m_numFrames > 1) {
 
@@ -295,30 +292,35 @@ void Model::Live(float dt) {
 	//move and what not
 	m_Life += dt;
 	if (m_Climbing) {
+		//LOGV("climbing\n");
 	} else if (m_IsFalling) {
-		ClimbTo(-10.0, dt);
-	} else {
+		//LOGV("falling\n");
+	} else if (!m_IsPushing) {
 		if (m_IsMoving) {
+			//LOGV("moving\n");
 			MoveTo(m_Velocity[0], m_Velocity[2], dt);
 		} else {
 			if (m_Steps->size() > 1) {
-				aiVector3D *next_step = (aiVector3D *)m_Steps->at(1);
-				if (next_step) {
-					float sx = m_Position[0];
-					float sy = m_Position[1];
-					float sz = m_Position[2];
+				LOGV("stepping\n");
+				int ax, ay;
+				micropather::ModelOctree::NodeToXY(m_Steps->at(1), &ax, &ay);
+				
+				float sx = m_Position[0];
+				float sy = m_Position[1];
+				float sz = m_Position[2];
 
-					float dx = next_step->x - sx;
-					float dy = next_step->y - sy;
-					float dz = next_step->z - sz;
-					
-					SetVelocity(sx + dx, sy + dy, sz + dz);
-					m_Steps->erase(m_Steps->begin());
+				float dx = ax - 10 - sx;
+				float dy = sy - sy;
+				float dz = ay - 10 - sz;
+				
+				SetVelocity(sx + dx, sy + dy, sz + dz);
+				m_Steps->erase(m_Steps->begin());
 
-					m_IsMoving = true;
-				}
+				m_IsMoving = true;
 			}
 		}
+	} else {
+		LOGV("stuck\n");
 	}
 }
 
@@ -385,6 +387,7 @@ bool Model::MoveTo(float x, float z, float dt) {
 }
 
 bool Model::ClimbTo(float y, float dt) {
+	m_IsMoving = false;
 	m_Position[1] = m_Position[1] + (y * dt);
 	return true;
 }

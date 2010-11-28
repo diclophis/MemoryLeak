@@ -1,8 +1,11 @@
 
 
-using namespace micropather;
+//using namespace micropather;
 
-class ModelOctree : public Graph {
+namespace micropather {
+
+
+class ModelOctree : public micropather::Graph {
 
 public:
 	
@@ -18,5 +21,24 @@ public:
 	void PrintStateInfo( void* node );
 	
 	int m_ModelIndex;
+	
+	
+	static void NodeToXY( void* node, int* x, int* y )
+	{
+		int index = (int)node;
+		*y = index / 64;
+		*x = index - *y * 64;
+	}
+	
+	static void* XYToNode( int x, int y )
+	{
+		return (void*) ( y*64 + x );
+	}
+	
+	void SetModelIndex (int i) {
+		m_ModelIndex = i;
+	};
+	
+};
 	
 };

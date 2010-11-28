@@ -13,7 +13,9 @@ public:
 	
 	static foofoo *GetFoo(const aiScene *a);
 	
-	Model(const foofoo *a);
+	bool m_UsesStaticBuffer;
+	
+	Model(const foofoo *a, bool usesStaticBuffer = false);
 	
 	void Render();
 	
@@ -63,8 +65,8 @@ public:
 		m_Scale[1] = m_Scale[1] - ((0.99 * dy) * dt);
 		m_Scale[2] = m_Scale[2] - ((0.99 * dz) * dt);
 	}
-	
-	float Simulate(float dt);
+	bool m_IsPushing;
+	float Simulate(float dt, bool pushing = false);
 	void Die(float dt);
 	void Live(float dt);
 	void Harm(Model *other);
@@ -110,10 +112,6 @@ public:
 
 	void Fall() {
 		m_IsFalling = true;
-	}
-
-	void Stand() {
-		m_IsFalling = false;
 	}
 
 	bool m_IsPlayer;

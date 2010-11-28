@@ -23,8 +23,6 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#include "assimp.h"
-
 #ifdef _MSC_VER
 #pragma warning( disable : 4786 )	// Debugger truncating names.
 #pragma warning( disable : 4530 )	// Exception handler isn't used
@@ -409,21 +407,7 @@ PathNode* PathNodePool::GetPathNode( unsigned frame, void* _state, float _costFr
 
 	PathNode* root = hashTable[key];
 	while( root ) {
-		
-		aiVector3D *me = (aiVector3D *)root->state;
-		aiVector3D *other = (aiVector3D *)_state;
-		bool they_are_equal = (me->x == other->x && me->y == other->y && me->z == other->z);
-		if (they_are_equal) {
-			
-		
-		//if ( root->state == _state ) {
-			
-			
-			
-			
-			
-			
-			
+		if ( root->state == _state ) {
 			if ( root->frame == frame )		// This is the correct state and correct frame.
 				break;
 			// Correct state, wrong frame.
@@ -565,17 +549,8 @@ void MicroPather::GetNodeNeighbors( PathNode* node, std::vector< NodeCost >* pNo
 			// If this assert fires, you have passed a state
 			// as its own neighbor state. This is impossible --
 			// bad things will happen.
-			for ( unsigned i=0; i<stateCostVec.size(); ++i ) {
-				
-				
-				aiVector3D *me = (aiVector3D *)stateCostVec[i].state;
-				aiVector3D *other = (aiVector3D *)node->state;
-				bool they_are_equal = (me->x == other->x && me->y == other->y && me->z == other->z);
-				MPASSERT(!they_are_equal);
-				
-				//MPASSERT( stateCostVec[i].state != node->state );
-				
-			}
+			for ( unsigned i=0; i<stateCostVec.size(); ++i )
+				MPASSERT( stateCostVec[i].state != node->state );
 		}
 		#endif
 
@@ -697,15 +672,13 @@ int MicroPather::Solve( void* startNode, void* endNode, vector< void* >* path, f
 	while ( !open.Empty() )
 	{
 		PathNode* node = open.Pop();
-		aiVector3D *me = (aiVector3D *)node->state;
-		aiVector3D *other = (aiVector3D *)endNode;
-		bool they_are_equal = (me->x == other->x && me->y == other->y && me->z == other->z);
-		if (they_are_equal)
+		
+		if ( node->state == endNode )
 		{
 			GoalReached( node, startNode, endNode, path );
 			*cost = node->costFromStart;
 			#ifdef DEBUG_PATH
-			//DumpStats();
+			DumpStats();
 			#endif
 			return SOLVED;
 		}
@@ -756,7 +729,7 @@ int MicroPather::Solve( void* startNode, void* endNode, vector< void* >* path, f
 		}					
 	}
 	#ifdef DEBUG_PATH
-	//DumpStats();
+	DumpStats();
 	#endif
 	return NO_SOLUTION;		
 }	
@@ -829,16 +802,7 @@ int MicroPather::SolveForNearStates( void* startState, std::vector< StateCost >*
 			}
 			// Groovy. We have new information or improved information.
 			PathNode* child = nodeCostVec[i].node;
-			
-			
-			
-			
-			aiVector3D *me = (aiVector3D *)child->state;
-			aiVector3D *other = (aiVector3D *)newPathNode->state;
-			bool they_are_equal = (me->x == other->x && me->y == other->y && me->z == other->z);
-			MPASSERT(!they_are_equal);
-			
-			//MPASSERT( child->state != newPathNode->state );	// should never re-process the parent.
+			MPASSERT( child->state != newPathNode->state );	// should never re-process the parent.
 
 			child->parent = node;
 			child->costFromStart = newCost;
@@ -867,13 +831,7 @@ int MicroPather::SolveForNearStates( void* startState, std::vector< StateCost >*
 #ifdef DEBUG
 	for( unsigned i=0; i<near->size(); ++i ) {
 		for( unsigned k=i+1; k<near->size(); ++k ) {
-			
-			aiVector3D *me = (aiVector3D *)near->at(i).state;
-			aiVector3D *other = (aiVector3D *)near->at(k).state;
-			bool they_are_equal = (me->x == other->x && me->y == other->y && me->z == other->z);
-			MPASSERT(!they_are_equal);
-			
-			//MPASSERT( near->at(i).state != near->at(k).state );
+			MPASSERT( near->at(i).state != near->at(k).state );
 		}
 	}
 #endif

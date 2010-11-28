@@ -17,6 +17,7 @@
 #include "MachineGun.h"
 #include "Engine.h"
 #include "octree.h"
+#include "micropather.h"
 #include "PixelPusher.h"
 
 extern "C" {

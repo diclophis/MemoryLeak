@@ -25,4 +25,6 @@ public:
 	Model *m_Menu;
 	int m_TargetIndex;
 	micropather::MicroPather *m_Pather;
+	micropather::ModelOctree *m_ModelOctree;
+
 };

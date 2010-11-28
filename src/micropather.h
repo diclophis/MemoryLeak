@@ -41,7 +41,6 @@ distribution.
 #include <vector>
 #include <float.h>
 
-
 #ifdef _DEBUG
 	#ifndef DEBUG
 		#define DEBUG
@@ -331,7 +330,7 @@ namespace micropather
 									to a given state. (On a chessboard, 8.) Higher values use a little
 									more memory.
 		*/
-		MicroPather( Graph* graph, unsigned allocate = 1, unsigned typicalAdjacent = 4);
+		MicroPather( Graph* graph, unsigned allocate = 250, unsigned typicalAdjacent=6 );
 		~MicroPather();
 
 		/**

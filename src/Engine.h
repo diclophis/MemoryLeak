@@ -73,4 +73,5 @@ public:
 	Assimp::Importer m_Importer;
   std::vector<Model *> m_Models;
   std::vector<foofoo *> m_FooFoos;
+	int m_RenderIndex;
 };

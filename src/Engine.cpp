@@ -149,7 +149,7 @@ void Engine::DrawScreen(float rotation) {
 			m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2],
 			0.0, 1.0, 0.0
 			);
-
+			
 			for (unsigned int i=0; i<m_Models.size(); i++) {
 				m_Models[i]->Render();
 			}

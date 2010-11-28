@@ -16,6 +16,7 @@
 #include "MachineGun.h"
 #include "octree.h"
 #include "micropather.h"
+#include "ModelOctree.h"
 #include "PixelPusher.h"
 
 static std::vector<GLuint> textures;
