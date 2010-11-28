@@ -186,33 +186,55 @@ int PixelPusher::Simulate() {
 	for (unsigned int mm=0; mm<m_SimulatedModels.size(); mm++) {
 		int m = m_SimulatedModels.at(mm);
 
-		bool collided = false;
 		int bx = m_Models[m]->m_Position[0] + 32;
 		int by = m_Models[m]->m_Position[1] + 32;
 		int bz = m_Models[m]->m_Position[2] + 32;
 		
 		int colliding_index = -1;
-		int d = 2;
-		bool pushing = false;
 		
+		const int dx[8] = { 1, 0, -1, 0};
+		const int dz[8] = { 0, 1, 0, -1};
+		
+		bool falling = true;
+
 		/*
-		for (unsigned int i=(bx - d); i<=(bx + d); i++) {
-			for (unsigned int j=(by - d); j<=(by + d); j++) {
-				for (unsigned int k=(bz - d); k<=(bz + d); k++) {
-					colliding_index = m_Space->at(i, j, k);
-					if (colliding_index >= 0 && colliding_index != m) {
-						if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-							if (m_Models[colliding_index]->m_Position[1] == m_Models[m]->m_Position[1]) {
-								pushing = true;
-							}
-						}
-					}
+		//up down left right
+		for( int i=0; i<4; ++i ) {
+			int nx = bx + dx[i];
+			int nz = bz + dz[i];
+			//what is there
+			colliding_index = m_Space->at(nx, by, nz);
+			if (colliding_index >= 0 && colliding_index != m) {
+				//something close to me
+				if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
+					
 				}
 			}
 		}
 		*/
+		int nx = m_Models[m]->m_Velocity[0] + 32;
+		int ny = m_Models[m]->m_Velocity[1] + 32;
+		int nz = m_Models[m]->m_Velocity[2] + 32;
 		
-		if (y1 > 0) {
+
+		colliding_index = m_Space->at(nx, ny, nz);
+		if (colliding_index >= 0 && colliding_index != m) {
+			//something close to me
+			if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
+				LOGV("boom\n");
+			}
+		}
+
+		
+		colliding_index = m_Space->at(bx, by - 1, bz);
+		if (colliding_index >= 0 && colliding_index != m) {
+			falling = false;
+		}
+		
+		if (falling) {
+			m_Models[m]->SetVelocity(m_Models[m]->m_Position[0], m_Models[m]->m_Position[1] - 1.0, m_Models[m]->m_Position[2]);
+			m_Models[m]->m_IsMoving = true;
+		} else {
 			float totalCost;
 			
 			int x1 = 0;
@@ -223,17 +245,12 @@ int PixelPusher::Simulate() {
 			int z2 = 1;
 			bool ai = false;
 			
-			
 			x1 = m_Models.at(m)->m_Position[0];
 			y1 = m_Models.at(m)->m_Position[1];
 			z1 = m_Models.at(m)->m_Position[2];
 			
-
-			if (!pushing && !m_Models[m]->m_IsMoving) {	
+			if (!m_Models[m]->m_IsMoving) {	
 				if (m_Models[m]->m_IsPlayer) {
-					//x2 = m_Models.at(m_TargetIndex)->m_Position[0];
-					//y2 = m_Models.at(m_TargetIndex)->m_Position[1];
-					//z2 = m_Models.at(m_TargetIndex)->m_Position[2];
 				} else {
 					ai = true;
 					x2 = m_Models.at(m_PlayerIndex)->m_Position[0];
@@ -247,32 +264,23 @@ int PixelPusher::Simulate() {
 					m_Pather->Reset();
 					m_ModelOctree->SetModelIndex(m);
 					int result = m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
-					//if (result == micropather::MicroPather::SOLVED) {
-					//}
 				}
 			}
 		}
 		
+		m_Models[m]->Simulate(m_DeltaTime, false);
 		
-		if (!collided) {
-			m_Models[m]->ClimbTo(-10.0, m_DeltaTime);
-			if (m_Models[m]->m_Position[1] < -5) {
-				m_Models[m]->SetPosition(0, 10, 0);
-			}
-		} else {
-			m_Models[m]->Simulate(m_DeltaTime, pushing);
-			if (!m_Models[m]->m_IsMoving && !pushing) {
-				//m_Space->erase(bx, by, bz);
-				bx = m_Models[m]->m_Position[0] + 32;
-				by = m_Models[m]->m_Position[1] + 32;
-				bz = m_Models[m]->m_Position[2] + 32;
-				m_Space->set(bx, by, bz, m);
-			}
+		/*
+		if (!m_Models[m]->m_IsMoving && !pushing) {
+			//m_Space->erase(bx, by, bz);
+			bx = m_Models[m]->m_Position[0] + 32;
+			by = m_Models[m]->m_Position[1] + 32;
+			bz = m_Models[m]->m_Position[2] + 32;
+			m_Space->set(bx, by, bz, m);
 		}
+		*/
 	}
 	
-	//LOGV("the fuck %d\n", ((int)(m_SimulationTime * 10)) % 10);
-
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
