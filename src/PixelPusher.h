@@ -26,5 +26,5 @@ public:
 	int m_TargetIndex;
 	micropather::MicroPather *m_Pather;
 	micropather::ModelOctree *m_ModelOctree;
-
+	int m_CircleIndex;
 };

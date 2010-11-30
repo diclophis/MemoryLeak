@@ -77,6 +77,7 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 	int by = 1 + 32;
 	int bz = ay - 10 + 32;
 	
+	LOGV("starting %d %d\n", bx, bz);
 	
 	//int sx = m_Models[m_ModelIndex]->m_Position[0] + 32;
 	//int sy = m_Models[m_ModelIndex]->m_Position[1] + 32;
@@ -92,23 +93,31 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
     for( int i=0; i<4; ++i ) {
 		int nx = bx + dx[i];
 		int nz = bz + dz[i];
-		//m_Models[m_ModelIndex]->SetPosition(bx - 32, by - 32, bz - 32);
 		bool passable = false;
 		colliding_index = m_Scene.at(nx, by, nz);
 		if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
+			/*
 			//something is in my way
 			if (m_Models[colliding_index]->m_IsStuck) {
 			} else {
 				//I can probably move this block
 				//but it may harm me
-				passable = true;
+				if (m_Models[colliding_index]->m_IsPlayer) {
+					passable = true;
+				}
+			}
+			*/
+			if (m_Models[colliding_index]->m_IsPlayer) {
+				LOGV("cannot move to this block %d %d %d %d\n", nx, by, nz, colliding_index);
 			}
 		} else {
 			// there wasnt anything in front of me, but maybe below that there is?
 			colliding_index = m_Scene.at(nx, by - 1, nz);
 			if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
-				//something to stand on
-				passable = true;
+			//	//something to stand on
+				if (m_Models[colliding_index]->m_IsStuck) {
+					passable = true;
+				}
 			}
 		}
 		
