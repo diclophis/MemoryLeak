@@ -166,9 +166,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 
 
 int PixelPusher::Simulate() {
-
-	//LOGV("\nbegin\n");
-	
+/*
 	for (unsigned int i = 0; i < 20; i++) {
 		for (unsigned int j = 0; j < 20; j++) {
 			for (unsigned int k = 0; k < 20; k++) {
@@ -186,33 +184,14 @@ int PixelPusher::Simulate() {
 		}
 		m_Space->set(rx, ry, rz, i);
 	}
+*/
 	
 	for (unsigned int mm=0; mm<m_SimulatedModels.size(); mm++) {
 		int m = m_SimulatedModels.at(mm);
 
-
-		
 		int colliding_index = -1;
 		bool falling = true;
 		bool touching = false;
-		
-		/*
-		const int dx[8] = { 1, 0, -1, 0};
-		const int dz[8] = { 0, 1, 0, -1};
-		//up down left right
-		for( int i=0; i<4; ++i ) {
-			int nx = bx + dx[i];
-			int nz = bz + dz[i];
-			//what is there
-			colliding_index = m_Space->at(nx, by, nz);
-			if (colliding_index >= 0 && colliding_index != m) {
-				//something close to me
-				if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-					
-				}
-			}
-		}
-		*/
 		
 		//where i am
 		int bx = m_Models[m]->m_Position[0];
@@ -225,41 +204,12 @@ int PixelPusher::Simulate() {
 		int nz = m_Models[m]->m_Velocity[2];
 		
 		if (ny > 0) {
-			/*
-			if (m_Models[m]->m_IsMoving) {
-				colliding_index = m_Space->at(nx, ny, nz);
-				if (colliding_index >= 0 && colliding_index != m) {
-					//something close to me
-					if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-						LOGV("boom\n");
-						//touching = true;
-					}
-				}
-			}
-			
-
-			falling = false;
-
-			colliding_index = m_Space->at(bx, by - 1, bz);
-			if (colliding_index >= 0 && colliding_index != m) {
-				if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-				} else {
-				}
-			} else {
-				colliding_index = m_Space->at(nx, ny - 1, nz);
-				if (colliding_index >= 0 && colliding_index != m) {
-				} else {
-					//m_Models[m]->SetVelocity(m_Models[m]->m_Velocity[0], m_Models[m]->m_Position[1] - 2.0, m_Models[m]->m_Velocity[2]);
-					m_Models[m]->m_Position[1] -= (1 * m_DeltaTime);
-					m_Models[m]->m_IsMoving = true;
-				}
-			}
-			*/
-			
-
 			int x1 = 0;
 			int y1 = 0;
 			int z1 = 0;
+			int xx1 = 0;
+			int yy1 = 0;
+			int zz1 = 0;
 			int x2 = 2;
 			int y2 = 1;
 			int z2 = 1;
@@ -269,14 +219,10 @@ int PixelPusher::Simulate() {
 			x1 = m_Models.at(m)->m_Position[0];
 			y1 = m_Models.at(m)->m_Position[1];
 			z1 = m_Models.at(m)->m_Position[2];
-			
-			if (!m_Models[m]->m_IsMoving) {	
-				if (m_Models[m]->m_IsPlayer) {
-				} else {
-					ai = true;
-        }
-				
-				if (ai) {
+
+
+			//if (!m_Models[m]->m_IsMoving) {	
+				if (!m_Models[m]->m_IsPlayer) {
           LOGV("%d %d\n", (m_AiIndex % (m_SimulatedModels.size() - 1)) + 1, mm);
           if (((m_AiIndex % (m_SimulatedModels.size() - 1)) + 1) == mm) {
             is_turn = true;
@@ -285,7 +231,8 @@ int PixelPusher::Simulate() {
             const int dx[8] = { +1, +1, +0, -1, -1, -1, +0, +1};
             const int dz[8] = { +0, +1, +1, +1, +0, -1, -1, -1};
             //int f = m_CircleIndex++ % 8;
-            int f = m_AiIndex % 8;
+            //int f = m_AiIndex % 8;
+            int f = mm % 8;
             x2 = m_Models.at(m_PlayerIndex)->m_Position[0] + dx[f];
             y2 = m_Models.at(m_PlayerIndex)->m_Position[1];
             z2 = m_Models.at(m_PlayerIndex)->m_Position[2] + dz[f];
@@ -299,13 +246,10 @@ int PixelPusher::Simulate() {
               int solved = m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
               switch (solved) {
                 case micropather::MicroPather::SOLVED:
-                  //LOGV("solved\n");
                   break;
                 case micropather::MicroPather::NO_SOLUTION:
-                  //LOGV("no solution\n");
                   break;
                 case micropather::MicroPather::START_END_SAME:
-                  //LOGV("start end same\n");
                   break;	
                 default:
                   break;
@@ -313,10 +257,15 @@ int PixelPusher::Simulate() {
             }
 					}
 				}
-			}
-			
-			m_Models[m]->Simulate(m_DeltaTime, touching);
-		
+      //}
+
+        m_Models[m]->Simulate(m_DeltaTime, touching);
+
+        m_Space->erase(x1, y1, z1);
+        xx1 = m_Models.at(m)->m_Position[0];
+        yy1 = m_Models.at(m)->m_Position[1];
+        zz1 = m_Models.at(m)->m_Position[2];
+        m_Space->set(xx1, yy1, zz1, m);
 		} else {
 			m_Models[m]->SetVelocity(0.0, 25.0, 0.0);
 			m_Models[m]->SetPosition(0.0, 20.0, 0.0);
