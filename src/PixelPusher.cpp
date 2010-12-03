@@ -206,9 +206,9 @@ int PixelPusher::Simulate() {
 		int xx1 = 0;
 		int yy1 = 0;
 		int zz1 = 0;
-		int x2 = 2;
-		int y2 = 1;
-		int z2 = 1;
+		int x2 = 0;
+		int y2 = 0;
+		int z2 = 0;
 		
 		int xd = (nx - bx);
 		int zd = (nz - bz);
@@ -222,7 +222,12 @@ int PixelPusher::Simulate() {
 				if (colliding_index >= 0 && colliding_index != m) {
 					if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
 						//if (m_Models[m]->m_IsPlayer || !m_Models[colliding_index]->m_IsPlayer) {
-							m_Models[colliding_index]->SetVelocity(nx + (xd), ny, nz + (zd));
+						float push_scale = 1.0;
+						if (m_Models[m]->m_IsPlayer) {
+							push_scale = 2.0;
+						}
+						
+							m_Models[colliding_index]->SetVelocity(nx + (xd * push_scale), ny, nz + (zd * push_scale));
 							m_Models[colliding_index]->m_IsMoving = true;
 							m_Models[m]->SetVelocity(bx, by, bz);
 						//}
@@ -241,11 +246,11 @@ int PixelPusher::Simulate() {
 					//if (m == m_LastAiSolved) {
 					//	m_AiIndex++;
 					//}
-					if (((m_AiIndex % (m_SimulatedModels.size() - 1)) + 1) == mm) {
-						is_turn = true;
-					}
-					bool solve = false;
-					if (is_turn) {
+					//if (((m_AiIndex % (m_SimulatedModels.size() - 1)) + 1) == mm) {
+					//	is_turn = true;
+					//}
+					//bool solve = false;
+					//if (is_turn) {
 						/*
 						const float dx[8] = { +1.0, +1.0, +0.0, -1.0, -1.0, -1.0, +0.0, +1.0};
 						const float dz[8] = { +0.0, +1.0, +1.0, +1.0, +0.0, -1.0, -1.0, -1.0};
@@ -269,20 +274,14 @@ int PixelPusher::Simulate() {
 						x2 = round(m_Models.at(m_PlayerIndex)->m_Position[0]);
 						y2 = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
 						z2 = round(m_Models.at(m_PlayerIndex)->m_Position[2]);
-						//colliding_index = m_Space->at(x2, y2, z2);
-						//if (colliding_index == m) {
-						//	solve = false;
-						//	break;
-						//} else {
-							if (m_LastAiSolved != m) {
-								m_LastAiSolved = m;
-								solve = true;
-							//	break;
-							}
+
+						//if (m_LastAiSolved != m) {
+						//	m_LastAiSolved = m;
+						//	solve = true;
 						//}
 						
 						
-						if (solve) {
+						//if (solve) {
 							void *startState = micropather::ModelOctree::XYToNode(bx, bz);
 							void *endState = micropather::ModelOctree::XYToNode(x2, z2);
 							float totalCost;
@@ -302,8 +301,8 @@ int PixelPusher::Simulate() {
 								default:
 									break;
 							}
-						}
-					}
+						//}
+					//}
 				}
 			}
 		}
