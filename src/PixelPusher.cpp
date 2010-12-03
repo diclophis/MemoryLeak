@@ -145,15 +145,15 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			if (fabs(m_Touches[1]) > (m_ScreenHeight * 0.25) && (fabs(dx) > 50 || fabs(dy) > 50)) {
 			  if (fabs(dx) > fabs(dy)) {
 					if (dx > 0) {
-						m_Models[m_PlayerIndex]->Move(d1);
+						m_Models.at(m_PlayerIndex)->Move(d1);
 					} else {
-						m_Models[m_PlayerIndex]->Move(d2);
+						m_Models.at(m_PlayerIndex)->Move(d2);
 					}
         } else {
           if (dy > 0) {
-            m_Models[m_PlayerIndex]->Move(d3);
+            m_Models.at(m_PlayerIndex)->Move(d3);
           } else {
-            m_Models[m_PlayerIndex]->Move(d4);
+            m_Models.at(m_PlayerIndex)->Move(d4);
           }
         }
 			}
@@ -194,14 +194,18 @@ int PixelPusher::Simulate() {
 		bool touching = false;
 		
 		//where i am
-		int bx = m_Models[m]->m_Position[0];
-		int by = m_Models[m]->m_Position[1];
-		int bz = m_Models[m]->m_Position[2];
+		int bx = round(m_Models[m]->m_Position[0]);
+		int by = round(m_Models[m]->m_Position[1]);
+		int bz = round(m_Models[m]->m_Position[2]);
 		
 		//where i am going
 		int nx = m_Models[m]->m_Velocity[0];
 		int ny = by;
 		int nz = m_Models[m]->m_Velocity[2];
+		
+		
+		int xd = (nx - bx);
+		int zd = (nz - bz);
 		
 		if (ny > 0) {
 			int x1 = 0;
@@ -215,15 +219,35 @@ int PixelPusher::Simulate() {
 			int z2 = 1;
 			bool ai = false;
       bool is_turn = false;
+
+      if (m_Models[m]->m_IsMoving) {
+		  //LOGV("fuck1: %d %d %d %d\n", bx, bz, nx, nz);
+		  //LOGV("fuck: %d %d\n", xd, zd);
+		  
+        colliding_index = m_Space->at(nx, ny, nz);
+        if (colliding_index >= 0 && colliding_index != m) {
+          //something close to me
+          if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
+          //LOGV("boom\n");
+            //if (m_Models[m]->m_IsPlayer) {
+
+
+			  //m_Models[colliding_index]->m_Steps->clear();
+              m_Models[colliding_index]->SetVelocity(nx + xd, ny, nz + zd);
+              m_Models[colliding_index]->m_IsMoving = true;
+			  m_Models[m]->SetVelocity(bx, by, bz);
+              //touching = true;
+            //}
+          }
+        }
+      } else {
 			
 			x1 = m_Models.at(m)->m_Position[0];
 			y1 = m_Models.at(m)->m_Position[1];
 			z1 = m_Models.at(m)->m_Position[2];
 
-
 			//if (!m_Models[m]->m_IsMoving) {	
 				if (!m_Models[m]->m_IsPlayer) {
-          LOGV("%d %d\n", (m_AiIndex % (m_SimulatedModels.size() - 1)) + 1, mm);
           if (((m_AiIndex % (m_SimulatedModels.size() - 1)) + 1) == mm) {
             is_turn = true;
           }
@@ -257,7 +281,7 @@ int PixelPusher::Simulate() {
             }
 					}
 				}
-      //}
+      }
 
         m_Models[m]->Simulate(m_DeltaTime, touching);
 
@@ -384,7 +408,7 @@ void PixelPusher::Load(int level_index) {
 			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 			m_Models[m_TerrainEndIndex]->SetScale(0.97, 0.97, 0.97);
-			//LOGV("wha %d %d %d %d\n", (int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
+			//LOGV("wha %d %d %d %d %d\n", (int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex, current[3]);
 		}
 		m_TerrainEndIndex++;
 	}

@@ -312,11 +312,12 @@ void Model::Live(float dt) {
 				float dx = ax - sx;
 				float dy = sy - sy;
 				float dz = ay - sz;
-				
-				SetVelocity(sx + dx, sy + dy, sz + dz);
-				m_Steps->erase(m_Steps->begin());
-
-				m_IsMoving = true;
+			
+        if (dx) {
+          SetVelocity(sx + dx, sy + dy, sz + dz);
+          m_Steps->erase(m_Steps->begin());
+          m_IsMoving = true;
+        }
 			}
 		}
 	} else {
@@ -355,19 +356,23 @@ void Model::Move(int direction) {
 			default:
 				break;
 		}
+    //LOGV("setv %d %f %f\n", direction, m_Position[0], m_Position[2]);
+	//	LOGV("Velocity is %f %f\n", m_Velocity[0], m_Velocity[2]);
+
 		m_Direction = direction;
 		m_IsMoving = true;
 	}
 }
 
 bool Model::MoveTo(float x, float z, float dt) {
+  //LOGV("moveto %f %f\n", x, z);
 	float dx = m_Position[0] - x;
 	float dz = m_Position[2] - z;
-	float tx = 0;
-	float tz = 0;
+	float tx = 0.0;
+	float tz = 0.0;
 	bool done = false;
 
-	if (fabs(dx) > 0.04 || fabs(dz) > 0.04) {
+	if (fabs(dx) > 0.5 || fabs(dz) > 0.5) {
 		tx = -((dx) * dt * 15.0);
 		tz = -((dz) * dt * 15.0);
 		done = false;
@@ -383,6 +388,7 @@ bool Model::MoveTo(float x, float z, float dt) {
 	m_Position[0] += tx;
 	m_Position[2] += tz;
 
+	//LOGV("tx tz: %f %f %f %f\n", tx, tz, m_Position[0], m_Position[2]);
 	return done;
 }
 
