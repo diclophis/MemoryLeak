@@ -28,4 +28,5 @@ public:
 	micropather::ModelOctree *m_ModelOctree;
 	int m_CircleIndex;
   int m_AiIndex;
+	int m_LastAiSolved;
 };

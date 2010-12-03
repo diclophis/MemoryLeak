@@ -304,20 +304,19 @@ void Model::Live(float dt) {
 				//LOGV("stepping\n");
 				int ax, ay;
 				micropather::ModelOctree::NodeToXY(m_Steps->at(1), &ax, &ay);
-				
 				float sx = m_Position[0];
 				float sy = m_Position[1];
 				float sz = m_Position[2];
-
 				float dx = ax - sx;
 				float dy = sy - sy;
 				float dz = ay - sz;
-			
-        if (dx) {
-          SetVelocity(sx + dx, sy + dy, sz + dz);
-          m_Steps->erase(m_Steps->begin());
-          m_IsMoving = true;
-        }
+				if (dx != 0.0 || dy != 0.0 || dz != 0.0) {
+					SetVelocity(sx + dx, sy + dy, sz + dz);
+					m_Steps->erase(m_Steps->begin());
+					m_IsMoving = true;
+				}
+			} else {
+				m_IsMoving = false;
 			}
 		}
 	} else {
@@ -356,9 +355,6 @@ void Model::Move(int direction) {
 			default:
 				break;
 		}
-    //LOGV("setv %d %f %f\n", direction, m_Position[0], m_Position[2]);
-	//	LOGV("Velocity is %f %f\n", m_Velocity[0], m_Velocity[2]);
-
 		m_Direction = direction;
 		m_IsMoving = true;
 	}
@@ -372,9 +368,9 @@ bool Model::MoveTo(float x, float z, float dt) {
 	float tz = 0.0;
 	bool done = false;
 
-	if (fabs(dx) > 0.5 || fabs(dz) > 0.5) {
-		tx = -((dx) * dt * 15.0);
-		tz = -((dz) * dt * 15.0);
+	if (fabs(dx) > 0.05 || fabs(dz) > 0.05) {
+		tx = -((dx) * dt * 5.0);
+		tz = -((dz) * dt * 5.0);
 		done = false;
 	} else {
 		tx = -dx;
