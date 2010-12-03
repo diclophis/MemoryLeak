@@ -81,7 +81,7 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 			colliding_index = m_Scene->at(nx, by, nz);
 			if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
 				if (m_Models->at(colliding_index)->m_IsPlayer) {
-					//passable = true;
+					passable = true;
 				}
 			} else {
 				// there wasnt anything in front of me, but maybe below that there is?

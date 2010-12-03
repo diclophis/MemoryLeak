@@ -221,15 +221,13 @@ int PixelPusher::Simulate() {
 				colliding_index = m_Space->at(nx, ny, nz);
 				if (colliding_index >= 0 && colliding_index != m) {
 					if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-						if (m_Models[m]->m_IsPlayer || !m_Models[colliding_index]->m_IsPlayer) {
-							//m_Space->erase(nx, ny, nz);
+						//if (m_Models[m]->m_IsPlayer || !m_Models[colliding_index]->m_IsPlayer) {
 							m_Models[colliding_index]->SetVelocity(nx + (xd), ny, nz + (zd));
-							//m_Space->set(nx + (xd), ny, nz + (zd), colliding_index);
 							m_Models[colliding_index]->m_IsMoving = true;
 							m_Models[m]->SetVelocity(bx, by, bz);
-						}
-						m_Models[m]->m_Steps->clear();
-						m_Models[colliding_index]->m_Steps->clear();
+						//}
+						//m_Models[m]->m_Steps->clear();
+						//m_Models[colliding_index]->m_Steps->clear();
 					}
 				} else {
 					m_Space->erase(bx, by, bz);
@@ -248,9 +246,9 @@ int PixelPusher::Simulate() {
 					}
 					bool solve = false;
 					if (is_turn) {
+						/*
 						const float dx[8] = { +1.0, +1.0, +0.0, -1.0, -1.0, -1.0, +0.0, +1.0};
 						const float dz[8] = { +0.0, +1.0, +1.0, +1.0, +0.0, -1.0, -1.0, -1.0};
-						
 						for (unsigned int f=0; f<8; f++) {							
 							x2 = round(m_Models.at(m_PlayerIndex)->m_Position[0] + dx[f]);
 							y2 = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
@@ -267,6 +265,22 @@ int PixelPusher::Simulate() {
 								}
 							}
 						}
+						*/
+						x2 = round(m_Models.at(m_PlayerIndex)->m_Position[0]);
+						y2 = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
+						z2 = round(m_Models.at(m_PlayerIndex)->m_Position[2]);
+						//colliding_index = m_Space->at(x2, y2, z2);
+						//if (colliding_index == m) {
+						//	solve = false;
+						//	break;
+						//} else {
+							if (m_LastAiSolved != m) {
+								m_LastAiSolved = m;
+								solve = true;
+							//	break;
+							}
+						//}
+						
 						
 						if (solve) {
 							void *startState = micropather::ModelOctree::XYToNode(bx, bz);
