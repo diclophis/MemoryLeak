@@ -20,7 +20,8 @@ Engine::~Engine() {
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l) {
 	LOGV("Engine::Engine\n");
 	
-	pthread_mutex_init(&m_Mutex, 0);
+  pthread_cond_init(&m_VsyncCond, NULL);
+	pthread_mutex_init(&m_Mutex, NULL);
 
 	m_SimulationTime = 0.0;		
 	m_GameState = -1;
@@ -72,6 +73,13 @@ void Engine::PauseThread() {
 }
 
 
+void Engine::WaitVsync() {
+  pthread_mutex_lock(&m_Mutex);
+  pthread_cond_wait(&m_VsyncCond, &m_Mutex);
+  pthread_mutex_unlock(&m_Mutex);
+}
+
+
 int Engine::RunThread() {
   LOGV("RunThread()\n");
 
@@ -81,7 +89,7 @@ int Engine::RunThread() {
   timeval tim;
   gettimeofday(&tim, NULL);
 
-  int waitedCount = 5;
+  int waitedCount = 1;
   int waitedIndex = 0;
 
   double waitSum = 0.0;
@@ -95,11 +103,17 @@ int Engine::RunThread() {
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 
 	while (m_GameState != 0) {
-    if (pthread_mutex_lock(&m_Mutex) == 0) {
+    //if (pthread_mutex_lock(&m_Mutex) == 0) {
 
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
 
+      averageWait = t2 - t1;
+
+      gettimeofday(&tim, NULL);
+      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+
+      /*
       m_Waits[waitedIndex] = t2 - t1;
 
       gettimeofday(&tim, NULL);
@@ -116,17 +130,23 @@ int Engine::RunThread() {
       }
 
       averageWait = waitSum / (double)waitedCount;
+      */
 
-      if (averageWait > (1.0 / 10.0)) {
-        LOGV("slow avg: %f\n", averageWait);
-      } else {
-        m_DeltaTime = averageWait;
-        m_SimulationTime += (m_DeltaTime);
-        m_GameState = Simulate();
+      if (averageWait > (1.0 / 30.0)) {
+        LOGV("slow avg: %f %f\n", averageWait, 1.0/30.0);
       }
+
+        double interp = 2.0;
+        for (unsigned int i=0; i<interp; i++) {
+          m_DeltaTime = averageWait / interp;
+          m_SimulationTime += (m_DeltaTime);
+          m_GameState = Simulate();
+        }
+      //}
       
-      pthread_mutex_unlock(&m_Mutex);
-    }
+      //pthread_mutex_unlock(&m_Mutex);
+    //}
+    WaitVsync();
   }
 
   LOGV("exiting tick thread\n");
@@ -136,7 +156,7 @@ int Engine::RunThread() {
 
 
 void Engine::DrawScreen(float rotation) {
-	if (pthread_mutex_lock(&m_Mutex) == 0) {
+	//if (pthread_mutex_lock(&m_Mutex) == 0) {
 		glPushMatrix();
 		{
 			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -157,8 +177,9 @@ void Engine::DrawScreen(float rotation) {
 			Render();
 		}
 		glPopMatrix();
-		pthread_mutex_unlock(&m_Mutex);
-	}
+		//pthread_mutex_unlock(&m_Mutex);
+    pthread_cond_signal(&m_VsyncCond);
+	//}
 }
 
 

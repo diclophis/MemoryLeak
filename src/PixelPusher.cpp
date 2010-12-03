@@ -20,10 +20,12 @@ PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*>
 	m_Touches = (float *)malloc(sizeof(float) * 4);
 	m_Touches[0] = m_Touches[1] = m_Touches[2] = m_Touches[3] = 0;
 	m_CircleIndex = 0;
+	m_AiIndex = 0;
 }
 
 
 void PixelPusher::Build() {
+//foo
 	m_CameraRotation = -45.0;
 	m_CameraRotationSpeed = 0.0;
 	m_CameraHeight = 50.0;
@@ -37,8 +39,8 @@ void PixelPusher::Build() {
 	Load(0);
 	m_FooFoos.clear();
 
-
-
+	//GLuint index = glGenLists(1);
+	//glMapBuffer();
 	
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
@@ -167,7 +169,6 @@ int PixelPusher::Simulate() {
 
 	//LOGV("\nbegin\n");
 	
-	
 	for (unsigned int i = 0; i < 20; i++) {
 		for (unsigned int j = 0; j < 20; j++) {
 			for (unsigned int k = 0; k < 20; k++) {
@@ -181,11 +182,10 @@ int PixelPusher::Simulate() {
 		int ry = m_Models[i]->m_Position[1];
 		int rz = m_Models[i]->m_Position[2];
 		if (i == m_PlayerIndex || i == m_TargetIndex) {
-			LOGV("setting space %d %d %d %d\n", rx, ry, rz, i);
+			//LOGV("setting space %d %d %d %d\n", rx, ry, rz, i);
 		}
 		m_Space->set(rx, ry, rz, i);
 	}
-	
 	
 	for (unsigned int mm=0; mm<m_SimulatedModels.size(); mm++) {
 		int m = m_SimulatedModels.at(mm);
@@ -225,6 +225,7 @@ int PixelPusher::Simulate() {
 		int nz = m_Models[m]->m_Velocity[2];
 		
 		if (ny > 0) {
+			/*
 			if (m_Models[m]->m_IsMoving) {
 				colliding_index = m_Space->at(nx, ny, nz);
 				if (colliding_index >= 0 && colliding_index != m) {
@@ -235,8 +236,8 @@ int PixelPusher::Simulate() {
 					}
 				}
 			}
-
 			
+
 			falling = false;
 
 			colliding_index = m_Space->at(bx, by - 1, bz);
@@ -253,6 +254,7 @@ int PixelPusher::Simulate() {
 					m_Models[m]->m_IsMoving = true;
 				}
 			}
+			*/
 			
 
 			int x1 = 0;
@@ -262,35 +264,56 @@ int PixelPusher::Simulate() {
 			int y2 = 1;
 			int z2 = 1;
 			bool ai = false;
+      bool is_turn = false;
 			
 			x1 = m_Models.at(m)->m_Position[0];
 			y1 = m_Models.at(m)->m_Position[1];
 			z1 = m_Models.at(m)->m_Position[2];
 			
-			//if (!m_Models[m]->m_IsMoving) {	
+			if (!m_Models[m]->m_IsMoving) {	
 				if (m_Models[m]->m_IsPlayer) {
 				} else {
 					ai = true;
-					const int dx[8] = { +1, +1, +0, -1, -1, -1, +0, +1};
-					const int dz[8] = { +0, +1, +1, +1, +0, -1, -1, -1};
-					int f = 0; //m % 8;
-					//LOGV("wha %d\n", f);
-					x2 = m_Models.at(m_PlayerIndex)->m_Position[0] + dx[f];
-					y2 = m_Models.at(m_PlayerIndex)->m_Position[1];
-					z2 = m_Models.at(m_PlayerIndex)->m_Position[2] + dz[f];
-				}
+        }
 				
 				if (ai) {
-					if (m_Models[m]->m_Steps->size() <= 1) {
-						void *startState = micropather::ModelOctree::XYToNode(x1, z1);
-						void *endState = micropather::ModelOctree::XYToNode(x2, z2);
-						float totalCost;
-						m_Pather->Reset();
-						m_ModelOctree->SetModelIndex(m);
-						m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
+          LOGV("%d %d\n", (m_AiIndex % (m_SimulatedModels.size() - 1)) + 1, mm);
+          if (((m_AiIndex % (m_SimulatedModels.size() - 1)) + 1) == mm) {
+            is_turn = true;
+          }
+          if (is_turn) {
+            const int dx[8] = { +1, +1, +0, -1, -1, -1, +0, +1};
+            const int dz[8] = { +0, +1, +1, +1, +0, -1, -1, -1};
+            //int f = m_CircleIndex++ % 8;
+            int f = m_AiIndex % 8;
+            x2 = m_Models.at(m_PlayerIndex)->m_Position[0] + dx[f];
+            y2 = m_Models.at(m_PlayerIndex)->m_Position[1];
+            z2 = m_Models.at(m_PlayerIndex)->m_Position[2] + dz[f];
+
+            if (m_Models[m]->m_Steps->size() <= 1) {
+              void *startState = micropather::ModelOctree::XYToNode(x1, z1);
+              void *endState = micropather::ModelOctree::XYToNode(x2, z2);
+              float totalCost;
+              m_Pather->Reset();
+              m_ModelOctree->SetModelIndex(m);
+              int solved = m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
+              switch (solved) {
+                case micropather::MicroPather::SOLVED:
+                  //LOGV("solved\n");
+                  break;
+                case micropather::MicroPather::NO_SOLUTION:
+                  //LOGV("no solution\n");
+                  break;
+                case micropather::MicroPather::START_END_SAME:
+                  //LOGV("start end same\n");
+                  break;	
+                default:
+                  break;
+              }
+            }
 					}
 				}
-			//}
+			}
 			
 			m_Models[m]->Simulate(m_DeltaTime, touching);
 		
@@ -299,6 +322,9 @@ int PixelPusher::Simulate() {
 			m_Models[m]->SetPosition(0.0, 20.0, 0.0);
 		}
 	}
+
+  m_AiIndex++;
+
 	
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
@@ -404,12 +430,12 @@ void PixelPusher::Load(int level_index) {
 			}
 
 			m_Models[m_TerrainEndIndex]->SetPosition(current[0] + 10, current[1], current[2] + 10);
-			m_Space->set((int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], current[3]);
+			m_Space->set((int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
 
 			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 			m_Models[m_TerrainEndIndex]->SetScale(0.97, 0.97, 0.97);
-			LOGV("wha %d %d %d %d\n", (int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], current[3]);
+			//LOGV("wha %d %d %d %d\n", (int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
 		}
 		m_TerrainEndIndex++;
 	}

@@ -13,6 +13,7 @@ LOCAL_CFLAGS := -I../../src -I../../src/include -I../../src/assimp/BoostWorkarou
 CG_SUBDIRS := \
 . \
 ../../../src \
+../../../src/octree \
 ../../../src/assimp \
 ../../../src/contrib/irrXML \
 ../../../src/contrib/ConvertUTF \

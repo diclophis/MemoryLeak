@@ -9,10 +9,10 @@ class ModelOctree : public micropather::Graph {
 
 public:
 	
-	std::vector<Model *> m_Models;
-	Octree<int> m_Scene;
+	std::vector<Model *> *m_Models;
+	Octree<int> *m_Scene;
 	
-	ModelOctree(std::vector<Model *> m, Octree<int> o, int i);
+	ModelOctree(std::vector<Model *> &m, Octree<int> &o, int i);
 	~ModelOctree();
 
 	

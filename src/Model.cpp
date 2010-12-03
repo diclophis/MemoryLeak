@@ -301,7 +301,7 @@ void Model::Live(float dt) {
 			MoveTo(m_Velocity[0], m_Velocity[2], dt);
 		} else {
 			if (m_Steps->size() > 1) {
-				LOGV("stepping\n");
+				//LOGV("stepping\n");
 				int ax, ay;
 				micropather::ModelOctree::NodeToXY(m_Steps->at(1), &ax, &ay);
 				
@@ -309,9 +309,9 @@ void Model::Live(float dt) {
 				float sy = m_Position[1];
 				float sz = m_Position[2];
 
-				float dx = ax - 10 - sx;
+				float dx = ax - sx;
 				float dy = sy - sy;
-				float dz = ay - 10 - sz;
+				float dz = ay - sz;
 				
 				SetVelocity(sx + dx, sy + dy, sz + dz);
 				m_Steps->erase(m_Steps->begin());

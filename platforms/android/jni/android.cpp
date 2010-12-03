@@ -11,13 +11,15 @@
 
 
 #include "importgl.h"
+
 #include "MemoryLeak.h"
 #include "Audio.h"
 #include "Model.h"
-#include "MachineGun.h"
 #include "Engine.h"
+#include "MachineGun.h"
 #include "octree.h"
 #include "micropather.h"
+#include "ModelOctree.h"
 #include "PixelPusher.h"
 
 extern "C" {

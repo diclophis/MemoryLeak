@@ -50,6 +50,9 @@ public:
 	virtual int Simulate() = 0;
 	virtual void Hit(float x, float y, int hitState) = 0;
 	virtual void Render() = 0;
+  void WaitVsync();
+
+
 
 
 	// World Engine
@@ -60,10 +63,11 @@ public:
 	int m_ScreenWidth;
 	int m_ScreenHeight;
   int m_GameState;
-  double m_Waits[5];
+  double m_Waits[1];
   float m_CameraPosition[3];
   float m_CameraTarget[3];
 
+  pthread_cond_t m_VsyncCond;
 	pthread_mutex_t m_Mutex;
 	pthread_t m_Thread;
 
