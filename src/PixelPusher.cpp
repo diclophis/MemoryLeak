@@ -27,9 +27,9 @@ PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*>
 
 void PixelPusher::Build() {
 //foo
-	m_CameraRotation = -45.0;
+	m_CameraRotation = -33.0;
 	m_CameraRotationSpeed = 0.0;
-	m_CameraHeight = 50.0;
+	m_CameraHeight = 10.0;
 	m_CameraClimbSpeed = 0.0;
 	m_CameraTarget[0] = 0.0;
 	m_CameraTarget[1] = 0.0;
@@ -217,6 +217,7 @@ int PixelPusher::Simulate() {
 
 		if (ny >= 0) {
 			if (m_Models[m]->m_IsMoving) {
+				//m_Space->erase(bx, by, bz);
 				colliding_index = m_Space->at(nx, ny, nz);
 				if (colliding_index >= 0 && colliding_index != m) {
 					if (m_Models[colliding_index]->m_IsStuck) {
@@ -227,9 +228,13 @@ int PixelPusher::Simulate() {
 						if (m_Models[m]->m_IsPlayer) {
 							push_scale = 2.0;
 						}						
-						m_Models[colliding_index]->SetVelocity(nx + (xd * push_scale), ny, nz + (zd * push_scale));
+						//m_Models[colliding_index]->SetVelocity(nx + (xd * push_scale), ny, nz + (zd * push_scale));
+						//m_Models[colliding_index]->m_IsMoving = true;
+						//m_Models[m]->SetVelocity(bx + (xd), by, bz + (zd));
+						m_Models[colliding_index]->SetVelocity(nz, ny, nz);
 						m_Models[colliding_index]->m_IsMoving = true;
 						m_Models[m]->SetVelocity(bx, by, bz);
+						m_Models[m]->m_IsMoving = true;
 					}
 				} else {
 					bool falling = false;
@@ -249,19 +254,19 @@ int PixelPusher::Simulate() {
 						m_Models[m]->m_IsMoving = true;
 					}
 					
-				
-					m_Space->erase(bx, by, bz);
-					xx1 = round(m_Models.at(m)->m_Position[0]);
-					yy1 = round(m_Models.at(m)->m_Position[1]);
-					zz1 = round(m_Models.at(m)->m_Position[2]);
+					/*
+					xx1 = (m_Models.at(m)->m_Position[0]);
+					yy1 = (m_Models.at(m)->m_Position[1]);
+					zz1 = (m_Models.at(m)->m_Position[2]);
 					if (yy1 >= 0) {
 						m_Space->set(xx1, yy1, zz1, m);
 					} else {
 						LOGV("fail level\n");
 					}
-					
+					*/
 				}
 			} else {
+				m_Space->set(bx, by, bz, m);
 				if (!m_Models[m]->m_IsPlayer) {
 					//if (m == m_LastAiSolved) {
 					//	m_AiIndex++;
@@ -295,34 +300,26 @@ int PixelPusher::Simulate() {
 						y2 = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
 						z2 = round(m_Models.at(m_PlayerIndex)->m_Position[2]);
 
-						//if (m_LastAiSolved != m) {
-						//	m_LastAiSolved = m;
-						//	solve = true;
-						//}
-						
-						
-						//if (solve) {
-							void *startState = micropather::ModelOctree::XYToNode(bx, bz);
-							void *endState = micropather::ModelOctree::XYToNode(x2, z2);
-							float totalCost;
-							m_Pather->Reset();
-							m_ModelOctree->SetModelIndex(m);
-							int solved = m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
-							switch (solved) {
-								case micropather::MicroPather::SOLVED:
-									//LOGV("solved\n");
-									break;
-								case micropather::MicroPather::NO_SOLUTION:
-									//LOGV("none\n");
-									break;
-								case micropather::MicroPather::START_END_SAME:
-									//LOGV("same\n");
-									break;	
-								default:
-									break;
-							}
-						//}
-					//}
+
+						void *startState = micropather::ModelOctree::XYToNode(bx, bz);
+						void *endState = micropather::ModelOctree::XYToNode(x2, z2);
+						float totalCost;
+						m_Pather->Reset();
+						m_ModelOctree->SetModelIndex(m);
+						int solved = m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
+						switch (solved) {
+							case micropather::MicroPather::SOLVED:
+								//LOGV("solved\n");
+								break;
+							case micropather::MicroPather::NO_SOLUTION:
+								//LOGV("none\n");
+								break;
+							case micropather::MicroPather::START_END_SAME:
+								//LOGV("same\n");
+								break;	
+							default:
+								break;
+						}
 				}
 			}
 		}
@@ -334,7 +331,7 @@ int PixelPusher::Simulate() {
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
 
-	float m_CameraDiameter = 75.0;
+	float m_CameraDiameter = 10.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
@@ -351,9 +348,6 @@ int PixelPusher::Simulate() {
 	m_CameraPosition[2] = cz;
 	
 	m_Menu->Simulate(m_DeltaTime);
-	
-	
-	//LOGV("\nend\n");
 
 	
 	return 1;
