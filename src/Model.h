@@ -40,6 +40,7 @@ public:
 	}
 
 	void SetVelocity(float x, float y, float z) {
+		//LOGV("%f %f %f\n", m_Velocity[0], m_Velocity[1], m_Velocity[2]);
 		m_Velocity[0] = x;
 		m_Velocity[1] = y;
 		m_Velocity[2] = z;
@@ -73,7 +74,7 @@ public:
 	void Help(Model *other, float dt);
 	void CollideWith(Model *other, float dt);
 	void Move(int direction);
-	bool MoveTo(float x, float z, float dt);
+	bool MoveTo(float x, float y, float z, float dt);
 	bool ClimbTo(float y, float dt);
 	bool IsCollidedWith(Model *other);
 	

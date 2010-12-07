@@ -298,7 +298,7 @@ void Model::Live(float dt) {
 	} else if (!m_IsPushing) {
 		if (m_IsMoving) {
 			//LOGV("moving\n");
-			MoveTo(m_Velocity[0], m_Velocity[2], dt);
+			MoveTo(m_Velocity[0], m_Velocity[1], m_Velocity[2], dt);
 		} else {
 			if (m_Steps->size() > 1) {
 				//LOGV("stepping\n");
@@ -341,16 +341,16 @@ void Model::Move(int direction) {
 	if (IsMovable()) {
 		switch (direction) {
 			case 0:
-				SetVelocity(m_Position[0] + 1.0, 0.0, m_Position[2]);
+				SetVelocity(m_Position[0] + 1.0, m_Position[1], m_Position[2]);
 				break;
 			case 1:
-				SetVelocity(m_Position[0], 0.0, m_Position[2] + 1.0);
+				SetVelocity(m_Position[0], m_Position[1], m_Position[2] + 1.0);
 				break;
 			case 2:
-				SetVelocity(m_Position[0] - 1.0, 0.0, m_Position[2]);
+				SetVelocity(m_Position[0] - 1.0, m_Position[1], m_Position[2]);
 				break;
 			case 3:
-				SetVelocity(m_Position[0], 0.0, m_Position[2] - 1.0);
+				SetVelocity(m_Position[0], m_Position[1], m_Position[2] - 1.0);
 				break;
 			default:
 				break;
@@ -360,31 +360,32 @@ void Model::Move(int direction) {
 	}
 }
 
-bool Model::MoveTo(float x, float z, float dt) {
-  //LOGV("moveto %f %f\n", x, z);
+bool Model::MoveTo(float x, float y, float z, float dt) {
 	float dx = m_Position[0] - x;
+	float dy = m_Position[1] - y;
 	float dz = m_Position[2] - z;
 	float tx = 0.0;
+	float ty = 0.0;
 	float tz = 0.0;
 	bool done = false;
-
-	if (fabs(dx) > 0.05 || fabs(dz) > 0.05) {
+	if (fabs(dx) > 0.05 || fabs(dy) > 0.05 || fabs(dz) > 0.05) {
 		tx = -((dx) * dt * 5.0);
+		ty = -((dy) * dt * 5.0);
 		tz = -((dz) * dt * 5.0);
 		done = false;
 	} else {
 		tx = -dx;
+		ty = -dy;
 		tz = -dz;
 		m_Velocity[0] = 0;
+		m_Velocity[1] = 0;
 		m_Velocity[2] = 0;
 		m_IsMoving = false;
 		done = true;
 	}
-
 	m_Position[0] += tx;
+	m_Position[1] += ty;
 	m_Position[2] += tz;
-
-	//LOGV("tx tz: %f %f %f %f\n", tx, tz, m_Position[0], m_Position[2]);
 	return done;
 }
 

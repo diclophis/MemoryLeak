@@ -213,33 +213,53 @@ int PixelPusher::Simulate() {
 		int xd = (nx - bx);
 		int zd = (nz - bz);
 		
-		
-		if (ny > 0) {
-			m_Models[m]->Simulate(m_DeltaTime, touching);
-			bool is_turn = false;
+		m_Models[m]->Simulate(m_DeltaTime, touching);
+
+		if (ny >= 0) {
 			if (m_Models[m]->m_IsMoving) {
 				colliding_index = m_Space->at(nx, ny, nz);
 				if (colliding_index >= 0 && colliding_index != m) {
-					if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-						//if (m_Models[m]->m_IsPlayer || !m_Models[colliding_index]->m_IsPlayer) {
+					if (m_Models[colliding_index]->m_IsStuck) {
+						m_Models[m]->SetVelocity(nx, ny + 1, nz);
+						m_Models[m]->m_IsMoving = true;
+					} else if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
 						float push_scale = 1.0;
 						if (m_Models[m]->m_IsPlayer) {
 							push_scale = 2.0;
-						}
-						
-							m_Models[colliding_index]->SetVelocity(nx + (xd * push_scale), ny, nz + (zd * push_scale));
-							m_Models[colliding_index]->m_IsMoving = true;
-							m_Models[m]->SetVelocity(bx, by, bz);
-						//}
-						//m_Models[m]->m_Steps->clear();
-						//m_Models[colliding_index]->m_Steps->clear();
+						}						
+						m_Models[colliding_index]->SetVelocity(nx + (xd * push_scale), ny, nz + (zd * push_scale));
+						m_Models[colliding_index]->m_IsMoving = true;
+						m_Models[m]->SetVelocity(bx, by, bz);
 					}
 				} else {
+					bool falling = false;
+					if ((by - 1) < 0) {
+						falling = true;
+					} else {
+						colliding_index = m_Space->at(bx, by - 1, bz);
+						if (colliding_index == -1) {
+							falling = true;
+						}
+					}
+					
+					if (falling) {
+						//m_Models[m]->m_IsMoving = false;
+						//m_Models[m]->ClimbTo(-1.0, m_DeltaTime);
+						m_Models[m]->SetVelocity(nx, by - 1, nz);
+						m_Models[m]->m_IsMoving = true;
+					}
+					
+				
 					m_Space->erase(bx, by, bz);
 					xx1 = round(m_Models.at(m)->m_Position[0]);
 					yy1 = round(m_Models.at(m)->m_Position[1]);
 					zz1 = round(m_Models.at(m)->m_Position[2]);
-					m_Space->set(xx1, yy1, zz1, m);
+					if (yy1 >= 0) {
+						m_Space->set(xx1, yy1, zz1, m);
+					} else {
+						LOGV("fail level\n");
+					}
+					
 				}
 			} else {
 				if (!m_Models[m]->m_IsPlayer) {
