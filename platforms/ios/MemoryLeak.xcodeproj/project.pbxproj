@@ -81,6 +81,7 @@
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
+		FCDFB0BF12B17F3600A0B4E1 /* glfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDFB0BD12B17F3600A0B4E1 /* glfont.cpp */; };
 		FCE2EE1312913F2D00A82A88 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCE2EE1212913F2D00A82A88 /* libpthread.dylib */; };
 		FCE2EE2412913FCA00A82A88 /* PixelPusher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */; };
 		FCFECB6411EC0D2000BBBE2A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */; };
@@ -409,6 +410,8 @@
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FCDFB0BD12B17F3600A0B4E1 /* glfont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glfont.cpp; sourceTree = "<group>"; };
+		FCDFB0BE12B17F3600A0B4E1 /* glfont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glfont.h; sourceTree = "<group>"; };
 		FCE2EE1212913F2D00A82A88 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
 		FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PixelPusher.cpp; sourceTree = "<group>"; };
 		FCE2EE2312913FCA00A82A88 /* PixelPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PixelPusher.h; sourceTree = "<group>"; };
@@ -487,6 +490,8 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FCDFB0BD12B17F3600A0B4E1 /* glfont.cpp */,
+				FCDFB0BE12B17F3600A0B4E1 /* glfont.h */,
 				FC10A31E129E3EB70056E630 /* micropather.cpp */,
 				FC10A31F129E3EB70056E630 /* micropather.h */,
 				FC10A320129E3EB70056E630 /* ModelOctree.cpp */,
@@ -1059,6 +1064,7 @@
 				FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */,
 				FC10A322129E3EB70056E630 /* micropather.cpp in Sources */,
 				FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */,
+				FCDFB0BF12B17F3600A0B4E1 /* glfont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

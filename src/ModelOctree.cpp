@@ -57,7 +57,7 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 		
     const int dx[8] = { 1, 0, -1, 0};
     const int dz[8] = { 0, 1, 0, -1};
-    const float cost[8] = { 1.0f, 1.01f, 1.0f, 1.01f};
+    //const float cost[8] = { 1.0f, 1.01f, 1.0f, 1.01f};
 	
 	int colliding_index;
 	
@@ -68,9 +68,11 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 	
 	//LOGV("distance %f\n", look_distance);
 
-	if (look_distance > 20) {
+	if (look_distance > 3) {
 		return;
 	}
+	
+	float pass_cost = 0;
 	
     for( int i=0; i<4; ++i ) {
 		int nx = bx + dx[i];
@@ -82,6 +84,10 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 			if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
 				if (m_Models->at(colliding_index)->m_IsPlayer) {
 					passable = true;
+					pass_cost = 0.0;
+				} else {
+					passable = true;
+					pass_cost = 100.0;
 				}
 			} else {
 				// there wasnt anything in front of me, but maybe below that there is?
@@ -89,6 +95,7 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 				if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
 				//	//something to stand on
 					if (m_Models->at(colliding_index)->m_IsStuck) {
+						pass_cost = 1.0;
 						passable = true;
 					}
 				}
@@ -96,7 +103,7 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 		}
 		
 		if (passable) {
-			StateCost nodeCost = { XYToNode(nx, nz), cost[i] };
+			StateCost nodeCost = { XYToNode(nx, nz), pass_cost };
 			neighbors->push_back(nodeCost);
 		} else {
 

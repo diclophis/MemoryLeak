@@ -15,6 +15,7 @@ PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*>
 	LOGV("PixelPusher::PixelPusher\n");
 	m_Menu = new Model(m_FooFoos.at(3));
 	m_Menu->SetTexture(m_Textures->at(5));
+	m_Menu->SetScale(0.1, 0.1, 0.1);
 	m_Menu->SetFrame(0);
 	m_Space = new Octree<int>(1024, -1);
 	m_Touches = (float *)malloc(sizeof(float) * 4);
@@ -54,7 +55,7 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
-	//m_Menu->Render();
+	m_Menu->Render();
 }
 
 
@@ -187,157 +188,85 @@ int PixelPusher::Simulate() {
 	
 	m_LastAiSolved = -1;
 
+	int collided_index = -1;
 	
-	for (unsigned int mm=0; mm<m_SimulatedModels.size(); mm++) {
-		int m = m_SimulatedModels.at(mm);
-		int colliding_index = -1;
-		bool touching = false;
-		
-		//where i am
-		int bx = round(m_Models[m]->m_Position[0]);
-		int by = round(m_Models[m]->m_Position[1]);
-		int bz = round(m_Models[m]->m_Position[2]);
-		
-		//where i am going
-		int nx = round(m_Models[m]->m_Velocity[0]);
-		int ny = by;
-		int nz = round(m_Models[m]->m_Velocity[2]);
-		
-		int xx1 = 0;
-		int yy1 = 0;
-		int zz1 = 0;
-		int x2 = 0;
-		int y2 = 0;
-		int z2 = 0;
-		
-		int xd = (nx - bx);
-		int zd = (nz - bz);
-		
-		m_Models[m]->Simulate(m_DeltaTime, touching);
-
-		if (ny >= 0) {
-			if (m_Models[m]->m_IsMoving) {
-				//m_Space->erase(bx, by, bz);
-				colliding_index = m_Space->at(nx, ny, nz);
-				if (colliding_index >= 0 && colliding_index != m) {
-					if (m_Models[colliding_index]->m_IsStuck) {
-						m_Models[m]->SetVelocity(nx, ny + 1, nz);
-						m_Models[m]->m_IsMoving = true;
-					} else if (m_Models[m]->IsCollidedWith(m_Models[colliding_index])) {
-						float push_scale = 1.0;
-						if (m_Models[m]->m_IsPlayer) {
-							push_scale = 2.0;
-						}						
-						//m_Models[colliding_index]->SetVelocity(nx + (xd * push_scale), ny, nz + (zd * push_scale));
-						//m_Models[colliding_index]->m_IsMoving = true;
-						//m_Models[m]->SetVelocity(bx + (xd), by, bz + (zd));
-						m_Models[colliding_index]->SetVelocity(nz, ny, nz);
-						m_Models[colliding_index]->m_IsMoving = true;
-						m_Models[m]->SetVelocity(bx, by, bz);
-						m_Models[m]->m_IsMoving = true;
-					}
-				} else {
-					bool falling = false;
-					if ((by - 1) < 0) {
-						falling = true;
-					} else {
-						colliding_index = m_Space->at(bx, by - 1, bz);
-						if (colliding_index == -1) {
-							falling = true;
-						}
-					}
-					
-					if (falling) {
-						//m_Models[m]->m_IsMoving = false;
-						//m_Models[m]->ClimbTo(-1.0, m_DeltaTime);
-						m_Models[m]->SetVelocity(nx, by - 1, nz);
-						m_Models[m]->m_IsMoving = true;
-					}
-					
-					/*
-					xx1 = (m_Models.at(m)->m_Position[0]);
-					yy1 = (m_Models.at(m)->m_Position[1]);
-					zz1 = (m_Models.at(m)->m_Position[2]);
-					if (yy1 >= 0) {
-						m_Space->set(xx1, yy1, zz1, m);
-					} else {
-						LOGV("fail level\n");
-					}
-					*/
-				}
-			} else {
-				m_Space->set(bx, by, bz, m);
-				if (!m_Models[m]->m_IsPlayer) {
-					//if (m == m_LastAiSolved) {
-					//	m_AiIndex++;
-					//}
-					//if (((m_AiIndex % (m_SimulatedModels.size() - 1)) + 1) == mm) {
-					//	is_turn = true;
-					//}
-					//bool solve = false;
-					//if (is_turn) {
-						/*
-						const float dx[8] = { +1.0, +1.0, +0.0, -1.0, -1.0, -1.0, +0.0, +1.0};
-						const float dz[8] = { +0.0, +1.0, +1.0, +1.0, +0.0, -1.0, -1.0, -1.0};
-						for (unsigned int f=0; f<8; f++) {							
-							x2 = round(m_Models.at(m_PlayerIndex)->m_Position[0] + dx[f]);
-							y2 = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
-							z2 = round(m_Models.at(m_PlayerIndex)->m_Position[2] + dz[f]);
-							colliding_index = m_Space->at(x2, y2, z2);
-							if (colliding_index == m) {
-								solve = false;
-								break;
-							} else {
-								if (colliding_index == -1 && m_LastAiSolved != f) {
-									m_LastAiSolved = f;
-									solve = true;
-									break;
-								}
-							}
-						}
-						*/
-						x2 = round(m_Models.at(m_PlayerIndex)->m_Position[0]);
-						y2 = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
-						z2 = round(m_Models.at(m_PlayerIndex)->m_Position[2]);
-
-
-						void *startState = micropather::ModelOctree::XYToNode(bx, bz);
-						void *endState = micropather::ModelOctree::XYToNode(x2, z2);
-						float totalCost;
-						m_Pather->Reset();
-						m_ModelOctree->SetModelIndex(m);
-						int solved = m_Pather->Solve(startState, endState, m_Models[m]->m_Steps, &totalCost);
-						switch (solved) {
-							case micropather::MicroPather::SOLVED:
-								//LOGV("solved\n");
-								break;
-							case micropather::MicroPather::NO_SOLUTION:
-								//LOGV("none\n");
-								break;
-							case micropather::MicroPather::START_END_SAME:
-								//LOGV("same\n");
-								break;	
-							default:
-								break;
-						}
-				}
+	int px = round(m_Models.at(m_PlayerIndex)->m_Position[0]);
+	//int py = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
+	int pz = round(m_Models.at(m_PlayerIndex)->m_Position[2]);
+	
+	for (unsigned int m=0; m<m_SimulatedModels.size(); m++) {
+		int i = m_SimulatedModels.at(m);
+		if (!m_Models[i]->m_IsPlayer) {
+			int bx = round(m_Models[i]->m_Position[0]);
+			//int by = round(m_Models[i]->m_Position[1]);
+			int bz = round(m_Models[i]->m_Position[2]);
+			void *startState = micropather::ModelOctree::XYToNode(bx, bz);
+			void *endState = micropather::ModelOctree::XYToNode(px, pz);
+			float totalCost;
+			m_Pather->Reset();
+			m_ModelOctree->SetModelIndex(i);
+			int solved = m_Pather->Solve(startState, endState, m_Models[i]->m_Steps, &totalCost);
+			switch (solved) {
+				case micropather::MicroPather::SOLVED:
+					//LOGV("solved\n");
+					break;
+				case micropather::MicroPather::NO_SOLUTION:
+					//LOGV("none\n");
+					break;
+				case micropather::MicroPather::START_END_SAME:
+					//LOGV("same\n");
+					break;	
+				default:
+					break;
 			}
 		}
 	}
 	
-	m_AiIndex++;
-	
+	for (unsigned int m=0; m<m_SimulatedModels.size(); m++) {
+		int i = m_SimulatedModels.at(m);
+		
+		int bx = round(m_Models[i]->m_Position[0]);
+		int by = round(m_Models[i]->m_Position[1]);
+		int bz = round(m_Models[i]->m_Position[2]);
+		
+		m_Models[i]->Simulate(m_DeltaTime, false);
+		
+		int ax = round(m_Models[i]->m_Position[0]);
+		int ay = round(m_Models[i]->m_Position[1]);
+		int az = round(m_Models[i]->m_Position[2]);
+
+		int dx = ax - bx;
+		int dy = ay - by;
+		int dz = az - bz;
+		
+		if (bx != ax || by != ay || bz != az) {
+			//LOGV("%d delta(%d %d %d)\n", i, dx, dy, dz);
+			collided_index = m_Space->at(ax, ay, az);
+			if (collided_index >= 0 && collided_index != i) {
+				//LOGV("%d collided (%d %d %d) => (%d %d %d)\n", i, bx, by, bz, ax, ay, az);
+				m_Models[i]->SetPosition((float)bx + ((float)dx * 0.4), (float)by + ((float)dy * 0.4), (float)bz + ((float)dz * 0.4));
+				m_Models[i]->SetVelocity(ax - dx, ay - dy, az - dz);
+				m_Models[i]->m_IsMoving = true;
+			} else {
+				//LOGV("%d moved (%d %d %d) => (%d %d %d)\n", i, bx, by, bz, ax, ay, az);
+				m_Space->erase(bx, by, bz);
+				m_Space->set(ax, ay, az, i);
+			}
+		}
+	}
+
+	/*
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
 
-	float m_CameraDiameter = 10.0;
+	float m_CameraDiameter = 20.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
-	m_CameraTarget[0] = 0.0; //m_Models[m_PlayerIndex]->m_Position[0];
-	m_CameraTarget[1] = 0.0; //m_Models[m_PlayerIndex]->m_Position[1];
-	m_CameraTarget[2] = 0.0; //m_Models[m_PlayerIndex]->m_Position[2];
+	m_CameraTarget[0] = 0.0;
+	m_CameraTarget[1] = 0.0;
+	m_CameraTarget[2] = 0.0;
 	
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
@@ -346,6 +275,15 @@ int PixelPusher::Simulate() {
 	m_CameraPosition[0] = cx;
 	m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;
 	m_CameraPosition[2] = cz;
+	*/
+	
+	m_CameraTarget[0] = 0.0;
+	m_CameraTarget[1] = 0.0;
+	m_CameraTarget[2] = 0.0;
+	
+	m_CameraPosition[0] = 27.0;
+	m_CameraPosition[1] = 0.0;
+	m_CameraPosition[2] = 0.0;
 	
 	m_Menu->Simulate(m_DeltaTime);
 
@@ -407,6 +345,9 @@ void PixelPusher::Load(int level_index) {
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = false;
 					m_Models[m_TerrainEndIndex]->m_IsHarmfulToPlayers = false;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = true;
+					
+					m_Models[m_TerrainEndIndex]->SetScale(0.99, 0.99, 0.99);
+
 					break;
 
 				case 8:
@@ -414,6 +355,9 @@ void PixelPusher::Load(int level_index) {
 					t = 1;
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = true;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
+					
+					m_Models[m_TerrainEndIndex]->SetScale(0.6, 0.6, 0.6);
+
 					break;
 
 				case 0:
@@ -421,6 +365,9 @@ void PixelPusher::Load(int level_index) {
 					t = 2;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
+					
+					m_Models[m_TerrainEndIndex]->SetScale(0.75, 0.75, 0.75);
+
 					break;
 					
 				default:
@@ -429,11 +376,8 @@ void PixelPusher::Load(int level_index) {
 
 			m_Models[m_TerrainEndIndex]->SetPosition(current[0] + 10, current[1], current[2] + 10);
 			m_Space->set((int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
-
 			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
-			m_Models[m_TerrainEndIndex]->SetScale(0.97, 0.97, 0.97);
-			//LOGV("wha %d %d %d %d %d\n", (int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex, current[3]);
 		}
 		m_TerrainEndIndex++;
 	}
