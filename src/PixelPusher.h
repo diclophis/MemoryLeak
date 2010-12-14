@@ -29,4 +29,6 @@ public:
 	int m_CircleIndex;
   int m_AiIndex;
 	int m_LastAiSolved;
+	
+	AtlasSprite *m_Sprite;
 };

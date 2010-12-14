@@ -9,6 +9,8 @@
 #include "ModelOctree.h"
 
 #include "Engine.h"
+#include "AtlasSprite.h"
+
 #include "PixelPusher.h"
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : Engine(w, h, t, m, l) {
@@ -27,7 +29,7 @@ PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*>
 
 
 void PixelPusher::Build() {
-//foo
+
 	m_CameraRotation = -33.0;
 	m_CameraRotationSpeed = 0.0;
 	m_CameraHeight = 10.0;
@@ -40,12 +42,11 @@ void PixelPusher::Build() {
 	m_CameraPosition[2] = 0.0;
 	Load(0);
 	m_FooFoos.clear();
-
-	//GLuint index = glGenLists(1);
-	//glMapBuffer();
 	
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
+	
+	m_Sprite = new AtlasSprite(m_Textures->at(1), 128, 128, 0, 0, 0, 15, 4);
 }
 
 
@@ -55,7 +56,8 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
-	m_Menu->Render();
+	//m_Menu->Render();
+	m_Sprite->Render();
 }
 
 

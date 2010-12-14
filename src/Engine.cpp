@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "Model.h"
+#include "AtlasSprite.h"
 #include "Engine.h"
 
 
@@ -45,9 +46,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_NORMAL_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glLoadIdentity();
 }
 
@@ -156,14 +157,15 @@ int Engine::RunThread() {
 
 
 void Engine::DrawScreen(float rotation) {
-	//if (pthread_mutex_lock(&m_Mutex) == 0) {
 		glPushMatrix();
 		{
+			
 			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glRotatef(rotation, 0.0, 0.0, 1.0);
 
+			/*
 			gluLookAt(
 			m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2],
 			m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2],
@@ -173,13 +175,12 @@ void Engine::DrawScreen(float rotation) {
 			for (unsigned int i=0; i<m_Models.size(); i++) {
 				m_Models[i]->Render();
 			}
-
+			*/
+			
 			Render();
 		}
 		glPopMatrix();
-		//pthread_mutex_unlock(&m_Mutex);
-    pthread_cond_signal(&m_VsyncCond);
-	//}
+		pthread_cond_signal(&m_VsyncCond);
 }
 
 
@@ -209,5 +210,12 @@ void Engine::ResizeScreen(int width, int height) {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(20.0, (float)width / (float)height, 0.1, 500.0);
+	//glOrthof(0, 480, 320, 0, 1, -1);
+	
+	float aspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
+    float halfHeight = m_ScreenHeight * 0.5;
+    glOrthof( -halfHeight*aspect, halfHeight*aspect, -halfHeight, halfHeight, 1.0f, -1.0f );
+	
+	
+	//gluPerspective(20.0, (float)width / (float)height, 0.1, 500.0);
 }
