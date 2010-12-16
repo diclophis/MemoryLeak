@@ -17,7 +17,7 @@ class AtlasSprite {
 	} Sprite;
 	
 	
-	int m_Texture;
+	GLuint m_Texture;
 	int m_TextureWidth;
 	int m_TextureHeight;
 	int m_SpriteWidth;
@@ -25,6 +25,7 @@ class AtlasSprite {
 	int m_SpriteIndexStart;
 	int m_SpriteIndexEnd;
 	int m_SpritesPerRow;
+	int m_Rows;
 	int m_Frame;
 	Sprite *m_Sprites;
 	char m_Animation[1024];
@@ -38,7 +39,7 @@ class AtlasSprite {
 		//memcpy(m_Animation, a, sizeof(char) * 1024);
 	}
 	
-	AtlasSprite(int t, int tw, int th, int sw, int sh, int s, int e, int spr);
+	AtlasSprite(GLuint t, int tw, int th, int sw, int sh, int s, int e, int spr, int rows);
 	void Render();
 	
 	int m_Count;

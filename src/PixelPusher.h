@@ -27,7 +27,7 @@ public:
 	micropather::MicroPather *m_Pather;
 	micropather::ModelOctree *m_ModelOctree;
 	int m_CircleIndex;
-  int m_AiIndex;
+	int m_AiIndex;
 	int m_LastAiSolved;
 	
 	AtlasSprite *m_Sprite;

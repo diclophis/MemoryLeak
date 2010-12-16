@@ -41,11 +41,13 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
 	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	
+	//glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LESS);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	
 	//glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_NORMAL_ARRAY);
 	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -85,6 +87,8 @@ int Engine::RunThread() {
   LOGV("RunThread()\n");
 
 	Build();
+	
+	m_IsSceneBuilt = true;
 	
   double t1, t2;
   timeval tim;
@@ -157,6 +161,7 @@ int Engine::RunThread() {
 
 
 void Engine::DrawScreen(float rotation) {
+	if (m_IsSceneBuilt) {
 		glPushMatrix();
 		{
 			
@@ -180,7 +185,8 @@ void Engine::DrawScreen(float rotation) {
 			Render();
 		}
 		glPopMatrix();
-		pthread_cond_signal(&m_VsyncCond);
+	}
+	pthread_cond_signal(&m_VsyncCond);
 }
 
 

@@ -168,6 +168,12 @@ class DemoRenderer implements GLSurfaceView.Renderer {
         int[] textures = new int[texture_file_names.length];
         int[] tmp_tex = new int[texture_file_names.length];
         gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
+
+int glError;
+if ((glError = gl.glGetError()) != 0) {
+System.out.println("1");
+}
+
         textures = tmp_tex; 
         for (int i=0; i<texture_file_names.length; i++) {
           InputStream stream = am.open(path + "/" + texture_file_names[i]);
@@ -177,6 +183,9 @@ class DemoRenderer implements GLSurfaceView.Renderer {
           gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
           gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
           GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+if ((glError = gl.glGetError()) != 0) {
+System.out.println("2");
+}
           gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
         }
         nativeOnSurfaceCreated(texture_file_names.length, textures);
