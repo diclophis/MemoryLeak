@@ -47,7 +47,10 @@ void PixelPusher::Build() {
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
 	
 	LOGV("the fuck: 123 - %d %d\n", (int)m_Textures->size(), m_Textures->at(0));
-	m_Sprite = new AtlasSprite(m_Textures->at(5), 100, 200, 0, 0, 0, 39, 4, 10);
+	
+	//	AtlasSprite(GLuint t, int tw, int th, int sw, int sh, int s, int e, int spr, int rows);
+
+	m_Sprite = new AtlasSprite(m_Textures->at(5), 100, 200, 0, 0, 0, 63, 8, 8);
 }
 
 
