@@ -50,7 +50,7 @@ void PixelPusher::Build() {
 	
 	//	AtlasSprite(GLuint t, int tw, int th, int sw, int sh, int s, int e, int spr, int rows);
 
-	m_Sprite = new AtlasSprite(m_Textures->at(5), 100, 200, 0, 0, 0, 63, 8, 8);
+	m_Sprite = new AtlasSprite(m_Textures->at(5), 0, 0, 0, 0, 0, 0, 8, 8);
 }
 
 

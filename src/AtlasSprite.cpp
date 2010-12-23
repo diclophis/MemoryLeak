@@ -5,7 +5,9 @@
 
 AtlasSprite::AtlasSprite(GLuint t, int tw, int th, int sw, int sh, int s, int e, int spr, int rows) : m_Texture(t), m_TextureWidth(tw), m_TextureHeight(th), m_SpriteWidth(sw), m_SpriteHeight(sh), m_SpriteIndexStart(s), m_SpriteIndexEnd(e), m_SpritesPerRow(spr), m_Rows(rows) {
 		
-	m_Count = (m_SpriteIndexEnd - m_SpriteIndexStart) + 1;
+	//m_Count = (m_SpriteIndexEnd - m_SpriteIndexStart) + 1;
+	
+	m_Count = m_SpritesPerRow * m_Rows;
 	
 	m_Sprites = new Sprite[m_Count];
 	
@@ -24,41 +26,46 @@ AtlasSprite::AtlasSprite(GLuint t, int tw, int th, int sw, int sh, int s, int e,
 		m_Sprites[i].ty1 = texture_y;
 		m_Sprites[i].tx2 = texture_x + tdx;
 		m_Sprites[i].ty2 = texture_y + tdy;
+		
+		LOGV("%d %d %f %f %f %f\n", vdx, vdy, m_Sprites[i].tx1, m_Sprites[i].ty1, m_Sprites[i].tx2, m_Sprites[i].ty2);
+		
 		texture_x += tdx;
 		
 		if (b == (m_SpritesPerRow - 1)) {
 			texture_y += tdy;
 		}
+		
+		
 	}
 	
 	SetAnimation("000", 0);
 }
 
 void AtlasSprite::Render() {
-	//LOGV("the fuck -- %d\n", m_Texture);
-	//LOGV("the fuck: %d %s\n", (int)strlen(m_Animation), m_Animation);
 	glEnable(GL_TEXTURE_2D);
-	glClientActiveTexture(GL_TEXTURE0);
+	//glClientActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	
-	int ax = 0;
-	int ay = 0;
-	int sprites_to_draw = (int)strlen(m_Animation);
+
+	int ax = -100;
+	int ay = -100;
+	//int sprites_to_draw = (int)strlen(m_Animation);
+	int sprites_to_draw = 4;
 	for (unsigned int j = 0; j < sprites_to_draw; j++) {
 		//int b = (i % m_SpritesPerRow);
 		//ax = m_Sprites[i].dx * b;
-		int i = m_Animation[j] - 48;
+		//int i = m_Animation[j] - 48;
+		int i = j;
 		float w = m_Sprites[i].dx;
 		float h = m_Sprites[i].dy;
+		//upper left, lower right
 		float tx = m_Sprites[i].tx1;
 		float ty = m_Sprites[i].ty1;
-		float th = m_Sprites[i].tx2 - m_Sprites[i].tx1;
-		float tw = m_Sprites[i].ty2 - m_Sprites[i].ty1;;
+		float tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
+		float th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
 		float vertices[8] = {
 			(-w / 2) + ax, (-h / 2) + ay,
 			(w / 2) + ax, (-h / 2) + ay,
@@ -66,10 +73,24 @@ void AtlasSprite::Render() {
 			(-w / 2) + ax, (h / 2) + ay
 		};
 		float texture[8] = {
-			tx, ty,
+			tx, (ty + th),
+			
+			tx + tw, (ty + th),
+			
 			tx + tw, ty,
-			tx + tw, ty + th,
-			tx, ty + th
+
+			tx, ty
+			
+
+			
+			
+			
+			
+			
+			
+
+			
+			
 		};
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
@@ -79,6 +100,8 @@ void AtlasSprite::Render() {
 		//	ay += m_Sprites[i].dy;
 		//}
 		ax += m_Sprites[i].dx;
+		ay += w;
+
 	}
 	
 	

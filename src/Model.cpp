@@ -157,6 +157,9 @@ foofoo *Model::GetFoo(const aiScene *a) {
 		}
 	}
 	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
 	return ff;
 }
 
