@@ -13,6 +13,7 @@
 #include "MemoryLeak.h"
 #include "Model.h"
 #include "AtlasSprite.h"
+#include "SpriteGun.h"
 #include "Engine.h"
 #include "MachineGun.h"
 #include "octree.h"

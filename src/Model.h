@@ -40,7 +40,6 @@ public:
 	}
 
 	void SetVelocity(float x, float y, float z) {
-		//LOGV("%f %f %f\n", m_Velocity[0], m_Velocity[1], m_Velocity[2]);
 		m_Velocity[0] = x;
 		m_Velocity[1] = y;
 		m_Velocity[2] = z;

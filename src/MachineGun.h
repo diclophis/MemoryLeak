@@ -1,12 +1,10 @@
 // Machine Gun Particle Effect
 
 
-
 class MachineGun : public Model {
 
 public:
 
-	//MachineGun(Assimp::Importer &importer);
 	MachineGun(const foofoo *a) : Model(a) {
 		build();
 	};

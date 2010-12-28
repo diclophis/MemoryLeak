@@ -78,6 +78,7 @@
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
 		FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */; };
 		FC7020541282309E00BB601D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC7020531282309E00BB601D /* CoreAudio.framework */; };
+		FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
@@ -407,6 +408,8 @@
 		FC5F1EBC129A13FD00E5F9FB /* shareddata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shareddata.h; sourceTree = "<group>"; };
 		FC5F1EBD129A13FD00E5F9FB /* tinyvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyvector.h; sourceTree = "<group>"; };
 		FC7020531282309E00BB601D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteGun.cpp; sourceTree = "<group>"; };
+		FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteGun.h; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -495,8 +498,6 @@
 				FC10A320129E3EB70056E630 /* ModelOctree.cpp */,
 				FC10A321129E3EB70056E630 /* ModelOctree.h */,
 				FC5F1EB5129A13FD00E5F9FB /* octree */,
-				FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */,
-				FCE2EE2312913FCA00A82A88 /* PixelPusher.h */,
 				FC1417741285415800166578 /* assimp */,
 				FC14188C1285415800166578 /* contrib */,
 				FC1419B41285415900166578 /* Engine.cpp */,
@@ -506,12 +507,16 @@
 				FC141A851285415900166578 /* MachineGun.cpp */,
 				FC141A861285415900166578 /* MachineGun.h */,
 				FC141A871285415900166578 /* MemoryLeak.h */,
-				FC141A881285415900166578 /* Model.cpp */,
-				FC141A891285415900166578 /* Model.h */,
 				FC141A8A1285415900166578 /* OpenGLCommon.h */,
 				FC141A8B1285415900166578 /* Platform.h */,
 				FC141A8C1285415900166578 /* Player.h */,
 				FC141A8D1285415900166578 /* revision.h */,
+				FC141A891285415900166578 /* Model.h */,
+				FC141A881285415900166578 /* Model.cpp */,
+				FCE2EE2312913FCA00A82A88 /* PixelPusher.h */,
+				FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */,
+				FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */,
+				FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */,
 				FCDFB0E012B1A7B400A0B4E1 /* AtlasSprite.h */,
 				FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */,
 			);
@@ -1065,6 +1070,7 @@
 				FC10A322129E3EB70056E630 /* micropather.cpp in Sources */,
 				FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */,
 				FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */,
+				FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

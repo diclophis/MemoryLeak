@@ -9,7 +9,9 @@
 #include "ModelOctree.h"
 
 #include "Engine.h"
+
 #include "AtlasSprite.h"
+#include "SpriteGun.h"
 
 #include "PixelPusher.h"
 
@@ -48,9 +50,9 @@ void PixelPusher::Build() {
 	
 	LOGV("the fuck: 123 - %d %d\n", (int)m_Textures->size(), m_Textures->at(0));
 	
-	//	AtlasSprite(GLuint t, int tw, int th, int sw, int sh, int s, int e, int spr, int rows);
 
-	m_Sprite = new AtlasSprite(m_Textures->at(5), 0, 0, 0, 0, 0, 0, 8, 8);
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 8, 8);	
+	m_SpriteGun = new SpriteGun(m_Textures->at(5), 8, 8);
 }
 
 
@@ -60,14 +62,17 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
-	//m_Menu->Render();
-  //LOGV("PixelPusher::Render\n");
-	m_Sprite->Render();
+	m_AtlasSprite->Render();
+	m_SpriteGun->Render();
 }
 
 
 void PixelPusher::Hit(float x, float y, int hitState) {
-	m_Sprite->SetPosition(x - (0.5 * m_ScreenWidth), 0.5 * m_ScreenHeight - y);
+	
+	m_SpriteGun->SetPosition(x - (0.5 * m_ScreenWidth), 0.5 * m_ScreenHeight - y);
+	
+	m_AtlasSprite->SetPosition(x - (0.5 * m_ScreenWidth), 0.5 * m_ScreenHeight - y);
+
 	float dx;
 	float dy;
 	int d1 = 0;
@@ -176,6 +181,9 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 
 
 int PixelPusher::Simulate() {
+	
+	m_SpriteGun->Simulate(m_DeltaTime);
+	
 	/*
 	for (unsigned int i = 0; i < 20; i++) {
 		for (unsigned int j = 0; j < 20; j++) {

@@ -30,5 +30,8 @@ public:
 	int m_AiIndex;
 	int m_LastAiSolved;
 	
-	AtlasSprite *m_Sprite;
+	AtlasSprite *m_AtlasSprite;
+	
+	SpriteGun *m_SpriteGun;
+
 };
