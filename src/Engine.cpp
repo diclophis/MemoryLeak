@@ -20,6 +20,8 @@ Engine::~Engine() {
 
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l) {
 	LOGV("Engine::Engine\n");
+
+	m_IsSceneBuilt = false;
 	
   pthread_cond_init(&m_VsyncCond, NULL);
 	pthread_mutex_init(&m_Mutex, NULL);
@@ -89,6 +91,8 @@ int Engine::RunThread() {
 	Build();
 	
 	m_IsSceneBuilt = true;
+
+  LOGV("SceneBuilt!!!!!!!!!!!!!!!!!!!\n");
 	
   double t1, t2;
   timeval tim;
@@ -185,8 +189,8 @@ void Engine::DrawScreen(float rotation) {
 			Render();
 		}
 		glPopMatrix();
+	  pthread_cond_signal(&m_VsyncCond);
 	}
-	pthread_cond_signal(&m_VsyncCond);
 }
 
 

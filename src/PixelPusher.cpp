@@ -61,11 +61,13 @@ PixelPusher::~PixelPusher() {
 
 void PixelPusher::Render() {
 	//m_Menu->Render();
+  //LOGV("PixelPusher::Render\n");
 	m_Sprite->Render();
 }
 
 
 void PixelPusher::Hit(float x, float y, int hitState) {
+	m_Sprite->SetPosition(x - (0.5 * m_ScreenWidth), 0.5 * m_ScreenHeight - y);
 	float dx;
 	float dy;
 	int d1 = 0;

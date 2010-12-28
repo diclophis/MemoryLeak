@@ -5,6 +5,7 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
+//#undef __STDC__
 
 #define CHAR_WIDTH 0.1			/* ogl tex coords :: Based on not quite 42 chars per line! */
 #define CHAR_HEIGHT 0.1

@@ -7,6 +7,8 @@
 #define EV_SELECT_USE_FD_SET 1
 #define _iPhoneVersion 1
 
+#undef __STDC__
+ 
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>

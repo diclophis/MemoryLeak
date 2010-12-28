@@ -28,7 +28,7 @@ class AtlasSprite {
 	int m_Rows;
 	int m_Frame;
 	Sprite *m_Sprites;
-	char m_Animation[1024];
+	char *m_Animation;
 
 	void SetFrame(int f) {
 		m_Frame = f;
@@ -43,4 +43,13 @@ class AtlasSprite {
 	void Render();
 	
 	int m_Count;
+	
+	
+	float *m_Position;
+
+	void SetPosition(float x,float y) {
+		m_Position[0] = x;
+		m_Position[1] = y;
+	}
+	
 };
