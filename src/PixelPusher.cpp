@@ -182,6 +182,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 
 int PixelPusher::Simulate() {
 	
+	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
 	/*

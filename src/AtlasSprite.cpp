@@ -16,7 +16,10 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 	m_Velocity[1] = 0.0;
 	
 	m_Life = 0.0;
-	m_IsAlive = false;
+	m_IsAlive = true;
+	
+	m_Frame = 0;
+	m_AnimationSpeed = 20.0;
 	
 	m_Count = m_SpritesPerRow * m_Rows;
 	
@@ -42,7 +45,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 		}
 	}
 	
-	SetAnimation("0", 0);
+	SetAnimation("01234567", 0);
 }
 
 void AtlasSprite::Render() {
@@ -56,13 +59,15 @@ void AtlasSprite::Render() {
 	float ay = m_Position[1];
 	
 	
-	int sprites_to_draw = (int)strlen(m_Animation);
+	//int sprites_to_draw = (int)strlen(m_Animation);
 	//int sprites_to_draw = 3;
-	for (unsigned int j = 0; j < sprites_to_draw; j++) {
+	//for (unsigned int j = 0; j < sprites_to_draw; j++) {
 		//int b = (i % m_SpritesPerRow);
 		//ax = m_Sprites[i].dx * b;
-		int i = m_Animation[j] - 48;
+		//int i = m_Animation[j] - 48;
 		//int i = j;
+		//int i = m_Frame;
+		int i = m_Animation[m_Frame % m_AnimationLength] - 48;
 		float w = m_Sprites[i].dx;
 		float h = m_Sprites[i].dy;
 		//upper left, lower right
@@ -93,7 +98,7 @@ void AtlasSprite::Render() {
 		ax += m_Sprites[i].dx;
 		ay += w;
 
-	}
+	//}
 	
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -108,5 +113,6 @@ void AtlasSprite::Simulate(float deltaTime) {
 		float dy = m_Velocity[1] * deltaTime;
 		SetPosition(m_Position[0] + dx, m_Position[1] + dy);
 		m_Life += deltaTime;
+		m_Frame = (int)(m_Life * m_AnimationSpeed);
 	}
 };

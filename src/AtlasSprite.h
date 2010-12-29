@@ -22,7 +22,9 @@ public:
 	int m_SpritesPerRow;
 	int m_Rows;
 	int m_Frame;
+	float m_AnimationSpeed;
 	Sprite *m_Sprites;
+	int m_AnimationLength;
 	char *m_Animation;
 
 	void SetFrame(int f) {
@@ -31,6 +33,7 @@ public:
 	
 	void SetAnimation(const char *a, int i) {
 		snprintf(m_Animation, 1024, a, i);
+		m_AnimationLength = strlen(m_Animation);
 	}
 	
 	AtlasSprite(GLuint t, int spr, int rows);

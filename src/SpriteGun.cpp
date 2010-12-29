@@ -10,7 +10,7 @@
 
 void SpriteGun::Build() {
 	m_NumParticles = 10;
-	m_ShootInterval = 0.1;
+	m_ShootInterval = 0.05;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows));
 		ResetParticle(idx);
@@ -23,12 +23,14 @@ void SpriteGun::ResetParticle(int idx) {
 	m_AtlasSprites[idx]->m_IsAlive = false;
 }
 
+
 void SpriteGun::ShootParticle(int idx) {
 	m_AtlasSprites[idx]->SetLife(0.0);
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
-	m_AtlasSprites[idx]->SetVelocity(0.0, 600.0);
+	m_AtlasSprites[idx]->SetVelocity(0.0, 700.0);
 	m_AtlasSprites[idx]->m_IsAlive = true;
 }
+
 
 void SpriteGun::Simulate(float deltaTime) {
 	bool shot = false;
