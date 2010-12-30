@@ -25,29 +25,37 @@ public:
 	float m_AnimationSpeed;
 	Sprite *m_Sprites;
 	int m_AnimationLength;
-	char *m_Animation;
+	float m_AnimationDuration;
+	float m_MaxLife;
+	//char *m_Animation;
+	char m_Animation[1024];
 
 	void SetFrame(int f) {
 		m_Frame = f;
 	};
 	
-	void SetAnimation(const char *a, int i) {
-		snprintf(m_Animation, 1024, a, i);
-		m_AnimationLength = strlen(m_Animation);
-	}
+	void SetAnimation(const char *a);
+
 	
 	AtlasSprite(GLuint t, int spr, int rows);
 	void Render();
 	
 	int m_Count;
-		
-	float *m_Position;
+	
+	
+	//float *m_Position;
 	void SetPosition(float x,float y) {
 		m_Position[0] = x;
 		m_Position[1] = y;
 	}
 	
+	float *m_Position;
 	float *m_Velocity;
+	//float m_Position[2];
+	//float m_Velocity[2];
+	//std::vector<float>m_Position;
+	//std::vector<float>m_Velocity;
+
 	void SetVelocity(float x, float y) {
 		m_Velocity[0] = x;
 		m_Velocity[1] = y;

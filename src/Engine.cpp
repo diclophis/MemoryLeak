@@ -141,11 +141,11 @@ int Engine::RunThread() {
       averageWait = waitSum / (double)waitedCount;
       */
 
-      if (averageWait > (1.0 / 30.0)) {
-        LOGV("slow avg: %f %f\n", averageWait, 1.0/30.0);
+      if (averageWait > (1.0 / 24.0)) {
+        LOGV("slow avg: %f %f\n", averageWait, 1.0 / 24.0);
       }
 
-        double interp = 2.0;
+        double interp = 3.0;
         for (unsigned int i=0; i<interp; i++) {
           m_DeltaTime = averageWait / interp;
           m_SimulationTime += (m_DeltaTime);

@@ -53,6 +53,9 @@ void PixelPusher::Build() {
 
 	m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 8, 8);	
 	m_SpriteGun = new SpriteGun(m_Textures->at(5), 8, 8);
+	
+	m_AtlasSprite->SetPosition(0.0, 0.0);
+	m_SpriteGun->SetPosition(0.0, 0.0);
 }
 
 
@@ -62,6 +65,7 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
+	//LOGV("render\n");
 	m_AtlasSprite->Render();
 	m_SpriteGun->Render();
 }
