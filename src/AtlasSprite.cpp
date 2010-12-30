@@ -28,12 +28,12 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 	m_Velocity[1] = 0.0;
 	
 	m_Life = 0.0;
-	m_MaxLife = 1.0;
+	m_MaxLife = 0.1;
 	m_IsAlive = true;
 	
 	m_Frame = 0;
 	m_AnimationSpeed = 1.0;
-	m_AnimationDuration = 1.0;
+	m_AnimationDuration = 1.5;
 	
 	m_Count = m_SpritesPerRow * m_Rows;
 	
@@ -60,7 +60,9 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 		}
 	}
 	
-	SetAnimation("23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqr");
+	//SetAnimation("23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqr");
+	SetAnimation("23456789:;<=>?@ABCDEFGHIJ");
+
 }
 
 void AtlasSprite::Render() {
@@ -130,7 +132,7 @@ void AtlasSprite::Simulate(float deltaTime) {
 		float dx = m_Velocity[0] * deltaTime;
 		float dy = m_Velocity[1] * deltaTime;
 		m_Velocity[0] -= 0.0;
-		m_Velocity[1] -= 0.0;
+		m_Velocity[1] -= 10.0;
 		m_Position[0] += dx;
 		m_Position[1] += dy;
 		m_Life += deltaTime;

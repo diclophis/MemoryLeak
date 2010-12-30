@@ -9,7 +9,7 @@
 
 
 void SpriteGun::Build() {
-	m_NumParticles = 1000;
+	m_NumParticles = 200;
 	m_ShootInterval = 0.01;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows));
@@ -39,9 +39,10 @@ void SpriteGun::ShootParticle(int idx) {
 	//m_AtlasSprites[idx]->m_Velocity[0] = ((randf() * 100.0) - 25.0);
 	//m_AtlasSprites[idx]->m_Velocity[1] = ((randf() * 100.0) - 25.0);
 	
-	m_AtlasSprites[idx]->m_Velocity[0] = fastSinf(randf() * 10.0) * 10.0;
-	m_AtlasSprites[idx]->m_Velocity[1] = fastSinf(randf() * 10.0) * 10.0;
-	
+	m_AtlasSprites[idx]->m_Velocity[0] = fastSinf(randf() * 5.0) * 100.0;
+	//m_AtlasSprites[idx]->m_Velocity[1] = fastSinf(randf() * 10.0) * 500.0;
+	m_AtlasSprites[idx]->m_Velocity[1] = (randf() * 200.0) + 300.0;
+
 	/*
 	if (m_AtlasSprites[idx]->m_Velocity[0] * m_AtlasSprites[idx]->m_Velocity[0] + m_AtlasSprites[idx]->m_Velocity[1] * m_AtlasSprites[idx]->m_Velocity[1] > 700.0 * 700.0) {
 		m_AtlasSprites[idx]->m_Velocity[0] *= 0.7;
