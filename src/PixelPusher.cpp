@@ -51,11 +51,22 @@ void PixelPusher::Build() {
 	LOGV("the fuck: 123 - %d %d\n", (int)m_Textures->size(), m_Textures->at(0));
 	
 
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 8, 8);	
-	m_SpriteGun = new SpriteGun(m_Textures->at(6), 5, 5);
+	//m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 8, 8, "23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopq");
+	//m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 6, 4, "23456789:;<=>?@ABCDEFGH");	
+	//m_AtlasSprite = new AtlasSprite(m_Textures->at(7), 16, 15, "23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopq");
+
+	//m_AtlasSprite = new AtlasSprite(m_Textures->at(7), 9, 6, "", 0, 54);
 	
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(6), 20, 20, "", 0, 400);
+
+	//m_SpriteGun = new SpriteGun(m_Textures->at(4), 5, 5, "89:;<=>?@ABCDEFFFFFFFFFFFFFFFFFFFF");
+	//m_SpriteGun = new SpriteGun(m_Textures->at(5), 6, 5, "23456789:;<=>?@ABCDEFGHIJKLMNO23456789:;<=>?@ABCDEFGHIJKLMNO");
+	m_SpriteGun = new SpriteGun(m_Textures->at(5), 8, 8, "", 0, 64);
+
 	m_AtlasSprite->SetPosition(0.0, 0.0);
-	m_SpriteGun->SetPosition(0.0, 0.0);
+	m_SpriteGun->SetPosition(100.0, 100.0);
+	
+
 }
 
 
@@ -66,8 +77,8 @@ PixelPusher::~PixelPusher() {
 
 void PixelPusher::Render() {
 	//LOGV("render\n");
-	m_AtlasSprite->Render();
 	m_SpriteGun->Render();
+	m_AtlasSprite->Render();
 }
 
 
@@ -206,7 +217,7 @@ int PixelPusher::Simulate() {
 	}
 	*/
 	
-	
+	/*
 	m_LastAiSolved = -1;
 
 	int collided_index = -1;
@@ -275,6 +286,8 @@ int PixelPusher::Simulate() {
 			}
 		}
 	}
+	 
+	*/
 
 	/*
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];

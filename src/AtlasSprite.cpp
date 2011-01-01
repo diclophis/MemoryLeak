@@ -3,7 +3,7 @@
 
 #include "AtlasSprite.h"
 
-AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows) {
+AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e) {
 		
 	//m_Animation = (char *)malloc(1024 * sizeof(char));
 	//int f = sizeof(m_Animation);
@@ -13,6 +13,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 	//m_Position.push_back(0.0);
 	//m_Position.push_back(0.0);
 	//m_Animation = new char[1024];
+	
 	m_Position = new float[2];
 	m_Velocity = new float[2];
 	
@@ -28,13 +29,26 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 	m_Velocity[1] = 0.0;
 	
 	m_Life = 0.0;
-	m_MaxLife = 0.1;
+	m_MaxLife = 1.25;//0.050.16;
 	m_IsAlive = true;
 	
 	m_Frame = 0;
 	m_AnimationSpeed = 1.0;
-	m_AnimationDuration = 1.5;
+	m_AnimationDuration = m_MaxLife + 0.1;
+	m_AnimationLength = m_Animation.length();
+	m_Frames = new int[1024];
 	
+	if (m_AnimationLength > 0) {
+		for (unsigned int i=0; i<m_AnimationLength; i++) {
+			m_Frames[i] = m_Animation[i % m_AnimationLength] - 50;
+		}
+	} else {
+		m_AnimationLength = m_End - m_Start;
+		for (unsigned int i=0; i<m_AnimationLength; i++) {
+			m_Frames[i] = m_Start + i;
+		}
+	}
+
 	m_Count = m_SpritesPerRow * m_Rows;
 	
 	m_Sprites = new Sprite[m_Count];
@@ -60,12 +74,14 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows) : m_Texture(t), m_SpritesP
 		}
 	}
 	
-	//SetAnimation("23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqr");
-	SetAnimation("23456789:;<=>?@ABCDEFGHIJ");
+	//SetAnimation("2");
 
 }
 
 void AtlasSprite::Render() {
+	if (m_AnimationLength == 0) {
+		return;
+	}
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 
@@ -74,7 +90,12 @@ void AtlasSprite::Render() {
 
 	float ax = m_Position[0];
 	float ay = m_Position[1];
-	
+
+	glPushMatrix();
+	{
+		glTranslatef(ax, ay, 0.0);
+		//glRotatef(randf() * 3.14, 0.0, 0.0, 1.0);
+		//glScalef((m_Life * 1.1) + 0.5, (m_Life * 1.1) + 0.5, (m_Life * 1.1) + 0.5);
 	
 	//int sprites_to_draw = (int)strlen(m_Animation);
 	//int sprites_to_draw = 3;
@@ -84,10 +105,11 @@ void AtlasSprite::Render() {
 		//int i = m_Animation[j] - 48;
 		//int i = j;
 		//int i = m_Frame;
-		int i = m_Animation[m_Frame % m_AnimationLength] - 50;
+		//LOGV("%d %d\n", m_Frame, m_AnimationLength);
+		int i = m_Frames[m_Frame % m_AnimationLength];
 		//int i = m_Frame % m_Count;
-		//LOGV("%d %d %d\n", m_Frame, m_AnimationLength, i);
-	
+		//LOGV("=%d\n", i);
+
 		float w = m_Sprites[i].dx;
 		float h = m_Sprites[i].dy;
 		//upper left, lower right
@@ -95,11 +117,19 @@ void AtlasSprite::Render() {
 		float ty = m_Sprites[i].ty1;
 		float tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
 		float th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
+		/*
 		float vertices[8] = {
 			(-w / 2.0) + ax, (-h / 2.0) + ay,
 			(w / 2.0) + ax, (-h / 2.0) + ay,
 			(w / 2.0) + ax, (h / 2.0) + ay,
 			(-w / 2.0) + ax, (h / 2.0) + ay
+		};
+		*/
+		float vertices[8] = {
+			(-w / 2.0), (-h / 2.0),
+			(w / 2.0), (-h / 2.0),
+			(w / 2.0), (h / 2.0),
+			(-w / 2.0), (h / 2.0)
 		};
 		float texture[8] = {
 			tx, (ty + th),
@@ -119,6 +149,8 @@ void AtlasSprite::Render() {
 		ay += w;
 
 	//}
+	}
+	glPopMatrix();
 	
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -131,8 +163,8 @@ void AtlasSprite::Simulate(float deltaTime) {
 	if (m_IsAlive) {
 		float dx = m_Velocity[0] * deltaTime;
 		float dy = m_Velocity[1] * deltaTime;
-		m_Velocity[0] -= 0.0;
-		m_Velocity[1] -= 10.0;
+		//m_Velocity[0] -= 0.0;
+		//m_Velocity[1] -= 10.0;
 		m_Position[0] += dx;
 		m_Position[1] += dy;
 		m_Life += deltaTime;
@@ -140,8 +172,19 @@ void AtlasSprite::Simulate(float deltaTime) {
 	}
 };
 
-void AtlasSprite::SetAnimation(const char *a) {
-	snprintf(m_Animation, sizeof(m_Animation), "%s", a);
-	m_AnimationLength = strlen(m_Animation);
+/*
+void AtlasSprite::SetAnimation(std::string a) {
+	//snprintf(m_Animation, sizeof(m_Animation), "%s", a);
+	//m_Animation = &a;
+	//m_AnimationLength = a.length();
+	//memcpy(m_Animation, a, m_AnimationLength);
+	//m_Animation = a;
+	
+	//const char* -> char*
+	//name = new char [strlen(str)+1];
+	//strcpy(name, str);
+	//name = new char [strlen(p.name)+1];
+	
 }
+*/
 
