@@ -40,7 +40,7 @@ public:
 	//void SetAnimation(std::string a);
 
 	
-	AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s = 0, int e = 0);
+	AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s = 0, int e = 0, float m = 1.0);
 	void Render();
 	
 	int m_Count;

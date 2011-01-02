@@ -65,15 +65,17 @@ void PixelPusher::Build() {
 
 	m_AtlasSprite->SetPosition(0.0, 0.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
+	m_SpriteGun->Build(125);
 	
-	float x = m_AtlasSprite->m_Position[0] - 100.0;
+	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
-	for (unsigned int i=0; i<10; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(7), 3, 3, "", 0, 9));
+	for (unsigned int i=0; i<20; i++) {
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(7), 8, 8, "", 0, 64, 0.75));
+		m_IceComets[i]->SetPosition(x + ((randf() * 20.0)), fastSinf(i) * 100.0 + (y + 500.0));
+		m_IceComets[i]->SetVelocity(0.0, -250.0);
 		m_IceComets[i]->m_IsAlive = false;
-		m_IceComets[i]->SetPosition(x, fastSinf(i) * 50.0);
-		m_IceComets[i]->ResetParticle(0);
-		m_IceComets[i]->SetVelocity(100.0, 0.0);
+		m_IceComets[i]->Build(3);
+		//m_IceComets[i]->ResetParticle(0);
 		x += 20;
 	}
 }
@@ -85,20 +87,21 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
-	//LOGV("render\n");
-	m_SpriteGun->Render();
-	m_AtlasSprite->Render();
-	for (unsigned int i=0; i<10; i++) {
+	for (unsigned int i=0; i<20; i++) {
 		m_IceComets[i]->Render();
 	}
+	m_AtlasSprite->Render();
+	m_SpriteGun->Render();
 }
 
 
 void PixelPusher::Hit(float x, float y, int hitState) {
 	
-	m_SpriteGun->SetPosition(x - (0.5 * m_ScreenWidth), 0.5 * m_ScreenHeight - y);
+	float xx = x - (0.5 * m_ScreenWidth);
+	float yy = 0.5 * m_ScreenHeight - y;
+	m_SpriteGun->SetPosition(xx, yy - 15.0);
 	
-	m_AtlasSprite->SetPosition(x - (0.5 * m_ScreenWidth), 0.5 * m_ScreenHeight - y);
+	m_AtlasSprite->SetPosition(xx, yy);
 
 	float dx;
 	float dy;
@@ -212,10 +215,24 @@ int PixelPusher::Simulate() {
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
-	for (unsigned int i=0; i<10; i++) {
+	float x = m_AtlasSprite->m_Position[0];
+	float y = m_AtlasSprite->m_Position[1];
+	
+	for (unsigned int i=0; i<20; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
-		if (m_SimulationTime > 5) {
-			m_IceComets[i]->m_IsAlive = true;
+		if (m_IceComets[i]->m_Position[1] < y) {
+			if (m_IceComets[i]->m_IsAlive) {
+				if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
+					m_IceComets[i]->SetPosition(x + ((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 1000.0));
+					m_IceComets[i]->SetVelocity(0.0, -300.0);
+					m_IceComets[i]->m_IsAlive = false;
+					m_IceComets[i]->m_Life = 0.0;
+					m_IceComets[i]->Reset();
+				}
+			} else {
+				m_IceComets[i]->m_Life = 0.0;
+				m_IceComets[i]->m_IsAlive = true;
+			}
 		}
 	}
 	

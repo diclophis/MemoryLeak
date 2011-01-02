@@ -5,38 +5,22 @@
 
 static GLuint g_lastTexture = 0;
 
-AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e) {
-		
-	//m_Animation = (char *)malloc(1024 * sizeof(char));
-	//int f = sizeof(m_Animation);
-	
-	//m_Position = (float *)malloc(2 * sizeof(float));
-	//m_Velocity = (float *)malloc(2 * sizeof(float));
-	//m_Position.push_back(0.0);
-	//m_Position.push_back(0.0);
-	//m_Animation = new char[1024];
-	
+AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e, float m) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e), m_MaxLife(m) {
 	m_Position = new float[2];
 	m_Velocity = new float[2];
 	
 	m_Position[0] = 0.0;
 	m_Position[1] = 0.0;
 	
-	//LOGV("!@#!@#!@# %f %f\n", m_Position[0], m_Position[1]);
-
-	//m_Velocity.push_back(0.0);
-	//m_Velocity.push_back(0.0);
-	
 	m_Velocity[0] = 0.0;
 	m_Velocity[1] = 0.0;
 	
 	m_Life = 0.0;
-	m_MaxLife = 1.25;//0.050.16;
 	m_IsAlive = true;
 	
 	m_Frame = 0;
 	m_AnimationSpeed = 1.0;
-	m_AnimationDuration = m_MaxLife + 0.1;
+	m_AnimationDuration = m_MaxLife + 0.5;
 	m_AnimationLength = m_Animation.length();
 	m_Frames = new int[1024];
 	
@@ -50,11 +34,8 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 			m_Frames[i] = m_Start + i;
 		}
 	}
-
 	m_Count = m_SpritesPerRow * m_Rows;
-	
 	m_Sprites = new Sprite[m_Count];
-	
 	float tdx = 1.0 / (float)m_SpritesPerRow;
 	float tdy = 1.0 / (float)m_Rows;
 	float vdx = 50.0;
@@ -75,13 +56,11 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 			texture_y += tdy;
 		}
 	}
-	
-	//SetAnimation("2");
-
 }
 
 void AtlasSprite::Render() {
 	if (m_AnimationLength == 0) {
+		LOGV("Fail, animation is at least 1 frame\n");
 		return;
 	}
 	//glEnable(GL_TEXTURE_2D);
@@ -101,7 +80,7 @@ void AtlasSprite::Render() {
 	glPushMatrix();
 	{
 		glTranslatef(ax, ay, 0.0);
-		//glRotatef(randf() * 3.14, 0.0, 0.0, 1.0);
+		//glRotatef(randf() * 100.0, 0.0, 0.0, 1.0);
 		//glScalef((m_Life * 1.1) + 0.5, (m_Life * 1.1) + 0.5, (m_Life * 1.1) + 0.5);
 	
 	//int sprites_to_draw = (int)strlen(m_Animation);
@@ -169,15 +148,11 @@ void AtlasSprite::Render() {
 void AtlasSprite::Simulate(float deltaTime) {
 	float dx = m_Velocity[0] * deltaTime;
 	float dy = m_Velocity[1] * deltaTime;
-	//m_Velocity[0] -= 0.0;
-	//m_Velocity[1] -= 10.0;
 	m_Position[0] += dx;
 	m_Position[1] += dy;
 	
-	//if (m_IsAlive) {
-		m_Life += deltaTime;
-		m_Frame = (((m_Life) / m_AnimationDuration) * m_AnimationLength);
-	//}
+	m_Life += deltaTime;
+	m_Frame = (((m_Life) / m_AnimationDuration) * m_AnimationLength);
 };
 
 /*
