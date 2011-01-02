@@ -15,6 +15,7 @@ void SpriteGun::Build() {
 		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_Animation, m_Start, m_End));
 		ResetParticle(idx);
 	}
+	m_IsAlive = true;
 }
 
 
@@ -58,50 +59,54 @@ void SpriteGun::ShootParticle(int idx) {
 
 
 void SpriteGun::Simulate(float deltaTime) {
-	//m_NumParticles = ((int)(m_Life * 10) % 300);
-	bool shot = false;
-	int shot_this_tick = 0;
-	int not_shot_this_tick = 0;
-	for (unsigned int i=0; i<m_NumParticles; i++) {
-		//if (!shot && (!m_AtlasSprites[i]->m_IsAlive) && (m_Life > m_ShootInterval)) {
-		if ((shot_this_tick < 2) && (!m_AtlasSprites[i]->m_IsAlive)) {
-			ShootParticle(i);
-			shot_this_tick++;
-			//m_Life = 0.0;
-			//shot = true;
-		} else {
-			not_shot_this_tick++;
+	if (m_IsAlive) {
+		//m_NumParticles = ((int)(m_Life * 10) % 300);
+		bool shot = false;
+		int shot_this_tick = 0;
+		int not_shot_this_tick = 0;
+		for (unsigned int i=0; i<m_NumParticles; i++) {
+			//if (!shot && (!m_AtlasSprites[i]->m_IsAlive) && (m_Life > m_ShootInterval)) {
+			if ((shot_this_tick < 2) && (!m_AtlasSprites[i]->m_IsAlive)) {
+				ShootParticle(i);
+				shot_this_tick++;
+				//m_Life = 0.0;
+				//shot = true;
+			} else {
+				not_shot_this_tick++;
+			}
+			
+			if (m_AtlasSprites[i]->m_Life > m_AtlasSprites[i]->m_MaxLife) {
+				ResetParticle(i);
+			}
+			
+			m_AtlasSprites[i]->Simulate(deltaTime);
 		}
-		
-		if (m_AtlasSprites[i]->m_Life > m_AtlasSprites[i]->m_MaxLife) {
-			ResetParticle(i);
-		}
-		
-		m_AtlasSprites[i]->Simulate(deltaTime);
+		//if (shot_this_tick == 0) {
+		//	LOGV("shot/not %d/%d\n", shot_this_tick, not_shot_this_tick);
+		//}
 	}
-	m_Life += deltaTime;
-	//if (shot_this_tick == 0) {
-	//	LOGV("shot/not %d/%d\n", shot_this_tick, not_shot_this_tick);
-	//}
+	AtlasSprite::Simulate(deltaTime);
 }
 
 
 void SpriteGun::Render() {
-	if (true) { //
-		int i=(m_NumParticles);
-		while (i-- > 0) {
-			//LOGV("the fuck %d %d\n", i, m_NumParticles);
-			if (m_AtlasSprites[i]->m_IsAlive) {
-				m_AtlasSprites[i]->Render();
+	if (m_IsAlive) {
+		if (true) { //
+			int i=(m_NumParticles);
+			while (i-- > 0) {
+				if (m_AtlasSprites[i]->m_IsAlive) {
+					m_AtlasSprites[i]->Render();
+				}
+			}
+		} else {
+			int i=0;
+			while (i++ < (m_NumParticles - 1)) {
+				if (m_AtlasSprites[i]->m_IsAlive) {
+					m_AtlasSprites[i]->Render();
+				}
 			}
 		}
 	} else {
-		int i=0;
-		while (i++ < (m_NumParticles - 1)) {
-			//LOGV("the fuck %d %d\n", i, m_NumParticles);
-			if (m_AtlasSprites[i]->m_IsAlive) {
-				m_AtlasSprites[i]->Render();
-			}
-		}
+		m_AtlasSprites[0]->Render();
 	}
 }

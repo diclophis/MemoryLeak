@@ -66,7 +66,16 @@ void PixelPusher::Build() {
 	m_AtlasSprite->SetPosition(0.0, 0.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
 	
-
+	float x = m_AtlasSprite->m_Position[0] - 100.0;
+	float y = m_AtlasSprite->m_Position[1];
+	for (unsigned int i=0; i<10; i++) {
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(7), 3, 3, "", 0, 9));
+		m_IceComets[i]->m_IsAlive = false;
+		m_IceComets[i]->SetPosition(x, fastSinf(i) * 50.0);
+		m_IceComets[i]->ResetParticle(0);
+		m_IceComets[i]->SetVelocity(100.0, 0.0);
+		x += 20;
+	}
 }
 
 
@@ -79,6 +88,9 @@ void PixelPusher::Render() {
 	//LOGV("render\n");
 	m_SpriteGun->Render();
 	m_AtlasSprite->Render();
+	for (unsigned int i=0; i<10; i++) {
+		m_IceComets[i]->Render();
+	}
 }
 
 
@@ -199,6 +211,13 @@ int PixelPusher::Simulate() {
 	
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
+	
+	for (unsigned int i=0; i<10; i++) {
+		m_IceComets[i]->Simulate(m_DeltaTime);
+		if (m_SimulationTime > 5) {
+			m_IceComets[i]->m_IsAlive = true;
+		}
+	}
 	
 	/*
 	for (unsigned int i = 0; i < 20; i++) {

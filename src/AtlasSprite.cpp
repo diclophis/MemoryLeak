@@ -3,6 +3,8 @@
 
 #include "AtlasSprite.h"
 
+static GLuint g_lastTexture = 0;
+
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e) {
 		
 	//m_Animation = (char *)malloc(1024 * sizeof(char));
@@ -82,11 +84,16 @@ void AtlasSprite::Render() {
 	if (m_AnimationLength == 0) {
 		return;
 	}
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, m_Texture);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	if (m_Texture != g_lastTexture) {
+		glBindTexture(GL_TEXTURE_2D, m_Texture);
+		g_lastTexture = m_Texture;
+	}
+	
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	float ax = m_Position[0];
 	float ay = m_Position[1];
@@ -152,24 +159,25 @@ void AtlasSprite::Render() {
 	}
 	glPopMatrix();
 	
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glDisableClientState(GL_VERTEX_ARRAY);
+	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	//glDisable(GL_TEXTURE_2D);
 }
 
 void AtlasSprite::Simulate(float deltaTime) {
-	if (m_IsAlive) {
-		float dx = m_Velocity[0] * deltaTime;
-		float dy = m_Velocity[1] * deltaTime;
-		//m_Velocity[0] -= 0.0;
-		//m_Velocity[1] -= 10.0;
-		m_Position[0] += dx;
-		m_Position[1] += dy;
+	float dx = m_Velocity[0] * deltaTime;
+	float dy = m_Velocity[1] * deltaTime;
+	//m_Velocity[0] -= 0.0;
+	//m_Velocity[1] -= 10.0;
+	m_Position[0] += dx;
+	m_Position[1] += dy;
+	
+	//if (m_IsAlive) {
 		m_Life += deltaTime;
 		m_Frame = (((m_Life) / m_AnimationDuration) * m_AnimationLength);
-	}
+	//}
 };
 
 /*

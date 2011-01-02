@@ -34,4 +34,5 @@ public:
 	
 	SpriteGun *m_SpriteGun;
 
+	std::vector<SpriteGun *> m_IceComets;
 };
