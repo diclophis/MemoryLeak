@@ -16,11 +16,11 @@
 #include "PixelPusher.h"
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : Engine(w, h, t, m, l) {
-	LOGV("PixelPusher::PixelPusher\n");
-	m_Menu = new Model(m_FooFoos.at(3));
-	m_Menu->SetTexture(m_Textures->at(5));
-	m_Menu->SetScale(0.1, 0.1, 0.1);
-	m_Menu->SetFrame(0);
+	//m_Menu = new Model(m_FooFoos.at(3));
+	//m_Menu->SetTexture(m_Textures->at(0));
+	//m_Menu->SetScale(0.1, 0.1, 0.1);
+	//m_Menu->SetFrame(0);
+	
 	m_Space = new Octree<int>(1024, -1);
 	m_Touches = (float *)malloc(sizeof(float) * 4);
 	m_Touches[0] = m_Touches[1] = m_Touches[2] = m_Touches[3] = 0;
@@ -31,7 +31,6 @@ PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*>
 
 
 void PixelPusher::Build() {
-
 	m_CameraRotation = -33.0;
 	m_CameraRotationSpeed = 0.0;
 	m_CameraHeight = 10.0;
@@ -47,36 +46,36 @@ void PixelPusher::Build() {
 	
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
-	
-	LOGV("the fuck: 123 - %d %d\n", (int)m_Textures->size(), m_Textures->at(0));
-	
 
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 8, 8, "23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopq");
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 6, 4, "23456789:;<=>?@ABCDEFGH");	
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(7), 16, 15, "23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopq");
-
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(7), 9, 6, "", 0, 54);
-	
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(6), 20, 20, "", 0, 400);
-
 	//m_SpriteGun = new SpriteGun(m_Textures->at(4), 5, 5, "89:;<=>?@ABCDEFFFFFFFFFFFFFFFFFFFF");
 	//m_SpriteGun = new SpriteGun(m_Textures->at(5), 6, 5, "23456789:;<=>?@ABCDEFGHIJKLMNO23456789:;<=>?@ABCDEFGHIJKLMNO");
-	m_SpriteGun = new SpriteGun(m_Textures->at(5), 8, 8, "", 0, 64);
-
+	
+	m_NumComets = 20;
+	
+	//m_AtlasSprite = new AtlasSprite(m_Textures->at(8), 5, 5, "789:;:987");
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 8, 8, "", 0, 64, 10.0);
+	m_SpriteGun = new SpriteGun(m_Textures->at(0), 8, 8, "", 6, 7, 1.0, "", 6, 7, 0.2);
+	
 	m_AtlasSprite->SetPosition(0.0, 0.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(125);
+	m_SpriteGun->Build(30);
 	
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
-	for (unsigned int i=0; i<20; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(7), 8, 8, "", 0, 64, 0.75));
-		m_IceComets[i]->SetPosition(x + ((randf() * 20.0)), fastSinf(i) * 100.0 + (y + 500.0));
+	for (unsigned int i=0; i<m_NumComets; i++) {
+		if (randf() > 0.5) {
+			m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 8, 8, "", 0, 64, 0.25, "", 0, 64, 0.25));
+		} else {
+			m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 8, 8, "", 0, 64, 0.25, "", 0, 64, 0.25));
+		}
+		m_IceComets[i]->SetPosition(((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 500.0));
 		m_IceComets[i]->SetVelocity(0.0, -250.0);
 		m_IceComets[i]->m_IsAlive = false;
 		m_IceComets[i]->Build(3);
-		//m_IceComets[i]->ResetParticle(0);
-		x += 20;
 	}
 }
 
@@ -87,7 +86,7 @@ PixelPusher::~PixelPusher() {
 
 
 void PixelPusher::Render() {
-	for (unsigned int i=0; i<20; i++) {
+	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Render();
 	}
 	m_AtlasSprite->Render();
@@ -99,9 +98,21 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	
 	float xx = x - (0.5 * m_ScreenWidth);
 	float yy = 0.5 * m_ScreenHeight - y;
-	m_SpriteGun->SetPosition(xx, yy - 15.0);
+	float dpx = m_AtlasSprite->m_Position[0] - xx;
+	float dpy = m_AtlasSprite->m_Position[1] - yy;
+
+	//if (fastAbs(dpx) > 3) {
+		dpx *= 0.25;
+		xx = m_AtlasSprite->m_Position[0] - dpx;
+	//}
 	
-	m_AtlasSprite->SetPosition(xx, yy);
+	//if (fastAbs(dpy) > 1) {
+		dpy *= 0.25;
+		yy = m_AtlasSprite->m_Position[1] - dpy;
+	//}
+	
+	m_AtlasSprite->SetPosition(xx, yy + 10.0);
+	m_SpriteGun->SetPosition(xx, (yy - 15.0) + 10.0);
 
 	float dx;
 	float dy;
@@ -110,9 +121,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	int d3 = 0;
 	int d4 = 0;
 	int r = (((int)RadiansToDegrees(m_CameraRotation)) % 360);
-	
-	//LOGV("x:%f, y:%f\n", x, y);
-	
+		
 	switch (hitState) {
 		case 0:
 			m_Touches[0] = x;
@@ -184,7 +193,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 				d3 = 0;
 				d4 = 2;
 			} else {
-				LOGV("the fuck\n");
+				throw 453;
 			}
 
 			if (fabs(m_Touches[1]) > (m_ScreenHeight * 0.25) && (fabs(dx) > 50 || fabs(dy) > 50)) {
@@ -218,12 +227,12 @@ int PixelPusher::Simulate() {
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
 	
-	for (unsigned int i=0; i<20; i++) {
+	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
 		if (m_IceComets[i]->m_Position[1] < y) {
 			if (m_IceComets[i]->m_IsAlive) {
 				if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
-					m_IceComets[i]->SetPosition(x + ((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 1000.0));
+					m_IceComets[i]->SetPosition(((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 1000.0));
 					m_IceComets[i]->SetVelocity(0.0, -300.0);
 					m_IceComets[i]->m_IsAlive = false;
 					m_IceComets[i]->m_Life = 0.0;
@@ -232,6 +241,7 @@ int PixelPusher::Simulate() {
 			} else {
 				m_IceComets[i]->m_Life = 0.0;
 				m_IceComets[i]->m_IsAlive = true;
+				//m_SpriteGun->m_NumParticles++;
 			}
 		}
 	}
@@ -355,7 +365,7 @@ int PixelPusher::Simulate() {
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
 	
-	m_Menu->Simulate(m_DeltaTime);
+	//m_Menu->Simulate(m_DeltaTime);
 
 	
 	return 1;
@@ -446,7 +456,8 @@ void PixelPusher::Load(int level_index) {
 
 			m_Models[m_TerrainEndIndex]->SetPosition(current[0] + 10, current[1], current[2] + 10);
 			m_Space->set((int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
-			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
+			//m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
+			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(0));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 		}
 		m_TerrainEndIndex++;

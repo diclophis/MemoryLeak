@@ -33,6 +33,8 @@ public:
 	AtlasSprite *m_AtlasSprite;
 	
 	SpriteGun *m_SpriteGun;
+	
+	int m_NumComets;
 
 	std::vector<SpriteGun *> m_IceComets;
 };

@@ -19,7 +19,6 @@ Engine::~Engine() {
 
 
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l) {
-	LOGV("Engine::Engine\n");
 
 	m_IsSceneBuilt = false;
 	
@@ -48,8 +47,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	//glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	
+	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -58,23 +58,20 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 void Engine::CreateThread() {
-  LOGV("CreateThread()\n");
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
 }
 
 
 void *Engine::EnterThread(void *obj) {
-  LOGV("EnterThread()\n");
 	reinterpret_cast<Engine *>(obj)->RunThread();
 	return NULL;
 }
 
 
 void Engine::PauseThread() {
-  LOGV("PauseThread()\n");
-  pthread_mutex_lock(&m_Mutex);
-  m_GameState = 0;
-  pthread_mutex_unlock(&m_Mutex);
+	pthread_mutex_lock(&m_Mutex);
+	m_GameState = 0;
+	pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -86,13 +83,11 @@ void Engine::WaitVsync() {
 
 
 int Engine::RunThread() {
-  LOGV("RunThread()\n");
 
 	Build();
 	
 	m_IsSceneBuilt = true;
 
-  LOGV("SceneBuilt!!!!!!!!!!!!!!!!!!!\n");
 	
   double t1, t2;
   timeval tim;

@@ -32,6 +32,7 @@ public:
 	//char *m_Animation;
 	//char m_Animation[1024];
 	std::string m_Animation;
+	float m_Rotation;
 	
 	void SetFrame(int f) {
 		m_Frame = f;
