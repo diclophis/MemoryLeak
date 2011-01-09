@@ -57,26 +57,26 @@ void PixelPusher::Build() {
 	m_NumComets = 20;
 	
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(8), 5, 5, "789:;:987");
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 8, 8, "", 0, 64, 10.0);
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 8, 8, "", 0, 64, 20.0);
 	//m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 0, 64, 1.0, "", 0, 64, 0.05);
-	m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 0, 64, 0.33, "", 0, 64, 0.33);
+	m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 30, 40, 0.5, "", 20, 30, 0.5);
 
 	m_AtlasSprite->SetPosition(0.0, 0.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(8);
+	m_SpriteGun->Build(0);
 	
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		if (randf() > 0.5) {
-			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 0, 16, 0.25, "", 16, 32, 0.25));
+			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 20, 25, 0.15, "", 25, 30, 0.15));
 		} else {
-			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 32, 48, 0.25, "", 48, 64, 0.25));
+			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 35, 40, 0.15, "", 40, 45, 0.15));
 		}
 		m_IceComets[i]->SetPosition(((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 500.0));
 		m_IceComets[i]->SetVelocity(0.0, -250.0);
 		m_IceComets[i]->m_IsAlive = false;
-		m_IceComets[i]->Build(4);
+		m_IceComets[i]->Build(5);
 	}
 }
 
@@ -233,8 +233,8 @@ int PixelPusher::Simulate() {
 		if (m_IceComets[i]->m_Position[1] < y) {
 			if (m_IceComets[i]->m_IsAlive) {
 				if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
-					m_IceComets[i]->SetPosition(((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 1000.0));
-					m_IceComets[i]->SetVelocity(0.0, -300.0);
+					m_IceComets[i]->SetPosition(((randf() * 200.0) + 50.0), fastSinf(i) * 50.0 + (y + 500.0));
+					m_IceComets[i]->SetVelocity(0.0, -(randf() * 150.0));
 					m_IceComets[i]->m_IsAlive = false;
 					m_IceComets[i]->m_Life = 0.0;
 					m_IceComets[i]->Reset();

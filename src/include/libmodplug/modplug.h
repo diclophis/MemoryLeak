@@ -101,7 +101,8 @@ void ModPlug_SetSettings(const ModPlug_Settings* settings);
 /* NOTE: Master Volume (1-512) */
 unsigned int ModPlug_GetMasterVolume(ModPlugFile* file) ;
 void ModPlug_SetMasterVolume(ModPlugFile* file,unsigned int cvol) ;
-
+void ModPlug_SetTempo(ModPlugFile* file, unsigned int t);
+	
 int ModPlug_GetCurrentSpeed(ModPlugFile* file);
 int ModPlug_GetCurrentTempo(ModPlugFile* file);
 int ModPlug_GetCurrentOrder(ModPlugFile* file);

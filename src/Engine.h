@@ -43,7 +43,7 @@ public:
   void PauseThread();
 
 
-	void CreateThread();
+	void CreateThread(void *(*sr)(void *));
 	static void *EnterThread(void *);
 	
 
@@ -79,4 +79,6 @@ public:
   std::vector<Model *> m_Models;
   std::vector<foofoo *> m_FooFoos;
 	int m_RenderIndex;
+	
+	void *(*start_routine)(void *);
 };

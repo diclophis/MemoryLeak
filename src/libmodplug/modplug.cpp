@@ -22,15 +22,14 @@ namespace ModPlug
 		2,
 		16,
 		44100,
-		MODPLUG_RESAMPLE_LINEAR,
-
+		MODPLUG_RESAMPLE_NEAREST,
 		0,
 		0,
 		0,
 		0,
 		0,
 		0,
-		0
+		-1
 	};
 
 	int gSampleSize;
@@ -91,6 +90,11 @@ ModPlugFile* ModPlug_Load(const void* data, int size)
 		delete result;
 		return NULL;
 	}
+}
+
+void ModPlug_SetTempo(ModPlugFile* file, UINT t)
+{
+	file->mSoundFile.SetTempo(t);
 }
 
 void ModPlug_Unload(ModPlugFile* file)

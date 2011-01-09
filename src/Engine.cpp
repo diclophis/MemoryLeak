@@ -47,8 +47,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	//glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_ONE, GL_ONE);
+	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_NORMAL_ARRAY);
@@ -57,7 +57,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 }
 
 
-void Engine::CreateThread() {
+void Engine::CreateThread(void *(*sr)(void *)) {
+	start_routine = sr;
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
 }
 
@@ -150,6 +151,7 @@ int Engine::RunThread() {
       
       //pthread_mutex_unlock(&m_Mutex);
     //}
+		start_routine(NULL);
     WaitVsync();
   }
 

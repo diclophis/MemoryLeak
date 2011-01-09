@@ -494,8 +494,6 @@
 		FCE2EE1212913F2D00A82A88 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
 		FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PixelPusher.cpp; sourceTree = "<group>"; };
 		FCE2EE2312913FCA00A82A88 /* PixelPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PixelPusher.h; sourceTree = "<group>"; };
-		FCFE11C812D4F78200FC246E /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Network.h; sourceTree = "<group>"; };
-		FCFE11C912D4F78200FC246E /* Network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Network.cpp; sourceTree = "<group>"; };
 		FCFE11DC12D4F94100FC246E /* curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
 		FCFE11DD12D4F94100FC246E /* curlbuild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlbuild.h; sourceTree = "<group>"; };
 		FCFE11E012D4F94100FC246E /* curlrules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlrules.h; sourceTree = "<group>"; };
@@ -594,8 +592,8 @@
 				FC5F1EB5129A13FD00E5F9FB /* octree */,
 				FC1417741285415800166578 /* assimp */,
 				FC14188C1285415800166578 /* contrib */,
-				FC1419B41285415900166578 /* Engine.cpp */,
 				FC1419B51285415900166578 /* Engine.h */,
+				FC1419B41285415900166578 /* Engine.cpp */,
 				FC1419B61285415900166578 /* foo.h */,
 				FC1419B91285415900166578 /* include */,
 				FC141A851285415900166578 /* MachineGun.cpp */,
@@ -613,8 +611,6 @@
 				FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */,
 				FCDFB0E012B1A7B400A0B4E1 /* AtlasSprite.h */,
 				FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */,
-				FCFE11C812D4F78200FC246E /* Network.h */,
-				FCFE11C912D4F78200FC246E /* Network.cpp */,
 			);
 			name = src;
 			path = ../../src;

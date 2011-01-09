@@ -41,19 +41,23 @@ import android.os.SystemClock;
 import android.util.Log;
 
 
-
 public class PlayerThread extends Thread {
+
+  protected static AudioTrack at1;
+
+  public static void writeAudio(byte[] b, int sz) {
+    at.write(b, 0, sz);
+  }
 
 	//
 	// kind of an arbitrary maximum mod file size...  (stub code in libmodplug/modplug.cpp apparently
 	//                                                 works without knowing this limit, but using a
 	//                                                 GetByteArrayElements() call to access the Java buffer)
 	// 
-	public final static int MAXMODSIZE = 60000;    // maximum size for a mod file
+	public final static int MAXMODSIZE = 50000;    // maximum size for a mod file
 	
 	// limit volume volume steps to 8 steps (just an arbitrary decision...) 
-	public final static float[] vol_floats = {0.0f, 0.125f, 0.25f, 0.375f, 0.5f, 
-											  0.625f, 0.75f, 1.0f};
+	public final static float[] vol_floats = {0.0f, 0.125f, 0.25f, 0.375f, 0.5f, 0.625f, 0.75f, 1.0f};
 	
 	// object for lock on PlayerValid check (mostly necessary for passing a single PlayerThread instance among
 	// Activities in an Android multi-activity application)
@@ -103,8 +107,11 @@ public class PlayerThread extends Thread {
 	private boolean play_once;
 
 	
-	private static final int NUM_RATES = 5;
-	private final int[] try_rates = {44100, 32000, 22000, 16000, 8000};
+	//private static final int NUM_RATES = 5;
+	//private final int[] try_rates = {44100, 32000, 22000, 16000, 8000};
+
+	private static final int NUM_RATES = 1;
+	private final int[] try_rates = {44100};
 	
 	//
 	// ownership code -- for when several activities try to share a single mod player instance...
@@ -581,7 +588,7 @@ public class PlayerThread extends Thread {
     static {
     	   try {
     	        //Log.i("JNI", "Trying to load libmodplug.so");
-    	        System.loadLibrary("modplug");
+    	        System.loadLibrary("sanangeles");
     	    }
     	    catch (UnsatisfiedLinkError ule) {
     	        //Log.e("JNI", "WARNING: Could not load libmodplug.so");

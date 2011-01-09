@@ -24,16 +24,25 @@
 #include "PixelPusher.h"
 
 
+EAGLView *g_View;
+
 pthread_mutex_t play_mutex;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> levels;
 
+class Callbacks {
+	static void *PumpAudio(void *) {
+		[[g_View mplayer] Pump];
+	};
+};
+
 @implementation EAGLView
 
 
 @synthesize animating;
+@synthesize mplayer;
 @dynamic animationFrameInterval;
 
 
@@ -41,15 +50,6 @@ static std::vector<foo*> levels;
 + (Class)layerClass {
     return [CAEAGLLayer class];
 }
-
-
--(id)initWithFrame:(CGRect)theFrame {
-	if ((self = [super initWithFrame:theFrame])) {
-		[self build];
-	}
-	return self;
-}
-
 
 
 -(void)build {
@@ -68,7 +68,7 @@ static std::vector<foo*> levels;
 	
 	if (!context || ![EAGLContext setCurrentContext:context]) {
 		[self release];
-		//return nil;
+		return;
 	}
 	
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
@@ -91,7 +91,7 @@ static std::vector<foo*> levels;
 	
 	if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES) {
 		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
-		//return NO;
+		return;
 	}
 	
 	[self startGame];
@@ -112,14 +112,6 @@ static std::vector<foo*> levels;
 }
 
 
--(id)initWithCoder:(NSCoder*)coder {
-    if ((self = [super initWithCoder:coder])) {
-	}
-
-    return self;
-}
-
-
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
 		NSSet *allTouches = [event allTouches];
@@ -137,6 +129,7 @@ static std::vector<foo*> levels;
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
+		
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		UITouch* touch;
@@ -146,6 +139,7 @@ static std::vector<foo*> levels;
 		location = [touch locationInView:self];
 		location.y = location.y;
 		game->Hit(location.x, location.y, 1);
+		[mplayer setTempo:(location.x + 50)];
 	}
 }
 
@@ -278,7 +272,7 @@ GLuint loadTexture(UIImage *image) {
 		}
 
 		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels);
-		game->CreateThread();
+		game->CreateThread(Callbacks::PumpAudio);
 		
 		gameState = 1;
 		
@@ -315,34 +309,20 @@ GLuint loadTexture(UIImage *image) {
 		mplayer = [[MusicPlayer alloc] initMusicPlayer];
 
 		ModPlug_Settings *mpsettings=[mplayer getMPSettings];
-		mpsettings->mResamplingMode = MODPLUG_RESAMPLE_LINEAR; /* RESAMP */
-		mpsettings->mChannels = 2;
-		mpsettings->mBits = 16;
-		mpsettings->mFrequency = 44100;
-		/* insert more setting changes here */
-		mpsettings->mLoopCount = 0;
+		//mpsettings->mResamplingMode = MODPLUG_RESAMPLE_LINEAR;
+		//mpsettings->mChannels = 2;
+		//mpsettings->mBits = 32;
+		//mpsettings->mFrequency = PLAYBACK_FREQ;
+		mpsettings->mLoopCount = -1;
 		[mplayer updateMPSettings];
 
 		int retcode;
 		
-		if (retcode=[mplayer LoadModule]) {
-			//error while loading
-			//NSLog(@"Issue in LoadModule %@",filePath);
-			//mRestart=0;
-			//mRestart_sub=0;
-			if (retcode==-99) {
-				//mLoadIssueMessage=0;
-			} else {
-				//mLoadIssueMessage=1;
-			}
-			printf("no dice\n");
+		if (retcode = [mplayer LoadModule]) {
+			NSLog(@"Issue in LoadModule");
 		}
 		
-		
-		
-		
-		
-		
+		[mplayer Play];
 	}
 }
 
@@ -384,6 +364,7 @@ GLuint loadTexture(UIImage *image) {
 
 -(void)startAnimation {
     if (!animating) {
+		g_View = self;
 		[self build];
 		animating = TRUE;
         if (displayLinkSupported) {
