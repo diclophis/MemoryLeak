@@ -26,7 +26,8 @@ static jshortArray ab = NULL;
 // ************************************************************ 
 ModPlugFile *currmodFile;
 
-#define SAMPLEBUFFERSIZE 20000
+#define SAMPLEBUFFERSIZE 3000
+#define SAMPLEBUFFERSIZE_BY_2 SAMPLEBUFFERSIZE / 2
 
 unsigned char samplebuffer[SAMPLEBUFFERSIZE];
 
@@ -40,16 +41,14 @@ class Callbacks {
 public:
   static void *PumpAudio(void *) {
 
-    int size = SAMPLEBUFFERSIZE / 2;
+    int size = SAMPLEBUFFERSIZE_BY_2;
     jint smpsize = 0;
 
     if (g_Env == NULL) {
-      LOGV("AttachThread\n");
       g_Vm->AttachCurrentThread(&g_Env, NULL);
     }
 
     if (ab == NULL) {
-      LOGV("NewShortArray\n");
       jobject tmp;
       ab = g_Env->NewShortArray(size);
       tmp = ab;
@@ -58,21 +57,13 @@ public:
     }
 
     if (android_dumpAudio == NULL) {
-      LOGV("GetStaticMethodID\n");
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SI)V");
     }
 
-    if (currmodFile == 0) {
-      LOGV("no sound\n");
-      return 0;
-    }
-
-    //LOGV("Pumping\n");
     smpsize = ModPlug_Read(currmodFile, samplebuffer, size * sizeof(jshort));
-    currsample = 0;
 
     // now convert the C sample buffer data to a java short array
-    if (size && samplebuffer && (smpsize || currsample < SAMPLEBUFFERSIZE)) {
+    if (smpsize) {
       g_Env->SetShortArrayRegion(ab, 0 ,size, (jshort *) (((char *) samplebuffer)+currsample));
       currsample += size*sizeof(jshort);
       //LOGV("Uploading\n");
