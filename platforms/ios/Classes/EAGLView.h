@@ -10,6 +10,8 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
+#import "MusicPlayer.h"
+
 #include "importgl.h"
 
 GLuint loadTexture(UIImage *image);
@@ -43,12 +45,16 @@ typedef struct Engine Engine;
 	
 	Engine *game;
 	int gameState;
+	
+	MusicPlayer *mplayer;
+
 
 }
 
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
+@property (nonatomic, retain) MusicPlayer *mplayer;
 
 
 -(void)build;

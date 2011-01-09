@@ -7,7 +7,12 @@
 #define EV_SELECT_USE_FD_SET 1
 #define _iPhoneVersion 1
 
-#undef __STDC__
+//#define HAVE_SETENV
+//#define MODPLUG_TRACKER
+
+//#include <stdint.h>
+
+//#undef __STDC__
  
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>

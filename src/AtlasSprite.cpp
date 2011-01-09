@@ -3,6 +3,8 @@
 
 #include "AtlasSprite.h"
 
+#define GL_PIXEL_UNPACK_BUFFER_ARB 0x88EC
+
 static GLuint g_lastTexture = 0;
 
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e, float m) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e), m_MaxLife(m) {
@@ -16,7 +18,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	m_IsAlive = true;
 	m_Frame = 0;
 	m_AnimationSpeed = 1.0;
-	m_AnimationDuration = m_MaxLife + 0.5;
+	m_AnimationDuration = m_MaxLife + 0.1;
 	m_AnimationLength = m_Animation.length();
 	m_Frames = new int[1024];
 	if (m_AnimationLength > 0) {
@@ -53,6 +55,19 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	}
 	m_Rotation = randf() > 0.5 ? (randf() * 5.0) : -(randf() * 5.0);
 
+	//glUnmapBufferOES();
+	
+	//glUnmapBuffer(GL_ARRAY_BUFFER);
+	
+	//glUnmapBufferOES(GL_PIXEL_UNPACK_BUFFER_ARB);
+	
+	
+	//const GLubyte *strr;
+	//int glPolyOffExtAvailable;
+	//strr = glGetString (GL_EXTENSIONS);
+	//glPolyOffExtAvailable = (strstr((const char *)strr, "GL_EXT_polygon_offset") != NULL);
+	//LOGV("%d %s \n", glPolyOffExtAvailable, strr);
+	
 }
 
 void AtlasSprite::Render() {
@@ -74,10 +89,8 @@ void AtlasSprite::Render() {
 		glTranslatef(ax, ay, 0.0);
 		//glRotatef(randf() * 2.0, 0.0, 0.0, 1.0);
 		m_Rotation *= (randf() > 0.99) ? -1.0 : 1.0;
-		
-		glRotatef((m_Life * (100.0 * m_Rotation)), 0.0, 0.0, 1.0);
-
-		//glScalef((m_Life * 2.1) + 0.5, (m_Life * 2.1) + 0.5, (m_Life * 2.1) + 0.5);
+		glRotatef((m_Life * (25.0 * m_Rotation)), 0.0, 0.0, 1.0);
+		//glScalef((m_Life * -1.1) + 0.5, (m_Life * -1.1) + 0.5, (m_Life * -1.1) + 0.5);
 	
 		int i = m_Frames[m_Frame % m_AnimationLength];
 

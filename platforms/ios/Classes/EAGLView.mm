@@ -8,7 +8,9 @@
 
 #import "MemoryLeakAppDelegate.h"
 #import "EAGLView.h"
-#import <CoreAudio/CoreAudioTypes.h>
+//#import <CoreAudio/CoreAudioTypes.h>
+
+#import "MusicPlayer.h"
 
 #include "MemoryLeak.h"
 #include "Model.h"
@@ -20,6 +22,9 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "PixelPusher.h"
+
+
+pthread_mutex_t play_mutex;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -276,6 +281,68 @@ GLuint loadTexture(UIImage *image) {
 		game->CreateThread();
 		
 		gameState = 1;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		UIDevice* device = [UIDevice currentDevice];
+		BOOL backgroundSupported = NO;
+		if ([device respondsToSelector:@selector(isMultitaskingSupported)])
+			backgroundSupported = device.multitaskingSupported;
+		
+
+		//if (pthread_mutex_init(&db_mutex,NULL)) {
+		//	printf("cannot create db mutex");
+		//	return NO;
+		//}
+		//if (pthread_mutex_init(&download_mutex,NULL)) {
+		//	printf("cannot create download mutex");
+		//	return NO;
+		//}
+		if (pthread_mutex_init(&play_mutex,NULL)) {
+			printf("cannot create play mutex");
+		}
+		
+
+		
+		
+		
+		mplayer = [[MusicPlayer alloc] initMusicPlayer];
+
+		ModPlug_Settings *mpsettings=[mplayer getMPSettings];
+		mpsettings->mResamplingMode = MODPLUG_RESAMPLE_LINEAR; /* RESAMP */
+		mpsettings->mChannels = 2;
+		mpsettings->mBits = 16;
+		mpsettings->mFrequency = 44100;
+		/* insert more setting changes here */
+		mpsettings->mLoopCount = 0;
+		[mplayer updateMPSettings];
+
+		int retcode;
+		
+		if (retcode=[mplayer LoadModule]) {
+			//error while loading
+			//NSLog(@"Issue in LoadModule %@",filePath);
+			//mRestart=0;
+			//mRestart_sub=0;
+			if (retcode==-99) {
+				//mLoadIssueMessage=0;
+			} else {
+				//mLoadIssueMessage=1;
+			}
+			printf("no dice\n");
+		}
+		
+		
+		
+		
+		
+		
 	}
 }
 

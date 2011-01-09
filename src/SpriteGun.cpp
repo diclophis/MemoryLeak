@@ -38,8 +38,8 @@ void SpriteGun::ResetParticle(int idx) {
 void SpriteGun::ShootParticle(int idx) {
 	m_AtlasSprites[idx]->SetLife(0.0);
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
-	m_AtlasSprites[idx]->m_Velocity[0] = ((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
-	m_AtlasSprites[idx]->m_Velocity[1] = +2000.0 + (randf() * 500.0); //((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
+	//m_AtlasSprites[idx]->m_Velocity[0] = ((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
+	m_AtlasSprites[idx]->m_Velocity[1] = +2000.0 + (randf() * 75.0); //((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
 	m_AtlasSprites[idx]->m_IsAlive = true;
 }
 
@@ -49,7 +49,8 @@ void SpriteGun::Simulate(float deltaTime) {
 		int shot_this_tick = 0;
 		int not_shot_this_tick = 0;
 		for (unsigned int i=0; i<m_NumParticles; i++) {
-			if ((shot_this_tick < (randf() * 2.0)) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive)) {
+			//(shot_this_tick < (randf() * 2.0)) && 
+			if ((randf() > 0.5) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive)) {
 				ShootParticle(i);
 				shot_this_tick++;
 			} else {
