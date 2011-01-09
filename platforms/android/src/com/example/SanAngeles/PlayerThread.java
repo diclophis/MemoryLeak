@@ -45,7 +45,7 @@ public class PlayerThread extends Thread {
 
   protected static AudioTrack at1;
 
-  public static void writeAudio(byte[] b, int sz) {
+  public static void writeAudio(short[] b, int sz) {
     at1.write(b, 0, sz);
   }
 
@@ -397,6 +397,7 @@ public class PlayerThread extends Thread {
     	// main play loop
         mytrack.play();
 
+        /*
         while (running) {
         	while (playing) {
         	
@@ -457,11 +458,12 @@ public class PlayerThread extends Thread {
         	
         	
         }
+        */
         
         //**********************
         // experimental
         //**********************
-        mytrack.release();
+        //mytrack.release();
     }
     
     //
