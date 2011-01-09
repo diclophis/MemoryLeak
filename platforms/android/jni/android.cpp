@@ -17,6 +17,63 @@
 #include "importgl.h"
 
 #include "MemoryLeak.h"
+
+static JavaVM *g_Vm;
+static jbyteArray ab = NULL;
+// ************************************************************ 
+// Start of JNI stub code
+// ************************************************************ 
+ModPlugFile *currmodFile;
+
+#define SAMPLEBUFFERSIZE 1024
+
+unsigned char samplebuffer[SAMPLEBUFFERSIZE];
+
+int currsample;
+void *Cbuffer;
+
+static jclass player;
+
+class Callbacks {
+public:
+  static void *PumpAudio(void *) {
+
+    JNIEnv *env;
+    jobject tmp;
+    g_Vm->GetEnv((void **)&env, JNI_VERSION_1_6);
+    int size = SAMPLEBUFFERSIZE;
+    //void *buffer[size];
+    jint smpsize = 0;
+
+    g_Vm->AttachCurrentThread(&env, NULL);
+    //LOGV("1111 %d %p\n", env, env);
+    if (ab == NULL) {
+  //player = (jclass)env->NewGlobalRef(player);
+  //LOGV("AAAAAAAAAAA  %p  FOOOOOOOOOOOOOOOOOOO\n", player);
+   //   LOGV("4444\n");
+      ab = env->NewByteArray(size);
+      //LOGV("5555\n");
+      tmp = ab;
+      //LOGV("6666\n");
+      ab = (jbyteArray)env->NewGlobalRef(ab);
+      //LOGV("7777\n");
+      env->DeleteLocalRef(tmp);
+    }
+    jmethodID android_dumpAudio = env->GetStaticMethodID(player, "writeAudio", "([BI)V");
+    //LOGV("3333\n");
+    //LOGV("8888\n");
+    smpsize = ModPlug_Read(currmodFile, Cbuffer, size * sizeof(jshort));
+    //LOGV("9999\n");
+    env->SetByteArrayRegion(ab, 0, size, (jbyte *)Cbuffer);
+    //LOGV("AAA\n");
+    env->CallStaticVoidMethod(player, android_dumpAudio, ab, (jint)size);
+    //LOGV("BBB\n");
+    g_Vm->DetachCurrentThread();
+    //LOGV("in pump\n");
+  };
+};
+
+
 #include "Audio.h"
 #include "Model.h"
 #include "AtlasSprite.h"
@@ -27,6 +84,7 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "PixelPusher.h"
+
 
 extern "C" {
   void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1, int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2);
@@ -41,85 +99,10 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> levels;
 
-static Engine *gameController;
+static PixelPusher *gameController;
 static int  sWindowWidth  = 0;
 static int  sWindowHeight = 0;
 static int gameState;
-
-
-JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
-  return JNI_VERSION_1_6;
-}
-
-
-void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1, int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2) {
-	importGLInit();
-	jclass fdClass = env->FindClass("java/io/FileDescriptor");
-	if (fdClass != NULL) {
-		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
-		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
-		if (fdClassDescriptorFieldID != NULL) {
-      for (int i=0; i<model_count; i++) {
-        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
-        int myfdx = dup(fdx);
-        foo *f = new foo;
-        f->fp = fdopen(myfdx, "rb");
-        f->off = env->GetIntArrayElements(off1, 0)[i];
-        f->len = env->GetIntArrayElements(len1, 0)[i];
-        models.push_back(f);
-      }
-      for (int i=0; i<level_count; i++) {
-        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys2, i), fdClassDescriptorFieldID);
-        int myfdx = dup(fdx);
-        foo *f = new foo;
-        f->fp = fdopen(myfdx, "rb");
-        f->off = env->GetIntArrayElements(off2, 0)[i];
-        f->len = env->GetIntArrayElements(len2, 0)[i];
-        levels.push_back(f);
-      }
-		}
-	} 
-} 
-
-
-void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr) {
-	for (int i=0; i<count; i++) {
-		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
-	}
-
-  Audio *foo = new Audio();
-  gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels);
-  gameController->CreateThread();
-
-  gameState = 1;
-}
-
-
-void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
-  //LOGV("nativeResize");
-  gameController->ResizeScreen(width, height);
-}
-
-
-void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-  //LOGV("nativePause");
-  gameController->PauseThread();
-  gameState = 0;
-}
-
-
-void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
-  //LOGV("nativeTouch");
-	gameController->Hit(x, y, (int)hitState);
-}
-
-
-void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
-  if (gameState) {
-    gameController->DrawScreen(0);
-  } 
-}
-
 
 	const ModPlug_Settings gSettings8000 =
 	{
@@ -166,17 +149,107 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
 	};
 
 
-// ************************************************************ 
-// Start of JNI stub code
-// ************************************************************ 
-ModPlugFile *currmodFile;
 
-#define SAMPLEBUFFERSIZE 40000
+JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
+  g_Vm = vm;
 
-unsigned char samplebuffer[SAMPLEBUFFERSIZE];
+      JNIEnv *env;
+      jobject tmp;
 
-int currsample;
-void *Cbuffer;
+      g_Vm->GetEnv((void **)&env, JNI_VERSION_1_6);
+      player = env->FindClass("com/example/SanAngeles/PlayerThread");
+      //LOGV("AAAAAAAAAAA  %p  FOOOOOOOOOOOOOOOOOOO\n", player);
+
+      tmp = player;
+      //LOGV("6666123123\n");
+      player = (jclass)env->NewGlobalRef(player);
+      //LOGV("7777\n");
+      env->DeleteLocalRef(tmp);
+
+      //LOGV("AAAAAAAAAAA  %p  FOOOOOOOOOOOOOOOOOOO\n", player);
+
+  return JNI_VERSION_1_6;
+}
+
+
+void Java_com_example_SanAngeles_DemoActivity_initNative(JNIEnv * env, jclass envClass, int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1, int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2) {
+	importGLInit();
+	jclass fdClass = env->FindClass("java/io/FileDescriptor");
+	if (fdClass != NULL) {
+		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
+		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
+		if (fdClassDescriptorFieldID != NULL) {
+      for (int i=0; i<model_count; i++) {
+        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
+        int myfdx = dup(fdx);
+        foo *f = new foo;
+        f->fp = fdopen(myfdx, "rb");
+        f->off = env->GetIntArrayElements(off1, 0)[i];
+        f->len = env->GetIntArrayElements(len1, 0)[i];
+        models.push_back(f);
+      }
+      for (int i=0; i<level_count; i++) {
+        jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys2, i), fdClassDescriptorFieldID);
+        int myfdx = dup(fdx);
+        foo *f = new foo;
+        f->fp = fdopen(myfdx, "rb");
+        f->off = env->GetIntArrayElements(off2, 0)[i];
+        f->len = env->GetIntArrayElements(len2, 0)[i];
+        levels.push_back(f);
+      }
+		}
+	} 
+}
+
+
+
+
+void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr) {
+	for (int i=0; i<count; i++) {
+		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
+	}
+
+  Audio *foo = new Audio();
+  gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels);
+
+  //LOGV("1111111111111111  %p  FOOOOOOOOOOOOOOOOOOO\n", Callbacks::PumpAudio);
+
+  gameController->CreateThread(Callbacks::PumpAudio);
+
+  //LOGV("2222222222222222222222    FOOOOOOOOOOOOOOOOOOO\n");
+
+  gameState = 1;
+}
+
+
+void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
+  //LOGV("nativeResize");
+  gameController->ResizeScreen(width, height);
+}
+
+
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
+  //LOGV("nativePause");
+  gameController->PauseThread();
+  gameState = 0;
+}
+
+
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
+  //LOGV("nativeTouch");
+	gameController->Hit(x, y, (int)hitState);
+}
+
+
+void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
+  if (gameState) {
+    gameController->DrawScreen(0);
+  } 
+}
+
+
+
+
 
 
 /*
@@ -195,7 +268,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1Ini
 {
   // if trying to make this truly re-entrant, separate buffers could be allocated here
 
-	__android_log_print(ANDROID_LOG_INFO, "PA_AND_lib", "Initializing modplug with rate %d", rate);
+	//__android_log_print(ANDROID_LOG_INFO, "PA_AND_lib", "Initializing modplug with rate %d", rate);
 
 	//usleep(16*1000);
 
@@ -276,6 +349,7 @@ JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JNumCha
  */
 JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JGetSoundData(JNIEnv *env, jobject obj, jshortArray jbuffer, jint size)
 {
+  //LOGV("FUUUUUUUUUUUUUUUUUUUUUUUUUUU    FOOOOOOOOOOOOOOOOOOO\n");
   jint smpsize = 0;
 
    if (currmodFile == 0)

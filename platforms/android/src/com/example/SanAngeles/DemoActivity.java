@@ -68,21 +68,9 @@ public class DemoActivity extends Activity {
         e.printStackTrace();
     }
 
-//    to call libmodplug's Load() function with the MOD data
-//
     player = new PlayerThread(modData, 0);
     player.setVolume(255);
-    //player.LoadMODData(modData);
     player.start();
-//
-//  then for transition to another MOD song
-//    player.PausePlay();
-//    player.UnLoadMod();
-//
-//   to load in the new mod file
-//    player.LoadMODData(newmodfiledata);
-//    player.UnPausePlay();
-//    repeat...
 
     try {
       path = "models";

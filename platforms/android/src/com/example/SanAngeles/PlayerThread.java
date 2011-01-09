@@ -46,7 +46,7 @@ public class PlayerThread extends Thread {
   protected static AudioTrack at1;
 
   public static void writeAudio(byte[] b, int sz) {
-    at.write(b, 0, sz);
+    at1.write(b, 0, sz);
   }
 
 	//
@@ -214,6 +214,7 @@ public class PlayerThread extends Thread {
         else {
             switch(mytrack.getState()) {
             case AudioTrack.STATE_INITIALIZED:
+                at1 = mytrack;
                 Log.i("PLAYERTHREAD", "GOT THE INITIALIZED AUDIOTRACK!"); break;
             default:
             	Log.i("PLAYERTHREAD", "GOT THE AUDIOTRACK, BUT IT'S UNINITIALIZED?!?");
@@ -273,6 +274,7 @@ public class PlayerThread extends Thread {
                     mytrack = new AudioTrack(AudioManager.STREAM_MUSIC, try_rates[rateindex], AudioFormat.CHANNEL_CONFIGURATION_STEREO,
                     		AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
                     // init the Modplug player for this sample rate
+                    //at1 = mytrack;
                     ModPlug_Init(try_rates[rateindex]);
                     success = true;
                 }
@@ -305,6 +307,7 @@ public class PlayerThread extends Thread {
         else {
             switch(mytrack.getState()) {
             case AudioTrack.STATE_INITIALIZED:
+                at1 = mytrack;
                 Log.i("PLAYERTHREAD", "GOT THE INITIALIZED AUDIOTRACK!"); break;
             default:
             	Log.i("PLAYERTHREAD", "GOT THE AUDIOTRACK, BUT IT'S UNINITIALIZED?!?");
@@ -322,6 +325,7 @@ public class PlayerThread extends Thread {
             }
 
         }
+
 
 
         mPlayerValid = true;
@@ -401,7 +405,8 @@ public class PlayerThread extends Thread {
         		// pre-load another packet
             	synchronized(mRDlock) {
             		// for non-looping mod files, may need to check this read cnt (rcnt) returned...
-            		rcnt = ModPlug_JGetSoundData(packets[process_index++], PACKETSIZE);
+            		// HACK rcnt = ModPlug_JGetSoundData(packets[process_index++], PACKETSIZE);
+        	      SystemClock.sleep(500);
             	}
         		if (process_index >= NUMPACKETS) process_index = 0;
         	        	

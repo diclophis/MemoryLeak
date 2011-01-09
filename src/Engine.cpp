@@ -58,8 +58,11 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 void Engine::CreateThread(void *(*sr)(void *)) {
+  //LOGV("3333333333333333333333333  %p  FOOOOOOOOOOOOOOOOOOO\n", sr);
 	start_routine = sr;
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
+  //LOGV("4444444444444444444444444444444 %p %p   FOOOOOOOOOOOOOOOOOOO\n", this, sr);
+  //LOGV("4444444444444444444444444444444 %p   FOOOOOOOOOOOOOOOOOOO\n", start_routine);
 }
 
 
@@ -151,7 +154,9 @@ int Engine::RunThread() {
       
       //pthread_mutex_unlock(&m_Mutex);
     //}
-		start_routine(NULL);
+  //LOGV("55555555555555555555555 %p, %p   FOOOOOOOOOOOOOOOOOOO\n", this, start_routine);
+		start_routine(0);
+  //LOGV("66666666666666666666666666    FOOOOOOOOOOOOOOOOOOO\n");
     WaitVsync();
   }
 
