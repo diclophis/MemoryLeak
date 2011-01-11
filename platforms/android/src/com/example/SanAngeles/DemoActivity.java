@@ -29,6 +29,9 @@ import android.media.AudioTrack;
 public class DemoActivity extends Activity {
 
   protected static AudioTrack at1;
+  public static void writeAudio(short[] b, int sz) {
+    at1.write(b, 0, sz);
+  }
 
 	//private InputStream modfileInStream;
 	//private byte[] modData;
@@ -60,6 +63,7 @@ public class DemoActivity extends Activity {
     int[] len2;
 
     int sound_count;
+    int sound_count_actual;
     java.io.FileDescriptor[] fd3;
     int[] off3;
     int[] len3;
@@ -122,20 +126,27 @@ public class DemoActivity extends Activity {
       path = "sounds";
       files = am.list(path);
       sound_count = files.length;
+      sound_count_actual = 0;
       android.content.res.AssetFileDescriptor afd3;
       fd3 = new java.io.FileDescriptor[sound_count];
       off3 = new int[sound_count];
       len3 = new int[sound_count];
       for (int i=0; i<sound_count; i++) {
-        afd3 = getAssets().openFd(path + "/" + files[i]);
-        if (afd3 != null) {
-            fd3[i] = afd3.getFileDescriptor();
-            off3[i] = (int)afd3.getStartOffset();
-            len3[i] = (int)afd3.getLength();
+        if (!files[i].contains("raw")) {
+          System.out.println(path + "/" + files[i]);
+          afd3 = getAssets().openFd(path + "/" + files[i]);
+          if (afd3 != null) {
+              fd3[i] = afd3.getFileDescriptor();
+              off3[i] = (int)afd3.getStartOffset();
+              len3[i] = (int)afd3.getLength();
+              sound_count_actual++;
+          }
         }
       }
 
-		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count, fd3, off3, len3);
+      System.out.println("FUUUUUUUUUUUUUUUU" + sound_count_actual);
+
+		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
     } catch(java.io.IOException e) {
       System.out.println(e);
     }
