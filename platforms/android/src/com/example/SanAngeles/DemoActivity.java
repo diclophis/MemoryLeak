@@ -22,17 +22,17 @@ import java.io.InputStream;
 import java.io.IOException;
 import android.view.ViewGroup.LayoutParams;
 import android.graphics.Color;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 
 public class DemoActivity extends Activity {
 
-	// default song to start with
-	public static final int DEFAULT_SONG = 0;
+  protected static AudioTrack at1;
 
-	private PlayerThread player = null;
-
-	private InputStream modfileInStream;
-	private byte[] modData;
-	private int modsize;    // holds the size in bytes of the mod file
+	//private InputStream modfileInStream;
+	//private byte[] modData;
+	//private int modsize;    // holds the size in bytes of the mod file
 
 	private GLSurfaceView mGLView;
 
@@ -59,6 +59,11 @@ public class DemoActivity extends Activity {
     int[] off2;
     int[] len2;
 
+    int sound_count;
+    java.io.FileDescriptor[] fd3;
+    int[] off3;
+    int[] len3;
+
     /*
     // allocate a buffer for the modfile data
     modData = new byte[PlayerThread.MAXMODSIZE];
@@ -77,11 +82,9 @@ public class DemoActivity extends Activity {
         int rate = 44100;
         int minbuffer = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
         Log.i("PLAYERTHREAD", "minbuffer="+minbuffer);
-        mytrack = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
-        mytrack.play();
-        mytrack.setStereoVolume(1.0f, 1.0f);
-        at1 = mytrack;
-        ModPlug_Init(try_rates[rateindex]);
+        at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
+        at1.play();
+        at1.setStereoVolume(1.0f, 1.0f);
 
     try {
       path = "models";
@@ -116,7 +119,23 @@ public class DemoActivity extends Activity {
         }
       }
 
-		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2);
+      path = "sounds";
+      files = am.list(path);
+      sound_count = files.length;
+      android.content.res.AssetFileDescriptor afd3;
+      fd3 = new java.io.FileDescriptor[sound_count];
+      off3 = new int[sound_count];
+      len3 = new int[sound_count];
+      for (int i=0; i<sound_count; i++) {
+        afd3 = getAssets().openFd(path + "/" + files[i]);
+        if (afd3 != null) {
+            fd3[i] = afd3.getFileDescriptor();
+            off3[i] = (int)afd3.getStartOffset();
+            len3[i] = (int)afd3.getLength();
+        }
+      }
+
+		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count, fd3, off3, len3);
     } catch(java.io.IOException e) {
       System.out.println(e);
     }
@@ -127,8 +146,7 @@ public class DemoActivity extends Activity {
     super.onConfigurationChanged(newConfig);
   }
 
-
-	private static native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2);
+	private static native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
 
     @Override
     protected void onPause() {

@@ -31,7 +31,7 @@ public:
 	//Engine& operator=(const Engine&);
 
 
-	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo *> &l);
+	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
 	virtual ~Engine();
 
  
@@ -75,10 +75,16 @@ public:
 	std::vector<GLuint> *m_Textures;
 	std::vector<foo *> *m_ModelFoos;
 	std::vector<foo *> *m_LevelFoos;
+	std::vector<foo *> *m_SoundFoos;
 	Assimp::Importer m_Importer;
   std::vector<Model *> m_Models;
   std::vector<foofoo *> m_FooFoos;
+  std::vector<ModPlugFile *>m_Sounds;
+
 	int m_RenderIndex;
-	
+
+  #define BUFFER_SIZE 12000
+  unsigned char m_AudioBuffer[BUFFER_SIZE];
 	void *(*start_routine)(void *);
+
 };

@@ -10,6 +10,8 @@
 
 #include "Model.h"
 #include "AtlasSprite.h"
+
+
 #include "Engine.h"
 
 
@@ -18,7 +20,7 @@ Engine::~Engine() {
 }
 
 
-Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l) {
+Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
 
 	m_IsSceneBuilt = false;
 	
@@ -30,11 +32,11 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 
-	char s[128];
+	char path[128];
 	int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 	for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
-		snprintf(s, sizeof(s), "%d", i);
-		m_Importer.ReadFile(s, m_PostProcessFlags);	
+		snprintf(path, sizeof(s), "%d", i);
+		m_Importer.ReadFile(path, m_PostProcessFlags);	
 		m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene()));
 		m_Importer.FreeScene();
 	}
@@ -54,6 +56,13 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	//glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glLoadIdentity();
+
+
+  void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
+	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
+	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
+  m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
+
 }
 
 
@@ -155,7 +164,8 @@ int Engine::RunThread() {
       //pthread_mutex_unlock(&m_Mutex);
     //}
   //LOGV("55555555555555555555555 %p, %p   FOOOOOOOOOOOOOOOOOOO\n", this, start_routine);
-		start_routine(0);
+    ModPlug_Read(m_Sounds[0], m_AudioBuffer, BUFFER_SIZE / 4);
+		start_routine(m_AudioBuffer);
   //LOGV("66666666666666666666666666    FOOOOOOOOOOOOOOOOOOO\n");
     WaitVsync();
   }

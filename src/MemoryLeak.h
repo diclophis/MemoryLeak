@@ -26,3 +26,7 @@
 #include <include/IOSystem.h>
 
 #include "foo.h"
+
+#include "modplug.h"
+#include "stdafx.h"
+#include "sndfile.h"

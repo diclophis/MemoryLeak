@@ -15,7 +15,7 @@
 
 #include "PixelPusher.h"
 
-PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l) : Engine(w, h, t, m, l) {
+PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 	//m_Menu = new Model(m_FooFoos.at(3));
 	//m_Menu->SetTexture(m_Textures->at(0));
 	//m_Menu->SetScale(0.1, 0.1, 0.1);
