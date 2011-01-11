@@ -69,7 +69,6 @@ public class DemoActivity extends Activity {
     }
 
     player = new PlayerThread(modData, 0);
-    player.run();
 
     try {
       path = "models";

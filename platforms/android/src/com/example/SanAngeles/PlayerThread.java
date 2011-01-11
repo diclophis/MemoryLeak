@@ -174,6 +174,7 @@ public class PlayerThread {
         minbuffer = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
         Log.i("PLAYERTHREAD", "minbuffer="+minbuffer+" our PACKETSIZE="+PACKETSIZE);
         mytrack = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
+        mytrack.play();
         mytrack.setStereoVolume(1.0f, 1.0f);
         at1 = mytrack;
         ModPlug_Init(try_rates[rateindex]);
@@ -181,69 +182,19 @@ public class PlayerThread {
         // load the mod file (data) into libmodplug
         load_ok = ModPlug_JLoad(modData, MAXMODSIZE);
         
-        if (load_ok) {
-        	// get info (name and number of tracks) for the loaded MOD file
-        	modname = ModPlug_JGetName();
-        	numchannels = ModPlug_JNumChannels();
-        	
-        	// init both sound and process indices to first sound buffer packet
-        	sound_index = 0;
-        	process_index = 0;
-        }
-        
-        mPlayerValid = true;
 	}
-
-	//
-	// the thread's run() call, where the actual sounds get played
-	//
-    public void run() {
-
-    	long pause_start_time=0;
-    	
-    	if (start_paused)
-    		playing = false;
-    	else
-    		playing = true;
-		
-    	// main play loop
-        mytrack.play();
-
-    }
-    
-    //
-    // MOD file info getters
-	public String getModName() {
-		return modname;
-	}
-	
-	public int getNumChannels() {
-		return numchannels;
-	}
-	
-	public int getModSize() {
-		return modsize;
-	}
-
-	public int getRate() {
-		return rate;
-	}
-
-    
-    
-    
 
     public static native boolean ModPlug_Init(int rate);    // init libmodplug
     public native boolean ModPlug_JLoad(byte[] buffer, int size);    // load a mod file (in the buffer)
-    public native String ModPlug_JGetName();      // for info only, gets the mod's name
-    public native int ModPlug_JNumChannels();     // info only, how many channels are used
-    public native int ModPlug_JGetSoundData(short[] sndbuffer, int datasize);  // get another packet of sample data
-    public static native boolean  ModPlug_JUnload(byte[] buffer, int size);  // unload a mod file
-    public static native boolean ModPlug_CloseDown();   // close down libmodplug
+
+    //public native String ModPlug_JGetName();      // for info only, gets the mod's name
+    //public native int ModPlug_JNumChannels();     // info only, how many channels are used
+    //public native int ModPlug_JGetSoundData(short[] sndbuffer, int datasize);  // get another packet of sample data
+    //public static native boolean  ModPlug_JUnload(byte[] buffer, int size);  // unload a mod file
+    //public static native boolean ModPlug_CloseDown();   // close down libmodplug
  
     static {
     	   try {
-    	        //Log.i("JNI", "Trying to load libmodplug.so");
     	        System.loadLibrary("sanangeles");
     	    }
     	    catch (UnsatisfiedLinkError ule) {
