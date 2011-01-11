@@ -17,7 +17,7 @@
 #include "importgl.h"
 #include "MemoryLeak.h"
 
-#define BUFFER_SIZE 10000
+#define BUFFER_SIZE 12000
 
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
@@ -51,13 +51,13 @@ public:
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SI)V");
     }
 
-    pumped = ModPlug_Read(currmodFile, samplebuffer, BUFFER_SIZE);
+    pumped = ModPlug_Read(currmodFile, samplebuffer, BUFFER_SIZE / 4);
 
     if (samplebuffer && pumped) {
       //LOGV("DDD\n");
       g_Env->SetShortArrayRegion(ab, 0, pumped, (jshort *) (((char *)samplebuffer)+0));
       //LOGV("%p %p %d %p EEE\n", player, android_dumpAudio, ab, ab);
-      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, pumped);
+      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 1500);
       //LOGV("FFF\n");
     } else {
       LOGV("Error\n");

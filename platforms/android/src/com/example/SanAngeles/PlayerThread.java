@@ -41,7 +41,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 
-public class PlayerThread extends Thread {
+public class PlayerThread {
 
   protected static AudioTrack at1;
 
@@ -54,7 +54,7 @@ public class PlayerThread extends Thread {
 	//                                                 works without knowing this limit, but using a
 	//                                                 GetByteArrayElements() call to access the Java buffer)
 	// 
-	public final static int MAXMODSIZE = 50000;    // maximum size for a mod file
+	public final static int MAXMODSIZE = 200000;    // maximum size for a mod file
 	
 	// limit volume volume steps to 8 steps (just an arbitrary decision...) 
 	public final static float[] vol_floats = {0.0f, 0.125f, 0.25f, 0.375f, 0.5f, 0.625f, 0.75f, 1.0f};
@@ -174,6 +174,7 @@ public class PlayerThread extends Thread {
         // is a separate buffer the OS handles
 
         // init the track and player for the desired rate (or if none specified, highest possible)
+        /*
         if (desiredrate == 0) {
             boolean success = false;
             while (!success && (rateindex < NUM_RATES)) {
@@ -201,10 +202,6 @@ public class PlayerThread extends Thread {
             ModPlug_Init(desiredrate);
         }
 
-        if (desiredrate == 0)
-        	rate = try_rates[rateindex];
-        else
-        	rate = desiredrate;
 
         if (mytrack == null) {
             Log.i("PLAYERTHREAD", "COULDN'T GET AN AUDIOTRACK");
@@ -233,9 +230,16 @@ public class PlayerThread extends Thread {
 
         }
 
+        */
 
-        
-        
+        rate = 44100;
+
+        minbuffer = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+        Log.i("PLAYERTHREAD", "minbuffer="+minbuffer+" our PACKETSIZE="+PACKETSIZE);
+        mytrack = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
+        at1 = mytrack;
+        ModPlug_Init(try_rates[rateindex]);
+
         // load the mod file (data) into libmodplug
         load_ok = ModPlug_JLoad(modData, MAXMODSIZE);
         
@@ -581,8 +585,8 @@ public class PlayerThread extends Thread {
 
     // Init() now takes a sample rate in case the Android device doesn't support higher rates?!? 
     
-    public static native boolean  ModPlug_Init(int rate);    // init libmodplug
-    public native boolean  ModPlug_JLoad(byte[] buffer, int size);    // load a mod file (in the buffer)
+    public static native boolean ModPlug_Init(int rate);    // init libmodplug
+    public native boolean ModPlug_JLoad(byte[] buffer, int size);    // load a mod file (in the buffer)
     public native String ModPlug_JGetName();      // for info only, gets the mod's name
     public native int ModPlug_JNumChannels();     // info only, how many channels are used
     public native int ModPlug_JGetSoundData(short[] sndbuffer, int datasize);  // get another packet of sample data
