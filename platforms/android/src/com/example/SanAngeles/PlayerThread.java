@@ -81,7 +81,7 @@ public class PlayerThread extends Thread {
 	private int minbuffer;
 	private int modsize;    // holds the size in bytes of the mod file
 
-	private final static int BUFFERSIZE = 3000; // the full sound sample buffer size
+	private final static int BUFFERSIZE = 6000; // the full sound sample buffer size
 	private final static int NUMPACKETS = 2; // we'll use 2 distinct sound data buffers to make up the full BUFFERSIZE
 	private final static int PACKETSIZE = BUFFERSIZE/NUMPACKETS;  // size of sound sample packet we write to the AudioTrack each time
 	private int process_index=0;   // current packet we'll have libmodplug fill

@@ -15,34 +15,25 @@
 #include "com_example_SanAngeles_PlayerThread.h"
 
 #include "importgl.h"
-
 #include "MemoryLeak.h"
+
+#define BUFFER_SIZE 10000
 
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
 static jshortArray ab = NULL;
-// ************************************************************ 
-// Start of JNI stub code
-// ************************************************************ 
 ModPlugFile *currmodFile;
-
-#define SAMPLEBUFFERSIZE 3000
-#define SAMPLEBUFFERSIZE_BY_2 SAMPLEBUFFERSIZE / 2
-
-unsigned char samplebuffer[SAMPLEBUFFERSIZE];
-
+unsigned char samplebuffer[BUFFER_SIZE];
 int currsample;
 void *Cbuffer;
-
 static jclass player;
 jmethodID android_dumpAudio;
 
 class Callbacks {
 public:
   static void *PumpAudio(void *) {
-
-    int size = SAMPLEBUFFERSIZE_BY_2;
-    jint smpsize = 0;
+    
+    jint pumped = 0;
 
     if (g_Env == NULL) {
       g_Vm->AttachCurrentThread(&g_Env, NULL);
@@ -50,7 +41,7 @@ public:
 
     if (ab == NULL) {
       jobject tmp;
-      ab = g_Env->NewShortArray(size);
+      ab = g_Env->NewShortArray(BUFFER_SIZE);
       tmp = ab;
       ab = (jshortArray)g_Env->NewGlobalRef(ab);
       g_Env->DeleteLocalRef(tmp);
@@ -60,18 +51,18 @@ public:
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SI)V");
     }
 
-    smpsize = ModPlug_Read(currmodFile, samplebuffer, size * sizeof(jshort));
+    pumped = ModPlug_Read(currmodFile, samplebuffer, BUFFER_SIZE);
 
-    // now convert the C sample buffer data to a java short array
-    if (smpsize) {
-      g_Env->SetShortArrayRegion(ab, 0 ,size, (jshort *) (((char *) samplebuffer)+currsample));
-      currsample += size*sizeof(jshort);
-      //LOGV("Uploading\n");
-      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, (jint)size);
-      //LOGV("Done\n");
+    if (samplebuffer && pumped) {
+      //LOGV("DDD\n");
+      g_Env->SetShortArrayRegion(ab, 0, pumped, (jshort *) (((char *)samplebuffer)+0));
+      //LOGV("%p %p %d %p EEE\n", player, android_dumpAudio, ab, ab);
+      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, pumped);
+      //LOGV("FFF\n");
     } else {
       LOGV("Error\n");
     }
+    //LOGV("GGG\n");
     //g_Vm->DetachCurrentThread();
   };
 };
@@ -307,8 +298,7 @@ JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JLo
   int csize = (int) size;
 
   // set the current sample as already beyond end of buffer (so a reload happens immediately)
-  currsample = SAMPLEBUFFERSIZE+1;
-
+  //currsample = SAMPLEBUFFERSIZE+1;
   // convert from Java buffer into a C buffer
   Cbuffer = (void *) env->GetByteArrayElements(buffer, 0);
   currmodFile = ModPlug_Load(Cbuffer, csize);
@@ -352,7 +342,8 @@ JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JNumCha
  */
 JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JGetSoundData(JNIEnv *env, jobject obj, jshortArray jbuffer, jint size)
 {
-  //LOGV("FUUUUUUUUUUUUUUUUUUUUUUUUUUU    FOOOOOOOOOOOOOOOOOOO\n");
+  LOGV("FUUUUUUUUUUUUUUUUUUUUUUUUUUU    FOOOOOOOOOOOOOOOOOOO\n");
+  /*
   jint smpsize = 0;
 
    if (currmodFile == 0)
@@ -371,6 +362,7 @@ JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JGetSou
   else {
     return 0;
   }
+  */
 }
 
 /*

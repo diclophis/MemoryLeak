@@ -441,7 +441,7 @@ void propertyListenerCallback (void                   *inUserData,              
 				genPattern[buffer_ana_gen_ofs]=ModPlug_GetCurrentPattern(mp_file);
 				genRow[buffer_ana_gen_ofs]=ModPlug_GetCurrentRow(mp_file);
 				nbBytes = ModPlug_Read(mp_file,buffer_ana[buffer_ana_gen_ofs],SOUND_BUFFER_SIZE_SAMPLE*2*2);
-				
+				printf("the fuck: %d\n", nbBytes);
 				buffer_ana_flag[buffer_ana_gen_ofs]=1;
 				if (mNeedSeek==2) {  //ask for a currentime update when this buffer will be played
 					buffer_ana_flag[buffer_ana_gen_ofs]=buffer_ana_flag[buffer_ana_gen_ofs]|2;
