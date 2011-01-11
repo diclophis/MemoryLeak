@@ -59,6 +59,7 @@ public class DemoActivity extends Activity {
     int[] off2;
     int[] len2;
 
+    /*
     // allocate a buffer for the modfile data
     modData = new byte[PlayerThread.MAXMODSIZE];
     modfileInStream =  getResources().openRawResource(R.raw.song);
@@ -69,6 +70,18 @@ public class DemoActivity extends Activity {
     }
 
     player = new PlayerThread(modData, 0);
+
+
+    */
+
+        int rate = 44100;
+        int minbuffer = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+        Log.i("PLAYERTHREAD", "minbuffer="+minbuffer);
+        mytrack = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
+        mytrack.play();
+        mytrack.setStereoVolume(1.0f, 1.0f);
+        at1 = mytrack;
+        ModPlug_Init(try_rates[rateindex]);
 
     try {
       path = "models";

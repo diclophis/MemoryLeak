@@ -217,20 +217,17 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
-  //LOGV("nativeResize");
   gameController->ResizeScreen(width, height);
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-  //LOGV("nativePause");
   gameController->PauseThread();
   gameState = 0;
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
-  //LOGV("nativeTouch");
 	gameController->Hit(x, y, (int)hitState);
 }
 
@@ -242,57 +239,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
 }
 
 
-
-
-
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_Init
- * Signature: ()Z
- */
-//JNIEXPORT jboolean JNICALL Java_com_examples_modplayer_PlayerThread_ModPlug_1Init
-// (JNIEnv *env, jclass cls)
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_Init
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1Init(JNIEnv *env, jclass cls, jint rate)
-{
-  // if trying to make this truly re-entrant, separate buffers could be allocated here
-
-	//__android_log_print(ANDROID_LOG_INFO, "PA_AND_lib", "Initializing modplug with rate %d", rate);
-
-	//usleep(16*1000);
-
-	switch (rate) {
-	case 8000:
-		ModPlug_SetSettings(&gSettings8000);
-		break;
-	case 16000:
-		ModPlug_SetSettings(&gSettings16000);
-		break;
-	case 22000:
-		ModPlug_SetSettings(&gSettings22000);
-		break;
-	case 32000:
-		ModPlug_SetSettings(&gSettings32000);
-		break;
-	case 44100:
-		// this is the default, so settings needn't be changed
-		break;
-	}
-
-
-  return 1;
-}
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_JLoad
- * Signature: ([BI)Z
- */
 JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JLoad(JNIEnv *env, jobject obj, jbyteArray buffer, jint size)
 {
   int csize = (int) size;
@@ -309,84 +255,4 @@ JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JLo
   else {
     return 0;
   }
-}
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_JGetName
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JGetName(JNIEnv *env, jobject obj)
-{
-  return env->NewStringUTF(ModPlug_GetName(currmodFile));
-}
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_JNumChannels
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JNumChannels(JNIEnv *env, jobject obj)
-{
-  jint numchannels;
-
-  numchannels = ModPlug_NumChannels(currmodFile);
-  return numchannels;
-}
-
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_JGetSoundData
- * Signature: ([SI)I
- */
-JNIEXPORT jint JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JGetSoundData(JNIEnv *env, jobject obj, jshortArray jbuffer, jint size)
-{
-  LOGV("FUUUUUUUUUUUUUUUUUUUUUUUUUUU    FOOOOOOOOOOOOOOOOOOO\n");
-  /*
-  jint smpsize = 0;
-
-   if (currmodFile == 0)
-     return 0;
-
-  // IN THIS MODE, WE READ IN EXACTLY HOW MUCH JAVA requested to improve frame rate
-  smpsize = ModPlug_Read(currmodFile, samplebuffer, size*sizeof(jshort));
-  currsample = 0;
-
-  // now convert the C sample buffer data to a java short array
-  if (size && samplebuffer && (smpsize || currsample < SAMPLEBUFFERSIZE)) {
-    env->SetShortArrayRegion(jbuffer, 0 ,size, (jshort *) (((char *) samplebuffer)+currsample));
-    currsample += size*sizeof(jshort);
-    return size;
-  }
-  else {
-    return 0;
-  }
-  */
-}
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_JUnload
- * Signature: ([BI)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1JUnload(JNIEnv *env, jclass cls, jbyteArray notused, jint size)
-{
-  if (currmodFile) {
-    ModPlug_Unload(currmodFile);
-    currmodFile = 0;
-  }
-
-  return 1;
-}
-
-/*
- * Class:     com_examples_modplayer_PlayerThread
- * Method:    ModPlug_CloseDown
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_com_example_SanAngeles_PlayerThread_ModPlug_1CloseDown(JNIEnv *env, jclass cls) {
-  // maybe for a proper re-entrant library, need to handle shutdown stuff, deallocting buffers
-  // etc.  but for my crappy, hacky single-entry version, do nothing much...
-  return 1;
 }
