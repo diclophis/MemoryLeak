@@ -12,8 +12,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #import "ModizerConstants.h"
-#import "modplug.h"
-
 
 @interface MusicPlayer : NSObject {
 	//General infos

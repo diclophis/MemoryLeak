@@ -7,11 +7,6 @@
 //
 
 #import "MemoryLeakAppDelegate.h"
-#import "EAGLView.h"
-//#import <CoreAudio/CoreAudioTypes.h>
-
-#import "MusicPlayer.h"
-
 #include "MemoryLeak.h"
 #include "Model.h"
 #include "AtlasSprite.h"
@@ -22,6 +17,11 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "PixelPusher.h"
+#import "MusicPlayer.h"
+
+#import "EAGLView.h"
+
+
 
 
 EAGLView *g_View;
@@ -31,6 +31,7 @@ pthread_mutex_t play_mutex;
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> levels;
+static std::vector<foo*> sounds;
 
 class Callbacks {
 	static void *PumpAudio(void *) {
@@ -270,8 +271,25 @@ GLuint loadTexture(UIImage *image) {
 			[image release];
 			[texData release];
 		}
+		
+		
+		NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
+		for (NSString *path in sound_names) {
+			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+			fseek(fd, 0, SEEK_END);
+			unsigned int len = ftell(fd);
+			rewind(fd);
+			foo *firstSound = new foo;
+			firstSound->fp = fd;
+			firstSound->off = 0;
+			firstSound->len = len;
+			sounds.push_back(firstSound);
+		}
 
-		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels);
+		
+		
+		
+		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
 		game->CreateThread(Callbacks::PumpAudio);
 		
 		gameState = 1;
@@ -308,19 +326,19 @@ GLuint loadTexture(UIImage *image) {
 		
 		mplayer = [[MusicPlayer alloc] initMusicPlayer];
 
-		ModPlug_Settings *mpsettings=[mplayer getMPSettings];
+		//ModPlug_Settings *mpsettings=[mplayer getMPSettings];
 		//mpsettings->mResamplingMode = MODPLUG_RESAMPLE_LINEAR;
 		//mpsettings->mChannels = 2;
 		//mpsettings->mBits = 32;
 		//mpsettings->mFrequency = PLAYBACK_FREQ;
-		mpsettings->mLoopCount = -1;
-		[mplayer updateMPSettings];
+		//mpsettings->mLoopCount = -1;
+		//[mplayer updateMPSettings];
 
-		int retcode;
+		//int retcode;
 		
-		if (retcode = [mplayer LoadModule]) {
-			NSLog(@"Issue in LoadModule");
-		}
+		//if (retcode = [mplayer LoadModule]) {
+		//	NSLog(@"Issue in LoadModule");
+		//}
 		
 		[mplayer Play];
 	}

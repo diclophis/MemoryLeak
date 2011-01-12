@@ -6,19 +6,18 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+//#import <Foundation/Foundation.h>
+//#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "MusicPlayer.h"
-
 #include "importgl.h"
+
+@class MusicPlayer;
 
 GLuint loadTexture(UIImage *image);
 
 struct Engine;
 typedef struct Engine Engine;
-
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.

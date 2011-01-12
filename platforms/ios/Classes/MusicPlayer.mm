@@ -14,6 +14,8 @@
 extern pthread_mutex_t db_mutex;
 extern pthread_mutex_t play_mutex;
 
+#import "modplug.h"
+
 #import "MusicPlayer.h"
 
 /* file types */
