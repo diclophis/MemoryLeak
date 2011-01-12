@@ -140,7 +140,7 @@ class Callbacks {
 		location = [touch locationInView:self];
 		location.y = location.y;
 		game->Hit(location.x, location.y, 1);
-		[mplayer setTempo:(location.x + 50)];
+		//[mplayer setTempo:(location.x + 50)];
 	}
 }
 

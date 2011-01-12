@@ -422,7 +422,7 @@ void propertyListenerCallback (void                   *inUserData,              
 				if (mNeedSeek==1) { //SEEK
 					mNeedSeek=2;  //taken into account
 					bGlobalSeekProgress=-1;
-					ModPlug_Seek(mp_file,mNeedSeekTime);
+					//HACK ModPlug_Seek(mp_file,mNeedSeekTime);
 				}
 				if (moveToNextSubSong) {
 					if (mod_currentsub<mod_maxsub) {

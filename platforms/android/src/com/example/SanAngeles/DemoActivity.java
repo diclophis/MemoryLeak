@@ -84,9 +84,14 @@ public class DemoActivity extends Activity {
     */
 
         int rate = 44100;
-        int minbuffer = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-        Log.i("PLAYERTHREAD", "minbuffer="+minbuffer);
-        at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, minbuffer, AudioTrack.MODE_STREAM);
+        int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+        //min = min * 2;
+
+        setMinBuffer(min);
+        Log.i("PLAYERTHREAD", "minbuffer=" + min);
+        short[] fill = new short[min];
+        at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
+        at1.write(fill, 0, min);
         at1.play();
         at1.setStereoVolume(1.0f, 1.0f);
 
@@ -158,6 +163,7 @@ public class DemoActivity extends Activity {
   }
 
 	private static native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
+  private static native void setMinBuffer(int size);
 
     @Override
     protected void onPause() {

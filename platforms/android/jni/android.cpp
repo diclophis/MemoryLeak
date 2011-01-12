@@ -17,31 +17,25 @@
 #include "importgl.h"
 #include "MemoryLeak.h"
 
-#define BUFFER_SIZE 12000
-
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
 static jshortArray ab = NULL;
-ModPlugFile *currmodFile;
-unsigned char samplebuffer[BUFFER_SIZE];
-int currsample;
-void *Cbuffer;
 static jclass player;
 jmethodID android_dumpAudio;
+static int min_buffer;
 
 class Callbacks {
 public:
   static void *PumpAudio(void *buffer) {
     
-    //jint pumped = 0;
-
     if (g_Env == NULL) {
       g_Vm->AttachCurrentThread(&g_Env, NULL);
     }
 
     if (ab == NULL) {
+      LOGV("aa %d\n", min_buffer);
       jobject tmp;
-      ab = g_Env->NewShortArray(BUFFER_SIZE);
+      ab = g_Env->NewShortArray(min_buffer);
       tmp = ab;
       ab = (jshortArray)g_Env->NewGlobalRef(ab);
       g_Env->DeleteLocalRef(tmp);
@@ -51,13 +45,12 @@ public:
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SI)V");
     }
 
-
     if (buffer) {
-      //LOGV("DDD\n");
-      g_Env->SetShortArrayRegion(ab, 0, BUFFER_SIZE, (jshort *) (((char *)buffer)+0));
-      //LOGV("%p %p %d %p EEE\n", player, android_dumpAudio, ab, ab);
-      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 1500);
-      //LOGV("FFF\n");
+      LOGV("DDD %d\n", min_buffer);
+      g_Env->SetShortArrayRegion(ab, 0, min_buffer / 2, (jshort *) (((char *)buffer)+0));
+      LOGV("EEE\n");
+      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, min_buffer / 2);
+      LOGV("FFF\n");
     } else {
       LOGV("Error\n");
     }
@@ -80,11 +73,15 @@ public:
 
 
 extern "C" {
-  void Java_com_example_SanAngeles_DemoActivity_initNative(
-    JNIEnv * env,
-    jclass envClass, int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
+  int Java_com_example_SanAngeles_DemoActivity_initNative(
+    JNIEnv * env, jclass envClass,
+    int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
     int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
     int sounds_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
+  );
+  void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
+    JNIEnv * env, jclass envClass,
+    int size
   );
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
@@ -118,14 +115,21 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   return JNI_VERSION_1_6;
 }
 
+void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
+  JNIEnv * env, jclass envClass,
+  int size
+) {
+  min_buffer = size;
+  LOGV("min_buffer: %d\n\n\n\n\n", min_buffer);
+}
 
-void Java_com_example_SanAngeles_DemoActivity_initNative(
+
+int Java_com_example_SanAngeles_DemoActivity_initNative(
   JNIEnv * env, jclass envClass,
   int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
   int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
 ) {
-LOGV("111\n");
 	importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
@@ -141,7 +145,6 @@ LOGV("111\n");
         f->len = env->GetIntArrayElements(len1, 0)[i];
         models.push_back(f);
       }
-LOGV("222\n");
       for (int i=0; i<level_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys2, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
@@ -151,25 +154,18 @@ LOGV("222\n");
         f->len = env->GetIntArrayElements(len2, 0)[i];
         levels.push_back(f);
       }
-LOGV("333 %d\n", sound_count);
       for (int i=0; i<sound_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys3, i), fdClassDescriptorFieldID);
-LOGV("333a %d\n", i);
         int myfdx = dup(fdx);
         foo *f = new foo;
-LOGV("333b\n");
         f->fp = fdopen(myfdx, "rb");
-LOGV("333c\n");
         f->off = env->GetIntArrayElements(off3, 0)[i];
-LOGV("333d\n");
         f->len = env->GetIntArrayElements(len3, 0)[i];
-LOGV("333e\n");
         sounds.push_back(f);
-LOGV("333f\n");
       }
 		}
 	}
-LOGV("444\n");
+  LOGV("foo foo foo\n");
 }
 
 
@@ -177,10 +173,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	for (int i=0; i<count; i++) {
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-  Audio *foo = new Audio();
-LOGV("555\n");
-  gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels, sounds);
-LOGV("666\n");
+  LOGV("22 22 22 %d\n", min_buffer);
+  gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer);
   gameController->CreateThread(Callbacks::PumpAudio);
   gameState = 1;
 }

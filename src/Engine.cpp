@@ -20,7 +20,7 @@ Engine::~Engine() {
 }
 
 
-Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
+Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s), m_AudioBufferSize(bs) {
 
 	m_IsSceneBuilt = false;
 	
@@ -62,6 +62,11 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
   m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
+
+LOGV("the fuck %d\n", m_AudioBufferSize);
+  m_AudioBuffer = (unsigned char *)calloc(m_AudioBufferSize, sizeof(unsigned char));
+  m_AudioSilenceBuffer = (unsigned char *)calloc(m_AudioBufferSize, sizeof(unsigned char));
+  m_IsPushingAudio = false;
 
 }
 
@@ -164,8 +169,14 @@ int Engine::RunThread() {
       //pthread_mutex_unlock(&m_Mutex);
     //}
   //LOGV("55555555555555555555555 %p, %p   FOOOOOOOOOOOOOOOOOOO\n", this, start_routine);
-    ModPlug_Read(m_Sounds[0], m_AudioBuffer, BUFFER_SIZE / 4);
-		start_routine(m_AudioBuffer);
+    if (m_IsPushingAudio) {
+      LOGV("pump audio %f\n", m_DeltaTime);
+      ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
+      start_routine(m_AudioBuffer);
+    } else {
+      LOGV("pump silence %f\n", m_DeltaTime);
+      start_routine(m_AudioSilenceBuffer);
+    }
   //LOGV("66666666666666666666666666    FOOOOOOOOOOOOOOOOOOO\n");
     WaitVsync();
   }

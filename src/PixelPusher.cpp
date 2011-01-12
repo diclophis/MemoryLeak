@@ -15,12 +15,11 @@
 
 #include "PixelPusher.h"
 
-PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs) : Engine(w, h, t, m, l, s, bs) {
 	//m_Menu = new Model(m_FooFoos.at(3));
 	//m_Menu->SetTexture(m_Textures->at(0));
 	//m_Menu->SetScale(0.1, 0.1, 0.1);
 	//m_Menu->SetFrame(0);
-	
 	m_Space = new Octree<int>(1024, -1);
 	m_Touches = (float *)malloc(sizeof(float) * 4);
 	m_Touches[0] = m_Touches[1] = m_Touches[2] = m_Touches[3] = 0;
@@ -125,6 +124,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 		
 	switch (hitState) {
 		case 0:
+      m_IsPushingAudio = false;
 			m_Touches[0] = x;
 			m_Touches[1] = y;
 			m_Touches[2] = x;
@@ -132,6 +132,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			break;
 			
 		case 1:
+      m_IsPushingAudio = true;
 			dx = x - m_Touches[2];
 			dy = y - m_Touches[3];
 			if (fabs(m_Touches[1]) > (m_ScreenHeight * 0.25)) {
@@ -148,6 +149,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			break;
 			
 		case 2:
+      m_IsPushingAudio = false;
 			m_Touches[2] = x;
 			m_Touches[3] = y;
 			dx = m_Touches[2] - m_Touches[0];

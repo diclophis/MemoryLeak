@@ -31,7 +31,7 @@ public:
 	//Engine& operator=(const Engine&);
 
 
-	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs);
 	virtual ~Engine();
 
  
@@ -83,8 +83,11 @@ public:
 
 	int m_RenderIndex;
 
-  #define BUFFER_SIZE 12000
-  unsigned char m_AudioBuffer[BUFFER_SIZE];
+  int m_AudioBufferSize;
+  unsigned char *m_AudioBuffer;
+  unsigned char *m_AudioSilenceBuffer;
 	void *(*start_routine)(void *);
+
+  bool m_IsPushingAudio;
 
 };

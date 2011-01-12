@@ -4,7 +4,7 @@ class PixelPusher : public Engine {
 	
 public:
 
-	PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+	PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs);
 	~PixelPusher();
 	void Hit(float x, float y, int hitState);
 	void Build();
