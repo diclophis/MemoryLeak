@@ -85,7 +85,8 @@ public class DemoActivity extends Activity {
 
     */
 
-        int rate = 44100; //11025;
+        int rate = 11025;
+        //int rate = 44100;
         //int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
         int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
         //min = min * 2;

@@ -53,29 +53,31 @@ void PixelPusher::Build() {
 	//m_SpriteGun = new SpriteGun(m_Textures->at(4), 5, 5, "89:;<=>?@ABCDEFFFFFFFFFFFFFFFFFFFF");
 	//m_SpriteGun = new SpriteGun(m_Textures->at(5), 6, 5, "23456789:;<=>?@ABCDEFGHIJKLMNO23456789:;<=>?@ABCDEFGHIJKLMNO");
 	
-	m_NumComets = 20;
+	m_NumComets = 50;
 	
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(8), 5, 5, "789:;:987");
 	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 8, 8, "", 0, 64, 20.0);
 	//m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 0, 64, 1.0, "", 0, 64, 0.05);
-	m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 30, 40, 0.5, "", 20, 30, 0.5);
+	m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 30, 40, 0.001, "", 20, 30, 0.001);
 
 	m_AtlasSprite->SetPosition(0.0, 0.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(0);
+	m_SpriteGun->Build(10);
 	
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		if (randf() > 0.5) {
-			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 20, 25, 0.15, "", 25, 30, 0.15));
+			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 20, 25, 1.75, "", 25, 30, 0.01));
 		} else {
-			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 35, 40, 0.15, "", 40, 45, 0.15));
+			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 35, 40, 1.75, "", 40, 45, 0.01));
 		}
-		m_IceComets[i]->SetPosition(((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 500.0));
+		//m_IceComets[i]->SetPosition(((randf() * 300.0)), fastSinf(i) * 100.0 + (y + 500.0));
+		//m_IceComets[i]->SetPosition(fastSinf(i) * 100.0, fastSinf(i) * 100.0);
+		m_IceComets[i]->SetPosition((fastSinf(i * 5) * 20), (i * 50) + 100.0);
 		m_IceComets[i]->SetVelocity(0.0, -250.0);
 		m_IceComets[i]->m_IsAlive = false;
-		m_IceComets[i]->Build(5);
+		m_IceComets[i]->Build(10);
 	}
 }
 
@@ -124,7 +126,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 		
 	switch (hitState) {
 		case 0:
-      m_IsPushingAudio = false;
+      //m_IsPushingAudio = false;
 			m_Touches[0] = x;
 			m_Touches[1] = y;
 			m_Touches[2] = x;
@@ -132,7 +134,8 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			break;
 			
 		case 1:
-      m_IsPushingAudio = true;
+      //m_IsPushingAudio = true;
+      //m_IsPushingAudio = false;
 			dx = x - m_Touches[2];
 			dy = y - m_Touches[3];
 			if (fabs(m_Touches[1]) > (m_ScreenHeight * 0.25)) {
@@ -149,7 +152,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			break;
 			
 		case 2:
-      m_IsPushingAudio = false;
+      //m_IsPushingAudio = false;
 			m_Touches[2] = x;
 			m_Touches[3] = y;
 			dx = m_Touches[2] - m_Touches[0];
@@ -223,6 +226,7 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 
 
 int PixelPusher::Simulate() {
+  m_IsPushingAudio = false;
 	
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
@@ -232,22 +236,45 @@ int PixelPusher::Simulate() {
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
-		if (m_IceComets[i]->m_Position[1] < y) {
-			if (m_IceComets[i]->m_IsAlive) {
-				if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
-					m_IceComets[i]->SetPosition(((randf() * 200.0) + 50.0), fastSinf(i) * 50.0 + (y + 500.0));
-					m_IceComets[i]->SetVelocity(0.0, -(randf() * 150.0));
-					m_IceComets[i]->m_IsAlive = false;
-					m_IceComets[i]->m_Life = 0.0;
-					m_IceComets[i]->Reset();
-				}
-			} else {
-				m_IceComets[i]->m_Life = 0.0;
-				m_IceComets[i]->m_IsAlive = true;
-				//m_SpriteGun->m_NumParticles++;
+		if (m_IceComets[i]->m_IsAlive) {
+			m_IsPushingAudio = true;
+
+			
+			//if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
+			////m_IceComets[i]->SetPosition(((randf() * 200.0) + 50.0), fastSinf(i) * 50.0 + (y + 500.0));
+			////m_IceComets[i]->SetPosition(100.0, 100.0);
+			//m_IceComets[i]->SetPosition((fastSinf(i) * 50.0), (fastSinf(i) * 10.0) + 100.0);
+			//m_IceComets[i]->SetPosition((fastSinf(i * 10)), (fastSinf(i) * 10.0) + 100.0);
+			m_IceComets[i]->SetPosition((fastSinf(i * 5) * 20), m_IceComets[i]->m_Position[1] + 500.0);
+
+			//m_IceComets[i]->SetVelocity(0.0, * 150.0));
+			m_IceComets[i]->m_IsAlive = false;
+			m_IceComets[i]->m_Life = 0.0;
+			m_IceComets[i]->Reset();
+			}
+		} else {
+			float dx = fastAbs(m_IceComets[i]->m_Position[0] - m_AtlasSprite->m_Position[0]);
+			float dy = fastAbs(m_IceComets[i]->m_Position[1] - m_AtlasSprite->m_Position[1]);
+			if (dy < 12 && dx < 12) {
+			ModPlug_Seek(m_Sounds[0], 0);
+			m_IceComets[i]->m_Life = 0.0;
+			m_IceComets[i]->m_IsAlive = true;
+			//m_SpriteGun->m_NumParticles++;
+			}
+
+			if (m_IceComets[i]->m_Position[1] < (0 - (m_ScreenHeight / 2))) {
+			m_IceComets[i]->SetPosition((fastSinf(i * 5) * 20), m_IceComets[i]->m_Position[1] + 500.0);
+			//m_IceComets[i]->SetVelocity(0.0, * 150.0));
+			m_IceComets[i]->m_IsAlive = false;
+			m_IceComets[i]->m_Life = 0.0;
+			m_IceComets[i]->Reset();
 			}
 		}
 	}
+
+  if (m_AtlasSprite->m_Position[1] < 0) {
+    m_IsPushingAudio = true;
+  }
 	
 	/*
 	for (unsigned int i = 0; i < 20; i++) {

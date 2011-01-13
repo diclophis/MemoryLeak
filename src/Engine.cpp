@@ -177,7 +177,7 @@ int Engine::RunThread() {
       //if ((buffer_position++ % div) == 0) {
       //}
 
-      //WaitAudioSync();
+      WaitAudioSync();
 
       if (m_IsPushingAudio) {
         //LOGV("pump audio %f\n", m_DeltaTime);
@@ -185,7 +185,7 @@ int Engine::RunThread() {
         //  LOGV("pump\n");
         //  ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
         //}
-        int div = 15;
+        int div = 25;
         int len = m_AudioBufferSize / div;
         //LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
         ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
