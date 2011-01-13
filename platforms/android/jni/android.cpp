@@ -26,14 +26,13 @@ static int min_buffer;
 
 class Callbacks {
 public:
-  static void *PumpAudio(void *buffer) {
-    
+  static void *PumpAudio(void *buffer, int buffer_position) {
+
     if (g_Env == NULL) {
       g_Vm->AttachCurrentThread(&g_Env, NULL);
     }
 
     if (ab == NULL) {
-      LOGV("aa %d\n", min_buffer);
       jobject tmp;
       ab = g_Env->NewShortArray(min_buffer);
       tmp = ab;
@@ -42,19 +41,24 @@ public:
     }
 
     if (android_dumpAudio == NULL) {
-      android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SI)V");
+      android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
     }
 
+    int div = 30;
+    int pos = (buffer_position % div);
+    int len = min_buffer / div;
+    int off = 0; //pos * len;
+    //LOGV("div: %d pos: %d len: %d off: %d min: %d\n", div, pos, len, off, min_buffer);
+
     if (buffer) {
-      LOGV("DDD %d\n", min_buffer);
-      g_Env->SetShortArrayRegion(ab, 0, min_buffer / 2, (jshort *) (((char *)buffer)+0));
-      LOGV("EEE\n");
-      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, min_buffer / 2);
-      LOGV("FFF\n");
+      //g_Env->SetShortArrayRegion(ab, 0, min_buffer / 2, (jshort *) (((char *)buffer)+0));
+      //g_Env->SetShortArrayRegion(ab, 0, min_buffer / 2, (jshort *) (((char *)buffer)+(buffer_position * (min_buffer / 2))));
+
+      g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
+      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, off, len);
     } else {
       LOGV("Error\n");
     }
-    //LOGV("GGG\n");
     //g_Vm->DetachCurrentThread();
   };
 };
@@ -120,7 +124,6 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
   int size
 ) {
   min_buffer = size;
-  LOGV("min_buffer: %d\n\n\n\n\n", min_buffer);
 }
 
 
@@ -165,7 +168,6 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
       }
 		}
 	}
-  LOGV("foo foo foo\n");
 }
 
 
@@ -173,7 +175,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	for (int i=0; i<count; i++) {
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-  LOGV("22 22 22 %d\n", min_buffer);
   gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer);
   gameController->CreateThread(Callbacks::PumpAudio);
   gameState = 1;

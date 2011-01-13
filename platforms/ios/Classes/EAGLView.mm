@@ -34,8 +34,8 @@ static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
 
 class Callbacks {
-	static void *PumpAudio(void *) {
-		[[g_View mplayer] Pump];
+	static void *PumpAudio(void *, int) {
+		//[[g_View mplayer] Pump];
 	};
 };
 
@@ -43,7 +43,7 @@ class Callbacks {
 
 
 @synthesize animating;
-@synthesize mplayer;
+//@synthesize mplayer;
 @dynamic animationFrameInterval;
 
 
@@ -289,7 +289,7 @@ GLuint loadTexture(UIImage *image) {
 		
 		
 		
-		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
+		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, 1024);
 		game->CreateThread(Callbacks::PumpAudio);
 		
 		gameState = 1;
@@ -324,7 +324,7 @@ GLuint loadTexture(UIImage *image) {
 		
 		
 		
-		mplayer = [[MusicPlayer alloc] initMusicPlayer];
+		//mplayer = [[MusicPlayer alloc] initMusicPlayer];
 
 		//ModPlug_Settings *mpsettings=[mplayer getMPSettings];
 		//mpsettings->mResamplingMode = MODPLUG_RESAMPLE_LINEAR;
@@ -340,7 +340,7 @@ GLuint loadTexture(UIImage *image) {
 		//	NSLog(@"Issue in LoadModule");
 		//}
 		
-		[mplayer Play];
+		//[mplayer Play];
 	}
 }
 

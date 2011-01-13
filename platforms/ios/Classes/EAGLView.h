@@ -45,7 +45,7 @@ typedef struct Engine Engine;
 	Engine *game;
 	int gameState;
 	
-	MusicPlayer *mplayer;
+	//MusicPlayer *mplayer;
 
 
 }
@@ -53,7 +53,7 @@ typedef struct Engine Engine;
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
-@property (nonatomic, retain) MusicPlayer *mplayer;
+//@property (nonatomic, retain) MusicPlayer *mplayer;
 
 
 -(void)build;

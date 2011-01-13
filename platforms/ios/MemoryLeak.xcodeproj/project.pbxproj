@@ -115,7 +115,6 @@
 		FCDE08AD12D924A3004CE9B7 /* snd_fx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088A12D924A3004CE9B7 /* snd_fx.cpp */; };
 		FCDE08AE12D924A3004CE9B7 /* sndfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088B12D924A3004CE9B7 /* sndfile.cpp */; };
 		FCDE08AF12D924A3004CE9B7 /* sndmix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088C12D924A3004CE9B7 /* sndmix.cpp */; };
-		FCDE091C12D92A2C004CE9B7 /* MusicPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCDE091B12D92A2C004CE9B7 /* MusicPlayer.mm */; };
 		FCDE095112D92F17004CE9B7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE095012D92F17004CE9B7 /* AudioToolbox.framework */; };
 		FCDE095312D92F17004CE9B7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE095212D92F17004CE9B7 /* AVFoundation.framework */; };
 		FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */; };
@@ -1258,7 +1257,6 @@
 				FCDE08AD12D924A3004CE9B7 /* snd_fx.cpp in Sources */,
 				FCDE08AE12D924A3004CE9B7 /* sndfile.cpp in Sources */,
 				FCDE08AF12D924A3004CE9B7 /* sndmix.cpp in Sources */,
-				FCDE091C12D92A2C004CE9B7 /* MusicPlayer.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

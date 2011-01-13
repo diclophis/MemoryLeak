@@ -29,8 +29,10 @@ import android.media.AudioTrack;
 public class DemoActivity extends Activity {
 
   protected static AudioTrack at1;
-  public static void writeAudio(short[] b, int sz) {
-    at1.write(b, 0, sz);
+  public static void writeAudio(short[] bytes, int offset, int size) {
+    //Log.i("PLAYERTHREAD", "trying to write(bytes, offset=" + offset + ", size=" + size);
+    int written = at1.write(bytes, offset, size);
+    //Log.i("PLAYERTHREAD", "written=" + written);
   }
 
 	//private InputStream modfileInStream;
@@ -83,14 +85,17 @@ public class DemoActivity extends Activity {
 
     */
 
-        int rate = 44100;
-        int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+        int rate = 44100; //11025;
+        //int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
+        int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
         //min = min * 2;
+        //min = min / 2;
 
         setMinBuffer(min);
         Log.i("PLAYERTHREAD", "minbuffer=" + min);
         short[] fill = new short[min];
-        at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
+        //at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
+        at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
         at1.write(fill, 0, min);
         at1.play();
         at1.setStereoVolume(1.0f, 1.0f);

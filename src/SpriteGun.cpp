@@ -36,10 +36,12 @@ void SpriteGun::ResetParticle(int idx) {
 
 
 void SpriteGun::ShootParticle(int idx) {
-	m_AtlasSprites[idx]->SetLife(0.0);
+	m_AtlasSprites[idx]->SetLife(0.0 - randf());
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
-	//m_AtlasSprites[idx]->m_Velocity[0] = ((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
-	m_AtlasSprites[idx]->m_Velocity[1] = +1500.0 + (randf() * 75.0); //((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
+	////m_AtlasSprites[idx]->m_Velocity[0] = ((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
+	//m_AtlasSprites[idx]->m_Velocity[1] = +1500.0 + (randf() * 75.0); //((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
+	m_AtlasSprites[idx]->m_Velocity[0] = randf() * 1200.0;//fastSinf(idx) * 1000.0;//randf() * 1000.0;
+	m_AtlasSprites[idx]->m_Velocity[1] = randf() * 1200.0;//100.0; //fastSinf(idx * 1000.0) * 500.0;//randf() * 1000.0;
 	m_AtlasSprites[idx]->m_IsAlive = true;
 }
 

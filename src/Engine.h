@@ -43,7 +43,7 @@ public:
   void PauseThread();
 
 
-	void CreateThread(void *(*sr)(void *));
+	void CreateThread(void *(*sr)(void *, int));
 	static void *EnterThread(void *);
 	
 
@@ -52,6 +52,7 @@ public:
 	virtual void Hit(float x, float y, int hitState) = 0;
 	virtual void Render() = 0;
   void WaitVsync();
+  void WaitAudioSync();
 
 
 
@@ -69,6 +70,7 @@ public:
   float m_CameraTarget[3];
 
   pthread_cond_t m_VsyncCond;
+  pthread_cond_t m_AudioSyncCond;
 	pthread_mutex_t m_Mutex;
 	pthread_t m_Thread;
 
@@ -86,7 +88,7 @@ public:
   int m_AudioBufferSize;
   unsigned char *m_AudioBuffer;
   unsigned char *m_AudioSilenceBuffer;
-	void *(*start_routine)(void *);
+	void *(* start_routine)(void *, int);
 
   bool m_IsPushingAudio;
 

@@ -130,5 +130,5 @@ void AtlasSprite::Simulate(float deltaTime) {
 	m_Position[1] += dy;
 	
 	m_Life += deltaTime;
-	m_Frame = (((m_Life) / m_AnimationDuration) * m_AnimationLength);
+	m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
 };

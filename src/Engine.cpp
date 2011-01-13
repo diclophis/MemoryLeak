@@ -25,6 +25,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_IsSceneBuilt = false;
 	
   pthread_cond_init(&m_VsyncCond, NULL);
+  pthread_cond_init(&m_AudioSyncCond, NULL);
 	pthread_mutex_init(&m_Mutex, NULL);
 
 	m_SimulationTime = 0.0;		
@@ -63,7 +64,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
   m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
 
-LOGV("the fuck %d\n", m_AudioBufferSize);
   m_AudioBuffer = (unsigned char *)calloc(m_AudioBufferSize, sizeof(unsigned char));
   m_AudioSilenceBuffer = (unsigned char *)calloc(m_AudioBufferSize, sizeof(unsigned char));
   m_IsPushingAudio = false;
@@ -71,7 +71,7 @@ LOGV("the fuck %d\n", m_AudioBufferSize);
 }
 
 
-void Engine::CreateThread(void *(*sr)(void *)) {
+void Engine::CreateThread(void *(*sr)(void *, int)) {
   //LOGV("3333333333333333333333333  %p  FOOOOOOOOOOOOOOOOOOO\n", sr);
 	start_routine = sr;
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
@@ -99,6 +99,12 @@ void Engine::WaitVsync() {
   pthread_mutex_unlock(&m_Mutex);
 }
 
+void Engine::WaitAudioSync() {
+  pthread_mutex_lock(&m_Mutex);
+  pthread_cond_wait(&m_AudioSyncCond, &m_Mutex);
+  pthread_mutex_unlock(&m_Mutex);
+}
+
 
 int Engine::RunThread() {
 
@@ -106,6 +112,7 @@ int Engine::RunThread() {
 	
 	m_IsSceneBuilt = true;
 
+  int ticks = 0;
 	
   double t1, t2;
   timeval tim;
@@ -116,6 +123,8 @@ int Engine::RunThread() {
 
   double waitSum = 0.0;
   double averageWait = 0.0;
+
+  int buffer_position = 0;
 
   for (unsigned int i=0; i<waitedCount; i++) {
     m_Waits[i] = 0.0;
@@ -164,20 +173,28 @@ int Engine::RunThread() {
           m_SimulationTime += (m_DeltaTime);
           m_GameState = Simulate();
         }
+
+      //if ((buffer_position++ % div) == 0) {
       //}
-      
-      //pthread_mutex_unlock(&m_Mutex);
-    //}
-  //LOGV("55555555555555555555555 %p, %p   FOOOOOOOOOOOOOOOOOOO\n", this, start_routine);
-    if (m_IsPushingAudio) {
-      LOGV("pump audio %f\n", m_DeltaTime);
-      ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
-      start_routine(m_AudioBuffer);
-    } else {
-      LOGV("pump silence %f\n", m_DeltaTime);
-      start_routine(m_AudioSilenceBuffer);
-    }
-  //LOGV("66666666666666666666666666    FOOOOOOOOOOOOOOOOOOO\n");
+
+      //WaitAudioSync();
+
+      if (m_IsPushingAudio) {
+        //LOGV("pump audio %f\n", m_DeltaTime);
+        //if ((tick++ % 2) == 0) {
+        //  LOGV("pump\n");
+        //  ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
+        //}
+        int div = 15;
+        int len = m_AudioBufferSize / div;
+        //LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
+        ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+        //LOGV("write audio %d\n", buffer_position);
+        start_routine(m_AudioBuffer, buffer_position);
+      } else {
+        start_routine(m_AudioSilenceBuffer, buffer_position);
+      }
+
     WaitVsync();
   }
 
@@ -188,6 +205,7 @@ int Engine::RunThread() {
 
 
 void Engine::DrawScreen(float rotation) {
+	pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glPushMatrix();
 		{
