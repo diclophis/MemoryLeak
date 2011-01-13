@@ -64,8 +64,15 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
   m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
 
-  m_AudioBuffer = (unsigned char *)calloc(m_AudioBufferSize, sizeof(unsigned char));
-  m_AudioSilenceBuffer = (unsigned char *)calloc(m_AudioBufferSize, sizeof(unsigned char));
+  //m_AudioBuffer = (unsigned char *)malloc(m_AudioBufferSize * sizeof(unsigned char));
+  //m_AudioSilenceBuffer = (unsigned char *)malloc(m_AudioBufferSize * sizeof(unsigned char));
+	
+	
+	//std::fill(m_AudioBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
+	//std::fill(m_AudioSilenceBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
+	m_AudioBuffer = new unsigned char[m_AudioBufferSize];
+	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
+
   m_IsPushingAudio = false;
 
 }
@@ -177,7 +184,7 @@ int Engine::RunThread() {
       //if ((buffer_position++ % div) == 0) {
       //}
 
-      WaitAudioSync();
+      //WaitAudioSync();
 
       if (m_IsPushingAudio) {
         //LOGV("pump audio %f\n", m_DeltaTime);
@@ -185,7 +192,7 @@ int Engine::RunThread() {
         //  LOGV("pump\n");
         //  ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
         //}
-        int div = 25;
+        int div = 20;
         int len = m_AudioBufferSize / div;
         //LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
         ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);

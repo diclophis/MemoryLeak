@@ -18,10 +18,12 @@ namespace ModPlug
 	ModPlug_Settings gSettings =
 	{
 		MODPLUG_ENABLE_OVERSAMPLING | MODPLUG_ENABLE_NOISE_REDUCTION,
+		//MODPLUG_ENABLE_REVERB,
+		//MODPLUG_ENABLE_NOISE_REDUCTION,
 		1,
 		16,
-		11025,
-		//44100,
+		//11025,
+		44100,
 		MODPLUG_RESAMPLE_NEAREST,
 		//MODPLUG_RESAMPLE_FIR,
 		0,
@@ -262,6 +264,11 @@ void ModPlug_Seek(ModPlugFile* file, int millisecond)
 	postime = (float)maxpos / (float)maxtime;
 
 	file->mSoundFile.SetCurrentPos((int)(millisecond * postime));
+}
+
+int ModPlug_GetCurrentPosition(ModPlugFile* file)
+{
+  return file->mSoundFile.GetCurrentPos();
 }
 
 void ModPlug_GetSettings(ModPlug_Settings* settings)

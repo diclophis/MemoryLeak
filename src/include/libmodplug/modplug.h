@@ -52,6 +52,7 @@ int ModPlug_GetLength(ModPlugFile* file);
  * note that seeking is not very exact in some mods -- especially those for which
  * ModPlug_GetLength() does not report the full length. */
 void ModPlug_Seek(ModPlugFile* file, int millisecond);
+int ModPlug_GetCurrentPosition(ModPlugFile* file);
 
 enum _ModPlug_Flags
 {
