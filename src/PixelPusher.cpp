@@ -53,26 +53,27 @@ void PixelPusher::Build() {
 	//m_SpriteGun = new SpriteGun(m_Textures->at(4), 5, 5, "89:;<=>?@ABCDEFFFFFFFFFFFFFFFFFFFF");
 	//m_SpriteGun = new SpriteGun(m_Textures->at(5), 6, 5, "23456789:;<=>?@ABCDEFGHIJKLMNO23456789:;<=>?@ABCDEFGHIJKLMNO");
 	
-	m_NumComets = 6;
+	m_NumComets = 8;
 	
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(8), 5, 5, "789:;:987");
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 20, 20, "", 0, 400, 120.0);
 	//m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 0, 64, 1.0, "", 0, 64, 0.05);
-	m_SpriteGun = new SpriteGun(m_Textures->at(0), 6, 5, "", 0, 30, 0.2, "", 0, 30, 0.2);
 
-	m_AtlasSprite->SetPosition(0.0, 0.0);
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 20, 20, "", 0, 400, 120.0);
+	m_SpriteGun = new SpriteGun(m_Textures->at(1), 20, 20, "", 0, 400, 1.0, "", 0, 400, 0.001);
+
+	m_AtlasSprite->SetPosition(100.0, 100.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
 	m_SpriteGun->Build(0);
 	
-	float x = m_AtlasSprite->m_Position[0];
-	float y = m_AtlasSprite->m_Position[1];
+	//float x = m_AtlasSprite->m_Position[0];
+	//float y = m_AtlasSprite->m_Position[1];
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 6, 5, "", 0, 3, 1.0, "", 4, 30, 0.18));
-		m_IceComets[i]->SetPosition(0.0, (i * 200.0) + 600.0);
-		m_IceComets[i]->SetVelocity(0.0, -800.0);
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 6, 5, "", 0, 3, 1.25, "", 4, 30, 0.1));
+		m_IceComets[i]->SetPosition(0.0, (i * 150.0) + 600.0);
+		m_IceComets[i]->SetVelocity(0.0, -750.0);
 		m_IceComets[i]->m_IsAlive = false;
-		m_IceComets[i]->Build(5);
+		m_IceComets[i]->Build(10);
 	}
 }
 
@@ -229,7 +230,7 @@ int PixelPusher::Simulate() {
 
 	float s = 0.0;
 	int div = 20;
-	int len = 4;//m_AudioBufferSize / div;
+	int len = 2;//m_AudioBufferSize / div;
 	
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];

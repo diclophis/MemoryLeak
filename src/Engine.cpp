@@ -70,8 +70,12 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	//std::fill(m_AudioBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
 	//std::fill(m_AudioSilenceBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
+	
+	
 	m_AudioBuffer = new unsigned char[m_AudioBufferSize];
 	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
+
+
 
   m_IsPushingAudio = false;
 
@@ -116,6 +120,11 @@ void Engine::WaitAudioSync() {
 int Engine::RunThread() {
 
 	Build();
+	
+	start_routine(m_AudioSilenceBuffer, 0);
+	start_routine(m_AudioSilenceBuffer, 0);
+	start_routine(m_AudioSilenceBuffer, 0);
+	
 	
 	m_IsSceneBuilt = true;
 
@@ -192,7 +201,7 @@ int Engine::RunThread() {
         //  LOGV("pump\n");
         //  ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
         //}
-        int div = 18;
+        int div = 16;
         int len = m_AudioBufferSize / div;
         //LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
         ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
