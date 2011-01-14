@@ -53,28 +53,24 @@ void PixelPusher::Build() {
 	//m_SpriteGun = new SpriteGun(m_Textures->at(4), 5, 5, "89:;<=>?@ABCDEFFFFFFFFFFFFFFFFFFFF");
 	//m_SpriteGun = new SpriteGun(m_Textures->at(5), 6, 5, "23456789:;<=>?@ABCDEFGHIJKLMNO23456789:;<=>?@ABCDEFGHIJKLMNO");
 	
-	m_NumComets = 12;
+	m_NumComets = 6;
 	
 	//m_AtlasSprite = new AtlasSprite(m_Textures->at(8), 5, 5, "789:;:987");
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 8, 8, "", 0, 64, 20.0);
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(1), 20, 20, "", 0, 400, 120.0);
 	//m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 0, 64, 1.0, "", 0, 64, 0.05);
-	m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 30, 40, 0.001, "", 20, 30, 0.001);
+	m_SpriteGun = new SpriteGun(m_Textures->at(0), 6, 5, "", 0, 30, 0.2, "", 0, 30, 0.2);
 
 	m_AtlasSprite->SetPosition(0.0, 0.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(5);
+	m_SpriteGun->Build(0);
 	
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
+	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		if (randf() > 0.5) {
-			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 20, 25, 0.75, "", 25, 30, 0.005));
-		} else {
-			m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 8, 8, "", 35, 40, 0.75, "", 40, 45, 0.005));
-		}
-		m_IceComets[i]->SetPosition(0.0, (i * (m_ScreenHeight / m_NumComets)) + 500.0);
-
-		m_IceComets[i]->SetVelocity(0.0, -500.0);
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 6, 5, "", 0, 3, 1.0, "", 4, 30, 0.18));
+		m_IceComets[i]->SetPosition(0.0, (i * 200.0) + 600.0);
+		m_IceComets[i]->SetVelocity(0.0, -800.0);
 		m_IceComets[i]->m_IsAlive = false;
 		m_IceComets[i]->Build(5);
 	}
@@ -90,8 +86,8 @@ void PixelPusher::Render() {
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Render();
 	}
-	m_AtlasSprite->Render();
 	m_SpriteGun->Render();
+	m_AtlasSprite->Render();
 }
 
 
@@ -232,8 +228,8 @@ int PixelPusher::Simulate() {
 	
 
 	float s = 0.0;
-	int div = 1;
-	int len = m_AudioBufferSize / div;
+	int div = 20;
+	int len = 4;//m_AudioBufferSize / div;
 	
 	float x = m_AtlasSprite->m_Position[0];
 	float y = m_AtlasSprite->m_Position[1];
@@ -251,7 +247,7 @@ int PixelPusher::Simulate() {
 		} else {
 			float dx = fastAbs(m_IceComets[i]->m_Position[0] - m_AtlasSprite->m_Position[0]);
 			float dy = fastAbs(m_IceComets[i]->m_Position[1] - m_AtlasSprite->m_Position[1]);
-			if (dy < 20 && dx < 20) {
+			if (dy < 50 && dx < 50) {
 				//ModPlug_Seek(m_Sounds[0], 0);
 				m_IceComets[i]->m_Life = 0.0;
 				m_IceComets[i]->m_IsAlive = true;
@@ -260,32 +256,28 @@ int PixelPusher::Simulate() {
 
 		}
 		
-		if (m_IceComets[i]->m_Position[1] < (0 - (m_ScreenHeight / 2))) {
+		if (m_IceComets[i]->m_Position[1] < -600.0) {
 			//m_IceComets[i]->SetPosition((fastSinf(i * 5) * 80), 500.0);
 			//LOGV("%f %f\n", (float)m_AudioBuffer[0], (float)m_AudioBuffer[11]);
-			
-
-						
-			int pos = ModPlug_GetCurrentPosition(m_Sounds[0]);
-			
-
+			//int pos = ModPlug_GetCurrentPosition(m_Sounds[0]);
 			//LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
-			ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+			//ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
 			for (unsigned int ii=0; ii<len; ii++) {
 				s += m_AudioBuffer[ii];
 			}
 			
 			//if (pos != 0) {
-				ModPlug_Seek(m_Sounds[0], (m_SimulationTime) * 100.0);
+				//ModPlug_Seek(m_Sounds[0], (m_SimulationTime) * 100.0);
 			//}
 			
 			s = s / (float)len;
+			//s = s * 10.0;
 
 			if (m_IsPushingAudio) {
-				LOGV("pos: %d, s: %f\n", pos, s);
-				m_IceComets[i]->SetPosition((s) - 100.0, 240.0);
+				//LOGV("s: %f\n", s);
+				m_IceComets[i]->SetPosition((s - (255.0 * 0.5)), 600.0);
 			} else {
-				m_IceComets[i]->SetPosition(0.0, 240.0);
+				m_IceComets[i]->SetPosition(0.0, 600.0);
 			}
 			m_IceComets[i]->m_IsAlive = false;
 			m_IceComets[i]->m_Life = 0.0;

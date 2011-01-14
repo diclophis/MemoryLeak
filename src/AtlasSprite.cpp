@@ -10,6 +10,9 @@ static GLuint g_lastTexture = 0;
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e, float m) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e), m_MaxLife(m) {
 	m_Position = new float[2];
 	m_Velocity = new float[2];
+	m_Scale = new float[2];
+	m_Scale[0] = 1.0;
+	m_Scale[1] = 1.0;
 	m_Position[0] = 0.0;
 	m_Position[1] = 0.0;
 	m_Velocity[0] = 0.0;
@@ -35,8 +38,8 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	m_Sprites = new Sprite[m_Count];
 	float tdx = 1.0 / (float)m_SpritesPerRow;
 	float tdy = 1.0 / (float)m_Rows;
-	float vdx = 70.0;
-	float vdy = 70.0;
+	float vdx = 100.0;
+	float vdy = 100.0;
 	float texture_x = 0.0;
 	float texture_y = 0.0;
 	unsigned int i;
@@ -88,9 +91,9 @@ void AtlasSprite::Render() {
 	{
 		glTranslatef(ax, ay, 0.0);
 		//glRotatef(randf() * 2.0, 0.0, 0.0, 1.0);
-		m_Rotation *= (randf() > 0.99) ? -1.0 : 1.0;
-		glRotatef((m_Life * (25.0 * m_Rotation)), 0.0, 0.0, 1.0);
-		//glScalef((m_Life * -1.1) + 0.5, (m_Life * -1.1) + 0.5, (m_Life * -1.1) + 0.5);
+		//m_Rotation *= (randf() > 0.99) ? -1.0 : 1.0;
+		//glRotatef((m_Life * (25.0 * m_Rotation)), 0.0, 0.0, 1.0);
+		glScalef(m_Scale[0], m_Scale[1], 1.0);
 	
 		int i = m_Frames[m_Frame % m_AnimationLength];
 
@@ -128,7 +131,7 @@ void AtlasSprite::Simulate(float deltaTime) {
 	float dy = m_Velocity[1] * deltaTime;
 	m_Position[0] += dx;
 	m_Position[1] += dy;
-	
+
 	m_Life += deltaTime;
 	m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
 };
