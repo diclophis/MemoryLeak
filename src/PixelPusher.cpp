@@ -16,10 +16,6 @@
 #include "PixelPusher.h"
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs) : Engine(w, h, t, m, l, s, bs) {
-	//m_Menu = new Model(m_FooFoos.at(3));
-	//m_Menu->SetTexture(m_Textures->at(0));
-	//m_Menu->SetScale(0.1, 0.1, 0.1);
-	//m_Menu->SetFrame(0);
 	m_Space = new Octree<int>(1024, -1);
 	m_Touches = (float *)malloc(sizeof(float) * 4);
 	m_Touches[0] = m_Touches[1] = m_Touches[2] = m_Touches[3] = 0;
@@ -45,36 +41,21 @@ void PixelPusher::Build() {
 	
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
-
-	//m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 8, 8, "23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopq");
-	//m_AtlasSprite = new AtlasSprite(m_Textures->at(5), 6, 4, "23456789:;<=>?@ABCDEFGH");	
-	//m_AtlasSprite = new AtlasSprite(m_Textures->at(7), 16, 15, "23456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopq");
-	//m_AtlasSprite = new AtlasSprite(m_Textures->at(7), 9, 6, "", 0, 54);
-	//m_SpriteGun = new SpriteGun(m_Textures->at(4), 5, 5, "89:;<=>?@ABCDEFFFFFFFFFFFFFFFFFFFF");
-	//m_SpriteGun = new SpriteGun(m_Textures->at(5), 6, 5, "23456789:;<=>?@ABCDEFGHIJKLMNO23456789:;<=>?@ABCDEFGHIJKLMNO");
 	
 	m_NumComets = 8;
-	
-	//m_AtlasSprite = new AtlasSprite(m_Textures->at(8), 5, 5, "789:;:987");
-	//m_SpriteGun = new SpriteGun(m_Textures->at(3), 8, 8, "", 0, 64, 1.0, "", 0, 64, 0.05);
 
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(2), 6, 5, "", 0, 30, 120.0);
-	m_SpriteGun = new SpriteGun(m_Textures->at(2), 6, 5, "", 0, 30, 10.0, "", 0, 30, 0.001);
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(2), 6, 5, "", 0, 30, 1.0);
+	m_SpriteGun = new SpriteGun(m_Textures->at(2), 6, 5, "", 0, 30, 1.0, "", 0, 30, 1.0);
 
 	m_AtlasSprite->SetPosition(100.0, 100.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
 	m_SpriteGun->Build(10);
 	
-	//float x = m_AtlasSprite->m_Position[0];
-	//float y = m_AtlasSprite->m_Position[1];
-	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 6, 5, "", 0, 30, 1.25, "", 0, 30, 0.1));
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 6, 5, "", 0, 30, 1.0, "", 0, 30, 1.0));
 		m_IceComets[i]->SetPosition(0.0, (i * 150.0) + 600.0);
 		m_IceComets[i]->SetVelocity(0.0, -250.0);
 		m_IceComets[i]->m_IsAlive = false;
-		//LOGV("the fuck %f\n", fastAbs(randf() * 50.0));
-		//m_IceComets[i]->Build(fastAbs((randf() * 20.0) + 1));
 		m_IceComets[i]->Build(5);
 	}
 }
@@ -124,7 +105,6 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 		
 	switch (hitState) {
 		case 0:
-      //m_IsPushingAudio = false;
 			m_Touches[0] = x;
 			m_Touches[1] = y;
 			m_Touches[2] = x;
@@ -132,8 +112,6 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			break;
 			
 		case 1:
-      //m_IsPushingAudio = true;
-      //m_IsPushingAudio = false;
 			dx = x - m_Touches[2];
 			dy = y - m_Touches[3];
 			if (fabs(m_Touches[1]) > (m_ScreenHeight * 0.25)) {
@@ -150,7 +128,6 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 			break;
 			
 		case 2:
-      //m_IsPushingAudio = false;
 			m_Touches[2] = x;
 			m_Touches[3] = y;
 			dx = m_Touches[2] - m_Touches[0];
@@ -224,18 +201,13 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 
 
 int PixelPusher::Simulate() {
-  m_IsPushingAudio = false;
+	m_IsPushingAudio = false;
 	
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
-
 	float s = 0.0;
 	int div = 8;
-	int len = m_AudioBufferSize / div;
-	
-	float x = m_AtlasSprite->m_Position[0];
-	float y = m_AtlasSprite->m_Position[1];
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
@@ -251,19 +223,13 @@ int PixelPusher::Simulate() {
 			float dx = fastAbs(m_IceComets[i]->m_Position[0] - m_AtlasSprite->m_Position[0]);
 			float dy = fastAbs(m_IceComets[i]->m_Position[1] - m_AtlasSprite->m_Position[1]);
 			if (dy < 50 && dx < 50) {
-				//ModPlug_Seek(m_Sounds[0], 0);
-				//m_IceComets[i]->m_Life = 0.0;
-				//m_IceComets[i]->m_IsAlive = true;
 				m_IceComets[i]->Fire();
 			}
-
-
 		}
 		
 		if (m_IceComets[i]->m_Position[1] < -600.0) {			
 			s = m_AudioBuffer[0];
 			if (m_IsPushingAudio) {
-				//LOGV("s: %f\n", s);
 				m_IceComets[i]->SetPosition((s - 125.0), 600.0);
 			} else {
 				m_IceComets[i]->SetPosition(0.0, 600.0);
@@ -274,14 +240,9 @@ int PixelPusher::Simulate() {
 	}
 	
 	if (!m_IsPushingAudio) {
-		//std::fill(m_AudioBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
 		ModPlug_Seek(m_Sounds[0], 0);
 	}
 
-  //if (m_AtlasSprite->m_Position[1] < 0) {
-  //  m_IsPushingAudio = true;
-  //}
-	
 	/*
 	for (unsigned int i = 0; i < 20; i++) {
 		for (unsigned int j = 0; j < 20; j++) {
@@ -299,7 +260,7 @@ int PixelPusher::Simulate() {
 	}
 	*/
 	
-	/*
+	
 	m_LastAiSolved = -1;
 
 	int collided_index = -1;
@@ -369,9 +330,7 @@ int PixelPusher::Simulate() {
 		}
 	}
 	 
-	*/
 
-	/*
 	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
@@ -391,8 +350,9 @@ int PixelPusher::Simulate() {
 	m_CameraPosition[0] = cx;
 	m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;
 	m_CameraPosition[2] = cz;
-	*/
 	
+	
+	/*
 	m_CameraTarget[0] = 0.0;
 	m_CameraTarget[1] = 0.0;
 	m_CameraTarget[2] = 0.0;
@@ -400,9 +360,7 @@ int PixelPusher::Simulate() {
 	m_CameraPosition[0] = 27.0;
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
-	
-	//m_Menu->Simulate(m_DeltaTime);
-
+	*/
 	
 	return 1;
 }

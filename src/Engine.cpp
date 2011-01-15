@@ -14,6 +14,22 @@
 
 #include "Engine.h"
 
+#ifndef DESKTOP
+static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+	GLfloat xmin, xmax, ymin, ymax;
+	
+	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+	ymin = -ymax;
+	xmin = ymin * aspect;
+	xmax = ymax * aspect;
+	
+	glFrustumx(
+			   (GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
+			   (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
+			   (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
+			   );
+}
+#endif
 
 Engine::~Engine() {
   LOGV("dealloc mofo\n");
@@ -222,68 +238,59 @@ int Engine::RunThread() {
 
 void Engine::DrawScreen(float rotation) {
 	pthread_cond_signal(&m_AudioSyncCond);
+
+
 	if (m_IsSceneBuilt) {
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		
+		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		{
-			
-			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glRotatef(rotation, 0.0, 0.0, 1.0);
+			gluPerspective(20.0, (float)m_ScreenWidth / (float)m_ScreenWidth, 0.1, 500.0);		
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			{
+				glLoadIdentity();
+				glRotatef(rotation, 0.0, 0.0, 1.0);
+				
+				gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+				
+				for (unsigned int i=0; i<m_Models.size(); i++) {
+					m_Models[i]->Render();
+				}
+				Model::ReleaseBuffers();
 
-			/*
-			gluLookAt(
-			m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2],
-			m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2],
-			0.0, 1.0, 0.0
-			);
-			
-			for (unsigned int i=0; i<m_Models.size(); i++) {
-				m_Models[i]->Render();
+
 			}
-			*/
-			
-			Render();
+			glPopMatrix();
 		}
 		glPopMatrix();
-	  pthread_cond_signal(&m_VsyncCond);
+		
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		{
+			glLoadIdentity();
+
+			glOrthof(-m_ScreenHalfHeight*m_ScreenAspect, m_ScreenHalfHeight*m_ScreenAspect, -m_ScreenHalfHeight, m_ScreenHalfHeight, 1.0f, -1.0f );
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			{
+				Render();
+			}
+			glPopMatrix();
+		}
+		glPopMatrix();
+		pthread_cond_signal(&m_VsyncCond);
 	}
 }
-
-
-#ifndef DESKTOP
-static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
-	GLfloat xmin, xmax, ymin, ymax;
-	
-	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-	ymin = -ymax;
-	xmin = ymin * aspect;
-	xmax = ymax * aspect;
-	
-	glFrustumx(
-			   (GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-			   (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-			   (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
-			   );
-}
-#endif
 
 
 void Engine::ResizeScreen(int width, int height) {
 	m_ScreenWidth = width;
 	m_ScreenHeight = height;
+	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
+	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	//glClearColor(0.5, 0.5, 0.5, 1.0);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	//glOrthof(0, 480, 320, 0, 1, -1);
-	
-	float aspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
-    float halfHeight = m_ScreenHeight * 0.5;
-    glOrthof( -halfHeight*aspect, halfHeight*aspect, -halfHeight, halfHeight, 1.0f, -1.0f );
-	
-	
-	//gluPerspective(20.0, (float)width / (float)height, 0.1, 500.0);
 }

@@ -23,10 +23,21 @@ static GLuint g_lastNormalBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
 
-static GLuint g_staticVertexBuffer = 0;
-static GLuint g_staticNormalBuffer = 0;
-static GLuint g_staticTexcoordBuffer = 0;
-static GLuint g_staticElementBuffer = 0;
+//static GLuint g_staticVertexBuffer = 0;
+//static GLuint g_staticNormalBuffer = 0;
+//static GLuint g_staticTexcoordBuffer = 0;
+//static GLuint g_staticElementBuffer = 0;
+
+void Model::ReleaseBuffers() {
+	g_lastVertexBuffer = 0;
+	g_lastNormalBuffer = 0;
+	g_lastTexcoordBuffer = 0;
+	g_lastElementBuffer = 0;
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
+}
 
 Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 	m_IsPlayer = false;
@@ -156,7 +167,7 @@ foofoo *Model::GetFoo(const aiScene *a) {
 			delete indices;
 		}
 	}
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	

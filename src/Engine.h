@@ -64,6 +64,9 @@ public:
 	float m_DeltaTime;
 	int m_ScreenWidth;
 	int m_ScreenHeight;
+	float m_ScreenAspect;
+	float m_ScreenHalfHeight;
+	
   int m_GameState;
   double m_Waits[1];
   float m_CameraPosition[3];

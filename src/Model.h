@@ -138,5 +138,7 @@ public:
 	Model *m_Climbing;
 	int m_Direction;
 	
+	static void ReleaseBuffers();
+	
 	std::vector<void *> *m_Steps;
 };
