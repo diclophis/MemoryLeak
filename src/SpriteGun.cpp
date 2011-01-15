@@ -9,6 +9,10 @@
 
 
 void SpriteGun::Build(int n) {
+	m_EmitVelocity = new float[2];
+	m_EmitVelocity[0] = 0;
+	m_EmitVelocity[1] = 0;
+	
 	m_NumParticles = n;
 	m_ShootInterval = 1.0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
@@ -19,6 +23,7 @@ void SpriteGun::Build(int n) {
 
 
 void SpriteGun::Reset() {
+	m_IsAlive = false;
 	m_Life = 0.0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		ResetParticle(idx);
@@ -41,8 +46,11 @@ void SpriteGun::ShootParticle(int idx) {
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
 	////m_AtlasSprites[idx]->m_Velocity[0] = ((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
 	//m_AtlasSprites[idx]->m_Velocity[1] = +1500.0 + (randf() * 75.0); //((randf() - 0.0) * 500.0); //fastSinf(randf() * 2.0) * 500.0;
-	m_AtlasSprites[idx]->m_Velocity[0] = randf() * 600.0;//fastSinf(idx) * 1000.0;//randf() * 1000.0;
-	m_AtlasSprites[idx]->m_Velocity[1] = fastAbs(randf() * 1000.0) + 100.0;//100.0; //fastSinf(idx * 1000.0) * 500.0;//randf() * 1000.0;
+	//m_AtlasSprites[idx]->m_Velocity[0] = randf() * 600.0;//fastSinf(idx) * 1000.0;//randf() * 1000.0;
+	//m_AtlasSprites[idx]->m_Velocity[1] = fastAbs(randf() * 1000.0) + 100.0;//100.0; //fastSinf(idx * 1000.0) * 500.0;//randf() * 1000.0;
+	
+	m_AtlasSprites[idx]->SetVelocity(m_EmitVelocity[0], m_EmitVelocity[1]);
+	
 	m_AtlasSprites[idx]->m_IsAlive = true;
 }
 

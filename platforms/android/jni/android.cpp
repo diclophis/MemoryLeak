@@ -44,7 +44,7 @@ public:
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
     }
 
-    int div = 32;
+    int div = 64;
     int pos = (buffer_position % div);
     int len = min_buffer / div;
     int off = 0; //pos * len;

@@ -27,4 +27,13 @@ public:
 	int m_ShotEnd;
 	float m_ShotMaxLife;
 	
+	float *m_EmitVelocity;
+	void SetEmitVelocity(float x, float y) {
+		m_EmitVelocity[0] = x;
+		m_EmitVelocity[1] = y;
+	}
+	
+	void Fire() {
+		m_IsAlive = true;
+	}
 };

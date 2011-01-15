@@ -50,8 +50,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	//glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_ONE, GL_ONE);
+	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_NORMAL_ARRAY);
@@ -201,7 +201,7 @@ int Engine::RunThread() {
         //  LOGV("pump\n");
         //  ModPlug_Read(m_Sounds[0], m_AudioBuffer, (m_AudioBufferSize / 2) * sizeof(short));
         //}
-        int div = 16;
+        int div = 32;
         int len = m_AudioBufferSize / div;
         //LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
         ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
@@ -273,8 +273,8 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenWidth = width;
 	m_ScreenHeight = height;
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-	//glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClearColor(0.5, 0.5, 0.5, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	//glClearColor(0.5, 0.5, 0.5, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
