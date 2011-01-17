@@ -164,19 +164,12 @@ int Engine::RunThread() {
 
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
-	start_routine(m_AudioSilenceBuffer, buffer_position);
+	
+	int warm = 0;
+	double interp = 2.0;
 
 	while (m_GameState != 0) {
+		
 		gettimeofday(&tim, NULL);
 		t2=tim.tv_sec+(tim.tv_usec/1000000.0);
 		averageWait = t2 - t1;
@@ -187,23 +180,26 @@ int Engine::RunThread() {
 			LOGV("slow avg: %f %f\n", averageWait, 1.0 / 19.0);
 		}
 		
-		double interp = 2.0;
-		for (unsigned int i=0; i<interp; i++) {
-			m_DeltaTime = averageWait / interp;
-			m_SimulationTime += (m_DeltaTime);
-			m_GameState = Simulate();
-		}
+		if (warm++ > 100) {
+			
+			if (averageWait > (1.0 / 19.0)) {
+				LOGV("slow after warmup\n");
+			}
+			
+			for (unsigned int i=0; i<interp; i++) {
+				m_DeltaTime = averageWait / interp;
+				m_SimulationTime += (m_DeltaTime);
+				m_GameState = Simulate();
+			}
 
-		if (m_IsPushingAudio) {
-
-		int div = 1;
-		int len = m_AudioBufferSize / div;
-		//LOGV("pump audio %d %d\n", m_AudioBufferSize, div);
-		ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-		//LOGV("write audio %d\n", buffer_position);
-			start_routine(m_AudioBuffer, buffer_position);
-		} else {
-			start_routine(m_AudioSilenceBuffer, buffer_position);
+			if (m_IsPushingAudio) {
+				int div = 1;
+				int len = m_AudioBufferSize / div;
+				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+				start_routine(m_AudioBuffer, buffer_position);
+			} else {
+				start_routine(m_AudioSilenceBuffer, buffer_position);
+			}
 		}
 
 		WaitVsync();

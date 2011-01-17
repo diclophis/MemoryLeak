@@ -70,37 +70,15 @@ public class DemoActivity extends Activity {
     int[] off3;
     int[] len3;
 
-    /*
-    // allocate a buffer for the modfile data
-    modData = new byte[PlayerThread.MAXMODSIZE];
-    modfileInStream =  getResources().openRawResource(R.raw.song);
-    try {
-        modsize = modfileInStream.read(modData, 0, PlayerThread.MAXMODSIZE);
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-
-    player = new PlayerThread(modData, 0);
-
-
-    */
-
-        int rate = 8000;
-        //int rate = 22050;
-        //int rate = 22050;
-        //int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-        int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
-        //min = min * 2;
-        //min = min / 2;
-
-        setMinBuffer(min);
-        Log.i("PLAYERTHREAD", "minbuffer=" + min);
-        short[] fill = new short[min];
-        //at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
-        at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
-        at1.write(fill, 0, min);
-        at1.play();
-        at1.setStereoVolume(1.0f, 1.0f);
+    int rate = 8000;
+    int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    setMinBuffer(min);
+    Log.i("PLAYERTHREAD", "minbuffer=" + min);
+    short[] fill = new short[min * 2];
+    at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
+    at1.play();
+    at1.write(fill, 0, min * 2);
+    at1.setStereoVolume(1.0f, 1.0f);
 
     try {
       path = "models";

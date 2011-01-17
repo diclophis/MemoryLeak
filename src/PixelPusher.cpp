@@ -44,12 +44,10 @@ void PixelPusher::Build() {
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
 	
 	m_NumComets = 4;
-	m_CometStart = 100.0;
-	m_CometStop = -400.0;
+	m_CometStart = 300.0;
+	m_CometStop = -200.0;
 	m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
 	
-	
-
 	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 2, 2, "", 0, 4, 1.0);
 	m_SpriteGun = new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 0.15, "", 0, 4, 1.0);
 
@@ -58,9 +56,9 @@ void PixelPusher::Build() {
 	m_SpriteGun->Build(1);
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 2.0, "", 0, 4, 1.0));
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 4.0, "", 0, 4, 1.0));
 		m_IceComets[i]->SetPosition(0.0, (i * m_CometDelta) + m_CometStart);
-		m_IceComets[i]->SetVelocity(0.0, -800.0);
+		m_IceComets[i]->SetVelocity(0.0, -600.0);
 		m_IceComets[i]->m_IsAlive = false;
 		m_IceComets[i]->Build(1);
 	}
@@ -91,9 +89,9 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	xx = m_AtlasSprite->m_Position[0] - dpx;
 	yy = m_AtlasSprite->m_Position[1] - dpy;
 	
-	m_AtlasSprite->SetPosition(xx, yy + 10.0);
-	m_SpriteGun->SetPosition(xx, (yy - 15.0) + 10.0);
-
+	m_AtlasSprite->SetPosition(xx, yy);
+	m_SpriteGun->SetPosition(xx, yy);
+	
 	float dx;
 	float dy;
 	int d1 = 0;
@@ -226,7 +224,6 @@ int PixelPusher::Simulate() {
 			} else {
 				m_IceComets[i]->m_EmitVelocity[0] = randf() * 100.0;
 				m_IceComets[i]->m_EmitVelocity[1] = randf() * 100.0;
-				LOGV("win\n");
 				m_IsPushingAudio = true;
 			}
 		} else {
@@ -249,7 +246,6 @@ int PixelPusher::Simulate() {
 	}
 	
 	if (!m_IsPushingAudio) {
-		LOGV("fail\n");
 		ModPlug_Seek(m_Sounds[0], 0);
 	}
 
