@@ -73,6 +73,10 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	
 }
 
+void AtlasSprite::ReleaseBuffers() {
+	g_lastTexture = 0;
+}
+
 void AtlasSprite::Render() {
 	if (m_AnimationLength == 0) {
 		LOGV("Fail, animation is at least 1 frame\n");

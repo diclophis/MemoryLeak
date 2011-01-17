@@ -53,6 +53,8 @@ public:
 		m_Position[1] = y;
 	}
 	
+	static void ReleaseBuffers();
+	
 	float *m_Position;
 	float *m_Velocity;
 	int *m_Frames;

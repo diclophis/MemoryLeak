@@ -11,7 +11,7 @@ class Model {
 
 public:
 	
-	static foofoo *GetFoo(const aiScene *a);
+	static foofoo *GetFoo(const aiScene *a, int s, int e);
 	
 	bool m_UsesStaticBuffer;
 	
@@ -137,6 +137,8 @@ public:
 	int m_Texture;
 	Model *m_Climbing;
 	int m_Direction;
+	int m_FramesOfAnimationCount;
+
 	
 	static void ReleaseBuffers();
 	

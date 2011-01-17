@@ -54,13 +54,13 @@ void SpriteGun::Simulate(float deltaTime) {
 		int not_shot_this_tick = 0;
 		for (unsigned int i=0; i<m_NumParticles; i++) {
 			//(shot_this_tick < (randf() * 2.0)) && 
-			if ((randf() > 0.3) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive)) {
+			if ((shot_this_tick < 1) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive)) {
 				ShootParticle(i);
 				shot_this_tick++;
 			} else {
 				not_shot_this_tick++;
 				if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {
-					//ResetParticle(i);
+					ResetParticle(i);
 				}
 				
 				//m_AtlasSprites[i]->m_Velocity[1] -= 60.0;

@@ -37,26 +37,32 @@ void PixelPusher::Build() {
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
 	Load(0);
-	m_FooFoos.clear();
+	//TODO: memory leak
+	//m_FooFoos.clear();
 	
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
 	
-	m_NumComets = 8;
+	m_NumComets = 4;
+	m_CometStart = 100.0;
+	m_CometStop = -400.0;
+	m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
+	
+	
 
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(2), 6, 5, "", 0, 30, 1.0);
-	m_SpriteGun = new SpriteGun(m_Textures->at(2), 6, 5, "", 0, 30, 1.0, "", 0, 30, 1.0);
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 2, 2, "", 0, 4, 1.0);
+	m_SpriteGun = new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 0.15, "", 0, 4, 1.0);
 
 	m_AtlasSprite->SetPosition(100.0, 100.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(10);
+	m_SpriteGun->Build(1);
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(2), 6, 5, "", 0, 30, 1.0, "", 0, 30, 1.0));
-		m_IceComets[i]->SetPosition(0.0, (i * 150.0) + 600.0);
-		m_IceComets[i]->SetVelocity(0.0, -250.0);
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 2.0, "", 0, 4, 1.0));
+		m_IceComets[i]->SetPosition(0.0, (i * m_CometDelta) + m_CometStart);
+		m_IceComets[i]->SetVelocity(0.0, -800.0);
 		m_IceComets[i]->m_IsAlive = false;
-		m_IceComets[i]->Build(5);
+		m_IceComets[i]->Build(1);
 	}
 }
 
@@ -82,15 +88,8 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	float dpx = m_AtlasSprite->m_Position[0] - xx;
 	float dpy = m_AtlasSprite->m_Position[1] - yy;
 
-	//if (fastAbs(dpx) > 3) {
-		//dpx *= 0.75;
-		xx = m_AtlasSprite->m_Position[0] - dpx;
-	//}
-	
-	//if (fastAbs(dpy) > 1) {
-		//dpy *= 0.75;
-		yy = m_AtlasSprite->m_Position[1] - dpy;
-	//}
+	xx = m_AtlasSprite->m_Position[0] - dpx;
+	yy = m_AtlasSprite->m_Position[1] - dpy;
 	
 	m_AtlasSprite->SetPosition(xx, yy + 10.0);
 	m_SpriteGun->SetPosition(xx, (yy - 15.0) + 10.0);
@@ -102,7 +101,11 @@ void PixelPusher::Hit(float x, float y, int hitState) {
 	int d3 = 0;
 	int d4 = 0;
 	int r = (((int)RadiansToDegrees(m_CameraRotation)) % 360);
-		
+	
+	
+	//HACK: disable 3d input
+	hitState = -1;
+	
 	switch (hitState) {
 		case 0:
 			m_Touches[0] = x;
@@ -207,6 +210,10 @@ int PixelPusher::Simulate() {
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
 	float s = 0.0;
+	for (unsigned int i=0; i<m_AudioBufferSize / 256; i++) {
+		s += m_AudioBuffer[i];
+	}
+	s /= (m_AudioBufferSize / 256);
 	int div = 8;
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
@@ -217,6 +224,9 @@ int PixelPusher::Simulate() {
 				m_IceComets[i]->m_Life = 0.0;
 				m_IceComets[i]->Reset();
 			} else {
+				m_IceComets[i]->m_EmitVelocity[0] = randf() * 100.0;
+				m_IceComets[i]->m_EmitVelocity[1] = randf() * 100.0;
+				LOGV("win\n");
 				m_IsPushingAudio = true;
 			}
 		} else {
@@ -227,12 +237,11 @@ int PixelPusher::Simulate() {
 			}
 		}
 		
-		if (m_IceComets[i]->m_Position[1] < -600.0) {			
-			s = m_AudioBuffer[0];
+		if (m_IceComets[i]->m_Position[1] < m_CometStop) {			
 			if (m_IsPushingAudio) {
-				m_IceComets[i]->SetPosition((s - 125.0), 600.0);
+				m_IceComets[i]->SetPosition((s - 125.0), m_CometStart);
 			} else {
-				m_IceComets[i]->SetPosition(0.0, 600.0);
+				m_IceComets[i]->SetPosition(0.0, m_CometStart);
 			}
 
 			m_IceComets[i]->Reset();
@@ -240,6 +249,7 @@ int PixelPusher::Simulate() {
 	}
 	
 	if (!m_IsPushingAudio) {
+		LOGV("fail\n");
 		ModPlug_Seek(m_Sounds[0], 0);
 	}
 
@@ -335,6 +345,9 @@ int PixelPusher::Simulate() {
 	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
 	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
 
+	m_CameraRotation += DEGREES_TO_RADIANS(0.5);
+	
+	m_CameraHeight = 5.0 + (fastSinf(m_SimulationTime) * 5.0); 
 	float m_CameraDiameter = 20.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
@@ -343,9 +356,10 @@ int PixelPusher::Simulate() {
 	m_CameraTarget[1] = 0.0;
 	m_CameraTarget[2] = 0.0;
 	
-	m_CameraTarget[0] = m_Models[m_PlayerIndex]->m_Position[0];
-	m_CameraTarget[1] = m_Models[m_PlayerIndex]->m_Position[1];
-	m_CameraTarget[2] = m_Models[m_PlayerIndex]->m_Position[2];
+	int ct = fastAbs(randf() * 5);
+	m_CameraTarget[0] = fastSinf(m_SimulationTime) + 10.0;//m_Models[ct]->m_Position[0];
+	//m_CameraTarget[1] = fastSinf(m_SimulationTime * 100.0);//m_Models[ct]->m_Position[1];
+	m_CameraTarget[2] = fastSinf(m_SimulationTime) + 10.0;//m_Models[ct]->m_Position[2];
 	
 	m_CameraPosition[0] = cx;
 	m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;
@@ -412,10 +426,40 @@ void PixelPusher::Load(int level_index) {
 		if ( code[3] == '1' ) current[2] += data[i++] - 32;
 		if ( code[4] == '1' ) current[3] += data[i++] - 32;
 		if ( code[0] == '1' ) {
-			m_Models.push_back(new Model(m_FooFoos.at(0)));
+			
+			int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
+			int ii = 0;
+			int s = 0;
+			int e = 1;
+			char path[128];
+			
+			if (current[3] == 8) {
+				ii = 1;
+			} else {
+			}
+			
+			/*
+			if (m_FooFoos.size() < (ii + 1)) {
+				LOGV("loading %d\n", ii);
+				snprintf(path, sizeof(char), "%d", i);
+				m_Importer.ReadFile(path, m_PostProcessFlags);
+				
+				//int& first = m_FooFoos->begin();
+				
+				//std::vector<foofoo *>::iterator it;
+				//it = m_FooFoos.begin();
+				
+				//m_FooFoos.insert(it, Model::GetFoo(m_Importer.GetScene(), s, e));
+				m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), s, e));
+				m_Importer.FreeScene();
+			}
+			*/
+			
+			m_Models.push_back(new Model(m_FooFoos.at(ii)));
+			int height = current[1];
 			switch (current[3]) {
 				case 9:
-					t = 0;
+					t = 3;
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = false;
 					m_Models[m_TerrainEndIndex]->m_IsHarmfulToPlayers = false;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = true;
@@ -426,17 +470,18 @@ void PixelPusher::Load(int level_index) {
 
 				case 8:
 					m_PlayerIndex = m_TerrainEndIndex;
-					t = 1;
+					t = 4;
+					height += 1;
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = true;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
-					
-					m_Models[m_TerrainEndIndex]->SetScale(0.6, 0.6, 0.6);
+
+					m_Models[m_TerrainEndIndex]->SetScale(0.05, 0.05, 0.05);
 
 					break;
 
 				case 0:
 					m_TargetIndex = m_TerrainEndIndex;
-					t = 2;
+					t = 3;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
 					
@@ -448,10 +493,10 @@ void PixelPusher::Load(int level_index) {
 					break;
 			}
 
-			m_Models[m_TerrainEndIndex]->SetPosition(current[0] + 10, current[1], current[2] + 10);
+			m_Models[m_TerrainEndIndex]->SetPosition(current[0] + 10, height, current[2] + 10);
 			m_Space->set((int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
 			//m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
-			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(0));
+			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 		}
 		m_TerrainEndIndex++;

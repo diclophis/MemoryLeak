@@ -22,4 +22,6 @@ struct foofoo {
 	GLuint *m_TextureBuffer;
 	int m_numFaces;
 	int m_numFrames;
+	int m_AnimationStart;
+	int m_AnimationEnd;
 };

@@ -67,15 +67,17 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 	SetRotation(0.0, 0.0, 0.0);
 	SetVelocity(0.0, 0.0, 0.0);
 	m_Steps = new std::vector<void *>;
+	
+	m_FramesOfAnimationCount = m_FooFoo->m_AnimationEnd - m_FooFoo->m_AnimationStart;	
 }
 
 
 //foofoos must contain #of frame info, look into replace interp
 //implement addverticestofoofoobuffersatposition,rotation,scale,frame
-foofoo *Model::GetFoo(const aiScene *a) {
+foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	
 	foofoo *ff = new foofoo;
-	int interp = 15;
+	int interp = 3;
 
 	if (a->mRootNode->mNumMeshes > 1) {
 		ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp) + 1;
@@ -91,7 +93,9 @@ foofoo *Model::GetFoo(const aiScene *a) {
 	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 
 	ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (1));
-	 
+	ff->m_AnimationStart = s;
+	ff->m_AnimationEnd = e;
+	
 	glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
 	glGenBuffers(ff->m_numBuffers, ff->m_NormalBuffers);
 	glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
@@ -108,8 +112,10 @@ foofoo *Model::GetFoo(const aiScene *a) {
 	}
 
 	int used_buffer = 0;
+	//int start_frame = 0;
+	//int stop_frame = 1; //a->mRootNode->mNumMeshes
 	
-	for (unsigned int mm=0; mm<a->mRootNode->mNumMeshes; mm++) { //keyframes
+	for (unsigned int mm=ff->m_AnimationStart; mm<ff->m_AnimationEnd; mm++) { //keyframes
 		for (unsigned int iiii=0; iiii<interp; iiii++) {
 			
 			unsigned short* indices = new unsigned short[a->mMeshes[mm]->mNumFaces * 3];
@@ -161,8 +167,6 @@ foofoo *Model::GetFoo(const aiScene *a) {
 				}
 			}
 			
-
-
 			delete vertices;
 			delete indices;
 		}
@@ -216,7 +220,6 @@ void Model::Render() {
 		
 		glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-		
 		//glTranslatef(-m_Position[0],-m_Position[1],-m_Position[2]);
 		//glScalef(-m_Scale[0],-m_Scale[1],1.0 / m_Scale[2]);
 
@@ -271,17 +274,18 @@ float Model::Simulate(float dt, bool pushing) {
 	
 	m_IsPushing = pushing;
 	
+	
 	if (m_FooFoo->m_numFrames > 1) {
 
 		m_Life += dt;
-		float fps = 60.0;
+		float fps = 120.0;
 		if (m_Life > (1.0 / (float)fps)) {
 			//LOGV("%d\n", m_Frame);
 			m_Frame++;
 			m_Life = 0.0;
 		}
 		
-		if (m_Frame >= m_FooFoo->m_numFrames) {
+		if (m_Frame >= m_FramesOfAnimationCount) {
 			m_Frame = 0;
 		}
 	} else {

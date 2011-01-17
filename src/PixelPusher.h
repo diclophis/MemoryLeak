@@ -36,5 +36,9 @@ public:
 	
 	int m_NumComets;
 
+	float m_CometStart;
+	float m_CometStop;
+	float m_CometDelta;
+	
 	std::vector<SpriteGun *> m_IceComets;
 };
