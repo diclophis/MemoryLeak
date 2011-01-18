@@ -80,35 +80,23 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glLoadIdentity();
 
 
-  void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
+	//4458
+	//
+	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
-  m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
+	m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
 
-  //m_AudioBuffer = (unsigned char *)malloc(m_AudioBufferSize * sizeof(unsigned char));
-  //m_AudioSilenceBuffer = (unsigned char *)malloc(m_AudioBufferSize * sizeof(unsigned char));
-	
-	
-	//std::fill(m_AudioBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
-	//std::fill(m_AudioSilenceBuffer, m_AudioBuffer+m_AudioBufferSize, 0);
-	
-	
 	m_AudioBuffer = new unsigned char[m_AudioBufferSize];
 	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
 	memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
-
-
-  m_IsPushingAudio = false;
-
+	m_IsPushingAudio = false;
 }
 
 
 void Engine::CreateThread(void *(*sr)(void *, int)) {
-  //LOGV("3333333333333333333333333  %p  FOOOOOOOOOOOOOOOOOOO\n", sr);
 	start_routine = sr;
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
-  //LOGV("4444444444444444444444444444444 %p %p   FOOOOOOOOOOOOOOOOOOO\n", this, sr);
-  //LOGV("4444444444444444444444444444444 %p   FOOOOOOOOOOOOOOOOOOO\n", start_routine);
 }
 
 
@@ -140,11 +128,9 @@ void Engine::WaitAudioSync() {
 
 int Engine::RunThread() {
 
-	Build();
+	sleep(3);
 	
-	//start_routine(m_AudioSilenceBuffer, 0);
-	//start_routine(m_AudioSilenceBuffer, 0);
-	//start_routine(m_AudioSilenceBuffer, 0);
+	Build();
 	
 	m_IsSceneBuilt = true;
 
@@ -185,10 +171,10 @@ int Engine::RunThread() {
 			m_GameState = Simulate();
 		}		
 		
-		//WaitAudioSync();
+		WaitAudioSync();
 		
 		if (m_IsPushingAudio) {
-			int div = 1;
+			int div = 16;
 			int len = m_AudioBufferSize / div;
 			ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
 			start_routine(m_AudioBuffer, buffer_position);

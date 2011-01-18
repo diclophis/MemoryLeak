@@ -48,7 +48,7 @@ void PixelPusher::Build() {
 	//m_CometStop = -1000.0;
 	//m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
 	m_LastPumpedComet = 0.0;
-	m_PumpCometTimeout = 1.0 / 8.0;
+	m_PumpCometTimeout = 1.0 / 4.0;
 	
 	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 2, 2, "", 0, 4, 1.0);
 	m_SpriteGun = new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 0.1, "", 0, 4, 0.1);
@@ -210,13 +210,13 @@ int PixelPusher::Simulate() {
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
-	float s = 0.0;
+	float s = m_AudioBuffer[0];
+	/*
 	for (unsigned int i=0; i<m_AudioBufferSize / 128; i++) {
-		s += m_AudioBuffer[i];
+		s += m_AudioBuffer[i + 96];
 	}
 	s /= (m_AudioBufferSize / 128);
-	//float s = m_AudioBuffer[m_AudioBufferSize / 2];
-	
+	*/
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
 		
@@ -259,7 +259,6 @@ int PixelPusher::Simulate() {
 	}
 	
 	if (!m_IsPushingAudio) {
-		LOGV("\n%f\n", randf());
 		ModPlug_Seek(m_Sounds[0], 0);
 	}
 

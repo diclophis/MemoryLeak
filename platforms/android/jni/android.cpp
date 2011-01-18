@@ -27,11 +27,9 @@ static int min_buffer;
 class Callbacks {
 public:
   static void *PumpAudio(void *buffer, int buffer_position) {
-
     if (g_Env == NULL) {
       g_Vm->AttachCurrentThread(&g_Env, NULL);
     }
-
     if (ab == NULL) {
       jobject tmp;
       ab = g_Env->NewShortArray(min_buffer);
@@ -39,27 +37,19 @@ public:
       ab = (jshortArray)g_Env->NewGlobalRef(ab);
       g_Env->DeleteLocalRef(tmp);
     }
-
     if (android_dumpAudio == NULL) {
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
     }
-
-    int div = 2;
+    int div = 2 * 16;
     int pos = (buffer_position % div);
     int len = min_buffer / div;
-    int off = 0; //pos * len;
-    //LOGV("div: %d pos: %d len: %d off: %d min: %d\n", div, pos, len, off, min_buffer);
-
+    int off = 0;
     if (buffer) {
-      //g_Env->SetShortArrayRegion(ab, 0, min_buffer / 2, (jshort *) (((char *)buffer)+0));
-      //g_Env->SetShortArrayRegion(ab, 0, min_buffer / 2, (jshort *) (((char *)buffer)+(buffer_position * (min_buffer / 2))));
-
       g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
       g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, off, len);
     } else {
       LOGV("Error\n");
     }
-    //g_Vm->DetachCurrentThread();
   };
 };
 
@@ -124,6 +114,7 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
   int size
 ) {
   min_buffer = size;
+  LOGV("\n\n\n\n\nmin_buffer = %d\n\n\n\n", min_buffer);
 }
 
 

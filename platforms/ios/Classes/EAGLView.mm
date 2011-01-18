@@ -288,19 +288,9 @@ GLuint loadTexture(UIImage *image) {
 		}
 
 		
-		
-		
-		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, 1024);
+		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, 1114);
 		game->CreateThread(Callbacks::PumpAudio);
-		
 		gameState = 1;
-		
-		
-		
-		
-		
-		
-		
 		
 		
 		UIDevice* device = [UIDevice currentDevice];
@@ -321,12 +311,7 @@ GLuint loadTexture(UIImage *image) {
 			printf("cannot create play mutex");
 		}
 		
-
-		
-		
-		
 		//mplayer = [[MusicPlayer alloc] initMusicPlayer];
-
 		//ModPlug_Settings *mpsettings=[mplayer getMPSettings];
 		//mpsettings->mResamplingMode = MODPLUG_RESAMPLE_LINEAR;
 		//mpsettings->mChannels = 2;
