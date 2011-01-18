@@ -37,20 +37,18 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
 #define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE 4096
+#define SOUND_BUFFER_SIZE_SAMPLE 5000
 #define SOUND_BUFFER_NB 1
 
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
-		int div = d;
+		int div = d * sizeof(short);
 		int len = (SOUND_BUFFER_SIZE_SAMPLE) / div;
 		memcpy(buffer_ana[buffer_ana_gen_ofs], b, len);
 		buffer_ana_flag[buffer_ana_play_ofs] = 1;
+		return NULL;
 	};
 };
-
-
-
 
 
 void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer) {
@@ -330,8 +328,7 @@ GLuint loadTexture(UIImage *image) {
     
     /* We force this format for iPhone */
     mDataFormat.mFormatID = kAudioFormatLinearPCM;
-    mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger |
-	kAudioFormatFlagIsPacked;
+    //mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
 	
 	mDataFormat.mSampleRate = PLAYBACK_FREQ;
     
@@ -344,7 +341,7 @@ GLuint loadTexture(UIImage *image) {
     mDataFormat.mFramesPerPacket = 1; 
     mDataFormat.mBytesPerPacket = mDataFormat.mBytesPerFrame;
     
-    /* Create an Audio Queue... */
+    // Create an Audio Queue...
     err = AudioQueueNewOutput( &mDataFormat, 
 							  iPhoneDrv_AudioCallback, 
 							  self, 
@@ -353,7 +350,7 @@ GLuint loadTexture(UIImage *image) {
 							  0, 
 							  &mAudioQueue );
     
-    /* ... and its associated buffers */
+    //... and its associated buffers
     mBuffers = (AudioQueueBufferRef*)malloc( sizeof(AudioQueueBufferRef) * SOUND_BUFFER_NB );
     for (int i=0; i<SOUND_BUFFER_NB; i++) {
 		AudioQueueBufferRef mBuffer;
@@ -361,9 +358,9 @@ GLuint loadTexture(UIImage *image) {
 		
 		mBuffers[i]=mBuffer;
     }
-    /* Set initial playback volume */
-    err = AudioQueueSetParameter( mAudioQueue, kAudioQueueParam_Volume, 1.0);
 	
+    // Set initial playback volume
+    err = AudioQueueSetParameter( mAudioQueue, kAudioQueueParam_Volume, 1.0);
 	
     return 1;
 }
@@ -451,7 +448,7 @@ GLuint loadTexture(UIImage *image) {
 		} else {
 			//LOGV("underun\n");
 			//WARNING : not fast enough!! do we care?
-			memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
+			//memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
 		}
 	}
 	AudioQueueEnqueueBuffer( mAudioQueue, mBuffer, 0, NULL);

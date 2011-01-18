@@ -81,7 +81,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 	//4458 vs 1114
-	m_AudioDivisor = 8;
+	m_AudioDivisor = 16;
 
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
@@ -190,9 +190,6 @@ void Engine::DrawScreen(float rotation) {
 	pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		
-
-		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glMatrixMode(GL_PROJECTION);
@@ -205,7 +202,7 @@ void Engine::DrawScreen(float rotation) {
 			{
 				glLoadIdentity();
 				//TODO: screen rotation
-				//glRotatef(rotation, 0.0, 0.0, 1.0);
+				//glRotatef(m_SimulationTime, 0.0, 0.0, 1.0);
 				gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				for (unsigned int i=0; i<m_Models.size(); i++) {
 					m_Models[i]->Render();
@@ -215,7 +212,6 @@ void Engine::DrawScreen(float rotation) {
 			glPopMatrix();
 		}
 		glPopMatrix();
-		
 		glDisable(GL_DEPTH_TEST);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -233,7 +229,6 @@ void Engine::DrawScreen(float rotation) {
 			glPopMatrix();
 		}
 		glPopMatrix();
-
 		pthread_cond_signal(&m_VsyncCond);
 	}
 }
