@@ -37,7 +37,7 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
 #define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE 1024 / 4
+#define SOUND_BUFFER_SIZE_SAMPLE 1024 / 3
 #define SOUND_BUFFER_NB 1
 
 class Callbacks {
@@ -434,7 +434,7 @@ GLuint loadTexture(UIImage *image) {
 	//consume another buffer
 	if (buffer_ana_flag[buffer_ana_play_ofs]) {
 		
-		LOGV("pumped\n");
+		//LOGV("pumped\n");
 		
 		memcpy((char*)mBuffer->mAudioData, buffer_ana[buffer_ana_play_ofs], SOUND_BUFFER_SIZE_SAMPLE);
 		
@@ -446,11 +446,10 @@ GLuint loadTexture(UIImage *image) {
 			buffer_ana_play_ofs=0;
 		}
 	} else {
-		LOGV("underun\n");
+		//LOGV("underun\n");
 		//WARNING : not fast enough!! do we care?
 		//memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
 	}
-	
 	
 	AudioQueueEnqueueBuffer(mAudioQueue, mBuffer, 0, NULL);
 	
