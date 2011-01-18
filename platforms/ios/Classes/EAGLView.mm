@@ -307,9 +307,9 @@ GLuint loadTexture(UIImage *image) {
 		//	printf("cannot create download mutex");
 		//	return NO;
 		//}
-		if (pthread_mutex_init(&play_mutex,NULL)) {
-			printf("cannot create play mutex");
-		}
+		//if (pthread_mutex_init(&play_mutex,NULL)) {
+		//	printf("cannot create play mutex");
+		//}
 		
 		//mplayer = [[MusicPlayer alloc] initMusicPlayer];
 		//ModPlug_Settings *mpsettings=[mplayer getMPSettings];

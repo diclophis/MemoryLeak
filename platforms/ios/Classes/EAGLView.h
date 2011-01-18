@@ -8,6 +8,7 @@
 
 //#import <Foundation/Foundation.h>
 //#import <UIKit/UIKit.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import <QuartzCore/QuartzCore.h>
 
 #include "importgl.h"
@@ -45,9 +46,25 @@ typedef struct Engine Engine;
 	Engine *game;
 	int gameState;
 	
-	//MusicPlayer *mplayer;
 
+	//General infos
+	int mod_message_updated,mod_subsongs;
+	int mod_currentsub,mod_minsub,mod_maxsub;
+	int mp_datasize,numChannels;
+	int iCurrentTime,iModuleLength;
 
+	//for spectrum analyzer
+	short int **buffer_ana_cpy;
+		
+	//Modplug stuff
+	int *genRow,*genPattern,*playRow,*playPattern;	
+	char *mp_data;
+	int numPatterns,numSamples,numInstr;
+	
+	//AVFoundation
+	AudioQueueRef mAudioQueue;
+	AudioQueueBufferRef *mBuffers;
+	
 }
 
 

@@ -210,13 +210,13 @@ int PixelPusher::Simulate() {
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
-	float s = m_AudioBuffer[0];
-	/*
-	for (unsigned int i=0; i<m_AudioBufferSize / 128; i++) {
-		s += m_AudioBuffer[i + 96];
+	//float s = m_AudioBuffer[0];
+	float s = 0.0;
+	for (unsigned int i=0; i<m_AudioBufferSize / m_AudioDivisor; i++) {
+		s += m_AudioBuffer[i];
 	}
-	s /= (m_AudioBufferSize / 128);
-	*/
+	s /= (m_AudioBufferSize / m_AudioDivisor);
+	
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
 		
