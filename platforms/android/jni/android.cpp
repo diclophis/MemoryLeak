@@ -40,8 +40,8 @@ public:
     if (android_dumpAudio == NULL) {
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
     }
-    //int div = divisor * 2 * 2; //sizeof(short);
-    int div = 2; //sizeof(short);
+    int div = divisor * sizeof(short);
+    //int div = 2; //sizeof(short);
     int pos = (buffer_position % div);
     int len = min_buffer / div;
     int off = 0;

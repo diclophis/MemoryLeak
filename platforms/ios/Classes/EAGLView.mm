@@ -36,19 +36,17 @@ static short int **buffer_ana;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
-#define PLAYBACK_FREQ 44100
-#define SOUND_BUFFER_SIZE_SAMPLE 4096
+#define PLAYBACK_FREQ 8000
+#define SOUND_BUFFER_SIZE_SAMPLE 1024
 #define SOUND_BUFFER_NB 1
-#define SPECTRUM_BANDS 64
-#define SND_BUFFER_CURRENTTIME_FIX 1000
 
 class Callbacks {
-	static void *PumpAudio(void *b, int o, int d) {
-		//[[g_View mplayer] Pump];
-		//sleep(1.0);
-		memcpy(buffer_ana[buffer_ana_gen_ofs], b, SOUND_BUFFER_SIZE_SAMPLE);
+	static void *PumpAudio(void *b, int buffer_position, int d) {
+		int div = d * sizeof(short);
+		int len = (SOUND_BUFFER_SIZE_SAMPLE*2*2) / div;
+		//g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
+		memcpy(buffer_ana[buffer_ana_gen_ofs], b, len);
 		buffer_ana_flag[buffer_ana_play_ofs] = 1;
-		//buffer_ana[buffer_ana_gen_ofs],SOUND_BUFFER_SIZE_SAMPLE*2*2
 	};
 };
 
@@ -62,26 +60,13 @@ void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferR
 	[view iPhoneDrv_Update:mBuffer];
 }
 
-
-/************************************************/
-/* Handle phone calls interruptions             */
-/************************************************/ 
+ 
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	EAGLView *mplayer=(EAGLView *)inUserData;
 	if (interruptionState == kAudioSessionBeginInterruption) {
-		//mInterruptShoudlRestart=0;
-		//if ([mplayer isPlaying] && (mplayer.bGlobalAudioPause==0)) {
-		//	[mplayer Pause:YES];
-		//	mInterruptShoudlRestart=1;
-		//}
-	}
-    else if (interruptionState == kAudioSessionEndInterruption) {
+		//TODO: phone call interuption, pause game?
+	} else if (interruptionState == kAudioSessionEndInterruption) {
 		// if the interruption was removed, and the app had been playing, resume playback
-		//if (mInterruptShoudlRestart) {
-		//	[mplayer Pause:NO];
-		//	mInterruptShoudlRestart=0;
-		//}
-		
 		UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
 		AudioSessionSetProperty (
 								 kAudioSessionProperty_AudioCategory,
@@ -91,50 +76,33 @@ void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 		AudioSessionSetActive (true);
 	}
 }
+
 /*************************************************/
 /* Audio property listener                       */
 /*************************************************/
-void propertyListenerCallback (void                   *inUserData,                                 // 1
-							   AudioSessionPropertyID inPropertyID,                                // 2
-							   UInt32                 inPropertyValueSize,                         // 3
+void propertyListenerCallback (void                   *inUserData,                             
+							   AudioSessionPropertyID inPropertyID,                                
+							   UInt32                 inPropertyValueSize,                         
 							   const void             *inPropertyValue ) {
 	if (inPropertyID==kAudioSessionProperty_AudioRouteChange ) {
-		EAGLView *mplayer = (EAGLView *) inUserData; // 6
-		/*
-		if ([mplayer isPlaying]) {
-			CFDictionaryRef routeChangeDictionary = (CFDictionaryRef)inPropertyValue;        // 8
-			//CFStringRef 
-			NSString *oldroute = (NSString*)CFDictionaryGetValue (
-																  routeChangeDictionary,
-																  CFSTR (kAudioSession_AudioRouteChangeKey_OldRoute)
-																  );
-			//NSLog(@"Audio route changed : %@",oldroute);
-			if ([oldroute compare:@"Headphone"]==NSOrderedSame) {  // 9				
-				[mplayer Pause:YES];
-			}
+		EAGLView *mplayer = (EAGLView *) inUserData;		
+		CFDictionaryRef routeChangeDictionary = (CFDictionaryRef)inPropertyValue;
+		NSString *oldroute = (NSString*)CFDictionaryGetValue (
+															  routeChangeDictionary,
+															  CFSTR (kAudioSession_AudioRouteChangeKey_OldRoute)
+															  );
+		NSLog(@"Audio route changed : %@",oldroute);
+		if ([oldroute compare:@"Headphone"]==NSOrderedSame) {	
+			//TODO: pause on headphone?
 		}
-		*/
-	}
+	}	
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @implementation EAGLView
 
 
 @synthesize animating;
-//@synthesize mplayer;
 @dynamic animationFrameInterval;
 
 
@@ -221,7 +189,6 @@ void propertyListenerCallback (void                   *inUserData,              
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		UITouch* touch;
@@ -231,7 +198,6 @@ void propertyListenerCallback (void                   *inUserData,              
 		location = [touch locationInView:self];
 		location.y = location.y;
 		game->Hit(location.x, location.y, 1);
-		//[mplayer setTempo:(location.x + 50)];
 	}
 }
 
@@ -323,18 +289,19 @@ GLuint loadTexture(UIImage *image) {
 							 &sessionCategory
 							 );
 	
-	//Check if still required or not 
-	Float32 preferredBufferDuration = SOUND_BUFFER_SIZE_SAMPLE*1.0f/PLAYBACK_FREQ;                      // 1
-	AudioSessionSetProperty (                                     // 2
-							 kAudioSessionProperty_PreferredHardwareIOBufferDuration,
-							 sizeof (preferredBufferDuration),
-							 &preferredBufferDuration
-							 );
-	AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;    // 1
-	AudioSessionAddPropertyListener (                                 // 2
-									 routeChangeID,                                                 // 3
-									 propertyListenerCallback,                                      // 4
-									 self                                                       // 5
+	//TODO: Check if still required or not 
+	//Float32 preferredBufferDuration = SOUND_BUFFER_SIZE_SAMPLE * 1.0f/PLAYBACK_FREQ;
+	//AudioSessionSetProperty (                                     
+	//						 kAudioSessionProperty_PreferredHardwareIOBufferDuration,
+	//						 sizeof (preferredBufferDuration),
+	//						 &preferredBufferDuration
+	//						 );
+	
+	AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
+	AudioSessionAddPropertyListener (                                 
+									 routeChangeID,                                                
+									 propertyListenerCallback,                                      
+									 self                                                       
 									 );
 	AudioSessionSetActive(true);	
 	
@@ -349,27 +316,7 @@ GLuint loadTexture(UIImage *image) {
 		buffer_ana_flag[i]=0;
 	}
 	
-	/*
-	//Global
-	bGlobalShouldEnd=0;
-	bGlobalSoundGenInProgress=0;
-	optForceMono=0;
-	mod_subsongs=0;
-	mod_message_updated=0;
-	bGlobalAudioPause=0;
-	bGlobalIsPlaying=0;
-	mVolume=1.0f;
-	mLoopMode=1;
-	mPanningFactor=0.7f;
-	
-	//MODPLUG specific
-	mp_file=NULL;
-	genPattern=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
-	genRow=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
-	playPattern=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
-	playRow=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
-	
-	*/
+
 	[self iPhoneDrv_Init];
 	[self iPhoneDrv_PlayStart];
 

@@ -29,15 +29,10 @@ import android.media.AudioTrack;
 public class DemoActivity extends Activity {
 
   protected static AudioTrack at1;
-  public static void writeAudio(short[] bytes, int offset, int size) {
-    //Log.i("PLAYERTHREAD", "trying to write(bytes, offset=" + offset + ", size=" + size);
-    int written = at1.write(bytes, offset, size);
-    //Log.i("PLAYERTHREAD", "written=" + written);
-  }
 
-	//private InputStream modfileInStream;
-	//private byte[] modData;
-	//private int modsize;    // holds the size in bytes of the mod file
+  public static void writeAudio(short[] bytes, int offset, int size) {
+    int written = at1.write(bytes, offset, size);
+  }
 
 	private GLSurfaceView mGLView;
 
@@ -70,10 +65,14 @@ public class DemoActivity extends Activity {
     int[] off3;
     int[] len3;
 
+
     int rate = 8000;
     int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
     setMinBuffer(min);
     at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
+    short[] filler = new short[min];
+    at1.write(filler, 0, min);
+    at1.play();
     at1.setStereoVolume(1.0f, 1.0f);
 
     try {
@@ -132,7 +131,6 @@ public class DemoActivity extends Activity {
 
 		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
-      at1.play();
     } catch(java.io.IOException e) {
       System.out.println(e);
     }

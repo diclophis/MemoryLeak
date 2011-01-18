@@ -56,7 +56,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 		snprintf(path, sizeof(s), "%d", i);
 		m_Importer.ReadFile(path, m_PostProcessFlags);	
 		if (i>0) {
-			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
+			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 70));
 		} else {
 			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 		}
@@ -81,7 +81,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 	//4458 vs 1114
-	m_AudioDivisor = 1;
+	m_AudioDivisor = 8;
 
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);

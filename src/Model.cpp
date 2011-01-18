@@ -77,7 +77,7 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	
 	foofoo *ff = new foofoo;
-	int interp = 4;
+	int interp = 2;
 
 	if (a->mRootNode->mNumMeshes > 1) {
 		ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp) + 1;
@@ -278,7 +278,7 @@ float Model::Simulate(float dt, bool pushing) {
 	if (m_FooFoo->m_numFrames > 1) {
 
 		m_Life += dt;
-		float fps = 1.0;
+		float fps = 60.0;
 		if (m_Life > (1.0 / (float)fps)) {
 			//LOGV("%d\n", m_Frame);
 			m_Frame++;
