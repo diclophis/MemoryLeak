@@ -37,15 +37,19 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
 #define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE 5000
+#define SOUND_BUFFER_SIZE_SAMPLE 1024 / 4
 #define SOUND_BUFFER_NB 1
 
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
-		int div = d * sizeof(short);
+		int div = d;
 		int len = (SOUND_BUFFER_SIZE_SAMPLE) / div;
 		memcpy(buffer_ana[buffer_ana_gen_ofs], b, len);
 		buffer_ana_flag[buffer_ana_play_ofs] = 1;
+		
+		//memcpy(buffer_ana[buffer_ana_gen_ofs], b, SOUND_BUFFER_SIZE_SAMPLE);
+		//buffer_ana_flag[buffer_ana_play_ofs] = 1;
+		
 		return NULL;
 	};
 };
@@ -326,9 +330,10 @@ GLuint loadTexture(UIImage *image) {
     AudioStreamBasicDescription mDataFormat;
     UInt32 err;
     
-    /* We force this format for iPhone */
+    //setup audio stuff
     mDataFormat.mFormatID = kAudioFormatLinearPCM;
-    //mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    
+	mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
 	
 	mDataFormat.mSampleRate = PLAYBACK_FREQ;
     
@@ -424,37 +429,31 @@ GLuint loadTexture(UIImage *image) {
 	
 	int skip_queue=0;
 	mBuffer->mAudioDataByteSize = SOUND_BUFFER_SIZE_SAMPLE;
-	BOOL bGlobalAudioPause = NO;
-	
-	
-	if (bGlobalAudioPause) {
-		memset(mBuffer->mAudioData, 0, SOUND_BUFFER_SIZE_SAMPLE);
-		if (bGlobalAudioPause==2) skip_queue=1;//return 0;  //End of song
-    } else {
-		//consume another buffer
-		if (buffer_ana_flag[buffer_ana_play_ofs]) {
-			
-			//LOGV("pumped\n");
-			
-			memcpy((char*)mBuffer->mAudioData,buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE);
-			
-			memcpy(buffer_ana_cpy[buffer_ana_play_ofs],buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE);
-			
-			buffer_ana_flag[buffer_ana_play_ofs]=0;
-			buffer_ana_play_ofs++;
-			if (buffer_ana_play_ofs==SOUND_BUFFER_NB) {
-				buffer_ana_play_ofs=0;
-			}
-		} else {
-			//LOGV("underun\n");
-			//WARNING : not fast enough!! do we care?
-			//memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
+
+
+	//consume another buffer
+	if (buffer_ana_flag[buffer_ana_play_ofs]) {
+		
+		LOGV("pumped\n");
+		
+		memcpy((char*)mBuffer->mAudioData, buffer_ana[buffer_ana_play_ofs], SOUND_BUFFER_SIZE_SAMPLE);
+		
+		//memcpy(buffer_ana_cpy[buffer_ana_play_ofs],buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE);
+		
+		buffer_ana_flag[buffer_ana_play_ofs] = 0;
+		buffer_ana_play_ofs++;
+		if (buffer_ana_play_ofs == SOUND_BUFFER_NB) {
+			buffer_ana_play_ofs=0;
 		}
+	} else {
+		LOGV("underun\n");
+		//WARNING : not fast enough!! do we care?
+		//memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
 	}
-	AudioQueueEnqueueBuffer( mAudioQueue, mBuffer, 0, NULL);
-	if (bGlobalAudioPause==2) {
-		AudioQueueStop( mAudioQueue, FALSE );
-	}
+	
+	
+	AudioQueueEnqueueBuffer(mAudioQueue, mBuffer, 0, NULL);
+	
     return 0;
 }
 
