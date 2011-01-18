@@ -13,8 +13,6 @@
 
 #include "importgl.h"
 
-@class MusicPlayer;
-
 GLuint loadTexture(UIImage *image);
 
 struct Engine;
@@ -70,7 +68,20 @@ typedef struct Engine Engine;
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
-//@property (nonatomic, retain) MusicPlayer *mplayer;
+
+
+//Modplug stuff
+
+@property char *mp_data;
+@property int *genRow,*genPattern,*playRow,*playPattern;
+@property int numChannels,numPatterns,numSamples,numInstr;
+
+
+//for spectrum analyzer
+@property short int **buffer_ana_cpy;
+@property AudioQueueRef mAudioQueue;
+@property AudioQueueBufferRef *mBuffers;
+
 
 
 -(void)build;
@@ -79,6 +90,34 @@ typedef struct Engine Engine;
 -(void)drawView:(id)sender;
 -(void)startGame;
 -(void)parse:(const char*)json withLength:(size_t)length;
+
+
+
+
+
+
+
+
+
+
+
+-(void)initAudio;
+-(BOOL)iPhoneDrv_FillAudioBuffer:(AudioQueueBufferRef) mBuffer;
+-(BOOL)iPhoneDrv_Init;
+-(void)iPhoneDrv_Exit;
+-(BOOL)iPhoneDrv_PlayStart;
+-(void)iPhoneDrv_PlayStop;
+-(void)iPhoneDrv_PlayWaitStop;
+-(void)iPhoneDrv_Update:(AudioQueueBufferRef) mBuffer;
+-(int)getCurrentPlayedBufferIdx;
+
+
+
+
+
+
+
+
 
 
 @end

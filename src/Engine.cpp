@@ -81,7 +81,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 	//4458 vs 1114
-	m_AudioDivisor = 8;
+	m_AudioDivisor = 1;
 
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
@@ -128,8 +128,6 @@ void Engine::WaitAudioSync() {
 
 
 int Engine::RunThread() {
-
-	sleep(3);
 	
 	Build();
 	
