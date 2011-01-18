@@ -37,14 +37,13 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
 #define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE 1024
+#define SOUND_BUFFER_SIZE_SAMPLE 4096
 #define SOUND_BUFFER_NB 1
 
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
-		int div = d * sizeof(short);
-		int len = (SOUND_BUFFER_SIZE_SAMPLE*2*2) / div;
-		//g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
+		int div = d;
+		int len = (SOUND_BUFFER_SIZE_SAMPLE) / div;
 		memcpy(buffer_ana[buffer_ana_gen_ofs], b, len);
 		buffer_ana_flag[buffer_ana_play_ofs] = 1;
 	};
@@ -55,7 +54,7 @@ class Callbacks {
 
 
 void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer) {
-	LOGV("iPhoneDrv_AudioCallback\n");
+	//LOGV("iPhoneDrv_AudioCallback\n");
 	EAGLView *view=(EAGLView *)data;
 	[view iPhoneDrv_Update:mBuffer];
 }
@@ -289,13 +288,15 @@ GLuint loadTexture(UIImage *image) {
 							 &sessionCategory
 							 );
 	
-	//TODO: Check if still required or not 
-	//Float32 preferredBufferDuration = SOUND_BUFFER_SIZE_SAMPLE * 1.0f/PLAYBACK_FREQ;
-	//AudioSessionSetProperty (                                     
-	//						 kAudioSessionProperty_PreferredHardwareIOBufferDuration,
-	//						 sizeof (preferredBufferDuration),
-	//						 &preferredBufferDuration
-	//						 );
+	//TODO: Check if still required or not
+	/*
+	Float32 preferredBufferDuration = SOUND_BUFFER_SIZE_SAMPLE * 1.0f/PLAYBACK_FREQ;
+	AudioSessionSetProperty (                                     
+							 kAudioSessionProperty_PreferredHardwareIOBufferDuration,
+							 sizeof (preferredBufferDuration),
+							 &preferredBufferDuration
+							 );
+	*/
 	
 	AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
 	AudioSessionAddPropertyListener (                                 
@@ -311,22 +312,18 @@ GLuint loadTexture(UIImage *image) {
 	buffer_ana_cpy=(short int**)malloc(SOUND_BUFFER_NB*sizeof(unsigned short int *));
 	buffer_ana_subofs=0;
 	for (int i=0;i<SOUND_BUFFER_NB;i++) {
-		buffer_ana[i]=(short int *)malloc(SOUND_BUFFER_SIZE_SAMPLE*2*2);
-		buffer_ana_cpy[i]=(short int *)malloc(SOUND_BUFFER_SIZE_SAMPLE*2*2);
+		buffer_ana[i]=(short int *)malloc(SOUND_BUFFER_SIZE_SAMPLE);
+		buffer_ana_cpy[i]=(short int *)malloc(SOUND_BUFFER_SIZE_SAMPLE);
 		buffer_ana_flag[i]=0;
 	}
-	
 
 	[self iPhoneDrv_Init];
 	[self iPhoneDrv_PlayStart];
-
 }
 
 
-
-
 -(BOOL) iPhoneDrv_Init {
-	LOGV("iPhoneDrv_Init\n");
+	//LOGV("iPhoneDrv_Init\n");
 
     AudioStreamBasicDescription mDataFormat;
     UInt32 err;
@@ -340,7 +337,7 @@ GLuint loadTexture(UIImage *image) {
     
 	mDataFormat.mBitsPerChannel = 16;
     
-	mDataFormat.mChannelsPerFrame = 2;
+	mDataFormat.mChannelsPerFrame = 1;
     
     mDataFormat.mBytesPerFrame = (mDataFormat.mBitsPerChannel>>3) * mDataFormat.mChannelsPerFrame;
 	
@@ -360,7 +357,7 @@ GLuint loadTexture(UIImage *image) {
     mBuffers = (AudioQueueBufferRef*)malloc( sizeof(AudioQueueBufferRef) * SOUND_BUFFER_NB );
     for (int i=0; i<SOUND_BUFFER_NB; i++) {
 		AudioQueueBufferRef mBuffer;
-		err = AudioQueueAllocateBuffer( mAudioQueue, SOUND_BUFFER_SIZE_SAMPLE*2*2, &mBuffer );
+		err = AudioQueueAllocateBuffer( mAudioQueue, SOUND_BUFFER_SIZE_SAMPLE, &mBuffer );
 		
 		mBuffers[i]=mBuffer;
     }
@@ -374,7 +371,6 @@ GLuint loadTexture(UIImage *image) {
 
 -(void) iPhoneDrv_Exit {
 	LOGV("iPhoneDrv_Exit\n");
-
     AudioQueueDispose( mAudioQueue, true );
     free( mBuffers );
 }
@@ -383,124 +379,84 @@ GLuint loadTexture(UIImage *image) {
 	LOGV("iPhoneDrv_PlayStart\n");
 
     UInt32 err;
-    UInt32 i;
-	
-    /*
-     * Enqueue all the allocated buffers before starting the playback.
-     * The audio callback will be called as soon as one buffer becomes
-     * available for filling.
-     */
-	
-	//BOOL mQueueIsBeingStopped = FALSE;
-	
+    UInt32 i;	
+   
+	// Enqueue all the allocated buffers before starting the playback.
+	// The audio callback will be called as soon as one buffer becomes
+	// available for filling.
+
 	buffer_ana_gen_ofs=buffer_ana_play_ofs=0;
 	buffer_ana_subofs=0;
 	for (int i=0;i<SOUND_BUFFER_NB;i++) {
 		buffer_ana_flag[i]=0;
-		//playRow[i]=playPattern[i]=genRow[i]=genPattern[i]=0;
-		memset(buffer_ana[i],0,SOUND_BUFFER_SIZE_SAMPLE*2*2);
-		memset(buffer_ana_cpy[i],0,SOUND_BUFFER_SIZE_SAMPLE*2*2);		
+		memset(buffer_ana[i],0,SOUND_BUFFER_SIZE_SAMPLE);
+		memset(buffer_ana_cpy[i],0,SOUND_BUFFER_SIZE_SAMPLE);		
 	}
-	//sampleVolume=256;
     for (i=0; i<SOUND_BUFFER_NB; i++) {
-		memset(mBuffers[i]->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE*2*2);
-		mBuffers[i]->mAudioDataByteSize = SOUND_BUFFER_SIZE_SAMPLE*2*2;
-		AudioQueueEnqueueBuffer( mAudioQueue, mBuffers[i], 0, NULL);
-		//		[self iPhoneDrv_FillAudioBuffer:mBuffers[i]];
-		
+		memset(mBuffers[i]->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);
+		mBuffers[i]->mAudioDataByteSize = SOUND_BUFFER_SIZE_SAMPLE;
+		AudioQueueEnqueueBuffer( mAudioQueue, mBuffers[i], 0, NULL);		
     }
-	//bGlobalAudioPause=0;	
-    /* Start the Audio Queue! */
-	//AudioQueuePrime( mAudioQueue, 0,NULL );
-    err = AudioQueueStart( mAudioQueue, NULL );
-	
+    err = AudioQueueStart(mAudioQueue, NULL);
     return 1;
 }
 
+
 -(void) iPhoneDrv_PlayWaitStop {
 	LOGV("iPhoneDrv_PlayWaitStop\n");
-
-	//int counter=0;
-    //mQueueIsBeingStopped = TRUE;
-	//bGlobalAudioPause=2;
 	AudioQueueStop( mAudioQueue, FALSE );
-	//while ([self isEndReached]==NO) {
-	//	[NSThread sleepForTimeInterval:DEFAULT_WAIT_TIME_MS];
-	//	counter++;
-	//	if (counter*DEFAULT_WAIT_TIME_MS>2) break;
-	//}
 	AudioQueueReset( mAudioQueue );	
-    //mQueueIsBeingStopped = FALSE;
 }
-
 
 
 -(void) iPhoneDrv_PlayStop {
 	LOGV("iPhoneDrv_PlayStop\n");
-
-    //mQueueIsBeingStopped = TRUE;
-	//bGlobalAudioPause=2;
     AudioQueueStop( mAudioQueue, TRUE );
 	AudioQueueReset( mAudioQueue );	
-    //mQueueIsBeingStopped = FALSE;
 }
 
 
 -(void) iPhoneDrv_Update:(AudioQueueBufferRef) mBuffer {   
-	LOGV("iPhoneDrv_Update\n");
-
-    /* the real processing takes place in FillAudioBuffer */
+	//LOGV("iPhoneDrv_Update\n");
+	// real processing in iPhoneDrv_FillAudioBuffer
 	[self iPhoneDrv_FillAudioBuffer:mBuffer];
 }
 
 -(BOOL) iPhoneDrv_FillAudioBuffer:(AudioQueueBufferRef) mBuffer {
-	LOGV("iPhoneDrv_FillAudioBuffer\n");
+	//LOGV("iPhoneDrv_FillAudioBuffer\n");
 	
 	int skip_queue=0;
-	mBuffer->mAudioDataByteSize = SOUND_BUFFER_SIZE_SAMPLE*2*2;
+	mBuffer->mAudioDataByteSize = SOUND_BUFFER_SIZE_SAMPLE;
 	BOOL bGlobalAudioPause = NO;
 	
 	
 	if (bGlobalAudioPause) {
-		memset(mBuffer->mAudioData, 0, SOUND_BUFFER_SIZE_SAMPLE*2*2);
+		memset(mBuffer->mAudioData, 0, SOUND_BUFFER_SIZE_SAMPLE);
 		if (bGlobalAudioPause==2) skip_queue=1;//return 0;  //End of song
     } else {
 		//consume another buffer
 		if (buffer_ana_flag[buffer_ana_play_ofs]) {
-			//bGlobalSoundHasStarted++;
-			//if (buffer_ana_flag[buffer_ana_play_ofs]&2) { //changed currentTime
-			//	iCurrentTime=mNeedSeekTime;
-			//	mNeedSeek=0;
-			//	bGlobalSeekProgress=0;
-			//}
 			
-			//playPattern[buffer_ana_play_ofs]=genPattern[buffer_ana_play_ofs];
-			//playRow[buffer_ana_play_ofs]=genRow[buffer_ana_play_ofs];
+			//LOGV("pumped\n");
 			
-			iCurrentTime+=1000*SOUND_BUFFER_SIZE_SAMPLE/PLAYBACK_FREQ;
+			memcpy((char*)mBuffer->mAudioData,buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE);
 			
-
-					
-					
-			memcpy((char*)mBuffer->mAudioData,buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE*2*2);
-			
-			memcpy(buffer_ana_cpy[buffer_ana_play_ofs],buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE*2*2);
+			memcpy(buffer_ana_cpy[buffer_ana_play_ofs],buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE);
 			
 			buffer_ana_flag[buffer_ana_play_ofs]=0;
 			buffer_ana_play_ofs++;
-			if (buffer_ana_play_ofs==SOUND_BUFFER_NB) buffer_ana_play_ofs=0;
+			if (buffer_ana_play_ofs==SOUND_BUFFER_NB) {
+				buffer_ana_play_ofs=0;
+			}
 		} else {
-			memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE*2*2);  //WARNING : not fast enough!!
+			//LOGV("underun\n");
+			//WARNING : not fast enough!! do we care?
+			memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
 		}
 	}
-	if (!skip_queue) {
-		AudioQueueEnqueueBuffer( mAudioQueue, mBuffer, 0, NULL);
-		if (bGlobalAudioPause==2) {
-			AudioQueueStop( mAudioQueue, FALSE );
-		}
-	} else {
-		buffer_ana_play_ofs++;
-		if (buffer_ana_play_ofs==SOUND_BUFFER_NB) buffer_ana_play_ofs=0;
+	AudioQueueEnqueueBuffer( mAudioQueue, mBuffer, 0, NULL);
+	if (bGlobalAudioPause==2) {
+		AudioQueueStop( mAudioQueue, FALSE );
 	}
     return 0;
 }
@@ -508,7 +464,6 @@ GLuint loadTexture(UIImage *image) {
 
 
 -(void)startGame {
-	
 	if (game != NULL) {
 		models.clear();
 		textures.clear();
