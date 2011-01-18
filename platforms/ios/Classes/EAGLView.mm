@@ -34,7 +34,7 @@ static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
 
 class Callbacks {
-	static void *PumpAudio(void *, int) {
+	static void *PumpAudio(void *, int, int) {
 		//[[g_View mplayer] Pump];
 		//sleep(1.0);
 	};

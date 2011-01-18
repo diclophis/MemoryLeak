@@ -26,7 +26,7 @@ static int min_buffer;
 
 class Callbacks {
 public:
-  static void *PumpAudio(void *buffer, int buffer_position) {
+  static void *PumpAudio(void *buffer, int buffer_position, int divisor) {
     if (g_Env == NULL) {
       g_Vm->AttachCurrentThread(&g_Env, NULL);
     }
@@ -40,7 +40,7 @@ public:
     if (android_dumpAudio == NULL) {
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
     }
-    int div = 2 * 16;
+    int div = divisor * sizeof(short);
     int pos = (buffer_position % div);
     int len = min_buffer / div;
     int off = 0;

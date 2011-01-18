@@ -80,8 +80,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glLoadIdentity();
 
 
-	//4458
-	//
+	//4458 vs 1114
+	m_AudioDivisor = 1;
+
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
@@ -94,7 +95,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 }
 
 
-void Engine::CreateThread(void *(*sr)(void *, int)) {
+void Engine::CreateThread(void *(*sr)(void *, int, int)) {
 	start_routine = sr;
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
 }
@@ -174,12 +175,11 @@ int Engine::RunThread() {
 		WaitAudioSync();
 		
 		if (m_IsPushingAudio) {
-			int div = 16;
-			int len = m_AudioBufferSize / div;
+			int len = m_AudioBufferSize / m_AudioDivisor;
 			ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-			start_routine(m_AudioBuffer, buffer_position);
+			start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
 		} else {
-			start_routine(m_AudioSilenceBuffer, buffer_position);
+			start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
 		}
 		
 		WaitVsync();

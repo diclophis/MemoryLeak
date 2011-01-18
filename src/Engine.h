@@ -43,7 +43,7 @@ public:
   void PauseThread();
 
 
-	void CreateThread(void *(*sr)(void *, int));
+	void CreateThread(void *(*sr)(void *, int, int));
 	static void *EnterThread(void *);
 	
 
@@ -91,8 +91,10 @@ public:
   int m_AudioBufferSize;
   unsigned char *m_AudioBuffer;
   unsigned char *m_AudioSilenceBuffer;
-	void *(* start_routine)(void *, int);
+	void *(* start_routine)(void *, int, int);
 
   bool m_IsPushingAudio;
+	
+	int m_AudioDivisor;
 
 };
