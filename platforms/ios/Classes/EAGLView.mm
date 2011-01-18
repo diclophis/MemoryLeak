@@ -37,7 +37,7 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
 #define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE 1024 / 3
+#define SOUND_BUFFER_SIZE_SAMPLE 4458
 #define SOUND_BUFFER_NB 1
 
 class Callbacks {

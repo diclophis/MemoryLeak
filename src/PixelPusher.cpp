@@ -55,7 +55,7 @@ void PixelPusher::Build() {
 
 	m_AtlasSprite->SetPosition(100.0, 100.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(5);
+	m_SpriteGun->Build(50);
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 2.0, "", 0, 4, 2.25));
@@ -63,7 +63,7 @@ void PixelPusher::Build() {
 		m_IceComets[i]->SetVelocity(0.0, 0.0);
 		m_IceComets[i]->m_IsAlive = false;
 		m_IceComets[i]->m_IsReady = true;
-		m_IceComets[i]->Build(5);
+		m_IceComets[i]->Build(50);
 	}
 }
 
