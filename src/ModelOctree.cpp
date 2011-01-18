@@ -68,7 +68,7 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 	
 	//LOGV("distance %f\n", look_distance);
 
-	if (look_distance > 3) {
+	if (look_distance > 10) {
 		return;
 	}
 	

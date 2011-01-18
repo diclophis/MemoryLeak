@@ -29,6 +29,8 @@ public:
 	int m_CircleIndex;
 	int m_AiIndex;
 	int m_LastAiSolved;
+	float m_LastPumpedComet;
+	float m_PumpCometTimeout;
 	
 	AtlasSprite *m_AtlasSprite;
 	

@@ -43,24 +43,27 @@ void PixelPusher::Build() {
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
 	
-	m_NumComets = 4;
+	m_NumComets = 16;
 	m_CometStart = 300.0;
-	m_CometStop = -200.0;
-	m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
+	//m_CometStop = -1000.0;
+	//m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
+	m_LastPumpedComet = 0.0;
+	m_PumpCometTimeout = 1.0 / 8.0;
 	
 	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 2, 2, "", 0, 4, 1.0);
-	m_SpriteGun = new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 0.15, "", 0, 4, 1.0);
+	m_SpriteGun = new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 0.1, "", 0, 4, 0.1);
 
 	m_AtlasSprite->SetPosition(100.0, 100.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(1);
+	m_SpriteGun->Build(5);
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 4.0, "", 0, 4, 1.0));
-		m_IceComets[i]->SetPosition(0.0, (i * m_CometDelta) + m_CometStart);
-		m_IceComets[i]->SetVelocity(0.0, -600.0);
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 2.0, "", 0, 4, 2.25));
+		m_IceComets[i]->SetPosition(0.0, 1000.0);
+		m_IceComets[i]->SetVelocity(0.0, 0.0);
 		m_IceComets[i]->m_IsAlive = false;
-		m_IceComets[i]->Build(1);
+		m_IceComets[i]->m_IsReady = true;
+		m_IceComets[i]->Build(5);
 	}
 }
 
@@ -208,44 +211,55 @@ int PixelPusher::Simulate() {
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
 	float s = 0.0;
-	for (unsigned int i=0; i<m_AudioBufferSize / 256; i++) {
+	for (unsigned int i=0; i<m_AudioBufferSize / 128; i++) {
 		s += m_AudioBuffer[i];
 	}
-	s /= (m_AudioBufferSize / 256);
-	int div = 8;
+	s /= (m_AudioBufferSize / 128);
+	//float s = m_AudioBuffer[m_AudioBufferSize / 2];
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
+		
+		if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
+			m_IceComets[i]->m_IsAlive = false;
+			m_IceComets[i]->m_IsReady = true;
+			m_IceComets[i]->m_Life = 0.0;
+			m_IceComets[i]->SetPosition(0.0, 1000.0);
+			m_IceComets[i]->SetVelocity(0.0, 0.0);
+			m_IceComets[i]->Reset();
+		}
+	
 		if (m_IceComets[i]->m_IsAlive) {
-			if ((m_IceComets[i]->m_Life > m_IceComets[i]->m_MaxLife)) {
-				m_IceComets[i]->m_IsAlive = false;
-				m_IceComets[i]->m_Life = 0.0;
-				m_IceComets[i]->Reset();
-			} else {
-				m_IceComets[i]->m_EmitVelocity[0] = randf() * 100.0;
-				m_IceComets[i]->m_EmitVelocity[1] = randf() * 100.0;
-				m_IsPushingAudio = true;
-			}
+			m_IceComets[i]->m_EmitVelocity[0] = randf() * 150.0;
+			m_IceComets[i]->m_EmitVelocity[1] = randf() * 150.0;
+			m_IsPushingAudio = true;
+		}
+
+		float dx = fastAbs(m_IceComets[i]->m_Position[0] - m_AtlasSprite->m_Position[0]);
+		float dy = fastAbs(m_IceComets[i]->m_Position[1] - m_AtlasSprite->m_Position[1]);
+		if (dy < 40 && dx < 40) {
+			m_IceComets[i]->Fire();
 		} else {
-			float dx = fastAbs(m_IceComets[i]->m_Position[0] - m_AtlasSprite->m_Position[0]);
-			float dy = fastAbs(m_IceComets[i]->m_Position[1] - m_AtlasSprite->m_Position[1]);
-			if (dy < 50 && dx < 50) {
-				m_IceComets[i]->Fire();
+			if (m_IceComets[i]->m_IsReady && (m_SimulationTime - m_LastPumpedComet) > m_PumpCometTimeout) {
+				//LOGV("pump %d\n", i);
+				m_LastPumpedComet = m_SimulationTime;
+				if (m_IsPushingAudio) {
+					m_IceComets[i]->SetPosition((s - 125.0), m_CometStart);
+				} else {
+					m_IceComets[i]->SetPosition(0.0, m_CometStart);
+				}
+				m_IceComets[i]->SetVelocity(0.0, -300.0);
+				m_IceComets[i]->m_Life = 0.0;
+				m_IceComets[i]->m_IsAlive = false;
+				m_IceComets[i]->m_IsReady = false;
+				m_IceComets[i]->Reset();
 			}
 		}
 		
-		if (m_IceComets[i]->m_Position[1] < m_CometStop) {			
-			if (m_IsPushingAudio) {
-				m_IceComets[i]->SetPosition((s - 125.0), m_CometStart);
-			} else {
-				m_IceComets[i]->SetPosition(0.0, m_CometStart);
-			}
-
-			m_IceComets[i]->Reset();
-		}
 	}
 	
 	if (!m_IsPushingAudio) {
+		LOGV("\n%f\n", randf());
 		ModPlug_Seek(m_Sounds[0], 0);
 	}
 
@@ -343,7 +357,7 @@ int PixelPusher::Simulate() {
 
 	m_CameraRotation += DEGREES_TO_RADIANS(0.5);
 	
-	m_CameraHeight = 5.0 + (fastSinf(m_SimulationTime) * 5.0); 
+	m_CameraHeight = 5.0 + (fastSinf(m_SimulationTime * 0.5) * 5.0); 
 	float m_CameraDiameter = 20.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
@@ -352,10 +366,10 @@ int PixelPusher::Simulate() {
 	m_CameraTarget[1] = 0.0;
 	m_CameraTarget[2] = 0.0;
 	
-	int ct = fastAbs(randf() * 5);
-	m_CameraTarget[0] = fastSinf(m_SimulationTime) + 10.0;//m_Models[ct]->m_Position[0];
+	//int ct = fastAbs(randf() * 5);
+	m_CameraTarget[0] = fastSinf(m_SimulationTime * 0.5) + 10.0;//m_Models[ct]->m_Position[0];
 	//m_CameraTarget[1] = fastSinf(m_SimulationTime * 100.0);//m_Models[ct]->m_Position[1];
-	m_CameraTarget[2] = fastSinf(m_SimulationTime) + 10.0;//m_Models[ct]->m_Position[2];
+	m_CameraTarget[2] = fastSinf(m_SimulationTime * 0.5) + 10.0;//m_Models[ct]->m_Position[2];
 	
 	m_CameraPosition[0] = cx;
 	m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;

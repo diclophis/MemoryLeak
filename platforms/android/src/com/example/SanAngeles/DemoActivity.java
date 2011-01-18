@@ -73,11 +73,10 @@ public class DemoActivity extends Activity {
     int rate = 8000;
     int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
     setMinBuffer(min);
-    Log.i("PLAYERTHREAD", "minbuffer=" + min);
-    short[] fill = new short[min * 2];
+    //Log.i("PLAYERTHREAD", "minbuffer=" + min);
+    //short[] fill = new short[min * 1024];
     at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
-    at1.play();
-    at1.write(fill, 0, min * 2);
+    //at1.write(fill, 0, min * 1024);
     at1.setStereoVolume(1.0f, 1.0f);
 
     try {
@@ -134,9 +133,9 @@ public class DemoActivity extends Activity {
         }
       }
 
-      System.out.println("FUUUUUUUUUUUUUUUU" + sound_count_actual);
-
 		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
+
+      at1.play();
     } catch(java.io.IOException e) {
       System.out.println(e);
     }

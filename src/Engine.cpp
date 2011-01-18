@@ -56,7 +56,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 		snprintf(path, sizeof(s), "%d", i);
 		m_Importer.ReadFile(path, m_PostProcessFlags);	
 		if (i>0) {
-			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 50));
+			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 		} else {
 			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 		}
@@ -165,8 +165,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	int warm = 0;
-	double interp = 2.0;
+	double interp = 1.0;
 
 	while (m_GameState != 0) {
 		
@@ -175,33 +174,28 @@ int Engine::RunThread() {
 		averageWait = t2 - t1;
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-		
-		if (averageWait > (1.0 / 19.0)) {
-			LOGV("slow avg: %f %f\n", averageWait, 1.0 / 19.0);
+			
+		if (averageWait > (1.0 / 15.0)) {
+			LOGV("slow\n");
 		}
 		
-		if (warm++ > 100) {
-			
-			if (averageWait > (1.0 / 19.0)) {
-				LOGV("slow after warmup\n");
-			}
-			
-			for (unsigned int i=0; i<interp; i++) {
-				m_DeltaTime = averageWait / interp;
-				m_SimulationTime += (m_DeltaTime);
-				m_GameState = Simulate();
-			}
-
-			if (m_IsPushingAudio) {
-				int div = 1;
-				int len = m_AudioBufferSize / div;
-				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-				start_routine(m_AudioBuffer, buffer_position);
-			} else {
-				start_routine(m_AudioSilenceBuffer, buffer_position);
-			}
+		for (unsigned int i=0; i<interp; i++) {
+			m_DeltaTime = averageWait / interp;
+			m_SimulationTime += (m_DeltaTime);
+			m_GameState = Simulate();
+		}		
+		
+		//WaitAudioSync();
+		
+		if (m_IsPushingAudio) {
+			int div = 1;
+			int len = m_AudioBufferSize / div;
+			ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+			start_routine(m_AudioBuffer, buffer_position);
+		} else {
+			start_routine(m_AudioSilenceBuffer, buffer_position);
 		}
-
+		
 		WaitVsync();
 	}	
 	return m_GameState;
@@ -221,7 +215,7 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			gluPerspective(20.0 + fastAbs(fastSinf(m_SimulationTime) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
+			gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{

@@ -10,6 +10,7 @@ public:
 		m_ShotStart = s2;
 		m_ShotEnd = e2;
 		m_ShotMaxLife = m2;
+		m_IsReady = false;
 	};
 
 	void Build(int n);
@@ -32,6 +33,8 @@ public:
 		m_EmitVelocity[0] = x;
 		m_EmitVelocity[1] = y;
 	}
+	
+	bool m_IsReady;
 	
 	void Fire() {
 		m_IsAlive = true;

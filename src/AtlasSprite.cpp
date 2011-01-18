@@ -38,8 +38,8 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	m_Sprites = new Sprite[m_Count];
 	float tdx = 1.0 / (float)m_SpritesPerRow;
 	float tdy = 1.0 / (float)m_Rows;
-	float vdx = 100.0;
-	float vdy = 100.0;
+	float vdx = 50.0;
+	float vdy = 50.0;
 	float texture_x = 0.0;
 	float texture_y = 0.0;
 	unsigned int i;

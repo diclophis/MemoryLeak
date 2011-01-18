@@ -22,8 +22,6 @@ void SpriteGun::Build(int n) {
 
 
 void SpriteGun::Reset() {
-	m_IsAlive = false;
-	m_Life = 0.0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		ResetParticle(idx);
 	}
@@ -65,8 +63,8 @@ void SpriteGun::Simulate(float deltaTime) {
 				
 				//m_AtlasSprites[i]->m_Velocity[1] -= 60.0;
 				
-				m_AtlasSprites[i]->m_Scale[0] -= 0.030;
-				m_AtlasSprites[i]->m_Scale[1] -= 0.030;
+				m_AtlasSprites[i]->m_Scale[0] -= 0.01;
+				m_AtlasSprites[i]->m_Scale[1] -= 0.01;
 				if (m_AtlasSprites[i]->m_Scale[0] < 0.25) {
 					m_AtlasSprites[i]->m_Scale[0] = 0.25;
 					m_AtlasSprites[i]->m_Scale[1] = 0.25;
