@@ -444,6 +444,8 @@ void PixelPusher::Load(int level_index) {
 			
 			if (current[3] == 8) {
 				ii = 1;
+			} else if (current[3] == 0) {
+				ii = 2;
 			} else {
 			}
 			
@@ -489,12 +491,13 @@ void PixelPusher::Load(int level_index) {
 					break;
 
 				case 0:
-					m_TargetIndex = m_TerrainEndIndex;
-					t = 3;
+					//m_TargetIndex = m_TerrainEndIndex;
+					t = 5;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
 					
-					m_Models[m_TerrainEndIndex]->SetScale(0.75, 0.75, 0.75);
+					//m_Models[m_TerrainEndIndex]->SetScale(0.75, 0.75, 0.75);
+					m_Models[m_TerrainEndIndex]->SetScale(0.05, 0.05, 0.05);
 
 					break;
 					

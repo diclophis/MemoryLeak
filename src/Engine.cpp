@@ -56,7 +56,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 		snprintf(path, sizeof(s), "%d", i);
 		m_Importer.ReadFile(path, m_PostProcessFlags);	
 		if (i>0) {
-			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 70));
+			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 100));
 		} else {
 			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 		}
