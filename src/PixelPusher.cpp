@@ -356,8 +356,8 @@ int PixelPusher::Simulate() {
 
 	m_CameraRotation += DEGREES_TO_RADIANS(0.5);
 	
-	m_CameraHeight = 5.0 + (fastSinf(m_SimulationTime * 0.5) * 5.0); 
-	float m_CameraDiameter = 20.0;
+	m_CameraHeight = 4.0 + (fastSinf(m_SimulationTime * 0.5) * 5.0); 
+	float m_CameraDiameter = 8.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
@@ -367,7 +367,7 @@ int PixelPusher::Simulate() {
 	
 	//int ct = fastAbs(randf() * 5);
 	m_CameraTarget[0] = fastSinf(m_SimulationTime * 0.5) + 10.0;//m_Models[ct]->m_Position[0];
-	//m_CameraTarget[1] = fastSinf(m_SimulationTime * 100.0);//m_Models[ct]->m_Position[1];
+	m_CameraTarget[1] = 4.0;
 	m_CameraTarget[2] = fastSinf(m_SimulationTime * 0.5) + 10.0;//m_Models[ct]->m_Position[2];
 	
 	m_CameraPosition[0] = cx;
@@ -444,6 +444,8 @@ void PixelPusher::Load(int level_index) {
 			
 			if (current[3] == 8) {
 				ii = 1;
+			} else if (current[3] == 1) {
+				ii = 3;
 			} else if (current[3] == 0) {
 				ii = 2;
 			} else {
@@ -487,6 +489,14 @@ void PixelPusher::Load(int level_index) {
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
 
 					m_Models[m_TerrainEndIndex]->SetScale(0.05, 0.05, 0.05);
+
+					break;
+
+				case 1:
+					t = 6;
+					height += 4;
+					m_Models[m_TerrainEndIndex]->m_IsStuck = true;
+					m_Models[m_TerrainEndIndex]->SetScale(0.015, 0.015, 0.015);
 
 					break;
 

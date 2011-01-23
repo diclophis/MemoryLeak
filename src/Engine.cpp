@@ -55,11 +55,11 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 		char path[128];
 		snprintf(path, sizeof(s), "%d", i);
 		m_Importer.ReadFile(path, m_PostProcessFlags);	
-		if (i>0) {
-			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 100));
-		} else {
+		//if (i>0) {
+		//	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 100));
+		//} else {
 			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
-		}
+		//}
 		m_Importer.FreeScene();
 	}
 	
@@ -69,10 +69,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glMatrixMode(GL_MODELVIEW);
 	
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_NORMALIZE);
+	
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_ONE, GL_ONE);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//glEnableClientState(GL_NORMAL_ARRAY);
@@ -81,7 +80,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 	//4458 vs 1114
-	m_AudioDivisor = 16;
+	m_AudioDivisor = 2;
 
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
@@ -160,7 +159,7 @@ int Engine::RunThread() {
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 			
-		if (averageWait > (1.0 / 15.0)) {
+		if (averageWait > (1.0 / 25.0)) {
 			LOGV("slow\n");
 		}
 		
@@ -190,6 +189,7 @@ void Engine::DrawScreen(float rotation) {
 	pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		//glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glMatrixMode(GL_PROJECTION);
@@ -213,7 +213,11 @@ void Engine::DrawScreen(float rotation) {
 		}
 		glPopMatrix();
 		glDisable(GL_DEPTH_TEST);
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_ONE, GL_ONE);
 		glMatrixMode(GL_PROJECTION);
+
 		glPushMatrix();
 		{
 			glLoadIdentity();
