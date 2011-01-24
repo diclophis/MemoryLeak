@@ -48,9 +48,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_GameState = -1;
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	//m_FooFoos.resize(m_ModelFoos->size());
-
 	
-	 int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
+	int m_PostProcessFlags =  aiProcess_ImproveCacheLocality | aiProcess_GenNormals; //aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 	for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
 		char path[128];
 		snprintf(path, sizeof(s), "%d", i);
@@ -80,7 +79,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 	//4458 vs 1114
-	m_AudioDivisor = 2;
+	m_AudioDivisor = 4;
 
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
@@ -159,12 +158,12 @@ int Engine::RunThread() {
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 			
-		if (averageWait > (1.0 / 25.0)) {
-			LOGV("slow\n");
+		if (averageWait > (1.0 / 30.0)) {
+			//LOGV("slow\n");
 		}
 		
 		for (unsigned int i=0; i<interp; i++) {
-			m_DeltaTime = averageWait / interp;
+			m_DeltaTime = (averageWait / interp);
 			m_SimulationTime += (m_DeltaTime);
 			m_GameState = Simulate();
 		}		

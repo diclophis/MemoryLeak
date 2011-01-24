@@ -272,7 +272,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @brief Default value for the #AI_CONFIG_PP_ICL_PTCACHE_SIZE property
  */
 #ifndef PP_ICL_PTCACHE_SIZE
-#	define PP_ICL_PTCACHE_SIZE 12
+#	define PP_ICL_PTCACHE_SIZE 5000
 #endif
 
 // ---------------------------------------------------------------------------

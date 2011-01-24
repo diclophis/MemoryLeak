@@ -357,7 +357,7 @@ int PixelPusher::Simulate() {
 	m_CameraRotation += DEGREES_TO_RADIANS(0.5);
 	
 	m_CameraHeight = 4.0 + (fastSinf(m_SimulationTime * 0.5) * 5.0); 
-	float m_CameraDiameter = 8.0;
+	float m_CameraDiameter = 20.0;
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
