@@ -483,9 +483,6 @@
 		FCDE088B12D924A3004CE9B7 /* sndfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sndfile.cpp; sourceTree = "<group>"; };
 		FCDE088C12D924A3004CE9B7 /* sndmix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sndmix.cpp; sourceTree = "<group>"; };
 		FCDE088D12D924A3004CE9B7 /* tables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tables.h; sourceTree = "<group>"; };
-		FCDE091A12D92A2C004CE9B7 /* MusicPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MusicPlayer.h; sourceTree = "<group>"; };
-		FCDE091B12D92A2C004CE9B7 /* MusicPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MusicPlayer.mm; sourceTree = "<group>"; };
-		FCDE091D12D92A7E004CE9B7 /* ModizerConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModizerConstants.h; sourceTree = "<group>"; };
 		FCDE095012D92F17004CE9B7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		FCDE095212D92F17004CE9B7 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FCDFB0E012B1A7B400A0B4E1 /* AtlasSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtlasSprite.h; sourceTree = "<group>"; };
@@ -569,9 +566,6 @@
 		FC1417611285413100166578 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FCDE091D12D92A7E004CE9B7 /* ModizerConstants.h */,
-				FCDE091A12D92A2C004CE9B7 /* MusicPlayer.h */,
-				FCDE091B12D92A2C004CE9B7 /* MusicPlayer.mm */,
 				FC1417621285413100166578 /* EAGLView.h */,
 				FC1417631285413100166578 /* EAGLView.mm */,
 				FC1417641285413100166578 /* MemoryLeakAppDelegate.h */,

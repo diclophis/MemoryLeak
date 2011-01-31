@@ -36,9 +36,11 @@ static short int **buffer_ana;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
+
 #define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE (3000)
-#define SOUND_BUFFER_NB 1
+#define SOUND_BUFFER_SIZE_SAMPLE (1024)
+#define SOUND_BUFFER_NB 2
+
 
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
@@ -46,10 +48,6 @@ class Callbacks {
 		int len = (SOUND_BUFFER_SIZE_SAMPLE) / div;
 		memcpy(buffer_ana[buffer_ana_gen_ofs], b, len);
 		buffer_ana_flag[buffer_ana_play_ofs] = 1;
-		
-		//memcpy(buffer_ana[buffer_ana_gen_ofs], b, SOUND_BUFFER_SIZE_SAMPLE);
-		//buffer_ana_flag[buffer_ana_play_ofs] = 1;
-		
 		return NULL;
 	};
 };
@@ -276,6 +274,10 @@ GLuint loadTexture(UIImage *image) {
 
 
 
+
+
+
+
 -(void)initAudio {
 	AudioSessionInitialize (
 							NULL,
@@ -291,14 +293,14 @@ GLuint loadTexture(UIImage *image) {
 							 );
 	
 	//TODO: Check if still required or not
-	/*
-	Float32 preferredBufferDuration = SOUND_BUFFER_SIZE_SAMPLE * 1.0f/PLAYBACK_FREQ;
+	
+	Float32 preferredBufferDuration = 1.0f/30.0;
 	AudioSessionSetProperty (                                     
 							 kAudioSessionProperty_PreferredHardwareIOBufferDuration,
 							 sizeof (preferredBufferDuration),
 							 &preferredBufferDuration
 							 );
-	*/
+	
 	
 	AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
 	AudioSessionAddPropertyListener (                                 
@@ -433,22 +435,13 @@ GLuint loadTexture(UIImage *image) {
 
 	//consume another buffer
 	if (buffer_ana_flag[buffer_ana_play_ofs]) {
-		
-		//LOGV("pumped\n");
-		
 		memcpy((char*)mBuffer->mAudioData, buffer_ana[buffer_ana_play_ofs], SOUND_BUFFER_SIZE_SAMPLE);
-		
-		//memcpy(buffer_ana_cpy[buffer_ana_play_ofs],buffer_ana[buffer_ana_play_ofs],SOUND_BUFFER_SIZE_SAMPLE);
-		
 		buffer_ana_flag[buffer_ana_play_ofs] = 0;
 		buffer_ana_play_ofs++;
 		if (buffer_ana_play_ofs == SOUND_BUFFER_NB) {
 			buffer_ana_play_ofs=0;
 		}
 	} else {
-		//LOGV("underun\n");
-		//WARNING : not fast enough!! do we care?
-		//memset((char*)mBuffer->mAudioData,0,SOUND_BUFFER_SIZE_SAMPLE);  
 	}
 	
 	AudioQueueEnqueueBuffer(mAudioQueue, mBuffer, 0, NULL);

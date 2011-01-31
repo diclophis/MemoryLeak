@@ -216,9 +216,10 @@ void Model::Render() {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
 		}
 
-		//glDrawElements(GL_LINE_LOOP, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+		//m_FooFoo->m_
+		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 		
-		glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+		//glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
 		//glTranslatef(-m_Position[0],-m_Position[1],-m_Position[2]);
 		//glScalef(-m_Scale[0],-m_Scale[1],1.0 / m_Scale[2]);

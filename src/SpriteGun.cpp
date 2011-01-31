@@ -9,9 +9,7 @@
 
 
 void SpriteGun::Build(int n) {
-	m_EmitVelocity = new float[2];
-	m_EmitVelocity[0] = 0;
-	m_EmitVelocity[1] = 0;
+
 	m_NumParticles = n;
 	m_ShootInterval = 1.0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {

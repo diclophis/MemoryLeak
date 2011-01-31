@@ -43,27 +43,30 @@ void PixelPusher::Build() {
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
 	
-	m_NumComets = 16;
+	m_NumComets = 24;
 	m_CometStart = 300.0;
 	//m_CometStop = -1000.0;
 	//m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
 	m_LastPumpedComet = 0.0;
-	m_PumpCometTimeout = 1.0 / 4.0;
+	m_PumpCometTimeout = 1.0 / 6.0;
 	
-	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 2, 2, "", 0, 4, 1.0);
-	m_SpriteGun = new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 0.1, "", 0, 4, 0.1);
+	m_LastForcePumpedComet = 0.0;
+	m_PumpCometForceTimeout = 1.0;
+	
+	m_AtlasSprite = new AtlasSprite(m_Textures->at(0), 10, 10, "", 0, 60, 1.0);
+	m_SpriteGun = new SpriteGun(m_Textures->at(0), 10, 10, "", 0, 60, 5.0, "", 0, 60, 1.0);
 
 	m_AtlasSprite->SetPosition(100.0, 100.0);
 	m_SpriteGun->SetPosition(100.0, 100.0);
-	m_SpriteGun->Build(50);
+	m_SpriteGun->Build(0);
 	
 	for (unsigned int i=0; i<m_NumComets; i++) {
-		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 2, 2, "", 0, 4, 2.0, "", 0, 4, 2.25));
+		m_IceComets.push_back(new SpriteGun(m_Textures->at(0), 10, 10, "", 0, 60, 1.25, "", 0, 60, 2.25));
 		m_IceComets[i]->SetPosition(0.0, 1000.0);
 		m_IceComets[i]->SetVelocity(0.0, 0.0);
 		m_IceComets[i]->m_IsAlive = false;
 		m_IceComets[i]->m_IsReady = true;
-		m_IceComets[i]->Build(50);
+		m_IceComets[i]->Build(10);
 	}
 }
 
@@ -210,13 +213,16 @@ int PixelPusher::Simulate() {
 	m_AtlasSprite->Simulate(m_DeltaTime);
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
-	//float s = m_AudioBuffer[0];
-	float s = 0.0;
-	for (unsigned int i=0; i<m_AudioBufferSize / m_AudioDivisor; i++) {
-		s += m_AudioBuffer[i];
-	}
-	s /= (m_AudioBufferSize / m_AudioDivisor);
-	
+	float s = (m_AudioBuffer[0] + m_AudioBuffer[1]) / 2;
+	//float s = 0.0;
+	//for (unsigned int i=0; i<m_AudioBufferSize / m_AudioDivisor; i++) {
+	//	s += m_AudioBuffer[i];
+	//}
+	//s /= (m_AudioBufferSize / m_AudioDivisor);
+	int fi = 0;
+	bool forced = false;
+	m_SpriteGun->SetEmitVelocity(fastSinf(m_SimulationTime * 20.0) * 1000.0, 1500.0);
+
 	for (unsigned int i=0; i<m_NumComets; i++) {
 		m_IceComets[i]->Simulate(m_DeltaTime);
 		
@@ -240,22 +246,32 @@ int PixelPusher::Simulate() {
 		if (dy < 40 && dx < 40) {
 			m_IceComets[i]->Fire();
 		} else {
-			if (m_IceComets[i]->m_IsReady && (m_SimulationTime - m_LastPumpedComet) > m_PumpCometTimeout) {
+			bool normal_ready = ((m_SimulationTime - m_LastPumpedComet) > m_PumpCometTimeout);
+			bool force_ready = (fi < 3 && (m_SimulationTime - m_LastForcePumpedComet) > m_PumpCometForceTimeout);
+			if (m_IceComets[i]->m_IsReady && (normal_ready || force_ready)) {
 				//LOGV("pump %d\n", i);
 				m_LastPumpedComet = m_SimulationTime;
-				if (m_IsPushingAudio) {
-					m_IceComets[i]->SetPosition((s - 125.0), m_CometStart);
+				if (force_ready) {
+					forced = true;
+					m_IceComets[i]->SetPosition(((fi++ * 50.0) - 50.0), m_CometStart);
 				} else {
-					m_IceComets[i]->SetPosition(0.0, m_CometStart);
+					if (m_IsPushingAudio) {
+						m_IceComets[i]->SetPosition((s - 125.0), m_CometStart);
+					} else {
+						m_IceComets[i]->SetPosition(0.0, m_CometStart);
+					}
 				}
-				m_IceComets[i]->SetVelocity(0.0, -300.0);
+				m_IceComets[i]->SetVelocity(0.0, -1000.0);
 				m_IceComets[i]->m_Life = 0.0;
 				m_IceComets[i]->m_IsAlive = false;
 				m_IceComets[i]->m_IsReady = false;
 				m_IceComets[i]->Reset();
 			}
 		}
-		
+	}
+	
+	if (forced) {
+		m_LastForcePumpedComet = m_SimulationTime;
 	}
 	
 	if (!m_IsPushingAudio) {
@@ -285,7 +301,6 @@ int PixelPusher::Simulate() {
 	int collided_index = -1;
 	
 	int px = round(m_Models.at(m_PlayerIndex)->m_Position[0]);
-	//int py = round(m_Models.at(m_PlayerIndex)->m_Position[1]);
 	int pz = round(m_Models.at(m_PlayerIndex)->m_Position[2]);
 	
 	for (unsigned int m=0; m<m_SimulatedModels.size(); m++) {
@@ -357,7 +372,7 @@ int PixelPusher::Simulate() {
 	m_CameraRotation += DEGREES_TO_RADIANS(0.5);
 	
 	m_CameraHeight = 4.0 + (fastSinf(m_SimulationTime * 0.5) * 5.0); 
-	float m_CameraDiameter = 20.0;
+	float m_CameraDiameter = 5.0 + fastAbs(fastSinf(m_SimulationTime * 0.1) * 25.0);
 	float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 	float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 
@@ -446,6 +461,8 @@ void PixelPusher::Load(int level_index) {
 				ii = 1;
 			} else if (current[3] == 1) {
 				ii = 3;
+			} else if (current[3] == 2) {
+				ii = 4;
 			} else if (current[3] == 0) {
 				ii = 2;
 			} else {
@@ -472,7 +489,8 @@ void PixelPusher::Load(int level_index) {
 			int height = current[1];
 			switch (current[3]) {
 				case 9:
-					t = 3;
+					//black
+					//t = 3;
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = false;
 					m_Models[m_TerrainEndIndex]->m_IsHarmfulToPlayers = false;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = true;
@@ -482,32 +500,44 @@ void PixelPusher::Load(int level_index) {
 					break;
 
 				case 8:
+					//white
 					m_PlayerIndex = m_TerrainEndIndex;
-					t = 4;
-					height += 1;
+					//t = 4;
+					height += 1.0;
 					m_Models[m_TerrainEndIndex]->m_IsPlayer = true;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
 
-					m_Models[m_TerrainEndIndex]->SetScale(0.05, 0.05, 0.05);
+					m_Models[m_TerrainEndIndex]->SetScale(0.06, 0.06, 0.06);
 
 					break;
 
 				case 1:
-					t = 6;
-					height += 4;
+					//yellow
+					//t = 6;
+					height += 5;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = true;
-					m_Models[m_TerrainEndIndex]->SetScale(0.015, 0.015, 0.015);
+					m_Models[m_TerrainEndIndex]->SetScale(0.0095, 0.0095, 0.0095);
 
+					break;
+					
+				case 2:
+					//green
+					//t = 7;
+					height += 3;
+					m_Models[m_TerrainEndIndex]->m_IsStuck = true;
+					m_Models[m_TerrainEndIndex]->SetScale(0.0095, 0.0095, 0.0095);
+					
 					break;
 
 				case 0:
-					//m_TargetIndex = m_TerrainEndIndex;
-					t = 5;
+					//red
+					//t = 5;
+					height += 1.0;
 					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
 					
 					//m_Models[m_TerrainEndIndex]->SetScale(0.75, 0.75, 0.75);
-					m_Models[m_TerrainEndIndex]->SetScale(0.05, 0.05, 0.05);
+					m_Models[m_TerrainEndIndex]->SetScale(0.06, 0.06, 0.06);
 
 					break;
 					

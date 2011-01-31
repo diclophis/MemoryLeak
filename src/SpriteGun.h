@@ -11,6 +11,9 @@ public:
 		m_ShotEnd = e2;
 		m_ShotMaxLife = m2;
 		m_IsReady = false;
+		m_EmitVelocity = new float[2];
+		m_EmitVelocity[0] = 0;
+		m_EmitVelocity[1] = 0;
 	};
 
 	void Build(int n);

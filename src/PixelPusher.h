@@ -31,6 +31,8 @@ public:
 	int m_LastAiSolved;
 	float m_LastPumpedComet;
 	float m_PumpCometTimeout;
+	float m_LastForcePumpedComet;
+	float m_PumpCometForceTimeout;
 	
 	AtlasSprite *m_AtlasSprite;
 	
