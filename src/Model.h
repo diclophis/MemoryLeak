@@ -3,7 +3,7 @@
  *  MemoryLeak
  *
  *  Created by Jon Bardin on 11/1/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
+ *  GPL
  *
  */
 
@@ -11,13 +11,22 @@ class Model {
 
 public:
 	
+	static void ReleaseBuffers();
 	static foofoo *GetFoo(const aiScene *a, int s, int e);
 	
-	bool m_UsesStaticBuffer;
 	
 	Model(const foofoo *a, bool usesStaticBuffer = false);
-	
 	void Render();
+	float Simulate(float dt, bool pushing = false);
+	void Die(float dt);
+	void Live(float dt);
+	void Harm(Model *other);
+	void Help(Model *other, float dt);
+	void CollideWith(Model *other, float dt);
+	void Move(int direction);
+	bool MoveTo(float x, float y, float z, float dt);
+	bool ClimbTo(float y, float dt);
+	bool IsCollidedWith(Model *other);
 	
 	void SetPosition(float x,float y,float z) {
 		m_Position[0] = x;
@@ -25,13 +34,11 @@ public:
 		m_Position[2] = z;
 	}
 	
-	
 	void SetScale(float x,float y,float z) {
 		m_Scale[0] = x;
 		m_Scale[1] = y;
 		m_Scale[2] = z;
 	}
-	
 	
 	void SetRotation(float x, float y, float z) {
 		m_Rotation[0] = x;
@@ -65,18 +72,7 @@ public:
 		m_Scale[1] = m_Scale[1] - ((0.99 * dy) * dt);
 		m_Scale[2] = m_Scale[2] - ((0.99 * dz) * dt);
 	}
-	bool m_IsPushing;
-	float Simulate(float dt, bool pushing = false);
-	void Die(float dt);
-	void Live(float dt);
-	void Harm(Model *other);
-	void Help(Model *other, float dt);
-	void CollideWith(Model *other, float dt);
-	void Move(int direction);
-	bool MoveTo(float x, float y, float z, float dt);
-	bool ClimbTo(float y, float dt);
-	bool IsCollidedWith(Model *other);
-	
+
 	bool IsMovable () {
 		if (m_IsMoving) {
 			return false;
@@ -114,6 +110,8 @@ public:
 		m_IsFalling = true;
 	}
 
+	bool m_UsesStaticBuffer;
+	bool m_IsPushing;
 	bool m_IsPlayer;
 	bool m_IsEnemy;
 	bool m_IsBomb;
@@ -137,10 +135,6 @@ public:
 	int m_Texture;
 	Model *m_Climbing;
 	int m_Direction;
-	int m_FramesOfAnimationCount;
-
-	
-	static void ReleaseBuffers();
-	
+	int m_FramesOfAnimationCount;	
 	std::vector<void *> *m_Steps;
 };

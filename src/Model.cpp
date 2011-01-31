@@ -112,8 +112,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	}
 
 	int used_buffer = 0;
-	//int start_frame = 0;
-	//int stop_frame = 1; //a->mRootNode->mNumMeshes
 	
 	for (unsigned int mm=ff->m_AnimationStart; mm<ff->m_AnimationEnd; mm++) { //keyframes
 		for (unsigned int iiii=0; iiii<interp; iiii++) {
@@ -128,7 +126,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 			}
 			
 			if (iiii == 0) {
-				//LOGV("keyframe %d %d\n", mm, iiii);
 				for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
 					vertices[jk] = a->mMeshes[mm]->mVertices[ik][0];
 					vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1];
@@ -147,7 +144,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 			} else {
 				if (mm <a->mRootNode->mNumMeshes-1) {
 					float percent_of_way = (float)iiii / (float)interp;
-					//LOGV("%d %d foo %f\n", mm, iiii, percent_of_way);
 
 					for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
 						vertices[jk+0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
@@ -215,15 +211,7 @@ void Model::Render() {
 			g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
 		}
-
-		//m_FooFoo->m_
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-		
-		//glDrawElements(GL_TRIANGLES, 3 * m_FooFoo->m_numFaces, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-
-		//glTranslatef(-m_Position[0],-m_Position[1],-m_Position[2]);
-		//glScalef(-m_Scale[0],-m_Scale[1],1.0 / m_Scale[2]);
-
 	}
 	glPopMatrix();
 }
@@ -281,7 +269,6 @@ float Model::Simulate(float dt, bool pushing) {
 		m_Life += dt;
 		float fps = 60.0;
 		if (m_Life > (1.0 / (float)fps)) {
-			//LOGV("%d\n", m_Frame);
 			m_Frame++;
 			m_Life = 0.0;
 		}

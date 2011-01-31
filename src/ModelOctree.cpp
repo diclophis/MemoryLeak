@@ -1,3 +1,5 @@
+// Jon Bardin GPL
+
 #include "micropather.h"
 #include <ctype.h>
 #include <stdio.h>
@@ -21,7 +23,6 @@
 #include "ModelOctree.h"
 
 namespace micropather {
-	
 
 
 ModelOctree::ModelOctree(std::vector<Model *> &m, Octree<int> &o, int i) : m_Models(&m), m_Scene(&o), m_ModelIndex(i) {
@@ -45,7 +46,7 @@ float ModelOctree::LeastCostEstimate( void* nodeStart, void* nodeEnd )
 }
 
 void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors ) 
-{	
+{
 	int ax, ay;
 	
     NodeToXY(node, &ax, &ay);
@@ -54,10 +55,8 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 	int by = 1;
 	int bz = ay;
 	
-		
     const int dx[8] = { 1, 0, -1, 0};
     const int dz[8] = { 0, 1, 0, -1};
-    //const float cost[8] = { 1.0f, 1.01f, 1.0f, 1.01f};
 	
 	int colliding_index;
 	
@@ -66,8 +65,6 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 
 	float look_distance = (float)sqrt( (double)(lx*lx) + (double)(lz*lz));
 	
-	//LOGV("distance %f\n", look_distance);
-
 	if (look_distance > 10) {
 		return;
 	}
@@ -79,7 +76,6 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 		int nz = bz + dz[i];	
 		bool passable = false;
 		if (nx > 0 && nz > 0) {
-			
 			colliding_index = m_Scene->at(nx, by, nz);
 			if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
 				if (m_Models->at(colliding_index)->m_IsPlayer) {
@@ -106,15 +102,8 @@ void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors )
 			StateCost nodeCost = { XYToNode(nx, nz), pass_cost };
 			neighbors->push_back(nodeCost);
 		} else {
-
 		}
 	}
-}
-
-void ModelOctree::PrintStateInfo( void* node ) 
-{
-	//Vector3D *foo = (Vector3D*)node;
-	//LOGV("\n%f %f %f\n", foo->x, foo->y, foo->z);
 }
 
 }

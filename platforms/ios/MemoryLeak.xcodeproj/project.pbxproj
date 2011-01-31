@@ -417,9 +417,6 @@
 		FC141A881285415900166578 /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
 		FC141A891285415900166578 /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		FC141A8A1285415900166578 /* OpenGLCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLCommon.h; sourceTree = "<group>"; };
-		FC141A8B1285415900166578 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
-		FC141A8C1285415900166578 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
-		FC141A8D1285415900166578 /* revision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = revision.h; sourceTree = "<group>"; };
 		FC141C4A1285429700166578 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../../assets; sourceTree = SOURCE_ROOT; };
 		FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MD2Loader.cpp; sourceTree = "<group>"; };
 		FC1CDCA0129A330500CAFC54 /* foreach.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = foreach.hpp; sourceTree = "<group>"; };
@@ -591,9 +588,6 @@
 				FC141A861285415900166578 /* MachineGun.h */,
 				FC141A871285415900166578 /* MemoryLeak.h */,
 				FC141A8A1285415900166578 /* OpenGLCommon.h */,
-				FC141A8B1285415900166578 /* Platform.h */,
-				FC141A8C1285415900166578 /* Player.h */,
-				FC141A8D1285415900166578 /* revision.h */,
 				FC1419B51285415900166578 /* Engine.h */,
 				FC1419B41285415900166578 /* Engine.cpp */,
 				FC141A891285415900166578 /* Model.h */,

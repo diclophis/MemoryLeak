@@ -12,6 +12,7 @@ public:
 	void Load(int level_index);
 	const char *byte_to_binary(int x);
 	void Render();
+	
 	int m_PlayerIndex;
 	int m_TerrainStartIndex;
 	int m_TerrainEndIndex;
@@ -33,16 +34,11 @@ public:
 	float m_PumpCometTimeout;
 	float m_LastForcePumpedComet;
 	float m_PumpCometForceTimeout;
-	
 	AtlasSprite *m_AtlasSprite;
-	
 	SpriteGun *m_SpriteGun;
-	
 	int m_NumComets;
-
 	float m_CometStart;
 	float m_CometStop;
 	float m_CometDelta;
-	
 	std::vector<SpriteGun *> m_IceComets;
 };

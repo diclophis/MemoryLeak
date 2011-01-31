@@ -1,9 +1,6 @@
-
-
-//using namespace micropather;
+// Jon Bardin GPL
 
 namespace micropather {
-
 
 class ModelOctree : public micropather::Graph {
 
@@ -11,18 +8,14 @@ public:
 	
 	std::vector<Model *> *m_Models;
 	Octree<int> *m_Scene;
-	
+	int m_ModelIndex;
+
 	ModelOctree(std::vector<Model *> &m, Octree<int> &o, int i);
 	~ModelOctree();
-
-	
 	float LeastCostEstimate( void* nodeStart, void* nodeEnd );
 	void AdjacentCost( void* node, std::vector< StateCost > *neighbors );
-	void PrintStateInfo( void* node );
-	
-	int m_ModelIndex;
-	
-	
+	void PrintStateInfo( void* node ) {};
+
 	static void NodeToXY( void* node, int* x, int* y )
 	{
 		int index = (int)node;
@@ -37,8 +30,7 @@ public:
 	
 	void SetModelIndex (int i) {
 		m_ModelIndex = i;
-	};
-	
+	};	
 };
 	
 };
