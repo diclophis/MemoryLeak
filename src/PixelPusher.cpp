@@ -1,18 +1,13 @@
-//
+// Jon Bardin GPL
 
 #include "MemoryLeak.h"
-
 #include "octree.h"
 #include "micropather.h"
-
 #include "Model.h"
 #include "ModelOctree.h"
-
 #include "Engine.h"
-
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
-
 #include "PixelPusher.h"
 
 PixelPusher::PixelPusher(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs) : Engine(w, h, t, m, l, s, bs) {
@@ -37,16 +32,13 @@ void PixelPusher::Build() {
 	m_CameraPosition[1] = 0.0;
 	m_CameraPosition[2] = 0.0;
 	Load(0);
-	//TODO: memory leak
-	//m_FooFoos.clear();
 	
 	m_ModelOctree = new micropather::ModelOctree(m_Models, *m_Space, m_PlayerIndex);
 	m_Pather = new micropather::MicroPather(m_ModelOctree);
 	
 	m_NumComets = 24;
 	m_CometStart = 300.0;
-	//m_CometStop = -1000.0;
-	//m_CometDelta = (m_CometStop - m_CometStart) / m_NumComets;
+
 	m_LastPumpedComet = 0.0;
 	m_PumpCometTimeout = 1.0 / 6.0;
 	
@@ -214,11 +206,6 @@ int PixelPusher::Simulate() {
 	m_SpriteGun->Simulate(m_DeltaTime);
 	
 	float s = (m_AudioBuffer[0] + m_AudioBuffer[1]) / 2;
-	//float s = 0.0;
-	//for (unsigned int i=0; i<m_AudioBufferSize / m_AudioDivisor; i++) {
-	//	s += m_AudioBuffer[i];
-	//}
-	//s /= (m_AudioBufferSize / m_AudioDivisor);
 	int fi = 0;
 	bool forced = false;
 	m_SpriteGun->SetEmitVelocity(fastSinf(m_SimulationTime * 20.0) * 1000.0, 1500.0);
@@ -249,7 +236,6 @@ int PixelPusher::Simulate() {
 			bool normal_ready = ((m_SimulationTime - m_LastPumpedComet) > m_PumpCometTimeout);
 			bool force_ready = (fi < 3 && (m_SimulationTime - m_LastForcePumpedComet) > m_PumpCometForceTimeout);
 			if (m_IceComets[i]->m_IsReady && (normal_ready || force_ready)) {
-				//LOGV("pump %d\n", i);
 				m_LastPumpedComet = m_SimulationTime;
 				if (force_ready) {
 					forced = true;
@@ -277,24 +263,6 @@ int PixelPusher::Simulate() {
 	if (!m_IsPushingAudio) {
 		ModPlug_Seek(m_Sounds[0], 0);
 	}
-
-	/*
-	for (unsigned int i = 0; i < 20; i++) {
-		for (unsigned int j = 0; j < 20; j++) {
-			for (unsigned int k = 0; k < 20; k++) {
-				m_Space->erase(i, j, k);
-			}
-		}
-	}
-	
-	for (unsigned int i=0; i<m_Models.size(); i++) {
-		int rx = round(m_Models[i]->m_Position[0]);
-		int ry = round(m_Models[i]->m_Position[1]);
-		int rz = round(m_Models[i]->m_Position[2]);
-		m_Space->set(rx, ry, rz, i);
-	}
-	*/
-	
 	
 	m_LastAiSolved = -1;
 
@@ -307,7 +275,6 @@ int PixelPusher::Simulate() {
 		int i = m_SimulatedModels.at(m);
 		if (!m_Models[i]->m_IsPlayer) {
 			int bx = round(m_Models[i]->m_Position[0]);
-			//int by = round(m_Models[i]->m_Position[1]);
 			int bz = round(m_Models[i]->m_Position[2]);
 			void *startState = micropather::ModelOctree::XYToNode(bx, bz);
 			void *endState = micropather::ModelOctree::XYToNode(px, pz);
@@ -349,15 +316,12 @@ int PixelPusher::Simulate() {
 		int dz = az - bz;
 		
 		if (bx != ax || by != ay || bz != az) {
-			//LOGV("%d delta(%d %d %d)\n", i, dx, dy, dz);
 			collided_index = m_Space->at(ax, ay, az);
 			if (collided_index >= 0 && collided_index != i) {
-				//LOGV("%d collided (%d %d %d) => (%d %d %d)\n", i, bx, by, bz, ax, ay, az);
 				m_Models[i]->SetPosition((float)bx + ((float)dx * 0.4), (float)by + ((float)dy * 0.4), (float)bz + ((float)dz * 0.4));
 				m_Models[i]->SetVelocity(ax - dx, ay - dy, az - dz);
 				m_Models[i]->m_IsMoving = true;
 			} else {
-				//LOGV("%d moved (%d %d %d) => (%d %d %d)\n", i, bx, by, bz, ax, ay, az);
 				m_Space->erase(bx, by, bz);
 				m_Space->set(ax, ay, az, i);
 			}
@@ -451,11 +415,7 @@ void PixelPusher::Load(int level_index) {
 		if ( code[4] == '1' ) current[3] += data[i++] - 32;
 		if ( code[0] == '1' ) {
 			
-			int m_PostProcessFlags =  aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 			int ii = 0;
-			int s = 0;
-			int e = 1;
-			char path[128];
 			
 			if (current[3] == 8) {
 				ii = 1;
@@ -467,23 +427,6 @@ void PixelPusher::Load(int level_index) {
 				ii = 2;
 			} else {
 			}
-			
-			/*
-			if (m_FooFoos.size() < (ii + 1)) {
-				LOGV("loading %d\n", ii);
-				snprintf(path, sizeof(char), "%d", i);
-				m_Importer.ReadFile(path, m_PostProcessFlags);
-				
-				//int& first = m_FooFoos->begin();
-				
-				//std::vector<foofoo *>::iterator it;
-				//it = m_FooFoos.begin();
-				
-				//m_FooFoos.insert(it, Model::GetFoo(m_Importer.GetScene(), s, e));
-				m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), s, e));
-				m_Importer.FreeScene();
-			}
-			*/
 			
 			m_Models.push_back(new Model(m_FooFoos.at(ii)));
 			int height = current[1];
@@ -536,7 +479,6 @@ void PixelPusher::Load(int level_index) {
 					m_Models[m_TerrainEndIndex]->m_IsStuck = false;
 					m_SimulatedModels.push_back(m_TerrainEndIndex);
 					
-					//m_Models[m_TerrainEndIndex]->SetScale(0.75, 0.75, 0.75);
 					m_Models[m_TerrainEndIndex]->SetScale(0.06, 0.06, 0.06);
 
 					break;
@@ -547,7 +489,6 @@ void PixelPusher::Load(int level_index) {
 
 			m_Models[m_TerrainEndIndex]->SetPosition(current[0] + 10, height, current[2] + 10);
 			m_Space->set((int)m_Models[m_TerrainEndIndex]->m_Position[0], (int)m_Models[m_TerrainEndIndex]->m_Position[1], (int)m_Models[m_TerrainEndIndex]->m_Position[2], m_TerrainEndIndex);
-			//m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetTexture(m_Textures->at(t));
 			m_Models[m_TerrainEndIndex]->SetFrame(0);
 		}

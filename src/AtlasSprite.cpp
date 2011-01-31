@@ -57,20 +57,6 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 		}
 	}
 	m_Rotation = randf() > 0.5 ? (randf() * 5.0) : -(randf() * 5.0);
-
-	//glUnmapBufferOES();
-	
-	//glUnmapBuffer(GL_ARRAY_BUFFER);
-	
-	//glUnmapBufferOES(GL_PIXEL_UNPACK_BUFFER_ARB);
-	
-	
-	//const GLubyte *strr;
-	//int glPolyOffExtAvailable;
-	//strr = glGetString (GL_EXTENSIONS);
-	//glPolyOffExtAvailable = (strstr((const char *)strr, "GL_EXT_polygon_offset") != NULL);
-	//LOGV("%d %s \n", glPolyOffExtAvailable, strr);
-	
 }
 
 void AtlasSprite::ReleaseBuffers() {
