@@ -54,8 +54,8 @@ public:
   void WaitVsync();
   void WaitAudioSync();
 
-
-
+	bool m_PumpedAudioLastTick;
+	int m_SkipLimit;
 
 	// World Engine
 	bool m_IsSceneBuilt;

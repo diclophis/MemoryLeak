@@ -91,6 +91,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
 	memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
 	m_IsPushingAudio = false;
+	m_PumpedAudioLastTick = false;
+	m_SkipLimit = 0;
 }
 
 
@@ -170,14 +172,23 @@ int Engine::RunThread() {
 		}		
 		
 		//WaitAudioSync();
-		
-		if (m_IsPushingAudio) {
-			int len = m_AudioBufferSize / m_AudioDivisor;
-			ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-			//LOGV("just read this much size/len: %d %d\n", m_AudioBufferSize, len);
-			start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
+
+		if (m_PumpedAudioLastTick) {			
+			if (m_IsPushingAudio) {
+				int len = m_AudioBufferSize / m_AudioDivisor;
+				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+				//LOGV("just read this much size/len: %d %d\n", m_AudioBufferSize, len);
+				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
+			} else {
+				m_PumpedAudioLastTick = start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
+			}
 		} else {
-			start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
+			if (m_SkipLimit++ > 0) {
+				LOGV("resume\n");
+				//WaitAudioSync();
+				m_PumpedAudioLastTick = true;
+				m_SkipLimit = 0;
+			}
 		}
 		
 		WaitVsync();

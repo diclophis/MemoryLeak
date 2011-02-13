@@ -52,6 +52,8 @@ typedef struct Engine Engine;
 	Engine *game;
 	int gameState;
 	
+	OSStatus status;
+	AudioComponentInstance audioUnit;
 
 	//General infos
 	int mod_message_updated,mod_subsongs;
