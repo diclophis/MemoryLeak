@@ -3,7 +3,7 @@
 //  WangCrapTemplate
 //
 //  Created by Jon Bardin on 7/12/10.
-//  Copyright __MyCompanyName__ 2010. All rights reserved.
+//  GPL
 //
 
 #import "MemoryLeakAppDelegate.h"
@@ -12,15 +12,13 @@
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
 #include "Engine.h"
-#include "MachineGun.h"
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "PixelPusher.h"
+#include "MainMenu.h"
 
 
 #import "EAGLView.h"
-
 
 EAGLView *g_View;
 
@@ -36,32 +34,57 @@ static short int **buffer_ana;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
+#define PLAYBACK_FREQ 44100
+#define SOUND_BUFFER_SIZE_SAMPLE (512)
 
-#define PLAYBACK_FREQ 8000
-#define SOUND_BUFFER_SIZE_SAMPLE (1024)
-#define SOUND_BUFFER_NB 2
-
+#define AUDIO_BUFFER_SIZE 1024
+#define AUDIO_SUB_DIVIDE 1
+#define SOUND_BUFFER_NB 4
+#define AUDIO_SUB 1
 
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
-		int div = d;
-		int len = (SOUND_BUFFER_SIZE_SAMPLE) / div;
-		memcpy(buffer_ana[buffer_ana_gen_ofs], b, len);
-		buffer_ana_flag[buffer_ana_play_ofs] = 1;
+		
+		//int div = d;
+		//int len = (SOUND_BUFFER_SIZE_SAMPLE) / div;
+		
+		for (unsigned int i=0; i<AUDIO_SUB; i++) {
+
+			//memcpy(buffer_ana[buffer_ana_gen_ofs + 1], b, len);
+			//buffer_ana_flag[buffer_ana_play_ofs + 1] = 1;
+			//[g_View pump_audio];
+			int len = AUDIO_BUFFER_SIZE / AUDIO_SUB;
+			//LOGV("need to copy this much %d %d %d\n", AUDIO_BUFFER_SIZE, d, len);
+			//LOGV("checking %d\n", buffer_ana_gen_ofs);
+			if (buffer_ana_flag[buffer_ana_gen_ofs] == 0) {
+				//LOGV("writing to: %d %d offset: %d\n", buffer_ana_gen_ofs, len, (i * len));
+				//LOGV("%d -- buffer_ana_gen_ofs: %d buffer_ana_play_ofs %d\n", buffer_ana_gen_ofs - buffer_ana_play_ofs, buffer_ana_gen_ofs, buffer_ana_play_ofs);
+				memcpy(buffer_ana[buffer_ana_gen_ofs], (short *)b + (i * len), len);
+				buffer_ana_flag[buffer_ana_gen_ofs] = 1;
+				buffer_ana_gen_ofs++;
+				
+				if (buffer_ana_gen_ofs == SOUND_BUFFER_NB) {
+					buffer_ana_gen_ofs = 0;
+				}
+			} else {
+				LOGV("WTFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\n");
+			}
+		}
+		
 		return NULL;
 	};
 };
 
 
 void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer) {
-	//LOGV("iPhoneDrv_AudioCallback\n");
-	EAGLView *view=(EAGLView *)data;
-	[view iPhoneDrv_Update:mBuffer];
+	LOGV("iPhoneDrv_AudioCallback\n");
+	//EAGLView *view=(EAGLView *)data;
+	//[view iPhoneDrv_Update:mBuffer];
 }
 
  
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
-	EAGLView *mplayer=(EAGLView *)inUserData;
+	LOGV("interupption\n");
 	if (interruptionState == kAudioSessionBeginInterruption) {
 		//TODO: phone call interuption, pause game?
 	} else if (interruptionState == kAudioSessionEndInterruption) {
@@ -76,15 +99,13 @@ void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	}
 }
 
-/*************************************************/
-/* Audio property listener                       */
-/*************************************************/
 void propertyListenerCallback (void                   *inUserData,                             
 							   AudioSessionPropertyID inPropertyID,                                
 							   UInt32                 inPropertyValueSize,                         
 							   const void             *inPropertyValue ) {
+	LOGV("property\n");
+
 	if (inPropertyID==kAudioSessionProperty_AudioRouteChange ) {
-		EAGLView *mplayer = (EAGLView *) inUserData;		
 		CFDictionaryRef routeChangeDictionary = (CFDictionaryRef)inPropertyValue;
 		NSString *oldroute = (NSString*)CFDictionaryGetValue (
 															  routeChangeDictionary,
@@ -108,6 +129,10 @@ void propertyListenerCallback (void                   *inUserData,
 // You must implement this method
 + (Class)layerClass {
     return [CAEAGLLayer class];
+}
+
+-(void)pump_audio {
+	[self iPhoneDrv_Update:mBuffers[0]];
 }
 
 
@@ -273,12 +298,8 @@ GLuint loadTexture(UIImage *image) {
 }
 
 
-
-
-
-
-
 -(void)initAudio {
+	LOGV("init audio\n");
 	AudioSessionInitialize (
 							NULL,
 							NULL,
@@ -293,14 +314,14 @@ GLuint loadTexture(UIImage *image) {
 							 );
 	
 	//TODO: Check if still required or not
-	
+	/*
 	Float32 preferredBufferDuration = 1.0f/30.0;
 	AudioSessionSetProperty (                                     
 							 kAudioSessionProperty_PreferredHardwareIOBufferDuration,
 							 sizeof (preferredBufferDuration),
 							 &preferredBufferDuration
 							 );
-	
+	*/
 	
 	AudioSessionPropertyID routeChangeID = kAudioSessionProperty_AudioRouteChange;
 	AudioSessionAddPropertyListener (                                 
@@ -327,11 +348,12 @@ GLuint loadTexture(UIImage *image) {
 
 
 -(BOOL) iPhoneDrv_Init {
-	//LOGV("iPhoneDrv_Init\n");
+	LOGV("iPhoneDrv_Init\n");
 
     AudioStreamBasicDescription mDataFormat;
     UInt32 err;
     
+	/*
     //setup audio stuff
     mDataFormat.mFormatID = kAudioFormatLinearPCM;
     
@@ -346,8 +368,21 @@ GLuint loadTexture(UIImage *image) {
     mDataFormat.mBytesPerFrame = (mDataFormat.mBitsPerChannel>>3) * mDataFormat.mChannelsPerFrame;
 	
     mDataFormat.mFramesPerPacket = 1; 
+	
     mDataFormat.mBytesPerPacket = mDataFormat.mBytesPerFrame;
-    
+	 
+	*/
+	/*
+	mDataFormat.mSampleRate = 8000.0;
+    mDataFormat.mFormatID = kAudioFormatLinearPCM;
+    mDataFormat.mFramesPerPacket = 1;
+    mDataFormat.mChannelsPerFrame = 1;
+    mDataFormat.mBytesPerFrame = 2;
+    mDataFormat.mBytesPerPacket = 2;
+    mDataFormat.mBitsPerChannel = 16;
+    mDataFormat.mReserved = 0;
+	mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+    */
     // Create an Audio Queue...
     err = AudioQueueNewOutput( &mDataFormat, 
 							  iPhoneDrv_AudioCallback, 
@@ -361,8 +396,7 @@ GLuint loadTexture(UIImage *image) {
     mBuffers = (AudioQueueBufferRef*)malloc( sizeof(AudioQueueBufferRef) * SOUND_BUFFER_NB );
     for (int i=0; i<SOUND_BUFFER_NB; i++) {
 		AudioQueueBufferRef mBuffer;
-		err = AudioQueueAllocateBuffer( mAudioQueue, SOUND_BUFFER_SIZE_SAMPLE, &mBuffer );
-		
+		err = AudioQueueAllocateBuffer(mAudioQueue, SOUND_BUFFER_SIZE_SAMPLE, &mBuffer);
 		mBuffers[i]=mBuffer;
     }
 	
@@ -421,13 +455,13 @@ GLuint loadTexture(UIImage *image) {
 
 
 -(void) iPhoneDrv_Update:(AudioQueueBufferRef) mBuffer {   
-	//LOGV("iPhoneDrv_Update\n");
+	LOGV("iPhoneDrv_Update\n");
 	// real processing in iPhoneDrv_FillAudioBuffer
 	[self iPhoneDrv_FillAudioBuffer:mBuffer];
 }
 
 -(BOOL) iPhoneDrv_FillAudioBuffer:(AudioQueueBufferRef) mBuffer {
-	//LOGV("iPhoneDrv_FillAudioBuffer\n");
+	LOGV("iPhoneDrv_FillAudioBuffer\n");
 	
 	int skip_queue=0;
 	mBuffer->mAudioDataByteSize = SOUND_BUFFER_SIZE_SAMPLE;
@@ -447,6 +481,246 @@ GLuint loadTexture(UIImage *image) {
 	AudioQueueEnqueueBuffer(mAudioQueue, mBuffer, 0, NULL);
 	
     return 0;
+}
+
+void checkStatus(OSStatus status) {
+	
+	if(status == 0)
+		NSLog(@"success");
+	else if(status == errSecNotAvailable)
+		NSLog(@"no trust results available");
+	else if(status == errSecItemNotFound)
+		NSLog(@"the item cannot be found");
+	else if(status == errSecParam)
+		NSLog(@"parameter error");
+	else if(status == errSecAllocate)
+		NSLog(@"memory allocation error");
+	else if(status == errSecInteractionNotAllowed)
+		NSLog(@"user interaction not allowd");
+	else if(status == errSecUnimplemented)
+		NSLog(@"not implemented");
+	else if(status == errSecDuplicateItem)
+		NSLog(@"item already exists");
+	else if(status == errSecDecode)
+		NSLog(@"unable to decode data");
+	else
+		NSLog(@"unknown: %d", status);
+	
+}
+
+static OSStatus playbackCallback(void *inRefCon, 
+								 AudioUnitRenderActionFlags *ioActionFlags, 
+								 const AudioTimeStamp *inTimeStamp, 
+								 UInt32 inBusNumber, 
+								 UInt32 inNumberFrames, 
+								 AudioBufferList *ioDataList) {    
+    // Notes: ioData contains buffers (may be more than one!)
+    // Fill them up as much as you can. Remember to set the size value in each buffer to match how
+    // much data is in the buffer.
+	
+	
+	if (ioDataList->mNumberBuffers != 1) {
+		LOGV("the fuck\n");
+	}
+	
+	AudioBuffer *ioData = &ioDataList->mBuffers[0];
+	
+	//memcpy(ioData->mData, , ioData->mDataByteSize
+	
+	//memcpy( theBufferList->mBuffers[0].mData, &ioData->mBuffers[0].mData, ioData->mBuffers[0].mDataByteSize);
+	
+	
+	//if (buffer_ana_flag[]) {
+	//BOOL found_buffer = false;
+	if (buffer_ana_play_ofs == SOUND_BUFFER_NB) {
+		buffer_ana_play_ofs = 0;
+	}
+	
+	if (buffer_ana_flag[buffer_ana_play_ofs]) {
+		int len = AUDIO_BUFFER_SIZE / AUDIO_SUB;
+		//LOGV("FOUND: %d got: %d wants: %d\n", buffer_ana_play_ofs, len, ioData->mDataByteSize);
+		ioData->mDataByteSize = len;
+		memcpy(ioData->mData, buffer_ana[buffer_ana_play_ofs], len);
+		buffer_ana_flag[buffer_ana_play_ofs] = 0;
+		buffer_ana_play_ofs++;
+	} else {
+		LOGV("MISSED %d %d\n", buffer_ana_play_ofs, ioData->mDataByteSize);
+	}
+
+
+
+	
+    return noErr;
+}
+
+-(void)initAudio2 {
+
+#define kOutputBus 0
+#define kInputBus 1
+	
+	// ...
+	
+	
+	OSStatus status;
+	AudioComponentInstance audioUnit;
+	
+	// Describe audio component
+	AudioComponentDescription desc;
+	desc.componentType = kAudioUnitType_Output;
+	desc.componentSubType = kAudioUnitSubType_RemoteIO;
+	desc.componentFlags = 0;
+	desc.componentFlagsMask = 0;
+	desc.componentManufacturer = kAudioUnitManufacturer_Apple;
+	
+	// Get component
+	AudioComponent inputComponent = AudioComponentFindNext(NULL, &desc);
+	
+	// Get audio units
+	status = AudioComponentInstanceNew(inputComponent, &audioUnit);
+	checkStatus(status);
+	
+	UInt32 flag = 1;
+	// Enable IO for recording
+	//status = AudioUnitSetProperty(audioUnit, 
+	//							  kAudioOutputUnitProperty_EnableIO, 
+	//							  kAudioUnitScope_Input, 
+	//							  kInputBus,
+	//							  &flag, 
+	//							  sizeof(flag));
+	//checkStatus(status);
+	
+	// Enable IO for playback
+	status = AudioUnitSetProperty(audioUnit, 
+								  kAudioOutputUnitProperty_EnableIO, 
+								  kAudioUnitScope_Output, 
+								  kOutputBus,
+								  &flag, 
+								  sizeof(flag));
+	checkStatus(status);
+	
+	AudioStreamBasicDescription audioFormat;
+
+	// Describe format
+	audioFormat.mSampleRate			= PLAYBACK_FREQ;
+	audioFormat.mFormatID			= kAudioFormatLinearPCM;
+	audioFormat.mFormatFlags		= kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	audioFormat.mFramesPerPacket	= 1;
+	audioFormat.mChannelsPerFrame	= 1;
+	audioFormat.mBitsPerChannel		= 16;
+	audioFormat.mBytesPerPacket		= 2;
+	audioFormat.mBytesPerFrame		= 2;
+	
+	/* crap
+	mDataFormat.mSampleRate = 8000.0;
+    mDataFormat.mFormatID = kAudioFormatLinearPCM;
+    mDataFormat.mFramesPerPacket = 1;
+    mDataFormat.mChannelsPerFrame = 1;
+    mDataFormat.mBytesPerFrame = 2;
+    mDataFormat.mBytesPerPacket = 2;
+    mDataFormat.mBitsPerChannel = 16;
+    mDataFormat.mReserved = 0;
+	mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+	*/
+	
+	// Apply format
+	status = AudioUnitSetProperty(audioUnit, 
+								  kAudioUnitProperty_StreamFormat, 
+								  kAudioUnitScope_Output, 
+								  kInputBus, 
+								  &audioFormat, 
+								  sizeof(audioFormat));
+	checkStatus(status);
+	status = AudioUnitSetProperty(audioUnit, 
+								  kAudioUnitProperty_StreamFormat, 
+								  kAudioUnitScope_Input, 
+								  kOutputBus, 
+								  &audioFormat, 
+								  sizeof(audioFormat));
+	checkStatus(status);
+	
+	
+	// Set input callback
+	/*
+	AURenderCallbackStruct callbackStruct;
+	callbackStruct.inputProc = recordingCallback;
+	callbackStruct.inputProcRefCon = self;
+	status = AudioUnitSetProperty(audioUnit, 
+								  kAudioOutputUnitProperty_SetInputCallback, 
+								  kAudioUnitScope_Global, 
+								  kInputBus, 
+								  &callbackStruct, 
+								  sizeof(callbackStruct));
+	checkStatus(status);
+	*/
+	
+	AURenderCallbackStruct callbackStruct;
+
+	// Set output callback
+	callbackStruct.inputProc = playbackCallback;
+	callbackStruct.inputProcRefCon = self;
+	status = AudioUnitSetProperty(audioUnit, 
+								  kAudioUnitProperty_SetRenderCallback, 
+								  kAudioUnitScope_Global, 
+								  kOutputBus,
+								  &callbackStruct, 
+								  sizeof(callbackStruct));
+	checkStatus(status);
+	
+	// Disable buffer allocation for the recorder (optional - do this if we want to pass in our own)
+	/*
+	flag = 0;
+	status = AudioUnitSetProperty(audioUnit, 
+								  kAudioUnitProperty_ShouldAllocateBuffer,
+								  kAudioUnitScope_Output, 
+								  kInputBus,
+								  &flag, 
+								  sizeof(flag));
+	*/
+	// TODO: Allocate our own buffers if we want
+	
+	
+	
+	buffer_ana_flag=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
+	buffer_ana=(short int**)malloc(SOUND_BUFFER_NB*sizeof(unsigned short int *));
+	for (int i=0;i<SOUND_BUFFER_NB;i++) {
+		buffer_ana[i]=(short int *)malloc(AUDIO_BUFFER_SIZE);
+		buffer_ana_flag[i]=0;
+	}
+	
+	buffer_ana_gen_ofs = 0;
+	buffer_ana_play_ofs = 0;
+	
+	Float32 aBufferLength; // In seconds
+	UInt32 size = sizeof(aBufferLength);
+	
+    status = AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareIOBufferDuration,
+							&size, &aBufferLength);
+	checkStatus(status);
+
+	LOGV("current duration: %f\n", aBufferLength);
+	
+	aBufferLength = 1.0 / 120.0;
+	
+	status = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, 
+							size, &aBufferLength);
+	checkStatus(status);
+
+	status = AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareIOBufferDuration,
+							&size, &aBufferLength);
+	
+	LOGV("current duration: %f\n", aBufferLength);
+	
+	
+	checkStatus(status);
+
+	
+	// Initialise
+	status = AudioUnitInitialize(audioUnit);
+	checkStatus(status);
+	
+	
+	status = AudioOutputUnitStart(audioUnit);
+	checkStatus(status);
 }
 
 
@@ -517,63 +791,16 @@ GLuint loadTexture(UIImage *image) {
 			sounds.push_back(firstSound);
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		[self initAudio];
-		
-		
-		
 
+		//[self initAudio];
 		
-		game = new PixelPusher(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, SOUND_BUFFER_SIZE_SAMPLE);
+		[self initAudio2];
+
+		game = new MainMenu(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, AUDIO_SUB_DIVIDE);
 		game->CreateThread(Callbacks::PumpAudio);
 		gameState = 1;
 		
-		
+
 		UIDevice* device = [UIDevice currentDevice];
 		BOOL backgroundSupported = NO;
 		if ([device respondsToSelector:@selector(isMultitaskingSupported)])

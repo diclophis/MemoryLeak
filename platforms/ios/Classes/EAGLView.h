@@ -13,6 +13,14 @@
 
 #include "importgl.h"
 
+
+void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer);
+void interruptionListenerCallback (void *inUserData,UInt32 interruptionState );
+void propertyListenerCallback (void                   *inUserData,                             
+							   AudioSessionPropertyID inPropertyID,                                
+							   UInt32                 inPropertyValueSize,                         
+							   const void             *inPropertyValue );
+
 GLuint loadTexture(UIImage *image);
 
 struct Engine;
@@ -90,7 +98,7 @@ typedef struct Engine Engine;
 -(void)drawView:(id)sender;
 -(void)startGame;
 -(void)parse:(const char*)json withLength:(size_t)length;
-
+-(void)pump_audio;
 
 
 

@@ -36,7 +36,7 @@ Engine::~Engine() {
 }
 
 
-Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s), m_AudioBufferSize(bs) {
+Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s), m_AudioBufferSize(bs), m_AudioDivisor(sd) {
 
 	m_IsSceneBuilt = false;
 	
@@ -80,7 +80,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 
 	//4458 vs 1114
-	m_AudioDivisor = 2;
+	//m_AudioDivisor = 3;
 
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
@@ -174,6 +174,7 @@ int Engine::RunThread() {
 		if (m_IsPushingAudio) {
 			int len = m_AudioBufferSize / m_AudioDivisor;
 			ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+			//LOGV("just read this much size/len: %d %d\n", m_AudioBufferSize, len);
 			start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
 		} else {
 			start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);

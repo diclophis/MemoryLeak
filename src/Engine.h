@@ -31,7 +31,7 @@ public:
 	//Engine& operator=(const Engine&);
 
 
-	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs);
+	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd);
 	virtual ~Engine();
 
  

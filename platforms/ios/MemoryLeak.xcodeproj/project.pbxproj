@@ -73,10 +73,10 @@
 		FC141C101285415900166578 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419AA1285415900166578 /* trees.c */; };
 		FC141C121285415900166578 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = FC1419B01285415900166578 /* zutil.c */; };
 		FC141C151285415900166578 /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1419B41285415900166578 /* Engine.cpp */; };
-		FC141C351285415900166578 /* MachineGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A851285415900166578 /* MachineGun.cpp */; };
 		FC141C361285415900166578 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A881285415900166578 /* Model.cpp */; };
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
 		FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */; };
+		FC6CE5F812F6966100CCE264 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6CE5F612F6966100CCE264 /* MainMenu.cpp */; };
 		FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
@@ -119,7 +119,6 @@
 		FCDE095312D92F17004CE9B7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE095212D92F17004CE9B7 /* AVFoundation.framework */; };
 		FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */; };
 		FCE2EE1312913F2D00A82A88 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCE2EE1212913F2D00A82A88 /* libpthread.dylib */; };
-		FCE2EE2412913FCA00A82A88 /* PixelPusher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */; };
 		FCFECB6411EC0D2000BBBE2A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */; };
 		FCFECB6C11EC0D5200BBBE2A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6B11EC0D5200BBBE2A /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
@@ -411,8 +410,6 @@
 		FC141A641285415900166578 /* XFileHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFileHelper.h; sourceTree = "<group>"; };
 		FC141A651285415900166578 /* XFileImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFileImporter.h; sourceTree = "<group>"; };
 		FC141A661285415900166578 /* XFileParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFileParser.h; sourceTree = "<group>"; };
-		FC141A851285415900166578 /* MachineGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MachineGun.cpp; sourceTree = "<group>"; };
-		FC141A861285415900166578 /* MachineGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineGun.h; sourceTree = "<group>"; };
 		FC141A871285415900166578 /* MemoryLeak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeak.h; sourceTree = "<group>"; };
 		FC141A881285415900166578 /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
 		FC141A891285415900166578 /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
@@ -439,6 +436,8 @@
 		FC5F1EBB129A13FD00E5F9FB /* point3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = point3d.h; sourceTree = "<group>"; };
 		FC5F1EBC129A13FD00E5F9FB /* shareddata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shareddata.h; sourceTree = "<group>"; };
 		FC5F1EBD129A13FD00E5F9FB /* tinyvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyvector.h; sourceTree = "<group>"; };
+		FC6CE5F612F6966100CCE264 /* MainMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainMenu.cpp; sourceTree = "<group>"; };
+		FC6CE5F712F6966100CCE264 /* MainMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenu.h; sourceTree = "<group>"; };
 		FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteGun.cpp; sourceTree = "<group>"; };
 		FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteGun.h; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -485,8 +484,6 @@
 		FCDFB0E012B1A7B400A0B4E1 /* AtlasSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtlasSprite.h; sourceTree = "<group>"; };
 		FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AtlasSprite.cpp; sourceTree = "<group>"; };
 		FCE2EE1212913F2D00A82A88 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
-		FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PixelPusher.cpp; sourceTree = "<group>"; };
-		FCE2EE2312913FCA00A82A88 /* PixelPusher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PixelPusher.h; sourceTree = "<group>"; };
 		FCFE11DC12D4F94100FC246E /* curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
 		FCFE11DD12D4F94100FC246E /* curlbuild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlbuild.h; sourceTree = "<group>"; };
 		FCFE11E012D4F94100FC246E /* curlrules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlrules.h; sourceTree = "<group>"; };
@@ -575,25 +572,23 @@
 			isa = PBXGroup;
 			children = (
 				FCDE086912D924A3004CE9B7 /* libmodplug */,
+				FC5F1EB5129A13FD00E5F9FB /* octree */,
+				FC1417741285415800166578 /* assimp */,
+				FC14188C1285415800166578 /* contrib */,
+				FC1419B91285415900166578 /* include */,
+				FC1419B61285415900166578 /* foo.h */,
 				FC10A31E129E3EB70056E630 /* micropather.cpp */,
 				FC10A31F129E3EB70056E630 /* micropather.h */,
 				FC10A320129E3EB70056E630 /* ModelOctree.cpp */,
 				FC10A321129E3EB70056E630 /* ModelOctree.h */,
-				FC5F1EB5129A13FD00E5F9FB /* octree */,
-				FC1417741285415800166578 /* assimp */,
-				FC14188C1285415800166578 /* contrib */,
-				FC1419B61285415900166578 /* foo.h */,
-				FC1419B91285415900166578 /* include */,
-				FC141A851285415900166578 /* MachineGun.cpp */,
-				FC141A861285415900166578 /* MachineGun.h */,
 				FC141A871285415900166578 /* MemoryLeak.h */,
 				FC141A8A1285415900166578 /* OpenGLCommon.h */,
 				FC1419B51285415900166578 /* Engine.h */,
 				FC1419B41285415900166578 /* Engine.cpp */,
+				FC6CE5F712F6966100CCE264 /* MainMenu.h */,
+				FC6CE5F612F6966100CCE264 /* MainMenu.cpp */,
 				FC141A891285415900166578 /* Model.h */,
 				FC141A881285415900166578 /* Model.cpp */,
-				FCE2EE2312913FCA00A82A88 /* PixelPusher.h */,
-				FCE2EE2212913FCA00A82A88 /* PixelPusher.cpp */,
 				FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */,
 				FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */,
 				FCDFB0E012B1A7B400A0B4E1 /* AtlasSprite.h */,
@@ -1203,9 +1198,7 @@
 				FC141C101285415900166578 /* trees.c in Sources */,
 				FC141C121285415900166578 /* zutil.c in Sources */,
 				FC141C151285415900166578 /* Engine.cpp in Sources */,
-				FC141C351285415900166578 /* MachineGun.cpp in Sources */,
 				FC141C361285415900166578 /* Model.cpp in Sources */,
-				FCE2EE2412913FCA00A82A88 /* PixelPusher.cpp in Sources */,
 				FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */,
 				FC10A322129E3EB70056E630 /* micropather.cpp in Sources */,
 				FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */,
@@ -1245,6 +1238,7 @@
 				FCDE08AD12D924A3004CE9B7 /* snd_fx.cpp in Sources */,
 				FCDE08AE12D924A3004CE9B7 /* sndfile.cpp in Sources */,
 				FCDE08AF12D924A3004CE9B7 /* sndmix.cpp in Sources */,
+				FC6CE5F812F6966100CCE264 /* MainMenu.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
