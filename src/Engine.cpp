@@ -46,9 +46,12 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_SimulationTime = 0.0;		
 	m_GameState = -1;
-	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
-	//m_FooFoos.resize(m_ModelFoos->size());
 	
+	
+	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
+	
+	/*
+	//m_FooFoos.resize(m_ModelFoos->size());
 	int m_PostProcessFlags = aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality; 
 	//aiProcess_ImproveCacheLocality | aiProcess_GenNormals; //aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
 	for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
@@ -62,6 +65,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 		}
 		m_Importer.FreeScene();
 	}
+	*/
 	
 
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
@@ -71,13 +75,15 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_CULL_FACE);
+    glEnable(GL_LIGHTING);
 
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glLoadIdentity();
 
+	
 
 	//4458 vs 1114
 	//m_AudioDivisor = 3;
@@ -208,14 +214,43 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
+			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
+			gluPerspective(60.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
+
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
+				
 				glLoadIdentity();
 				//TODO: screen rotation
 				//glRotatef(m_SimulationTime, 0.0, 0.0, 1.0);
+				
+				
+				GLfloat global_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+				glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
+				
+				// Define the ambient component of the first light
+				GLfloat lightDiffuseLamp[] = {0.5, 0.5, 0.5, 1.0};
+				GLfloat lightAmbientLamp[] = {1.0, 1.0, 1.0, 1.0};
+				GLfloat lightPositionLamp[] = {0.0 + fastSinf(m_SimulationTime), 0.0, 0.0};
+
+
+				glEnable(GL_LIGHT0 );
+				glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuseLamp  );
+				glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
+				glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
+				glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
+
+
+				
+				
+				
 				gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+
+
+				
+				
 				for (unsigned int i=0; i<m_Models.size(); i++) {
 					m_Models[i]->Render();
 				}

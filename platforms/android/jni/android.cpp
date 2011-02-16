@@ -44,6 +44,7 @@ public:
     //int div = 2; //sizeof(short);
     int pos = (buffer_position % div);
     int len = min_buffer / div;
+    //LOGV("len buffer: %d\n", len);
     int off = 0;
     if (buffer) {
       g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
@@ -55,16 +56,14 @@ public:
 };
 
 
-#include "Audio.h"
 #include "Model.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
 #include "Engine.h"
-#include "MachineGun.h"
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "PixelPusher.h"
+#include "MainMenu.h"
 
 
 extern "C" {
@@ -92,7 +91,7 @@ static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
 
 
-static PixelPusher *gameController;
+static Engine *gameController;
 static int  sWindowWidth  = 0;
 static int  sWindowHeight = 0;
 static int gameState;
@@ -167,7 +166,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	for (int i=0; i<count; i++) {
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-  gameController = new PixelPusher(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer);
+  //LOGV("min buffer: %d\n", min_buffer);
+  gameController = new MainMenu(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer, 16);
   gameController->CreateThread(Callbacks::PumpAudio);
   gameState = 1;
 }

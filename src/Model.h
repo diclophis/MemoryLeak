@@ -137,4 +137,5 @@ public:
 	int m_Direction;
 	int m_FramesOfAnimationCount;	
 	std::vector<void *> *m_Steps;
+	float m_Fps;
 };

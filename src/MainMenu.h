@@ -4,6 +4,12 @@ class MainMenu : public Engine {
 
 public:
 
+	float m_CameraRotation;
+	float m_CameraHeight;
+	float *m_Touches;
+	float m_CameraRotationSpeed;
+	float m_CameraClimbSpeed;
+	
 	MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd);
 	~MainMenu();
 	void Hit(float x, float y, int hitState);

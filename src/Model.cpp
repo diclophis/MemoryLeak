@@ -61,14 +61,15 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 	m_IsFalling = false;
 
 	m_Life = 0.0;
-
+	m_Fps = 1.0;
+	
 	SetScale(1.0, 1.0, 1.0);
 	SetPosition(0.0, 0.0, 0.0);
 	SetRotation(0.0, 0.0, 0.0);
 	SetVelocity(0.0, 0.0, 0.0);
 	m_Steps = new std::vector<void *>;
 	
-	m_FramesOfAnimationCount = m_FooFoo->m_AnimationEnd - m_FooFoo->m_AnimationStart;	
+	m_FramesOfAnimationCount = m_FooFoo->m_numFrames; //m_FooFoo->m_AnimationEnd - m_FooFoo->m_AnimationStart;	
 }
 
 
@@ -80,7 +81,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	int interp = 2;
 
 	if (a->mRootNode->mNumMeshes > 1) {
-		ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp) + 1;
+		ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);
 	} else {
 		interp = 1;
 		ff->m_numFrames = a->mRootNode->mNumMeshes;
@@ -125,7 +126,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 				indices[j+2] = a->mMeshes[mm]->mFaces[i].mIndices[2];
 			}
 			
-			if (iiii == 0) {
+			if (iiii == 0 || (mm + 1) == a->mRootNode->mNumMeshes) {
 				for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
 					vertices[jk] = a->mMeshes[mm]->mVertices[ik][0];
 					vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1];
@@ -142,7 +143,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 				glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
 				used_buffer++;
 			} else {
-				if (mm <a->mRootNode->mNumMeshes-1) {
+				//if (mm < (a->mRootNode->mNumMeshes - 1)) {
 					float percent_of_way = (float)iiii / (float)interp;
 
 					for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
@@ -160,7 +161,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 					glBindBuffer(GL_ARRAY_BUFFER, ff->m_NormalBuffers[used_buffer]);
 					glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
 					used_buffer++;
-				}
+				//}
 			}
 			
 			delete vertices;
@@ -265,10 +266,8 @@ float Model::Simulate(float dt, bool pushing) {
 	
 	
 	if (m_FooFoo->m_numFrames > 1) {
-
 		m_Life += dt;
-		float fps = 60.0;
-		if (m_Life > (1.0 / (float)fps)) {
+		if (m_Life > (1.0 / (float)m_Fps)) {
 			m_Frame++;
 			m_Life = 0.0;
 		}
