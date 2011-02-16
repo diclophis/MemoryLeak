@@ -182,6 +182,7 @@ int Engine::RunThread() {
 		if (m_PumpedAudioLastTick) {			
 			if (m_IsPushingAudio) {
 				int len = m_AudioBufferSize / m_AudioDivisor;
+				//LOGV("modplug read: %d\n", len);
 				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
 				//LOGV("just read this much size/len: %d %d\n", m_AudioBufferSize, len);
 				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);

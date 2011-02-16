@@ -37,25 +37,8 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
 #define PLAYBACK_FREQ 44100
-#define AUDIO_BUFFER_SIZE (1024)
-#define AUDIO_SUB_DIVIDE 1
-#define SOUND_BUFFER_NB 4
-#define AUDIO_SEG (1024)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#define BUF_SIZE 32768
+#define AUDIO_BUFFER_SIZE (1536)
+#define BUF_SIZE 64
 
 struct buf_t {
 	volatile int writepos;
@@ -70,11 +53,17 @@ void produce (buf_t *b, void * e) {
 }
 
 volatile void *consume (buf_t *b) {
-    while (b->readpos == b->writepos); // nothing to consume. wait
+    //while (b->readpos == b->writepos); // nothing to consume. wait
+	if (b->readpos == b->writepos) {
+		return NULL;
+	}
+	
     int next = (b->readpos+1) % BUF_SIZE;
     volatile void *res = b->buffer[b->readpos]; b->readpos = next;
     return res;
 }
+
+buf_t *ring;
 
 buf_t *alloc () {
     buf_t *b = (buf_t *)malloc(sizeof(buf_t));
@@ -82,40 +71,16 @@ buf_t *alloc () {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
-		
+
+			void *f = (void *)malloc(sizeof(short) * 1024);
+			memcpy(f, b, 1024);
+			produce (ring, f);
+
+		//memcpy(buffer_ana[buffer_ana_gen_ofs], (short *)b + (i * len), len);
+
+		/*
 		if (m_SyncAudio) {
 			pthread_mutex_lock(&m_Mutex);
 			pthread_cond_wait(&m_AudioSyncCond, &m_Mutex);
@@ -148,8 +113,12 @@ class Callbacks {
 		
 		//pthread_cond_signal(&m_AudioSyncCond);
 		
+		
+		
 		return (void *)r;
-
+		*/
+		
+		return (void *)true;
 	};
 };
 
@@ -249,7 +218,7 @@ void propertyListenerCallback (void                   *inUserData,
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 2;
+	animationFrameInterval = 1;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -411,10 +380,28 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
+
+	LOGV("wants: %d %d\n", ioDataList->mNumberBuffers, ioData->mDataByteSize);
+	
+	if (m_SyncAudio) {
+		void *b;
+		if ((b = (void *)consume(ring))) {
+			memcpy(ioData->mData, b, ioData->mDataByteSize);
+		} else {
+			*ioActionFlags = kAudioUnitRenderAction_OutputIsSilence;
+			memset(ioData->mData, 0, ioData->mDataByteSize);
+
+			//for(unsigned int currentBuffer = 0; currentBuffer < ioData->mNumberBuffers; ++currentBuffer) {
+			//	memset(ioData->mBuffers[currentBuffer].mData, 0, ioData->mBuffers[currentBuffer].mDataByteSize);
+			//}
+		}			
+	}
+	
+	//LOGV("got: %d\n", ioData->mDataByteSize);
+
+	/*
 	int len = AUDIO_SEG;
 
-	LOGV("wants: %d\n", ioData->mDataByteSize);
-	
 	int desired = ioData->mDataByteSize;
 	
 	ioData->mDataByteSize = 0;
@@ -452,6 +439,8 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	pthread_cond_signal(&m_AudioSyncCond);
 
+	*/
+	
     return noErr;
 }
 
@@ -565,6 +554,7 @@ static OSStatus playbackCallback(void *inRefCon,
 								  sizeof(callbackStruct));
 	checkStatus(status);
 	
+	/*
 	buffer_ana_flag=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
 	buffer_ana=(AudioUnitSampleType**)malloc(SOUND_BUFFER_NB*sizeof(AudioUnitSampleType *));
 	for (int i=0;i<SOUND_BUFFER_NB;i++) {
@@ -574,6 +564,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	buffer_ana_gen_ofs = 0;
 	buffer_ana_play_ofs = 0;
+	*/
 	
 	Float32 aBufferLength; // In seconds
 	UInt32 size = sizeof(aBufferLength);
@@ -585,7 +576,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	LOGV("current duration: %f\n", aBufferLength);
 	
 	
-	aBufferLength = 0.005;
+	aBufferLength = 1.0;
 	
 	status = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, 
 							size, &aBufferLength);
@@ -679,9 +670,12 @@ static OSStatus playbackCallback(void *inRefCon,
 		pthread_mutex_init(&m_Mutex, NULL);
 
 		m_SyncAudio = false;
+		
+		ring = alloc();
+		
 		[self initAudio2];
 		
-		game = new MainMenu(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, AUDIO_SUB_DIVIDE);
+		game = new MainMenu(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
 		game->CreateThread(Callbacks::PumpAudio);
 		
 		gameState = 1;

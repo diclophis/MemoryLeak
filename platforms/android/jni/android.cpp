@@ -46,6 +46,7 @@ public:
     int len = min_buffer / div;
     //LOGV("len buffer: %d\n", len);
     int off = 0;
+    LOGV("len to copy out: %d\n", len); 
     if (buffer) {
       g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
       g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, off, len);
