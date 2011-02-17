@@ -10,6 +10,7 @@
 
 #include "Model.h"
 #include "AtlasSprite.h"
+#include "SpriteGun.h"
 
 
 #include "Engine.h"
@@ -274,9 +275,11 @@ void Engine::DrawScreen(float rotation) {
 			glPushMatrix();
 			{
 				glLoadIdentity();
+				for (unsigned int i=0; i<m_AtlasSprites.size(); i++) {
+					m_AtlasSprites[i]->Render();
+				}				
 				Render();
 				AtlasSprite::ReleaseBuffers();
-				
 			}
 			glPopMatrix();
 		}

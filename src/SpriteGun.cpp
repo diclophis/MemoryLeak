@@ -3,9 +3,9 @@
 
 #include "MemoryLeak.h"
 #include "AtlasSprite.h"
+#include "SpriteGun.h"
 #include "Model.h"
 #include "Engine.h"
-#include "SpriteGun.h"
 
 
 void SpriteGun::Build(int n) {

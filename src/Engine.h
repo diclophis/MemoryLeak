@@ -83,6 +83,7 @@ public:
 	std::vector<foo *> *m_SoundFoos;
 	Assimp::Importer m_Importer;
   std::vector<Model *> m_Models;
+  std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;
   std::vector<ModPlugFile *>m_Sounds;
 

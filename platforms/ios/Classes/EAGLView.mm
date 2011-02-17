@@ -233,17 +233,17 @@ void propertyListenerCallback (void                   *inUserData,
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	m_SyncAudio = !m_SyncAudio;
 	if (animating) {
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
-		UITouch* touch;
-		bounds = [self bounds];
-		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
-		location = [touch locationInView:self];
-		location.y = location.y;		
-		game->Hit(location.x, location.y, 0);
+		bounds = [self bounds];
+		for (UITouch *touch in touches) {			
+			//touch = [[allTouches allObjects] objectAtIndex:0];
+			location = [touch locationInView:self];
+			location.y = location.y;
+			game->Hit(location.x, location.y, 1);
+		}
 	}
 }
 
@@ -252,28 +252,30 @@ void propertyListenerCallback (void                   *inUserData,
 	if (animating) {
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
-		UITouch* touch;
-		bounds = [self bounds];
-		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
-		location = [touch locationInView:self];
-		location.y = location.y;
-		game->Hit(location.x, location.y, 1);
+		bounds = [self bounds];
+		for (UITouch *touch in touches) {			
+			//touch = [[allTouches allObjects] objectAtIndex:0];
+			location = [touch locationInView:self];
+			location.y = location.y;
+			game->Hit(location.x, location.y, 1);
+		}
 	}
 }
 
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (animating) {		
+	if (animating) {
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
-		UITouch* touch;
-		bounds = [self bounds];
-		touch = [[allTouches allObjects] objectAtIndex:0];
 		CGPoint location;
-		location = [touch locationInView:self];
-		location.y = location.y;
-		game->Hit(location.x, location.y, 2);
+		bounds = [self bounds];
+		for (UITouch *touch in touches) {			
+			//touch = [[allTouches allObjects] objectAtIndex:0];
+			location = [touch locationInView:self];
+			location.y = location.y;
+			game->Hit(location.x, location.y, 1);
+		}
 	}
 }
 
@@ -380,7 +382,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-	LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
+	//LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
 	
 	if (m_SyncAudio) {
 		void *b;
@@ -679,8 +681,8 @@ static OSStatus playbackCallback(void *inRefCon,
 		
 		gameState = 1;
 	
-		status = AudioOutputUnitStart(audioUnit);
-		checkStatus(status);
+		//status = AudioOutputUnitStart(audioUnit);
+		//checkStatus(status);
 	}
 }
 

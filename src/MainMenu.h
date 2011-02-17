@@ -10,6 +10,10 @@ public:
 	float m_CameraRotationSpeed;
 	float m_CameraClimbSpeed;
 	
+	float leftSliderValue;
+	float rightSliderValue;
+	
+	
 	MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd);
 	~MainMenu();
 	void Hit(float x, float y, int hitState);
