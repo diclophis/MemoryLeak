@@ -22,7 +22,7 @@ namespace ModPlug
 		//MODPLUG_ENABLE_NOISE_REDUCTION,
 		1,
 		16,
-		44100,
+		8000,
 		//22050,
 		//11025,
 		//22050,

@@ -180,9 +180,9 @@ void Model::Render() {
 	glPushMatrix();
 	{
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
-		//glRotatef(m_Rotation[0],0,0,1);
-		//glRotatef(m_Rotation[1],0,1,0);
-		//glRotatef(m_Rotation[2],1,0,0);
+		glRotatef(m_Rotation[0],0,0,1);
+		glRotatef(m_Rotation[1],0,-1,0);
+		glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
 		if (m_Texture != g_lastTexture) {
@@ -275,6 +275,14 @@ float Model::Simulate(float dt, bool pushing) {
 		if (m_Frame >= m_FramesOfAnimationCount) {
 			m_Frame = 0;
 		}
+		
+		float tx = -sin(DEGREES_TO_RADIANS(m_Rotation[1]));
+		float tz = cos(DEGREES_TO_RADIANS(m_Rotation[1]));
+		
+		m_Position[0] -= tx * (m_Velocity[0] * dt);
+		m_Position[1] += 0.0;
+		m_Position[2] -= tz * (m_Velocity[0] * dt);
+		
 	} else {
 	
 		if (m_Life < 0.0) {

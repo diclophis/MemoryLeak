@@ -47,7 +47,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models[1]->SetTexture(m_Textures->at(1));
 	m_Models[1]->SetFrame(0);
 	m_Models[1]->SetPosition(0.0, -0.675, 0.0);
-	m_Models[1]->SetScale(1024.0, 0.25, 1024.0);
+	m_Models[1]->SetScale(512.0, 0.25, 512.0);
 
 }
 
@@ -56,6 +56,14 @@ MainMenu::~MainMenu() {
 
 void MainMenu::Hit(float x, float y, int hitState) {
 	m_Models[0]->m_Fps += 1.0;
+	m_Models[0]->m_IsMoving = true;
+	
+	if (x > 160) {
+		m_Models[0]->m_Rotation[1] += 1;
+	} else {
+		m_Models[0]->m_Rotation[1] -= 1;
+	}
+	
 	//m_IsPushingAudio = !m_IsPushingAudio;
 }
 
@@ -65,9 +73,16 @@ void MainMenu::Build() {
 
 int MainMenu::Simulate() {
 	
+	//m_Models[0]->m_Velocity[2] = m_Models[0]->m_Position[2] - m_Models[0]->m_Fps;
+	//m_Models[0]->m_Velocity[0] = m_Models[0]->m_Position[0] + fastSinf(m_SimulationTime);
+
+	
+	m_Models[0]->m_Velocity[0] = 25.0;
+	//m_Models[0]->m_Rotation[1] = fastSinf(m_SimulationTime * 0.25) * 360.0;
+	
 	m_Models[0]->Simulate(m_DeltaTime, false);
 
-	if (m_IsPushingAudio) {
+	if (false) {
 		m_CameraTarget[0] = m_Models[0]->m_Position[0];
 		m_CameraTarget[1] = m_Models[0]->m_Position[1];
 		m_CameraTarget[2] = m_Models[0]->m_Position[2];
@@ -82,14 +97,34 @@ int MainMenu::Simulate() {
 		m_CameraPosition[0] = cx;
 		m_CameraPosition[1] = m_CameraTarget[1] + m_CameraHeight;
 		m_CameraPosition[2] = cz;
-	} else {
+	} else if (true) {
+		float tx = -sin(DEGREES_TO_RADIANS(m_Models[0]->m_Rotation[1]));
+		float tz = cos(DEGREES_TO_RADIANS(m_Models[0]->m_Rotation[1]));
+		
+		m_CameraTarget[0] = m_Models[0]->m_Position[0] - (tx * 200.0);
+		m_CameraTarget[1] = 0.5;
+		m_CameraTarget[2] = m_Models[0]->m_Position[2] - (tz * 200.0);
+		
+		m_CameraPosition[0] = m_Models[0]->m_Position[0] + (tx * 5.0);
+		m_CameraPosition[1] = 1.25;
+		m_CameraPosition[2] = m_Models[0]->m_Position[2] + (tz * 5.0);
+		
+	} else if (false) {
 		m_CameraTarget[0] = 0.0;
 		m_CameraTarget[1] = 0.0;
-		m_CameraTarget[2] = -1.0;
+		m_CameraTarget[2] = 0.0;
+		
+		m_CameraPosition[0] = 1.0;
+		m_CameraPosition[1] = 100.0;
+		m_CameraPosition[2] = 1.0;
+	} else {
+		m_CameraTarget[0] = m_Models[0]->m_Position[0];
+		m_CameraTarget[1] = m_Models[0]->m_Position[1];
+		m_CameraTarget[2] = m_Models[0]->m_Position[2] - 5.0;
 		
 		m_CameraPosition[0] = m_Models[0]->m_Position[0];
-		m_CameraPosition[1] = m_Models[0]->m_Position[1] + 0.25;
-		m_CameraPosition[2] = m_Models[0]->m_Position[2] + 0.5;
+		m_CameraPosition[1] = m_Models[0]->m_Position[1] + 1.0;
+		m_CameraPosition[2] = m_Models[0]->m_Position[2] + 10.0;
 	}
 	
 	return 1;

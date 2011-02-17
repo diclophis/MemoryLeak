@@ -36,20 +36,21 @@ static AudioUnitSampleType **buffer_ana;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 static volatile int *buffer_ana_flag;
 
-#define PLAYBACK_FREQ 44100
-#define AUDIO_BUFFER_SIZE (1536)
-#define BUF_SIZE 64
+#define PLAYBACK_FREQ 8000
+#define AUDIO_BUFFER_SIZE (186)
+#define BUF_SIZE 4
 
 struct buf_t {
 	volatile int writepos;
-	volatile void *buffer[BUF_SIZE]; 
+	volatile void **buffer[BUF_SIZE][AUDIO_BUFFER_SIZE]; 
     volatile int readpos;
 };
 
-void produce (buf_t *b, void * e) {
+void *produce (buf_t *b) {
     int next = (b->writepos+1) % BUF_SIZE;
-    while (b->readpos == next); // queue is full. wait
-    b->buffer[b->writepos] = e; b->writepos = next;
+    if (b->readpos == next); // queue is full. wait
+	b->writepos = next;
+	return b->buffer[b->writepos];
 }
 
 volatile void *consume (buf_t *b) {
@@ -74,9 +75,8 @@ buf_t *alloc () {
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
 
-			void *f = (void *)malloc(sizeof(short) * 1024);
-			memcpy(f, b, 1024);
-			produce (ring, f);
+			//void *f = (void *)malloc(sizeof(short) * 1024);
+		memcpy(produce(ring), b, AUDIO_BUFFER_SIZE);
 
 		//memcpy(buffer_ana[buffer_ana_gen_ofs], (short *)b + (i * len), len);
 
@@ -380,8 +380,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-
-	LOGV("wants: %d %d\n", ioDataList->mNumberBuffers, ioData->mDataByteSize);
+	LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
 	
 	if (m_SyncAudio) {
 		void *b;
@@ -495,7 +494,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	audioFormat.mSampleRate        = 44100.0;
 	 */
 	
-	audioFormat.mSampleRate			= 44100.00;
+	audioFormat.mSampleRate			= PLAYBACK_FREQ;
 	audioFormat.mFormatID			= kAudioFormatLinearPCM;
 	audioFormat.mFormatFlags		= kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
 	audioFormat.mFramesPerPacket	= 1;
