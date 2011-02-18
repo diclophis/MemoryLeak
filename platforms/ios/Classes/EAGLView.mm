@@ -242,7 +242,7 @@ void propertyListenerCallback (void                   *inUserData,
 			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
-			game->Hit(location.x, location.y, 1);
+			game->Hit(location.x, location.y, 0);
 		}
 	}
 }
@@ -274,7 +274,7 @@ void propertyListenerCallback (void                   *inUserData,
 			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
-			game->Hit(location.x, location.y, 1);
+			game->Hit(location.x, location.y, 2);
 		}
 	}
 }
@@ -290,7 +290,7 @@ void propertyListenerCallback (void                   *inUserData,
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = location.y;
-		game->Hit(location.x, location.y, 0);
+		game->Hit(location.x, location.y, -1);
 	}
 }
 

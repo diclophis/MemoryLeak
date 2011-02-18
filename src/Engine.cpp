@@ -76,7 +76,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_CULL_FACE);
-    glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
 
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -217,7 +217,7 @@ void Engine::DrawScreen(float rotation) {
 		{
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
-			gluPerspective(60.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
+			gluPerspective(50, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.5, 400.0);		
 
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
@@ -228,6 +228,7 @@ void Engine::DrawScreen(float rotation) {
 				//glRotatef(m_SimulationTime, 0.0, 0.0, 1.0);
 				
 				
+				/*
 				GLfloat global_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 				glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 
@@ -243,7 +244,7 @@ void Engine::DrawScreen(float rotation) {
 				glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
 				glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
 				glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
-
+				*/
 
 				
 				

@@ -13,6 +13,7 @@ public:
 	float leftSliderValue;
 	float rightSliderValue;
 	
+	int m_CameraIndex;
 	
 	MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd);
 	~MainMenu();
