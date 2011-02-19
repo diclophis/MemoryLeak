@@ -11,9 +11,9 @@
 
 #include "MainMenu.h"
 
-#define kMaxTankSpeed 35.0
+#define kMaxTankSpeed 0.0
 #define kTurnRate 1.0
-#define kTankAcceleration 1.0
+#define kTankAcceleration 0.0
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
@@ -217,3 +217,41 @@ void MainMenu::Render() {
 	
 }
 
+
+void MainMenu::Build(int n) {
+	m_NumParticles = n;
+	m_ShootInterval = 1.0;
+	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
+		//m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_ShotAnimation, m_ShotStart, m_ShotEnd, m_ShotMaxLife));
+		ResetParticle(idx);
+	}
+}
+
+
+void MainMenu::Reset() {
+	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
+		ResetParticle(idx);
+	}
+}
+
+
+void MainMenu::ResetParticle(int idx) {
+	/*
+	m_AtlasSprites[idx]->SetLife(0.0 - (randf() * 20));
+	m_AtlasSprites[idx]->SetScale(1.0, 1.0);
+	m_AtlasSprites[idx]->m_Frame = 0;
+	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
+	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
+	m_AtlasSprites[idx]->m_IsAlive = false;
+	*/
+}
+
+
+void MainMenu::ShootParticle(int idx) {
+	/*
+	m_AtlasSprites[idx]->SetLife(0.0);
+	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
+	m_AtlasSprites[idx]->SetVelocity(m_EmitVelocity[0], m_EmitVelocity[1]);
+	m_AtlasSprites[idx]->m_IsAlive = true;
+	*/
+}
