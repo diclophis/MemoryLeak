@@ -16,13 +16,7 @@
 
 
 
-/* Global ambient light. */
-static const GLfloat globalAmbient[4]      = { 0.0, 0.0, 0.0, 1.0 };
 
-/* Lamp parameters. */
-static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 0.85, 1.0 };
-static const GLfloat lightAmbientLamp[4]   = { 0.4, 0.4, 0.20, 1.0 };
-static const GLfloat lightPositionLamp[4]  = { 0.0, 50.0, 50.0, 0.0 };
 
 
 #ifndef DESKTOP
@@ -92,17 +86,10 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST );
 	
-	
 	glShadeModel( GL_SMOOTH );
 	
 	
-	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, globalAmbient );
-	// Set up light source
-	glEnable( GL_LIGHT0 );
-	glLightfv(  GL_LIGHT0, GL_DIFFUSE,  lightDiffuseLamp  );
-	glLightfv(  GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
-	glLightfv(  GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
-	glLightfv(  GL_LIGHT0, GL_POSITION, lightPositionLamp );
+
 	
 	
 	
@@ -250,7 +237,7 @@ void Engine::DrawScreen(float rotation) {
 		//glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
-		glEnable(GL_LIGHTING);
+		//glEnable(GL_LIGHTING);
 		glDepthFunc(GL_LESS);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -270,7 +257,7 @@ void Engine::DrawScreen(float rotation) {
 		}
 		glPopMatrix();
 		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
+		//glDisable(GL_LIGHTING);
 		//glDisable(GL_CULL_FACE);
 		//glEnable(GL_BLEND);
 		//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

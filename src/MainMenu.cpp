@@ -11,41 +11,23 @@
 
 #include "MainMenu.h"
 
-#define kMaxTankSpeed 1.0
+#define kMaxTankSpeed 25.0
 #define kTurnRate 1.0
 #define kTankAcceleration 0.25
 
 
-#define WATER_VERTICES      4
-#define RIPPLE_SEGMENTS     64
-
-/** Vertices for the water object. */
-static const GLfloat objVertexDataWater[]=
-{
--10000.f, 0.f, -10000.f,
-10000.f, 0.f, -10000.f,
-10000.f, 0.f,  10000.f,
--10000.f, 0.f,  10000.f
-};
-
-/** Indices to the water object vertices. */
-static const GLubyte objIndicesWater[]=
-{ 1, 0, 2, 3 };
-
-/** Materials for the duck object. */
-static const GLfloat objDiffuseDuck[4]     = { 0.6, 0.6, 0.10, 1.0 };
-static const GLfloat objAmbientDuck[4]     = { 0.5, 0.4, 0.05, 1.0 };
-static const GLfloat objSpecularDuck[4]    = { 0.8, 0.8, 0.20, 1.0 };
-static const GLfloat objEmissionDuck[4]    = { 0.2, 0.2, 0.00, 1.0 };
-
-/** Materials for the underwater duck object. */
-static const GLfloat objDiffuseSunkenDuck[4]     = { 0.4, 0.4, 0.60, 1.0 };
-static const GLfloat objAmbientSunkenDuck[4]     = { 0.4, 0.3, 0.65, 1.0 };
-static const GLfloat objSpecularSunkenDuck[4]    = { 0.6, 0.6, 0.80, 1.0 };
-static const GLfloat objEmissionSunkenDuck[4]    = { 0.0, 0.0, 0.20, 1.0 };
 
 
-static const GLfloat lightPositionLamp[4]  = { 0.0, 50.0, 50.0, 0.0 };
+
+
+
+/* Global ambient light. */
+static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
+
+/* Lamp parameters. */
+static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 1.0, 1.0 };
+static const GLfloat lightAmbientLamp[4]   = { 0.4, 0.4, 0.4, 1.0 };
+static const GLfloat lightPositionLamp[4]  = { 0.0, 5.0, 0.0, 0.0 };
 
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
@@ -86,7 +68,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models.push_back(new Model(m_FooFoos.at(0)));
 	m_Models[0]->SetTexture(m_Textures->at(0));
 	m_Models[0]->SetFrame(0);
-	m_Models[0]->SetPosition(0.0, 1.0, 0.0);
+	m_Models[0]->SetPosition(0.0, 0.65, 0.0);
 	m_Models[0]->SetScale(4.0, 4.0, 4.0);
 
 	m_Models.push_back(new Model(m_FooFoos.at(2)));
@@ -113,82 +95,8 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	BuildParticles(100);
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-iRippleVertices = new GLfloat[(RIPPLE_SEGMENTS * 2) * 3];
-iRippleIndices = new GLushort[RIPPLE_SEGMENTS * 2 + 2];
-
-	
-// Calculate the ripple triangle strip indices now, since they won't change.
-// The ripples are drawn as a triangle strip, which goes around a full circle.
-for (GLint i = 0; i < RIPPLE_SEGMENTS * 2 + 2; i++)
-{
-iRippleIndices[i] = i % (RIPPLE_SEGMENTS * 2);
-}
-
-// Create the needed vertex buffers object names
-//glGenBuffers( 1, &iVertexDataBufferId );
-//glGenBuffers( 1, &iNormalDataBufferId );
-//glGenBuffers( 1, &iIndexDataBufferId );
-
-/*
-// Create the vertex buffer object for duck vertices
-glBindBuffer( GL_ARRAY_BUFFER, iVertexDataBufferId );
-glBufferData( GL_ARRAY_BUFFER,
-				   ( sizeof(GLfloat) * NUM_DUCK_VERTICES * 3 ),  // Size of the data array
-				   objVertexdataDuck,      // Vertices
-				   GL_STATIC_DRAW );           // Hint that the object data is static (non-changing)
-
-// Create the vertex buffer object for duck normals
-glBindBuffer( GL_ARRAY_BUFFER, iNormalDataBufferId );
-glBufferData( GL_ARRAY_BUFFER,
-				   ( sizeof(GLbyte) * NUM_DUCK_VERTICES * 3 ),// Size of the data array
-				   objNormaldataDuck,    // Normals
-				   GL_STATIC_DRAW );             // Hint that the object data is static (non-changing)
-
-// Create the vertex buffer object for duck indices
-glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, iIndexDataBufferId );
-glBufferData( GL_ELEMENT_ARRAY_BUFFER,
-				   ( sizeof(GLubyte) * NUM_DUCK_FACES * 3 ), // Size of the index array
-				   objFacedataDuck,              // No data pointer given (creates empty buffer)
-				   GL_STATIC_DRAW );             // Hint that the object data is static (non-changing)
-*/
 
 
-
-
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
 
 MainMenu::~MainMenu() {
@@ -233,55 +141,18 @@ void MainMenu::Build() {
 }
 
 int MainMenu::Simulate() {
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	int shot_this_tick = 0;
 	int not_shot_this_tick = 0;
-	float m_ShotMaxLife = 1.0;
+	float m_ShotMaxLife = 0.5;
 
-	float g = 20.0;
+	float g = 200.0;
 	float x = 0.0;
 	float y = 0.0;
 	
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		int o = m_ParticlesOffset + idx;
 
-		if ((shot_this_tick < 2) && ((m_Models[o]->m_Life > m_ShotMaxLife) || !m_Models[o]->m_IsAlive)) {
+		if ((shot_this_tick < 12) && ((m_Models[o]->m_Life > m_ShotMaxLife) || !m_Models[o]->m_IsAlive)) {
 			ShootParticle(o);
 			shot_this_tick++;
 		} else {
@@ -357,6 +228,7 @@ int MainMenu::Simulate() {
 		}
 	}
 	
+	m_Models[0]->m_Life += m_DeltaTime;
 	m_Models[0]->Simulate(m_DeltaTime, false);
 
 	if (m_CameraIndex == 0) {
@@ -415,121 +287,50 @@ int MainMenu::Simulate() {
 }
 
 void MainMenu::RenderModelPhase() {
-
 	
+	//glEnable(GL_LIGHTING);
 	
+	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, globalAmbient );
+	// Set up light source
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuseLamp  );
+	glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
 	
+	/*
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_AMBIENT,   objAmbientSunkenDuck  );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_DIFFUSE,   objDiffuseSunkenDuck  );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_SPECULAR,  objSpecularSunkenDuck );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_EMISSION,  objEmissionSunkenDuck );
 	glMaterialx(    GL_FRONT_AND_BACK, GL_SHININESS,     5 << 16     );
-		
+	*/
+	
 	float old_scale = m_Models[0]->m_Scale[1];
-	m_Models[0]->m_Scale[1] = old_scale + (fastSinf(m_SimulationTime * 2.0) * 0.9);
+	m_Models[0]->m_Scale[1] = old_scale + (fastSinf(m_SimulationTime * 1.0) * 0.2);
 	
+	glFrontFace(GL_CW);
 	DrawPlayer(-1.0);
-	
-	glDisable( GL_LIGHTING );
-	glDisableClientState(GL_NORMAL_ARRAY);
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glNormal3f( 0.f, 1.f, 0.f );
-	RenderModelRange(1, 2);
-	//glDisable(GL_BLEND);	
-	glEnable(GL_LIGHTING);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	
-	// Draw semitransparent water surface
-	//DrawWater();
-	
-	//Model::ReleaseBuffers();
-	//DrawRipples();
+	glFrontFace(GL_CCW);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	RenderModelRange(1, 2);
+	glDisable(GL_BLEND);
+
+	/*
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_AMBIENT,   objAmbientDuck  );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_DIFFUSE,   objDiffuseDuck  );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_SPECULAR,  objSpecularDuck );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_EMISSION,  objEmissionDuck );
 	glMaterialx(    GL_FRONT_AND_BACK, GL_SHININESS,     5 << 16     );
+	*/
 	
 	m_Models[0]->m_Scale[1] = old_scale;
-
-	DrawPlayer(1.0);	
-}
-
-void MainMenu::DrawWater() {
-	glDisable( GL_LIGHTING );
-	glDisableClientState( GL_NORMAL_ARRAY );
-
 	
-	// Set array pointers for water model.
-	glVertexPointer( 3, GL_FLOAT, 0, objVertexDataWater );
-
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	glNormal3f( 0.f, 1.f, 0.f );
-	//glColor4f(0.204, 0.796, 0.988, 0.600 );
-	glDrawElements( GL_TRIANGLE_STRIP, WATER_VERTICES, GL_UNSIGNED_BYTE, objIndicesWater );
-	//glColor4f(1.0, 1.0, 1.0, 1.0);
-	glDisable(GL_BLEND);	
+	DrawPlayer(1.0);
 	
-	// Enable lighting and normal arrays
-	glEnable( GL_LIGHTING );
-	glEnableClientState( GL_NORMAL_ARRAY );
-}
-
-
-void MainMenu::DrawRipples() {
-
-// Update the ripple vertex positions
-GLint i, n;
-GLfloat angle;
-const GLfloat maxRadius = 100.0;
-
-// Disable lighting and normals
-//glDisable( GL_LIGHTING );
-glDisableClientState( GL_NORMAL_ARRAY );
-
-// Set array pointers for the ripple model.
-glVertexPointer( 3, GL_FLOAT, 0, iRippleVertices );
-
-// Speed up the animation
-float aTimeSecs = m_SimulationTime * 3;
-
-glDisable( GL_DEPTH_TEST );
-glEnable( GL_BLEND );
-glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-glNormal3f( 0.f, 1.f, 0.f );
-
-for (n = 0; n < 3; n++)
-    {
-    GLfloat radius = (6 * aTimeSecs + 30 * n) - maxRadius * (GLint)((6 * aTimeSecs + 30 * n) / maxRadius);
-
-    for (i = 0, angle = 0; i < RIPPLE_SEGMENTS; i++, angle += 2 * M_PI / RIPPLE_SEGMENTS)
-        {
-        // inner ring
-        iRippleVertices[(i * 2 + 0) * 3 + 0] = sin(angle) * (radius + 4 * cos(angle * 8 + aTimeSecs));
-        iRippleVertices[(i * 2 + 0) * 3 + 1] = 0;
-        iRippleVertices[(i * 2 + 0) * 3 + 2] = cos(angle) * (radius + 4 * cos(angle * 6 + aTimeSecs * 4));
-        // outer ring
-        iRippleVertices[(i * 2 + 1) * 3 + 0] = sin(angle) * (radius + 15 + 4 * sin(angle * 5 - aTimeSecs * 3));
-        iRippleVertices[(i * 2 + 1) * 3 + 1] = 0;
-        iRippleVertices[(i * 2 + 1) * 3 + 2] = cos(angle) * (radius + 15 + 4 * sin(angle * 7 - aTimeSecs * 2));
-        }
-
-    glColor4f(1, 1, 1, .6 * (1.0 - radius / maxRadius));
-    glDrawElements( GL_TRIANGLE_STRIP, RIPPLE_SEGMENTS * 2 + 2, GL_UNSIGNED_SHORT, iRippleIndices );
-    }
-
-glDisable( GL_BLEND );
-glEnable( GL_DEPTH_TEST );
-
-// Enable lighting and normal arrays
-glEnable( GL_LIGHTING );
-glEnableClientState( GL_NORMAL_ARRAY );
-
-	
-
+	glDisable(GL_LIGHTING);
 }
 
 
@@ -574,7 +375,7 @@ void MainMenu::BuildParticles(int n) {
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		int o = m_ParticlesOffset + idx;  
 		m_Models.push_back(new Model(m_FooFoos.at(1)));
-		m_Models[o]->SetTexture(m_Textures->at(3));
+		m_Models[o]->SetTexture(m_Textures->at(1));
 		m_Models[o]->SetFrame(0);
 		ResetParticle(o);
 	}
@@ -591,9 +392,9 @@ void MainMenu::ResetParticles() {
 void MainMenu::ResetParticle(int idx) {	
 	m_Models[idx]->SetPosition(m_Models[0]->m_Position[0], m_Models[0]->m_Position[1], m_Models[0]->m_Position[2]);
 	m_Models[idx]->m_Life = 0.0 - (randf() * 20);
-	m_Models[idx]->SetScale(0.25, 0.25, 0.25);
+	m_Models[idx]->SetScale(0.5, 0.5, 0.5);
 	m_Models[idx]->m_Theta = DEGREES_TO_RADIANS(45);
-	m_Models[idx]->m_Velocity[0] = (fastAbs(randf()) * 12.0) + 2.0;
+	m_Models[idx]->m_Velocity[0] = (fastAbs(randf()) * 25.0) + 15.0;
 	m_Models[idx]->m_IsAlive = false;
 }
 
