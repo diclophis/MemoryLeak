@@ -76,18 +76,23 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	snprintf(path, sizeof(s), "%d", 1);
 	m_Importer.ReadFile(path, m_PostProcessFlags);	
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
+	m_Importer.FreeScene();
+	
+	snprintf(path, sizeof(s), "%d", 3);
+	m_Importer.ReadFile(path, m_PostProcessFlags);	
+	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();	
 	
 	m_Models.push_back(new Model(m_FooFoos.at(0)));
-	m_Models[0]->SetTexture(m_Textures->at(2));
+	m_Models[0]->SetTexture(m_Textures->at(0));
 	m_Models[0]->SetFrame(0);
 	m_Models[0]->SetPosition(0.0, 1.0, 0.0);
 	m_Models[0]->SetScale(4.0, 4.0, 4.0);
 
-	m_Models.push_back(new Model(m_FooFoos.at(1)));
+	m_Models.push_back(new Model(m_FooFoos.at(2)));
 	m_Models[1]->SetTexture(m_Textures->at(1));
 	m_Models[1]->SetFrame(0);
-	m_Models[1]->SetPosition(0.0, -0.75, 0.0);
+	m_Models[1]->SetPosition(0.0, 0.0, 0.0);
 	m_Models[1]->SetScale(256.0, 0.25, 256.0);
 	
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, "", 0, 16, 1.25, "", 0, 16, 0.25));
@@ -105,7 +110,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_AtlasSprites[1]->m_IsReady = true;
 	m_AtlasSprites[1]->Build(0);
 	
-	BuildParticles(10);
+	BuildParticles(100);
 	
 	
 	
@@ -267,9 +272,9 @@ int MainMenu::Simulate() {
 	
 	int shot_this_tick = 0;
 	int not_shot_this_tick = 0;
-	float m_ShotMaxLife = 0.33;
+	float m_ShotMaxLife = 1.0;
 
-	float g = 40.0;
+	float g = 20.0;
 	float x = 0.0;
 	float y = 0.0;
 	
@@ -298,7 +303,7 @@ int MainMenu::Simulate() {
 		float tz = cos(DEGREES_TO_RADIANS(m_Models[o]->m_Rotation[1]));
 		
 		m_Models[o]->m_Position[0] = (x * -(tx)) + m_Models[0]->m_Position[0] - (tx * 2.0);
-		m_Models[o]->m_Position[1] = y - 0.5;
+		m_Models[o]->m_Position[1] = y;
 		m_Models[o]->m_Position[2] = (x * -(tz)) + m_Models[0]->m_Position[2] - (tz * 2.0);
 		
 	}
@@ -419,29 +424,36 @@ void MainMenu::RenderModelPhase() {
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_SPECULAR,  objSpecularSunkenDuck );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_EMISSION,  objEmissionSunkenDuck );
 	glMaterialx(    GL_FRONT_AND_BACK, GL_SHININESS,     5 << 16     );
+		
+	float old_scale = m_Models[0]->m_Scale[1];
+	m_Models[0]->m_Scale[1] = old_scale + (fastSinf(m_SimulationTime * 2.0) * 0.9);
 	
-	// Draw duck reflection by using y-scale of -1.0
-	//DrawDuck(  aFrame, aTimeSecs, -1.0f );
-	
-
 	DrawPlayer(-1.0);
 	
+	glDisable( GL_LIGHTING );
+	glDisableClientState(GL_NORMAL_ARRAY);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glNormal3f( 0.f, 1.f, 0.f );
+	RenderModelRange(1, 2);
+	//glDisable(GL_BLEND);	
+	glEnable(GL_LIGHTING);
+	glEnableClientState(GL_NORMAL_ARRAY);
 	
 	// Draw semitransparent water surface
-	DrawWater();
+	//DrawWater();
 	
-	Model::ReleaseBuffers();
-	
-	DrawRipples();
+	//Model::ReleaseBuffers();
+	//DrawRipples();
 
-		
-	// Set duck material
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_AMBIENT,   objAmbientDuck  );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_DIFFUSE,   objDiffuseDuck  );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_SPECULAR,  objSpecularDuck );
 	glMaterialfv(   GL_FRONT_AND_BACK, GL_EMISSION,  objEmissionDuck );
 	glMaterialx(    GL_FRONT_AND_BACK, GL_SHININESS,     5 << 16     );
 	
+	m_Models[0]->m_Scale[1] = old_scale;
+
 	DrawPlayer(1.0);	
 }
 
@@ -526,8 +538,8 @@ void MainMenu::DrawPlayer(float yScale) {
 	glPushMatrix();
 	
 	// Reflection and the light position must be mirrored
-	glScalef( 1.f, yScale, 1.f );
-	glLightfv(  GL_LIGHT0, GL_POSITION, lightPositionLamp );
+	glScalef(1.f, yScale, 1.f);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp);
 	
     // Define the water clip plane that prevents the duck reflection
     // from being drawn above the water
@@ -535,20 +547,14 @@ void MainMenu::DrawPlayer(float yScale) {
 	glClipPlanef( GL_CLIP_PLANE0, coeff );
 	glEnable( GL_CLIP_PLANE0 );
 	
-	/*
-	// Make the duck bob up and down
-	glTranslatef( 0.f, 7.f + cos( aTimeSecs * 2.f ) * 7.f, 0.f );
-	
-	// Rotate the duck around the y-axis
-	glRotatef( aTimeSecs * 3.f, 0.f, 1.f, 0.f );
-	
-	// Make the duck swing back and forth
-	glRotatef( sin( aTimeSecs * 3.f) * -5.f, 0.f, 0.f, 1.f );
-	glRotatef( cos( aTimeSecs ) * -5.f, 1.f, 0.f, 0.f );
-	*/
-	
 	RenderModelRange(0, 1);
-
+	
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE);
+	RenderModelRange(2, m_NumParticles);
+	//glDisable(GL_BLEND);
+	
     // Disable the clipping plane
 	glDisable( GL_CLIP_PLANE0 );
 	
@@ -587,24 +593,24 @@ void MainMenu::ResetParticle(int idx) {
 	m_Models[idx]->m_Life = 0.0 - (randf() * 20);
 	m_Models[idx]->SetScale(0.25, 0.25, 0.25);
 	m_Models[idx]->m_Theta = DEGREES_TO_RADIANS(45);
-	m_Models[idx]->m_Velocity[0] = 12.0 - (randf() * 8.0);
+	m_Models[idx]->m_Velocity[0] = (fastAbs(randf()) * 12.0) + 2.0;
 	m_Models[idx]->m_IsAlive = false;
 }
 
 
 void MainMenu::ShootParticle(int idx) {
-	m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 30.0) + 20.0);
-	//DEGREES_TO_RADIANS(20.0 + (fastSinf(m_SimulationTime) * 10));
 	m_Models[idx]->SetPosition(m_Models[0]->m_Position[0], m_Models[0]->m_Position[1], m_Models[0]->m_Position[2]);
-	
 	switch (m_ParticleStreamIndex++ % 3) {
 		case 0:
+			m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 30.0) + 20.0);
 			m_Models[idx]->m_Rotation[1] = (m_Models[0]->m_Rotation[1] + 25) + (randf() * 7.0);
 			break;
 		case 1:
+			m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 5.0) + 60.0);
 			m_Models[idx]->m_Rotation[1] = (m_Models[0]->m_Rotation[1]) + (randf() * 2.0);
 			break;
 		case 2:
+			m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 30.0) + 20.0);
 			m_Models[idx]->m_Rotation[1] = (m_Models[0]->m_Rotation[1] - 25) + (randf() * 7.0);
 			break;
 	};

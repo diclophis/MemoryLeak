@@ -247,7 +247,7 @@ void Engine::DrawScreen(float rotation) {
 	pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		glDisable(GL_BLEND);
+		//glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
@@ -257,8 +257,7 @@ void Engine::DrawScreen(float rotation) {
 		{
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
-			gluPerspective(50, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.5, 400.0);		
-
+			gluPerspective(50, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.5, 400.0);
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
@@ -271,13 +270,12 @@ void Engine::DrawScreen(float rotation) {
 		}
 		glPopMatrix();
 		glDisable(GL_DEPTH_TEST);
-		//glDisable(GL_LIGHTING);
+		glDisable(GL_LIGHTING);
 		//glDisable(GL_CULL_FACE);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		//glBlendFunc(GL_ONE, GL_ONE);
 		glMatrixMode(GL_PROJECTION);
-
 		glPushMatrix();
 		{
 			glLoadIdentity();
