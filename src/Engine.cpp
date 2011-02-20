@@ -11,9 +11,19 @@
 #include "Model.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
-
-
 #include "Engine.h"
+
+
+
+
+/* Global ambient light. */
+static const GLfloat globalAmbient[4]      = { 0.0, 0.0, 0.0, 1.0 };
+
+/* Lamp parameters. */
+static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 0.85, 1.0 };
+static const GLfloat lightAmbientLamp[4]   = { 0.4, 0.4, 0.20, 1.0 };
+static const GLfloat lightPositionLamp[4]  = { 0.0, 50.0, 50.0, 0.0 };
+
 
 #ifndef DESKTOP
 static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
@@ -75,13 +85,27 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
-	glEnable(GL_CULL_FACE);
-    //glEnable(GL_LIGHTING);
-
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST );
+	
+	
+	glShadeModel( GL_SMOOTH );
+	
+	
+	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, globalAmbient );
+	// Set up light source
+	glEnable( GL_LIGHT0 );
+	glLightfv(  GL_LIGHT0, GL_DIFFUSE,  lightDiffuseLamp  );
+	glLightfv(  GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
+	glLightfv(  GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
+	glLightfv(  GL_LIGHT0, GL_POSITION, lightPositionLamp );
+	
+	
+	
 	glLoadIdentity();
 
 	
@@ -205,12 +229,28 @@ int Engine::RunThread() {
 }
 
 
+void Engine::RenderModelRange(int s, int e) {
+	for (unsigned int i=s; i<e; i++) {
+		m_Models[i]->Render();
+	}
+}
+
+
+void Engine::RenderSpriteRange(int s, int e) {
+	for (unsigned int i=s; i<e; i++) {
+		m_AtlasSprites[i]->Render();
+	}
+}
+
+
 void Engine::DrawScreen(float rotation) {
 	pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_LIGHTING);
 		glDepthFunc(GL_LESS);
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -222,47 +262,17 @@ void Engine::DrawScreen(float rotation) {
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
-				
 				glLoadIdentity();
-				//TODO: screen rotation
-				//glRotatef(m_SimulationTime, 0.0, 0.0, 1.0);
-				
-				
-				/*
-				GLfloat global_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
-
-				
-				// Define the ambient component of the first light
-				GLfloat lightDiffuseLamp[] = {0.5, 0.5, 0.5, 1.0};
-				GLfloat lightAmbientLamp[] = {1.0, 1.0, 1.0, 1.0};
-				GLfloat lightPositionLamp[] = {0.0 + fastSinf(m_SimulationTime), 0.0, 0.0};
-
-
-				glEnable(GL_LIGHT0 );
-				glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuseLamp  );
-				glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
-				glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
-				glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
-				*/
-
-				
-				
-				
 				gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-
-
-				
-				
-				for (unsigned int i=0; i<m_Models.size(); i++) {
-					m_Models[i]->Render();
-				}
+				RenderModelPhase();
 				Model::ReleaseBuffers();
 			}
 			glPopMatrix();
 		}
 		glPopMatrix();
 		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_LIGHTING);
+		//glDisable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		//glBlendFunc(GL_ONE, GL_ONE);
@@ -276,10 +286,7 @@ void Engine::DrawScreen(float rotation) {
 			glPushMatrix();
 			{
 				glLoadIdentity();
-				for (unsigned int i=0; i<m_AtlasSprites.size(); i++) {
-					m_AtlasSprites[i]->Render();
-				}				
-				Render();
+				RenderSpritePhase();
 				AtlasSprite::ReleaseBuffers();
 			}
 			glPopMatrix();

@@ -20,14 +20,48 @@ public:
 	void Hit(float x, float y, int hitState);
 	void Build();
 	int Simulate();
-	void Render();
-	
+	void RenderModelPhase();
+	void RenderSpritePhase();
+	void DrawWater();
+	void DrawRipples();
+	void DrawPlayer(float yScale);
 	void BuildParticles(int n);
 	void ResetParticles();
 	void ResetParticle(int idx);
 	void ShootParticle(int idx);
 	int m_NumParticles;
 	int m_ParticlesOffset;
+	int m_ParticleStreamIndex;
 	std::vector<Model *> m_ModelParticles;	
 	float m_ShootInterval;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+         /** Up and down y-axis offset for the duck. */
+         GLfloat iDuckOffset;
+
+
+ /** Ripple vertex data */
+ GLfloat* iRippleVertices;
+ /** Ripple index data */
+ GLushort* iRippleIndices;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 };

@@ -50,9 +50,14 @@ public:
   virtual void Build() = 0;
 	virtual int Simulate() = 0;
 	virtual void Hit(float x, float y, int hitState) = 0;
-	virtual void Render() = 0;
+	virtual void RenderModelPhase() = 0;
+	virtual void RenderSpritePhase() = 0;
   void WaitVsync();
   void WaitAudioSync();
+	
+	void RenderModelRange(int s, int e);
+
+	void RenderSpriteRange(int s, int e);
 
 	bool m_PumpedAudioLastTick;
 	int m_SkipLimit;

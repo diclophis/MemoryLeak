@@ -35,6 +35,7 @@ void Model::ReleaseBuffers() {
 	g_lastNormalBuffer = 0;
 	g_lastTexcoordBuffer = 0;
 	g_lastElementBuffer = 0;
+	g_lastTexture = 0;
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
