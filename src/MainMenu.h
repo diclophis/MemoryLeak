@@ -22,11 +22,12 @@ public:
 	int Simulate();
 	void Render();
 	
-	void Build(int n);
-	void Reset();
+	void BuildParticles(int n);
+	void ResetParticles();
 	void ResetParticle(int idx);
 	void ShootParticle(int idx);
 	int m_NumParticles;
+	int m_ParticlesOffset;
 	std::vector<Model *> m_ModelParticles;	
 	float m_ShootInterval;
 };

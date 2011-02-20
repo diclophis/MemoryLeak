@@ -11,13 +11,13 @@
 
 #include "MainMenu.h"
 
-#define kMaxTankSpeed 0.0
+#define kMaxTankSpeed 50.0
 #define kTurnRate 1.0
-#define kTankAcceleration 0.0
+#define kTankAcceleration 1.0
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
-	m_CameraIndex = 2;
+	m_CameraIndex = 0;
 	
 	leftSliderValue = 0.0;
 	rightSliderValue = 0.0;
@@ -70,7 +70,10 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_AtlasSprites[1]->m_IsAlive = false;
 	m_AtlasSprites[1]->m_IsReady = true;
 	m_AtlasSprites[1]->Build(0);
-										
+	
+	
+	BuildParticles(5);
+	
 }
 
 MainMenu::~MainMenu() {
@@ -94,14 +97,15 @@ void MainMenu::Hit(float x, float y, int hitState) {
 		if (xx < 0) {
 			dpx = m_AtlasSprites[0]->m_Position[0] - xx;
 			dpy = m_AtlasSprites[0]->m_Position[1] - yy;
-			xx = m_AtlasSprites[0]->m_Position[0];
+			xx = m_AtlasSprites[0]->m_Position[0] = -
+			(0.4 * m_ScreenWidth);
 			yy = m_AtlasSprites[0]->m_Position[1] - dpy;
 			m_AtlasSprites[0]->SetPosition(xx, yy);
 			rightSliderValue = yy;
 		} else {
 			dpx = m_AtlasSprites[1]->m_Position[0] - xx;
 			dpy = m_AtlasSprites[1]->m_Position[1] - yy;
-			xx = m_AtlasSprites[1]->m_Position[0];
+			xx = m_AtlasSprites[1]->m_Position[0] = (0.4 * m_ScreenWidth);
 			yy = m_AtlasSprites[1]->m_Position[1] - dpy;
 			m_AtlasSprites[1]->SetPosition(xx, yy);
 			leftSliderValue = yy;
@@ -115,8 +119,55 @@ void MainMenu::Build() {
 
 int MainMenu::Simulate() {
 	
-	m_AtlasSprites[0]->Simulate(m_DeltaTime);
+	int shot_this_tick = 0;
+	int not_shot_this_tick = 0;
+	
+	float m_ShotMaxLife = 0.125;
+	
+	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
+		int o = m_ParticlesOffset + idx;
 
+		if ((shot_this_tick < 1) && ((m_Models[o]->m_Life > m_ShotMaxLife) || !m_Models[o]->m_IsAlive)) {
+			ShootParticle(o);
+			shot_this_tick++;
+		} else {
+			not_shot_this_tick++;
+			if ((m_Models[o]->m_Life > m_ShotMaxLife)) {
+				ResetParticle(o);
+			}
+		}
+		
+		float v = 150.0;
+		float g = 2000.0;
+		float x = 0.0;
+		float y = 0.0;
+		float theta = m_Models[o]->m_Theta;
+		
+		m_Models[o]->m_Life += m_DeltaTime;
+		
+		x = v * cos(theta) * m_Models[o]->m_Life;
+		y = (v * fastSinf(theta) * m_Models[o]->m_Life) - (0.5 * g * (m_Models[o]->m_Life * m_Models[o]->m_Life));
+		
+		float tx = -sin(DEGREES_TO_RADIANS(m_Models[o]->m_Rotation[1]));
+		float tz = cos(DEGREES_TO_RADIANS(m_Models[o]->m_Rotation[1]));
+		
+		m_Models[o]->m_Position[0] = (x * -tx) + m_Models[0]->m_Position[0];
+		m_Models[o]->m_Position[1] = y - 1.0;
+		m_Models[o]->m_Position[2] = (x * -tz) + m_Models[0]->m_Position[2];
+		
+	}
+	
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	m_AtlasSprites[0]->Simulate(m_DeltaTime);
 	
 	bool moveForward = false;
 	bool moveBackward = false;
@@ -171,10 +222,9 @@ int MainMenu::Simulate() {
 		m_CameraTarget[1] = m_Models[0]->m_Position[1];
 		m_CameraTarget[2] = m_Models[0]->m_Position[2];
 
-		m_CameraRotation += DEGREES_TO_RADIANS(2.0);
-		
+		m_CameraRotation += DEGREES_TO_RADIANS(0.5);
 		m_CameraHeight = 0.5; // + (fastSinf(m_SimulationTime * 0.5) * 5.0);
-		float m_CameraDiameter = 5.0; // + fastAbs(fastSinf(m_SimulationTime * 0.1) * 25.0);
+		float m_CameraDiameter = 20.0; // + fastAbs(fastSinf(m_SimulationTime * 0.1) * 25.0);
 		float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 		float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
 		
@@ -188,12 +238,21 @@ int MainMenu::Simulate() {
 		float txx = -sin(DEGREES_TO_RADIANS(m_Models[0]->m_Rotation[1] + 90.0));
 		float tzz = cos(DEGREES_TO_RADIANS(m_Models[0]->m_Rotation[1] + 90.0));
 		
+		/*
 		m_CameraTarget[0] = m_Models[0]->m_Position[0] + (tx * 60.0);
 		m_CameraTarget[1] = 0.0125;
 		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 60.0);
 		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 0.25) - (txx * 0.4);
 		m_CameraPosition[1] = 0.125;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 0.25) - (tzz * 0.4);
+		*/
+		
+		m_CameraTarget[0] = m_Models[0]->m_Position[0] + (tx * 60.0);
+		m_CameraTarget[1] = 0.0125;
+		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 60.0);
+		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 10.0) - (txx * 0.0);
+		m_CameraPosition[1] = 1.0;
+		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 10.0) - (tzz * 0.0);
 	} else if (m_CameraIndex == 2) {
 		m_CameraTarget[0] = 0.0;
 		m_CameraTarget[1] = 0.0;
@@ -206,7 +265,7 @@ int MainMenu::Simulate() {
 		m_CameraTarget[1] = m_Models[0]->m_Position[1];
 		m_CameraTarget[2] = m_Models[0]->m_Position[2];
 		m_CameraPosition[0] = m_Models[0]->m_Position[0] + 1;
-		m_CameraPosition[1] = m_Models[0]->m_Position[1] + 100.0;
+		m_CameraPosition[1] = m_Models[0]->m_Position[1] + 60.0;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] + 1;
 	}
 	
@@ -218,40 +277,41 @@ void MainMenu::Render() {
 }
 
 
-void MainMenu::Build(int n) {
+void MainMenu::BuildParticles(int n) {
 	m_NumParticles = n;
 	m_ShootInterval = 1.0;
+	m_ParticlesOffset = m_Models.size();
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
-		//m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_ShotAnimation, m_ShotStart, m_ShotEnd, m_ShotMaxLife));
+		int o = m_ParticlesOffset + idx;  
+		m_Models.push_back(new Model(m_FooFoos.at(1)));
+		m_Models[o]->SetTexture(m_Textures->at(3));
+		m_Models[o]->SetFrame(0);
+		ResetParticle(o);
+	}
+}
+
+
+void MainMenu::ResetParticles() {
+	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		ResetParticle(idx);
 	}
 }
 
 
-void MainMenu::Reset() {
-	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
-		ResetParticle(idx);
-	}
+void MainMenu::ResetParticle(int idx) {	
+	m_Models[idx]->SetPosition(m_Models[0]->m_Position[0], m_Models[0]->m_Position[1], m_Models[0]->m_Position[2]);
+	m_Models[idx]->m_Life = 0.0 - (randf() * 20);
+	m_Models[idx]->SetScale(0.5, 0.5, 0.5);
+	m_Models[idx]->m_Theta = DEGREES_TO_RADIANS(45);
+	m_Models[idx]->m_IsAlive = false;
 }
 
 
-void MainMenu::ResetParticle(int idx) {
-	/*
-	m_AtlasSprites[idx]->SetLife(0.0 - (randf() * 20));
-	m_AtlasSprites[idx]->SetScale(1.0, 1.0);
-	m_AtlasSprites[idx]->m_Frame = 0;
-	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
-	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[idx]->m_IsAlive = false;
-	*/
-}
-
-
-void MainMenu::ShootParticle(int idx) {
-	/*
-	m_AtlasSprites[idx]->SetLife(0.0);
-	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
-	m_AtlasSprites[idx]->SetVelocity(m_EmitVelocity[0], m_EmitVelocity[1]);
-	m_AtlasSprites[idx]->m_IsAlive = true;
-	*/
+void MainMenu::ShootParticle(int idx) {	
+	m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 20.0) + 30.0);
+	//DEGREES_TO_RADIANS(20.0 + (fastSinf(m_SimulationTime) * 10));
+	m_Models[idx]->SetPosition(m_Models[0]->m_Position[0], m_Models[0]->m_Position[1], m_Models[0]->m_Position[2]);
+	m_Models[idx]->m_Rotation[1] = (m_Models[0]->m_Rotation[1]) + (randf() * 10);
+	m_Models[idx]->m_Life = 0.0;
+	m_Models[idx]->m_IsAlive = true;
 }

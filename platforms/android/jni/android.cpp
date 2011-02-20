@@ -12,10 +12,18 @@
 #include "modplug.h"
 #include "stdafx.h"
 #include "sndfile.h"
-//#include "com_example_SanAngeles_PlayerThread.h"
 
 #include "importgl.h"
 #include "MemoryLeak.h"
+
+#include "Model.h"
+#include "AtlasSprite.h"
+#include "SpriteGun.h"
+#include "Engine.h"
+#include "octree.h"
+#include "micropather.h"
+#include "ModelOctree.h"
+#include "MainMenu.h"
 
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
@@ -41,30 +49,17 @@ public:
       android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
     }
     int div = divisor * sizeof(short);
-    //int div = 2; //sizeof(short);
     int pos = (buffer_position % div);
     int len = min_buffer / div;
-    //LOGV("len buffer: %d\n", len);
     int off = 0;
-    LOGV("len to copy out: %d\n", len); 
     if (buffer) {
       g_Env->SetShortArrayRegion(ab, 0, len, (jshort *)((short *)buffer + off));
       g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, off, len);
     } else {
-      LOGV("Error\n");
+      LOGV("no buffer\n");
     }
   };
 };
-
-
-#include "Model.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
-#include "Engine.h"
-#include "octree.h"
-#include "micropather.h"
-#include "ModelOctree.h"
-#include "MainMenu.h"
 
 
 extern "C" {
@@ -167,7 +162,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	for (int i=0; i<count; i++) {
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-  //LOGV("min buffer: %d\n", min_buffer);
   gameController = new MainMenu(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer, 16);
   gameController->CreateThread(Callbacks::PumpAudio);
   gameState = 1;

@@ -125,12 +125,14 @@ public:
 	bool m_NeedsClimbAfterMove;
 	bool m_IsMoving;
 	bool m_IsFalling;
+	bool m_IsAlive;
 	const foofoo *m_FooFoo;
 	float m_Life;
 	GLfloat *m_Scale;
 	float *m_Position;
 	float *m_Rotation;
 	float *m_Velocity;
+	float m_Theta;
 	int m_Frame;
 	int m_Texture;
 	Model *m_Climbing;

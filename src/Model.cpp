@@ -64,6 +64,8 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 
 	m_Life = 0.0;
 	m_Fps = 1.0;
+	m_Theta = 0.0;
+	m_IsAlive = false;
 	
 	SetScale(1.0, 1.0, 1.0);
 	SetPosition(0.0, 0.0, 0.0);

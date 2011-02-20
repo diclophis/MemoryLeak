@@ -1,3 +1,5 @@
+// Jon Bardin GPL
+
 package com.example.SanAngeles;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -65,13 +67,10 @@ public class DemoActivity extends Activity {
     int[] off3;
     int[] len3;
 
-
     int rate = 8000;
     int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
     setMinBuffer(min);
     at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
-    short[] filler = new short[min];
-    at1.write(filler, 0, min);
     at1.play();
     at1.setStereoVolume(1.0f, 1.0f);
 
@@ -131,11 +130,10 @@ public class DemoActivity extends Activity {
 
 		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
-    } catch(java.io.IOException e) {
-      System.out.println(e);
+    } catch (java.io.IOException e) {
+      Log.v(this.toString(), e.toString());
     }
 	}
-
 
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
@@ -144,96 +142,102 @@ public class DemoActivity extends Activity {
 	private static native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
   private static native void setMinBuffer(int size);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mGLView.onPause();
-    }
+@Override
+  protected void onPause() {
+    super.onPause();
+    mGLView.onPause();
+  }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mGLView.onResume();
-    }
+@Override
+  protected void onResume() {
+    super.onResume();
+    mGLView.onResume();
+  }
 
-    static {
-        System.loadLibrary("sanangeles");
-    }
+  static {
+    System.loadLibrary("sanangeles");
+  }
 }
 
 class DemoGLSurfaceView extends GLSurfaceView {
-    public DemoGLSurfaceView(Context context) {
-        super(context);
-        mRenderer = new DemoRenderer(context);
-        setRenderer(mRenderer);
-    }
+  public DemoGLSurfaceView(Context context) {
+    super(context);
+    mRenderer = new DemoRenderer(context);
+    setRenderer(mRenderer);
+  }
 
-    public boolean onTouchEvent(final MotionEvent event) {
-      float x = event.getRawX();
-      float y = event.getRawY();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+@Override
+  public boolean onTouchEvent(final MotionEvent event) {
+    queueEvent(new Runnable() {
+      public void run() {
+        for (int i=0; i<event.getPointerCount(); i++) {
+          float x = event.getX(i);
+          float y = event.getY(i);
+          if (event.getAction() == MotionEvent.ACTION_DOWN) {
             nativeTouch(x, y, 0);
-        }
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+          }
+          if (event.getAction() == MotionEvent.ACTION_MOVE) {
             nativeTouch(x, y, 1);
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+          }
+          if (event.getAction() == MotionEvent.ACTION_UP) {
             nativeTouch(x, y, 2);
+          }
         }
         event.recycle();
-        return true;
-    }
+      }
+    });
+    return true;
+  }
 
-    @Override
-    public void onPause() {
-      super.onPause();
-      nativePause();
-    }
+@Override
+  public void onPause() {
+    super.onPause();
+    nativePause();
+  }
 
-    DemoRenderer mRenderer;
+  DemoRenderer mRenderer;
 
-    private static native void nativePause();
-    private static native void nativeTouch(float x, float y, int hitState);
+  private static native void nativePause();
+  private static native void nativeTouch(float x, float y, int hitState);
 }
 
 class DemoRenderer implements GLSurfaceView.Renderer {
 
-    Context mContext;
+  Context mContext;
 
-    public DemoRenderer(Context context) {
-      mContext = context;
-    }
+  public DemoRenderer(Context context) {
+    mContext = context;
+  }
 
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-      try {
-        AssetManager am = mContext.getAssets();
-        String path = "textures";
-        String[] texture_file_names = am.list(path);
-        int[] textures = new int[texture_file_names.length];
-        int[] tmp_tex = new int[texture_file_names.length];
-        gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
-
-int glError;
-if ((glError = gl.glGetError()) != 0) {
-System.out.println("1");
-}
-
-        textures = tmp_tex; 
-        for (int i=0; i<texture_file_names.length; i++) {
-          InputStream stream = am.open(path + "/" + texture_file_names[i]);
-          Bitmap bitmap = BitmapFactory.decodeStream(stream);
-          int t = textures[i];
-          gl.glBindTexture(GL10.GL_TEXTURE_2D, t);
-          gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-          gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-          GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-if ((glError = gl.glGetError()) != 0) {
-System.out.println("2");
-}
-          gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
+  public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    try {
+      AssetManager am = mContext.getAssets();
+      String path = "textures";
+      String[] texture_file_names = am.list(path);
+      int[] textures = new int[texture_file_names.length];
+      int[] tmp_tex = new int[texture_file_names.length];
+      gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
+      int glError;
+      if ((glError = gl.glGetError()) != 0) {
+        Log.v(this.toString(), "unable to glGenTextures");
+      }
+      textures = tmp_tex; 
+      for (int i=0; i<texture_file_names.length; i++) {
+        InputStream stream = am.open(path + "/" + texture_file_names[i]);
+        Bitmap bitmap = BitmapFactory.decodeStream(stream);
+        int t = textures[i];
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, t);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+        if ((glError = gl.glGetError()) != 0) {
+          Log.v(this.toString(), "unable to GLUtils.texImage2D");
         }
-        nativeOnSurfaceCreated(texture_file_names.length, textures);
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
+      }
+      nativeOnSurfaceCreated(texture_file_names.length, textures);
       } catch(IOException e) {
+        Log.v(this.toString(), e.toString());
       }
     }
 
