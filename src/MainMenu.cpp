@@ -12,7 +12,7 @@
 
 #define kMaxTankSpeed 30.0
 #define kTurnRate 1.0
-#define kTankAcceleration 0.5
+#define kTankAcceleration 0.15
 
 /* Global ambient light. */
 static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
@@ -20,7 +20,7 @@ static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
 /* Lamp parameters. */
 static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 1.0, 1.0 };
 static const GLfloat lightAmbientLamp[4]   = { 0.4, 0.4, 0.4, 1.0 };
-static const GLfloat lightPositionLamp[4]  = { 0.0, 5.0, 0.0, 0.0 };
+static const GLfloat lightPositionLamp[4]  = { 25.0, 25.0, 25.0, 25.0 };
 
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
@@ -67,21 +67,22 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models.push_back(new Model(m_FooFoos.at(0)));
 	m_Models[0]->SetTexture(m_Textures->at(0));
 	m_Models[0]->SetFrame(0);
-	m_Models[0]->SetPosition(0.0, 0.65, 0.0);
+	m_Models[0]->SetPosition(50.0, 0.65, 80.0);
 	m_Models[0]->SetScale(4.0, 4.0, 4.0);
 
 	m_Models.push_back(new Model(m_FooFoos.at(2)));
 	m_Models[1]->SetTexture(m_Textures->at(1));
 	m_Models[1]->SetFrame(0);
-	m_Models[1]->SetPosition(0.0, 0.0, 0.0);
+	m_Models[1]->SetPosition(128.0, 0.0, 128.0);
 	m_Models[1]->SetScale(256.0, 1.0, 256.0);
 	
 	m_Models.push_back(new Model(m_FooFoos.at(3)));
 	m_Models[2]->SetTexture(m_Textures->at(4));
 	m_Models[2]->SetFrame(0);
-	m_Models[2]->SetPosition(0.0, 0.0, 0.0);
+	m_Models[2]->SetPosition(128.0, 0.0, 128.0);
 	m_Models[2]->SetScale(256.0, 128.0, 256.0);
-	
+	m_Models[2]->m_Rotation[1] = 90.0;
+
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, "", 0, 16, 1.25, "", 0, 16, 0.25));
 	m_AtlasSprites[0]->SetPosition(0.0 - (0.4 * m_ScreenWidth), 0.0);
 	m_AtlasSprites[0]->SetVelocity(0.0, 0.0);
@@ -99,9 +100,6 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	
 	BuildParticles(100);
 	
-	
-	
-	
 	int level_index = 0;
 	
 	unsigned char *level = (unsigned char *)malloc(sizeof(unsigned char) * m_LevelFoos->at(level_index)->len);
@@ -112,26 +110,19 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	
 	m_Space = new Octree<int>(256 * 256, -1);
 	
-	/*
-	int collided_index = m_Space->at(ax, ay, az);
-	m_Space->erase(bx, by, bz);
-	m_Space->set(ax, ay, az, i);
-	*/	
-	
 	int x = 0;
 	int y = 0;
-	//int z = 0;
 	int f = m_NumParticles + 3;
-	for (unsigned int i=0; i<m_LevelFoos->at(level_index)->len; i++) {
+	for (unsigned int i=m_LevelFoos->at(level_index)->len - 1; i>0; i--) {
 		float yy = ((float)level[i] / 255.0) * 1.0;
 		m_Space->set(x, 0, y, f);
 		m_Models.push_back(new Model(m_FooFoos.at(2)));
 		m_Models[f]->SetTexture(m_Textures->at(1));
 		m_Models[f]->SetFrame(0);
-		m_Models[f]->SetPosition(x, 0, y);
+		m_Models[f]->SetPosition(x, 3.0, y);
 		m_Models[f]->SetScale(yy, 1.0, yy);
-		if (level[i] > 128) {
-			m_Models[f]->m_IsStuck = true;
+		if (level[i] < 180) {
+			m_Models[f]->m_IsHelpfulToPlayers = true;
 		}
 		x++;
 		if (x == 256) {
@@ -140,6 +131,8 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 		}
 		f++;
 	}
+	
+	free(level);
 }
 
 MainMenu::~MainMenu() {
@@ -184,16 +177,34 @@ void MainMenu::Build() {
 }
 
 int MainMenu::Simulate() {
+	m_AtlasSprites[0]->Simulate(m_DeltaTime);
+
 	int shot_this_tick = 0;
 	int not_shot_this_tick = 0;
 	float m_ShotMaxLife = 0.5;
-
 	
-	//m_Models[2]->SetScale(6.0, m_SimulationTime, 6.0);
-
 	float g = 200.0;
 	float x = 0.0;
 	float y = 0.0;
+	float a = 0.0;
+	
+	bool moveForward = false;
+	bool moveBackward = false;
+	bool turnLeft = false;
+	bool turnRight = false;
+	float sliderDelta;
+	
+	int collided_index = m_Space->at(m_Models[0]->m_Position[0], 0, m_Models[0]->m_Position[2]);
+	if (collided_index > 0) {
+		if (m_Models[collided_index]->m_IsHelpfulToPlayers) {
+			a = kTankAcceleration;
+			moveForward = true;
+		} else {
+			a = kTankAcceleration * 0.25;
+			m_Models[0]->m_Velocity[0] = 0.1;
+			moveForward = true;
+		}
+	}
 	
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		int o = m_ParticlesOffset + idx;
@@ -207,7 +218,6 @@ int MainMenu::Simulate() {
 				ResetParticle(o);
 			}
 		}
-		
 
 		float theta = m_Models[o]->m_Theta;
 		float v = m_Models[o]->m_Velocity[0];
@@ -225,20 +235,11 @@ int MainMenu::Simulate() {
 		
 	}
 
-	
-	m_AtlasSprites[0]->Simulate(m_DeltaTime);
-	
-	bool moveForward = false;
-	bool moveBackward = false;
-	bool turnLeft = false;
-	bool turnRight = false;
-	float sliderDelta;
-	
 	sliderDelta = leftSliderValue - rightSliderValue;
 	
 	float absDelta = fastAbs(sliderDelta);
 		
-	if (absDelta > 0.1) {
+	if (absDelta > 20.0) {
 		if (sliderDelta < 0.0) {
 			turnLeft = true;
 		} else {
@@ -246,7 +247,7 @@ int MainMenu::Simulate() {
 		}
 	}
 	
-	
+	/*
 	//TODO: figure this out
 	if (rightSliderValue > 0.95 && leftSliderValue > 0.95) {
 		moveForward = true;
@@ -254,33 +255,25 @@ int MainMenu::Simulate() {
 		moveBackward = true;
 	}
 	
-	moveForward = true;
+	//moveForward = true;
+	*/
 	
 	if (turnLeft) {
 		m_Models[0]->m_Rotation[1] += kTurnRate * absDelta * m_DeltaTime;
 	} else if (turnRight) {
 		m_Models[0]->m_Rotation[1] -= kTurnRate * absDelta * m_DeltaTime;
 	}
-		
+	
 	if (moveForward) {
-		m_Models[0]->m_Velocity[0] += kTankAcceleration;
+		m_Models[0]->m_Velocity[0] += a;
 		if (m_Models[0]->m_Velocity[0] > kMaxTankSpeed) {
 			m_Models[0]->m_Velocity[0] = kMaxTankSpeed;
 		}
 	} else if (moveBackward) {
-		m_Models[0]->m_Velocity[0] -= kTankAcceleration;
+		m_Models[0]->m_Velocity[0] -= a;
 		if (m_Models[0]->m_Velocity[0] < -kMaxTankSpeed) {
 			m_Models[0]->m_Velocity[0] = -kMaxTankSpeed;
 		}
-	}
-	
-	
-	int collided_index = m_Space->at(m_Models[0]->m_Position[0], 0, m_Models[0]->m_Position[2]);
-	if (collided_index > 0) {
-		if (m_Models[collided_index]->m_IsStuck) {
-			m_Models[0]->m_Velocity[0] = 5.0;
-		}
-		m_Models[collided_index]->SetScale(4.0, 1.0, 4.0);
 	}
 	
 	m_Models[0]->m_Life += m_DeltaTime;
@@ -323,12 +316,12 @@ int MainMenu::Simulate() {
 		m_CameraPosition[1] = 3.0;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 10.0) - (tzz * 0.0);
 	} else if (m_CameraIndex == 2) {
-		m_CameraTarget[0] = 0.0;
+		m_CameraTarget[0] = 128.0;
 		m_CameraTarget[1] = 0.0;
-		m_CameraTarget[2] = 0.0;
-		m_CameraPosition[0] = 1.0;
-		m_CameraPosition[1] = 350.0;
-		m_CameraPosition[2] = 1.0;
+		m_CameraTarget[2] = 128.0;
+		m_CameraPosition[0] = 0.0;
+		m_CameraPosition[1] = 512.0;
+		m_CameraPosition[2] = 0.0;
 	} else if (m_CameraIndex == 3) {
 		m_CameraTarget[0] = m_Models[0]->m_Position[0];
 		m_CameraTarget[1] = m_Models[0]->m_Position[1];
@@ -342,11 +335,10 @@ int MainMenu::Simulate() {
 }
 
 void MainMenu::RenderModelPhase() {
-	/*
-	//glEnable(GL_LIGHTING);
+	
+	glEnable(GL_LIGHTING);
 	
 	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, globalAmbient );
-	// Set up light source
 	glEnable(GL_LIGHT0);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightDiffuseLamp  );
 	glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
@@ -372,12 +364,10 @@ void MainMenu::RenderModelPhase() {
 
 	DrawPlayer(1.0);
 	
-	//glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHTING);
 	
-	*/
-	DrawPlayer(1.0);
-
-	RenderModelRange(3 + m_NumParticles, 256 * 256);
+	//DrawPlayer(1.0);
+	//RenderModelRange(3 + m_NumParticles, 256 * 256);
 }
 
 
@@ -397,22 +387,24 @@ void MainMenu::DrawPlayer(float yScale) {
 	
 	RenderModelRange(0, 1);
 	
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	//glBlendFunc(GL_ONE, GL_ONE);
-	//RenderModelRange(3, 3 + m_NumParticles);
-	//glDisable(GL_BLEND);
+	if (m_Models[0]->m_Velocity[0] > 25.0) {
+		glEnable(GL_BLEND);
+		//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE, GL_ONE);
+		RenderModelRange(3, 3 + m_NumParticles);
+		glDisable(GL_BLEND);
+	}
 	
-    // Disable the clipping plane
 	glDisable( GL_CLIP_PLANE0 );
 	
-    // Restore model view matrix
 	glPopMatrix();
 }
+
 
 void MainMenu::RenderSpritePhase() {
 	RenderSpriteRange(0, 2);
 }
+
 
 void MainMenu::BuildParticles(int n) {
 	m_NumParticles = n;
