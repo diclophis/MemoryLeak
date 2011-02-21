@@ -120,17 +120,19 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	
 	int x = 0;
 	int y = 0;
-	int z = 0;
-	int f = m_NumParticles + 2;
+	//int z = 0;
+	int f = m_NumParticles + 3;
 	for (unsigned int i=0; i<m_LevelFoos->at(level_index)->len; i++) {
-		//LOGV("%d\n", level[i]);
 		float yy = ((float)level[i] / 255.0) * 1.0;
-		m_Space->set(x, level[i], x, 0);
+		m_Space->set(x, 0, y, f);
 		m_Models.push_back(new Model(m_FooFoos.at(2)));
 		m_Models[f]->SetTexture(m_Textures->at(1));
 		m_Models[f]->SetFrame(0);
 		m_Models[f]->SetPosition(x, 0, y);
 		m_Models[f]->SetScale(yy, 1.0, yy);
+		if (level[i] > 128) {
+			m_Models[f]->m_IsStuck = true;
+		}
 		x++;
 		if (x == 256) {
 			x = 0;
@@ -270,6 +272,15 @@ int MainMenu::Simulate() {
 		if (m_Models[0]->m_Velocity[0] < -kMaxTankSpeed) {
 			m_Models[0]->m_Velocity[0] = -kMaxTankSpeed;
 		}
+	}
+	
+	
+	int collided_index = m_Space->at(m_Models[0]->m_Position[0], 0, m_Models[0]->m_Position[2]);
+	if (collided_index > 0) {
+		if (m_Models[collided_index]->m_IsStuck) {
+			m_Models[0]->m_Velocity[0] = 5.0;
+		}
+		m_Models[collided_index]->SetScale(4.0, 1.0, 4.0);
 	}
 	
 	m_Models[0]->m_Life += m_DeltaTime;
