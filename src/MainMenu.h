@@ -47,15 +47,8 @@ public:
 	
 
 
-         /** Up and down y-axis offset for the duck. */
-         GLfloat iDuckOffset;
+	Octree<int> *m_Space;
 
-
- /** Ripple vertex data */
- GLfloat* iRippleVertices;
- /** Ripple index data */
- GLushort* iRippleIndices;
-	
 	
 	
 	

@@ -10,7 +10,7 @@
 #include "Engine.h"
 #include "MainMenu.h"
 
-#define kMaxTankSpeed 50.0
+#define kMaxTankSpeed 30.0
 #define kTurnRate 1.0
 #define kTankAcceleration 0.5
 
@@ -79,8 +79,8 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models.push_back(new Model(m_FooFoos.at(3)));
 	m_Models[2]->SetTexture(m_Textures->at(4));
 	m_Models[2]->SetFrame(0);
-	m_Models[2]->SetPosition(0.0, -0.375, 0.0);
-	m_Models[2]->SetScale(0.15, 0.075, 0.15);
+	m_Models[2]->SetPosition(0.0, 0.0, 0.0);
+	m_Models[2]->SetScale(256.0, 128.0, 256.0);
 	
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, "", 0, 16, 1.25, "", 0, 16, 0.25));
 	m_AtlasSprites[0]->SetPosition(0.0 - (0.4 * m_ScreenWidth), 0.0);
@@ -98,6 +98,46 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_AtlasSprites[1]->Build(0);
 	
 	BuildParticles(100);
+	
+	
+	
+	
+	int level_index = 0;
+	
+	unsigned char *level = (unsigned char *)malloc(sizeof(unsigned char) * m_LevelFoos->at(level_index)->len);
+	
+	fseek(m_LevelFoos->at(level_index)->fp, m_LevelFoos->at(level_index)->off, SEEK_SET);
+	fread(level, sizeof(unsigned char), m_LevelFoos->at(level_index)->len, m_LevelFoos->at(level_index)->fp);
+	
+	
+	m_Space = new Octree<int>(256 * 256, -1);
+	
+	/*
+	int collided_index = m_Space->at(ax, ay, az);
+	m_Space->erase(bx, by, bz);
+	m_Space->set(ax, ay, az, i);
+	*/	
+	
+	int x = 0;
+	int y = 0;
+	int z = 0;
+	int f = m_NumParticles + 2;
+	for (unsigned int i=0; i<m_LevelFoos->at(level_index)->len; i++) {
+		//LOGV("%d\n", level[i]);
+		float yy = ((float)level[i] / 255.0) * 1.0;
+		m_Space->set(x, level[i], x, 0);
+		m_Models.push_back(new Model(m_FooFoos.at(2)));
+		m_Models[f]->SetTexture(m_Textures->at(1));
+		m_Models[f]->SetFrame(0);
+		m_Models[f]->SetPosition(x, 0, y);
+		m_Models[f]->SetScale(yy, 1.0, yy);
+		x++;
+		if (x == 256) {
+			x = 0;
+			y++;
+		}
+		f++;
+	}
 }
 
 MainMenu::~MainMenu() {
@@ -291,7 +331,7 @@ int MainMenu::Simulate() {
 }
 
 void MainMenu::RenderModelPhase() {
-	
+	/*
 	//glEnable(GL_LIGHTING);
 	
 	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, globalAmbient );
@@ -301,14 +341,6 @@ void MainMenu::RenderModelPhase() {
 	glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
-	
-	/*
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_AMBIENT,   objAmbientSunkenDuck  );
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_DIFFUSE,   objDiffuseSunkenDuck  );
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_SPECULAR,  objSpecularSunkenDuck );
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_EMISSION,  objEmissionSunkenDuck );
-	glMaterialx(    GL_FRONT_AND_BACK, GL_SHININESS,     5 << 16     );
-	*/
 	
 	float old_scale = m_Models[0]->m_Scale[1];
 	m_Models[0]->m_Scale[1] = old_scale + (fastSinf(m_SimulationTime * 1.0) * 0.2);
@@ -322,21 +354,19 @@ void MainMenu::RenderModelPhase() {
 	RenderModelRange(1, 2);
 	glDisable(GL_BLEND);
 
-	/*
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_AMBIENT,   objAmbientDuck  );
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_DIFFUSE,   objDiffuseDuck  );
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_SPECULAR,  objSpecularDuck );
-	glMaterialfv(   GL_FRONT_AND_BACK, GL_EMISSION,  objEmissionDuck );
-	glMaterialx(    GL_FRONT_AND_BACK, GL_SHININESS,     5 << 16     );
-	*/
-	
+
 	m_Models[0]->m_Scale[1] = old_scale;
 	
 	RenderModelRange(2, 3);
 
 	DrawPlayer(1.0);
 	
-	glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHTING);
+	
+	*/
+	DrawPlayer(1.0);
+
+	RenderModelRange(3 + m_NumParticles, 256 * 256);
 }
 
 
@@ -359,7 +389,7 @@ void MainMenu::DrawPlayer(float yScale) {
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE, GL_ONE);
-	RenderModelRange(3, 3 + m_NumParticles);
+	//RenderModelRange(3, 3 + m_NumParticles);
 	//glDisable(GL_BLEND);
 	
     // Disable the clipping plane
