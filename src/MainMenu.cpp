@@ -8,18 +8,11 @@
 #include "Model.h"
 #include "ModelOctree.h"
 #include "Engine.h"
-
 #include "MainMenu.h"
 
-#define kMaxTankSpeed 25.0
+#define kMaxTankSpeed 50.0
 #define kTurnRate 1.0
-#define kTankAcceleration 0.25
-
-
-
-
-
-
+#define kTankAcceleration 0.5
 
 /* Global ambient light. */
 static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
@@ -32,7 +25,7 @@ static const GLfloat lightPositionLamp[4]  = { 0.0, 5.0, 0.0, 0.0 };
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
-	m_CameraIndex = 0;
+	m_CameraIndex = 2;
 	
 	leftSliderValue = 0.0;
 	rightSliderValue = 0.0;
@@ -50,6 +43,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 
 	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality;
 	char path[128];
+	
 	snprintf(path, sizeof(s), "%d", 2);
 	m_Importer.ReadFile(path, m_PostProcessFlags);	
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
@@ -63,7 +57,12 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	snprintf(path, sizeof(s), "%d", 3);
 	m_Importer.ReadFile(path, m_PostProcessFlags);	
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
-	m_Importer.FreeScene();	
+	m_Importer.FreeScene();
+	
+	snprintf(path, sizeof(s), "%d", 4);
+	m_Importer.ReadFile(path, m_PostProcessFlags);	
+	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
+	m_Importer.FreeScene();
 	
 	m_Models.push_back(new Model(m_FooFoos.at(0)));
 	m_Models[0]->SetTexture(m_Textures->at(0));
@@ -75,7 +74,13 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models[1]->SetTexture(m_Textures->at(1));
 	m_Models[1]->SetFrame(0);
 	m_Models[1]->SetPosition(0.0, 0.0, 0.0);
-	m_Models[1]->SetScale(256.0, 0.25, 256.0);
+	m_Models[1]->SetScale(256.0, 1.0, 256.0);
+	
+	m_Models.push_back(new Model(m_FooFoos.at(3)));
+	m_Models[2]->SetTexture(m_Textures->at(4));
+	m_Models[2]->SetFrame(0);
+	m_Models[2]->SetPosition(0.0, -0.375, 0.0);
+	m_Models[2]->SetScale(0.15, 0.075, 0.15);
 	
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, "", 0, 16, 1.25, "", 0, 16, 0.25));
 	m_AtlasSprites[0]->SetPosition(0.0 - (0.4 * m_ScreenWidth), 0.0);
@@ -93,10 +98,6 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_AtlasSprites[1]->Build(0);
 	
 	BuildParticles(100);
-	
-	
-
-
 }
 
 MainMenu::~MainMenu() {
@@ -144,6 +145,9 @@ int MainMenu::Simulate() {
 	int shot_this_tick = 0;
 	int not_shot_this_tick = 0;
 	float m_ShotMaxLife = 0.5;
+
+	
+	//m_Models[2]->SetScale(6.0, m_SimulationTime, 6.0);
 
 	float g = 200.0;
 	float x = 0.0;
@@ -237,7 +241,7 @@ int MainMenu::Simulate() {
 		m_CameraTarget[2] = m_Models[0]->m_Position[2];
 
 		m_CameraRotation += DEGREES_TO_RADIANS(0.5);
-		m_CameraHeight = 0.5; // + (fastSinf(m_SimulationTime * 0.5) * 5.0);
+		m_CameraHeight = 1.25; // + (fastSinf(m_SimulationTime * 0.5) * 5.0);
 		float m_CameraDiameter = 20.0; // + fastAbs(fastSinf(m_SimulationTime * 0.1) * 25.0);
 		float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 		float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
@@ -265,14 +269,14 @@ int MainMenu::Simulate() {
 		m_CameraTarget[1] = 0.0125;
 		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 60.0);
 		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 10.0) - (txx * 0.0);
-		m_CameraPosition[1] = 1.0;
+		m_CameraPosition[1] = 3.0;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 10.0) - (tzz * 0.0);
 	} else if (m_CameraIndex == 2) {
 		m_CameraTarget[0] = 0.0;
 		m_CameraTarget[1] = 0.0;
 		m_CameraTarget[2] = 0.0;
 		m_CameraPosition[0] = 1.0;
-		m_CameraPosition[1] = 300.0;
+		m_CameraPosition[1] = 350.0;
 		m_CameraPosition[2] = 1.0;
 	} else if (m_CameraIndex == 3) {
 		m_CameraTarget[0] = m_Models[0]->m_Position[0];
@@ -328,6 +332,8 @@ void MainMenu::RenderModelPhase() {
 	
 	m_Models[0]->m_Scale[1] = old_scale;
 	
+	RenderModelRange(2, 3);
+
 	DrawPlayer(1.0);
 	
 	glDisable(GL_LIGHTING);
@@ -353,7 +359,7 @@ void MainMenu::DrawPlayer(float yScale) {
 	//glEnable(GL_BLEND);
 	//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE, GL_ONE);
-	RenderModelRange(2, m_NumParticles);
+	RenderModelRange(3, 3 + m_NumParticles);
 	//glDisable(GL_BLEND);
 	
     // Disable the clipping plane
@@ -407,7 +413,7 @@ void MainMenu::ShootParticle(int idx) {
 			m_Models[idx]->m_Rotation[1] = (m_Models[0]->m_Rotation[1] + 25) + (randf() * 7.0);
 			break;
 		case 1:
-			m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 5.0) + 60.0);
+			m_Models[idx]->m_Theta = DEGREES_TO_RADIANS((fastAbs(randf()) * 5.0) + 20.0);
 			m_Models[idx]->m_Rotation[1] = (m_Models[0]->m_Rotation[1]) + (randf() * 2.0);
 			break;
 		case 2:
