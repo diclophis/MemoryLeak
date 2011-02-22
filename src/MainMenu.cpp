@@ -12,7 +12,8 @@
 
 #define kMaxTankSpeed 30.0
 #define kTurnRate 1.0
-#define kTankAcceleration 0.15
+#define kTankAcceleration 0.5
+#define kPlayerHeight 0.65
 
 /* Global ambient light. */
 static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
@@ -67,7 +68,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models.push_back(new Model(m_FooFoos.at(0)));
 	m_Models[0]->SetTexture(m_Textures->at(0));
 	m_Models[0]->SetFrame(0);
-	m_Models[0]->SetPosition(50.0, 0.65, 80.0);
+	m_Models[0]->SetPosition(50.0, kPlayerHeight, 80.0);
 	m_Models[0]->SetScale(4.0, 4.0, 4.0);
 
 	m_Models.push_back(new Model(m_FooFoos.at(2)));
@@ -121,6 +122,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 		m_Models[f]->SetFrame(0);
 		m_Models[f]->SetPosition(x, 3.0, y);
 		m_Models[f]->SetScale(yy, 1.0, yy);
+		m_Models[f]->m_Life = yy;
 		if (level[i] < 180) {
 			m_Models[f]->m_IsHelpfulToPlayers = true;
 		}
@@ -197,11 +199,13 @@ int MainMenu::Simulate() {
 	int collided_index = m_Space->at(m_Models[0]->m_Position[0], 0, m_Models[0]->m_Position[2]);
 	if (collided_index > 0) {
 		if (m_Models[collided_index]->m_IsHelpfulToPlayers) {
+			m_Models[0]->m_Position[1] = kPlayerHeight;
 			a = kTankAcceleration;
 			moveForward = true;
 		} else {
-			a = kTankAcceleration * 0.25;
-			m_Models[0]->m_Velocity[0] = 0.1;
+			m_Models[0]->m_Position[1] = kPlayerHeight + (m_Models[collided_index]->m_Life * 1.1);
+			//a = kTankAcceleration * 0.25;
+			m_Models[0]->m_Velocity[0] = 10.0;
 			moveForward = true;
 		}
 	}
@@ -259,9 +263,25 @@ int MainMenu::Simulate() {
 	*/
 	
 	if (turnLeft) {
+		if (m_Models[0]->m_Rotation[0] > 30) {
+			m_Models[0]->m_Rotation[0] = 30;
+		} else {
+			m_Models[0]->m_Rotation[0] += 1.0;
+		}
 		m_Models[0]->m_Rotation[1] += kTurnRate * absDelta * m_DeltaTime;
 	} else if (turnRight) {
+		if (m_Models[0]->m_Rotation[0] < -30) {
+			m_Models[0]->m_Rotation[0] = -30;
+		} else {
+			m_Models[0]->m_Rotation[0] -= 1.0;
+		}
 		m_Models[0]->m_Rotation[1] -= kTurnRate * absDelta * m_DeltaTime;
+	} else {
+		if (m_Models[0]->m_Rotation[0] > 0) {
+			m_Models[0]->m_Rotation[0] -= 1.0;
+		} else {
+			m_Models[0]->m_Rotation[0] += 1.0;
+		}
 	}
 	
 	if (moveForward) {
@@ -278,6 +298,8 @@ int MainMenu::Simulate() {
 	
 	m_Models[0]->m_Life += m_DeltaTime;
 	m_Models[0]->Simulate(m_DeltaTime, false);
+	
+	m_Models[0]->m_Rotation[2] = 0.0; //fastSinf(m_Life * 2.0) * 5.0;
 
 	if (m_CameraIndex == 0) {
 		m_CameraTarget[0] = m_Models[0]->m_Position[0];
