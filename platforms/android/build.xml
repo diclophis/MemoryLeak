@@ -28,6 +28,7 @@
          -->
     <property file="build.properties" />
 
+
     <!-- The default.properties file is created and updated by the 'android' tool, as well
          as ADT.
          This file is an integral part of the build system for your application and
@@ -47,6 +48,8 @@
     <taskdef name="setup"
         classname="com.android.ant.SetupTask"
         classpathref="android.antlibs" />
+
+
 
     <!-- Execute the Android Setup task that will setup some properties specific to the target,
          and import the build rules files.

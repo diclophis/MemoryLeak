@@ -407,7 +407,12 @@ void MainMenu::DrawPlayer(float yScale) {
 	
     // Define the water clip plane that prevents the duck reflection
     // from being drawn above the water
+#ifdef DESKTOP
 	GLdouble coeff[4] =  { 0.f, 1.f, 0.f, 0.f };
+#else
+	GLfloat coeff[4] =  { 0.f, 1.f, 0.f, 0.f };
+#endif
+
 	glClipPlanef( GL_CLIP_PLANE0, coeff );
 	glEnable( GL_CLIP_PLANE0 );
 	
