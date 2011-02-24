@@ -17,11 +17,11 @@
 //#define kWindowWidth 480
 //#define kWindowHeight 320
 
-//#define kWindowWidth 320
-//#define kWindowHeight 480
+#define kWindowWidth 320
+#define kWindowHeight 480
 
-#define kWindowWidth 480
-#define kWindowHeight 640
+//#define kWindowWidth 480
+//#define kWindowHeight 640
 
 static Engine *game;
 static std::vector<GLuint> textures;
@@ -148,7 +148,6 @@ void processNormalKeys(unsigned char key, int x, int y) {
 */
 }
 
-
 int main(int argc, char** argv) {
 NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
@@ -159,11 +158,6 @@ NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
   glutCreateWindow(argv[0]);
-
-
-
-
-
 
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
 	for (NSString *path in model_names) {
