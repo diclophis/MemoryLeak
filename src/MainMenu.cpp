@@ -63,9 +63,9 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();
 	
-	int model = 5;
-	int texture = 5;
-	int level_index = 1;
+	int model = 6;
+	int texture = 6;
+	int level_index = 2;
 
 	snprintf(path, sizeof(s), "%d", model);
 	m_Importer.ReadFile(path, m_PostProcessFlags);	
@@ -81,7 +81,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models.push_back(new Model(m_FooFoos.at(2)));
 	m_Models[1]->SetTexture(m_Textures->at(1));
 	m_Models[1]->SetFrame(0);
-	m_Models[1]->SetPosition(128.0, 0.0, 128.0);
+	m_Models[1]->SetPosition(128.0, 0.5, 128.0);
 	m_Models[1]->SetScale(256.0, 1.0, 256.0);
 	
 	m_Models.push_back(new Model(m_FooFoos.at(3)));
@@ -184,6 +184,8 @@ void MainMenu::Build() {
   m_IsPushingAudio = true;
 }
 
+inline float clamp(float x, float a, float b){    return x < a ? a : (x > b ? b : x);};
+
 int MainMenu::Simulate() {
 	m_AtlasSprites[0]->Simulate(m_DeltaTime);
 
@@ -202,18 +204,85 @@ int MainMenu::Simulate() {
 	bool turnRight = false;
 	float sliderDelta;
 	
+	
+	
+	
+	
+	//This would take place inside an Update(float delta) type function, where delta is the amount of time passed
+	// since the last frame:
+	float boatDensity = 0.35f;
+	float fluidDensity = 1;
+	//figure out the dimensions of our boat
+	//BoundingBox boatBox = renderable.BBox;
+	float width = 0.25; //(boatBox.Max.X - boatBox.Min.X);
+	float depth = 0.25; //(boatBox.Max.Z - boatBox.Min.Z);
+	float height = 0.25; //(boatBox.Max.Y - boatBox.Min.Y);
+	// now we must find height of our water relative to the location of our object
+	// this is easy if your water doesn't move, the water height is just the height
+	// of your water plane in world space
+	float waterHeight = 0.25;//water.GetAvgHeight(this.Position, width, depth);
+	
 	int collided_index = m_Space->at(m_Models[0]->m_Position[0], 0, m_Models[0]->m_Position[2]);
 	if (collided_index > 0) {
 		if (m_Models[collided_index]->m_IsHelpfulToPlayers) {
-			m_Models[0]->m_Position[1] = kPlayerHeight;
+			//m_Models[0]->m_Position[1] = kPlayerHeight;
+			waterHeight = 0.25;
 			a = kTankAcceleration;
 			moveForward = true;
 		} else {
-			m_Models[0]->m_Position[1] = kPlayerHeight + (m_Models[collided_index]->m_Life);
+			//m_Models[0]->m_Position[1] = kPlayerHeight + (m_Models[collided_index]->m_Life);
+			waterHeight = 1.0;
+			boatDensity = fluidDensity;
 			m_Models[0]->m_Velocity[0] = 10.0;
 			moveForward = true;
 		}
 	}
+
+	
+	//now we calculate how much water our boat is displacing
+	float clamped_foo = clamp(waterHeight - (m_Models[0]->m_Position[1] - height * 0.5f),0,height);
+	float displacedVolume = width * depth * clamped_foo;
+	
+	
+	//calculate the boat's mass - we are only using part of the volume
+	// as we assume the rest is filled with air
+	float boatMass = boatDensity * (width * depth * height * 0.75f);
+	//Now lets calculate the gravitational force
+	//	Fg	= mass	* g
+	float gravForce = boatMass * -9.8f;
+	//And Buoyancy!
+	//	Fb	= displacedVolume * fluidDensity * g
+	float buoyancyForce = displacedVolume * fluidDensity * 9.8f;
+	//And finally drag force, but with some special considerations
+	//We only apply drag force if the boat is in the water
+	float dragforce = 0;
+	if (m_Models[0]->m_Position[1] < waterHeight)
+	{
+		//Fd	= (1/2) *	v ^ 2	* fluidDensity * ( area )	* dragCoefficient
+		dragforce = -0.5f * (m_Models[0]->m_Velocity[0] * m_Models[0]->m_Velocity[0]) * fluidDensity * (width * depth) * 1.33f;
+		//we also want the drag force to operate in the opposite direction of the movement:
+		// - if the object is sinking, it has to push through water as it sinks
+		// - if the object is rising, it has to push through water going up
+		if (m_Models[0]->m_Velocity[1] < 0)
+			dragforce *= -1;
+	}
+	//just sum them up!
+	float netForce = gravForce + buoyancyForce;
+	//So we've got a net force, now what?
+	//If you were using Havok or some other physics API, you would just apply it
+	//to your rigid body.
+	//If not, you need to extract acceleration from the force,
+	// use that to affect velocity, and then velocity to affect position!
+	//
+	// Force = mass * acceleration
+	// aceleration = (Force / mass)
+	float acel = (netForce / boatMass);
+	//apply the acceleration to the velocity
+	m_Models[0]->m_Velocity[1] += acel * m_DeltaTime;
+	//apply that to the position
+	//position.Y += yVel * delta;
+	
+	
 	
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		int o = m_ParticlesOffset + idx;
@@ -340,7 +409,7 @@ int MainMenu::Simulate() {
 		m_CameraTarget[1] = 0.1;
 		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 60.0);
 		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 10.0) - (txx * 0.0);
-		m_CameraPosition[1] = 1.0;
+		m_CameraPosition[1] = 3.0;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 10.0) - (tzz * 0.0);
 	} else if (m_CameraIndex == 2) {
 		m_CameraTarget[0] = 128.0;

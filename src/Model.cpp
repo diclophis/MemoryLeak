@@ -284,8 +284,11 @@ float Model::Simulate(float dt, bool pushing) {
 		float tx = -sin(DEGREES_TO_RADIANS(m_Rotation[1]));
 		float tz = cos(DEGREES_TO_RADIANS(m_Rotation[1]));
 		m_Position[0] += tx * (m_Velocity[0] * dt);
+		m_Position[1] += (m_Velocity[1] * dt);
 		//m_Position[1] = 0.7 + (fastSinf(m_Life) * 0.1);
 		m_Position[2] += tz * (m_Velocity[0] * dt);
+		
+		LOGV("vy: %f\n", m_Velocity[1]);
 	}
 	
 	return m_Life;

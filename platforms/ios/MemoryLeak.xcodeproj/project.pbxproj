@@ -634,7 +634,6 @@
 				FC14181D1285415800166578 /* RemoveComments.cpp */,
 				FC14181F1285415800166578 /* RemoveRedundantMaterials.cpp */,
 				FC1418211285415800166578 /* RemoveVCProcess.cpp */,
-				FC1418231285415800166578 /* res */,
 				FC1418261285415800166578 /* SceneCombiner.cpp */,
 				FC1418281285415800166578 /* ScenePreprocessor.cpp */,
 				FC14182A1285415800166578 /* SGSpatialSort.cpp */,
@@ -651,13 +650,6 @@
 				FC1418481285415800166578 /* VertexTriangleAdjacency.cpp */,
 			);
 			path = assimp;
-			sourceTree = "<group>";
-		};
-		FC1418231285415800166578 /* res */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = res;
 			sourceTree = "<group>";
 		};
 		FC14188C1285415800166578 /* contrib */ = {
