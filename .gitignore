@@ -25,3 +25,5 @@ platforms/android/bin/
 platforms/osx/*.o
 platforms/android/local.properties
 src/libmodplug/*.o
+platforms/osx_glut/*.o
+platforms/osx_glut/build
