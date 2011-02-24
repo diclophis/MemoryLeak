@@ -107,7 +107,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
-	m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
+  if (r > 0) { 
+    m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
+  }
 
 	m_AudioBuffer = new unsigned char[m_AudioBufferSize];
 	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
@@ -156,19 +158,11 @@ int Engine::RunThread() {
 	
 	m_IsSceneBuilt = true;
 
-	double t1, t2;
+	double t1, t2, averageWait;
 	timeval tim;
 	gettimeofday(&tim, NULL);
 
-	int waitedCount = 1;
-
-	double averageWait = 0.0;
-
 	int buffer_position = 0;
-
-	for (unsigned int i=0; i<waitedCount; i++) {
-		m_Waits[i] = 0.0;
-	}
 
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -183,10 +177,6 @@ int Engine::RunThread() {
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 			
-		if (averageWait > (1.0 / 30.0)) {
-			//LOGV("slow\n");
-		}
-		
 		for (unsigned int i=0; i<interp; i++) {
 			m_DeltaTime = (averageWait / interp);
 			m_SimulationTime += (m_DeltaTime);
@@ -220,14 +210,14 @@ int Engine::RunThread() {
 }
 
 
-void Engine::RenderModelRange(int s, int e) {
+void Engine::RenderModelRange(unsigned int s, unsigned int e) {
 	for (unsigned int i=s; i<e; i++) {
 		m_Models[i]->Render();
 	}
 }
 
 
-void Engine::RenderSpriteRange(int s, int e) {
+void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 	for (unsigned int i=s; i<e; i++) {
 		m_AtlasSprites[i]->Render();
 	}

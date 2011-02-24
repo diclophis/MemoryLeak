@@ -55,9 +55,9 @@ public:
   void WaitVsync();
   void WaitAudioSync();
 	
-	void RenderModelRange(int s, int e);
+	void RenderModelRange(unsigned int s, unsigned int e);
 
-	void RenderSpriteRange(int s, int e);
+	void RenderSpriteRange(unsigned int s, unsigned int e);
 
 	bool m_PumpedAudioLastTick;
 	int m_SkipLimit;

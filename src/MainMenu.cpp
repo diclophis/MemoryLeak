@@ -91,7 +91,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models[2]->SetScale(256.0, 128.0, 256.0);
 	m_Models[2]->m_Rotation[1] = 90.0;
 
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, "", 0, 16, 1.25, "", 0, 16, 0.25));
+	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 1.25, "", 0, 16, 0.25));
 	m_AtlasSprites[0]->SetPosition(0.0 - (0.4 * m_ScreenWidth), 0.0);
 	m_AtlasSprites[0]->SetVelocity(0.0, 0.0);
 	m_AtlasSprites[0]->m_IsAlive = true;
@@ -99,7 +99,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_AtlasSprites[0]->SetEmitVelocity(0.0, 0.0);
 	m_AtlasSprites[0]->Build(10);
 	
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, "", 0, 16, 1.25, "", 0, 16, 2.25));
+	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 1.25, "", 0, 16, 2.25));
 	m_AtlasSprites[1]->SetPosition(0.0 + (0.4 * m_ScreenWidth), 0.0);
 	m_AtlasSprites[1]->SetVelocity(0.0, 0.0);
 	m_AtlasSprites[1]->m_IsAlive = false;

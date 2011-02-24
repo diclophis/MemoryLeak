@@ -13,7 +13,7 @@ void SpriteGun::Build(int n) {
 	m_NumParticles = n;
 	m_ShootInterval = 1.0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
-		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_ShotAnimation, m_ShotStart, m_ShotEnd, m_ShotMaxLife));
+		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_ShotStart, m_ShotEnd, m_ShotMaxLife));
 		ResetParticle(idx);
 	}
 }

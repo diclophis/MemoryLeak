@@ -134,7 +134,7 @@ public:
 	float *m_Velocity;
 	float m_Theta;
 	int m_Frame;
-	int m_Texture;
+	GLuint m_Texture;
 	Model *m_Climbing;
 	int m_Direction;
 	int m_FramesOfAnimationCount;	

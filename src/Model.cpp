@@ -119,8 +119,8 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 	int used_buffer = 0;
 	
-	for (unsigned int mm=ff->m_AnimationStart; mm<ff->m_AnimationEnd; mm++) { //keyframes
-		for (unsigned int iiii=0; iiii<interp; iiii++) {
+	for (int mm=ff->m_AnimationStart; mm<ff->m_AnimationEnd; mm++) { //keyframes
+		for (int iiii=0; iiii<interp; iiii++) {
 			
 			unsigned short* indices = new unsigned short[a->mMeshes[mm]->mNumFaces * 3];
 			float* vertices = new float[a->mMeshes[mm]->mNumVertices * 3];

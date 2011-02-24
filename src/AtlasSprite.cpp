@@ -7,7 +7,7 @@
 
 static GLuint g_lastTexture = 0;
 
-AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s, int e, float m) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Animation(str), m_Start(s), m_End(e), m_MaxLife(m) {
+AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
 	m_Position = new float[2];
 	m_Velocity = new float[2];
 	m_Scale = new float[2];
@@ -42,8 +42,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	float vdy = 50.0;
 	float texture_x = 0.0;
 	float texture_y = 0.0;
-	unsigned int i;
-	for (i=0; i<m_Count; i++) {
+	for (unsigned i=0; i<m_Count; i++) {
 		int b = (i % m_SpritesPerRow);
 		m_Sprites[i].dx = vdx;
 		m_Sprites[i].dy = vdy;
@@ -59,9 +58,6 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, const std::string &str, in
 	m_Rotation = randf() > 0.5 ? (randf() * 5.0) : -(randf() * 5.0);
 }
 
-void AtlasSprite::ReleaseBuffers() {
-	g_lastTexture = 0;
-}
 
 void AtlasSprite::Render() {
 	if (m_AnimationLength == 0) {

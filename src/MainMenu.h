@@ -29,7 +29,7 @@ public:
 	void ResetParticles();
 	void ResetParticle(int idx);
 	void ShootParticle(int idx);
-	int m_NumParticles;
+	unsigned int m_NumParticles;
 	int m_ParticlesOffset;
 	int m_ParticleStreamIndex;
 	std::vector<Model *> m_ModelParticles;	

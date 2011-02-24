@@ -5,7 +5,7 @@ class SpriteGun : public AtlasSprite {
 
 public:
 
-	SpriteGun(GLuint t, int spr, int rows, const std::string &str, int s, int e, float m, const std::string &str2, int s2, int e2, float m2) : AtlasSprite(t, spr, rows, str, s, e, m) {
+	SpriteGun(GLuint t, int spr, int rows, int s, int e, float m, const std::string &str2, int s2, int e2, float m2) : AtlasSprite(t, spr, rows, s, e, m) {
 		m_ShotAnimation = str2;
 		m_ShotStart = s2;
 		m_ShotEnd = e2;
@@ -23,7 +23,7 @@ public:
 	void Render();
 	void Reset();
 	
-	int m_NumParticles;
+	unsigned int m_NumParticles;
 	std::vector<AtlasSprite *> m_AtlasSprites;	
 	float m_ShootInterval;
 	std::string m_ShotAnimation;

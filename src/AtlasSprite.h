@@ -17,6 +17,8 @@ public:
 		float tx1, ty1;
 		float tx2, ty2;
 	} Sprite;
+
+	std::string m_Animation;
 	
 	GLuint m_Texture;
 	int m_SpritesPerRow;
@@ -26,27 +28,29 @@ public:
 	int m_End;
 	float m_AnimationSpeed;
 	Sprite *m_Sprites;
-	int m_AnimationLength;
+	unsigned int m_AnimationLength;
 	float m_AnimationDuration;
 	float m_MaxLife;
-	std::string m_Animation;
 	float m_Rotation;
 	
 	void SetFrame(int f) {
 		m_Frame = f;
 	};
 	
-	AtlasSprite(GLuint t, int spr, int rows, const std::string &str, int s = 0, int e = 0, float m = 1.0);
+	AtlasSprite(GLuint t, int spr, int rows, int s = 0, int e = 0, float m = 1.0);
 	void Render();
 	
-	int m_Count;
+	unsigned int m_Count;
 		
 	void SetPosition(float x,float y) {
 		m_Position[0] = x;
 		m_Position[1] = y;
 	}
 	
-	static void ReleaseBuffers();
+	//static void ReleaseBuffers();
+static void ReleaseBuffers() {
+	//g_lastTexture = 0;
+}
 	
 	float *m_Position;
 	float *m_Velocity;
