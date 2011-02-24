@@ -36,6 +36,10 @@ static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat 
 }
 #endif
 
+#ifdef DESKTOP
+  #define glOrthof glOrtho
+#endif
+
 Engine::~Engine() {
   LOGV("dealloc mofo\n");
 }

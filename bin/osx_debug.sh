@@ -5,7 +5,8 @@ touch assets/textures/.DS_Store && rm assets/textures/.DS_Store
 
 cd platforms/osx/
 
-make clean && make
+make clean
+make
 
 cd ../../
 

@@ -6,7 +6,7 @@
 #CXX=~/Desktop/checker-249/libexec/c++-analyzer
 
 build=build
-CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -I../../src -I../../src/include -I../../src/libmodplug -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
+CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
 CFLAGS=$(CXXFLAGS)
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -framework WebKit
 
@@ -19,6 +19,7 @@ objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/ConvertUTF/*.c)
 objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/unzip/*.c))
 objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/contrib/zlib/*.c))
 objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/yajl/*.c))
+objects   += $(patsubst %.cpp,%.o,    $(wildcard ../../src/libmodplug/*.cpp))
 objects   += $(patsubst %.c,%.o,    $(wildcard ../../src/yajl/api/*.c))
 
 raptor_island: $(build) $(objects)

@@ -18,7 +18,12 @@ public:
 
 	static void NodeToXY( void* node, int* x, int* y )
 	{
-		int index = (int)node;
+    int*  data = reinterpret_cast<int*>(node);
+    int   index    = *data;
+    delete data;
+
+
+		//int index = (int)node;
 		*y = index / 64;
 		*x = index - *y * 64;
 	}

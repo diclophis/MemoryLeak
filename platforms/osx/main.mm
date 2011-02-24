@@ -9,22 +9,35 @@
 #import "GLView.h"
 
 #include "MemoryLeak.h"
-#include "Audio.h"
 #include "Model.h"
+#include "AtlasSprite.h"
+#include "SpriteGun.h"
 #include "Engine.h"
-#include "MachineGun.h"
-#include "PixelPusher.h"
+#include "octree.h"
+#include "micropather.h"
+#include "ModelOctree.h"
+#include "MainMenu.h"
+
 
 //#define kWindowWidth  480
 //#define kWindowHeight 320
 #define kWindowWidth  320
 #define kWindowHeight 480
 
+class Callbacks {
+public:
+  static void *PumpAudio(void *buffer, int buffer_position, int divisor) {
+    //LOGV("pump up the jam\n");
+  };
+};
 
 @interface Skeleton : NSObject {
   Engine *game;
   std::vector<GLuint> textures;
   std::vector<foo*> models;
+  std::vector<foo*> sounds;
+  std::vector<foo*> levels;
+  int min_buffer;
   GLView *glView;
   int built;
 }
@@ -42,6 +55,7 @@
 
   built = 0;
 
+  min_buffer = 1024;
 
   id menubar = [[NSMenu new] autorelease];
   id appMenuItem = [[NSMenuItem new] autorelease];
@@ -108,6 +122,36 @@
     [texData release];
   }
 
+	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/levels"];
+	for (NSString *path in level_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
+		
+		levels.push_back(firstModel);
+	}
+
+	NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/sounds"];
+	for (NSString *path in sound_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
+		
+		sounds.push_back(firstModel);
+	}
+
   [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(draw:) userInfo:nil repeats:YES];
   [glWindow setContentView:glView];
   [glWindow makeKeyAndOrderFront:nil];
@@ -122,8 +166,10 @@
     //[glView setNeedsDisplay:YES];
     game->DrawScreen(0);
   } else {
-    game = new PixelPusher(kWindowWidth, kWindowHeight, textures, models);
-    game->CreateThread();
+
+    game = new MainMenu(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 16);
+    game->CreateThread(Callbacks::PumpAudio);
+
     built = 1;
   }
   [[glView openGLContext] flushBuffer];

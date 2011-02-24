@@ -23,6 +23,9 @@ static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 1.0, 1.0 };
 static const GLfloat lightAmbientLamp[4]   = { 0.4, 0.4, 0.4, 1.0 };
 static const GLfloat lightPositionLamp[4]  = { 25.0, 25.0, 25.0, 25.0 };
 
+#ifdef DESKTOP
+  #define glClipPlanef glClipPlane
+#endif
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
@@ -404,7 +407,7 @@ void MainMenu::DrawPlayer(float yScale) {
 	
     // Define the water clip plane that prevents the duck reflection
     // from being drawn above the water
-	GLfloat coeff[4] =  { 0.f, 1.f, 0.f, 0.f };
+	GLdouble coeff[4] =  { 0.f, 1.f, 0.f, 0.f };
 	glClipPlanef( GL_CLIP_PLANE0, coeff );
 	glEnable( GL_CLIP_PLANE0 );
 	

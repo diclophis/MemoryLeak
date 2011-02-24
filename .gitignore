@@ -24,3 +24,4 @@ private
 platforms/android/bin/
 platforms/osx/*.o
 platforms/android/local.properties
+src/libmodplug/*.o
