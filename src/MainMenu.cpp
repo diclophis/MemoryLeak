@@ -13,7 +13,7 @@
 #define kMaxTankSpeed 30.0
 #define kTurnRate 1.0
 #define kTankAcceleration 0.5
-#define kPlayerHeight 0.65
+#define kPlayerHeight 0.0
 
 /* Global ambient light. */
 static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
@@ -60,7 +60,11 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();
 	
-	snprintf(path, sizeof(s), "%d", 4);
+	int model = 5;
+	int texture = 5;
+	int level_index = 1;
+
+	snprintf(path, sizeof(s), "%d", model);
 	m_Importer.ReadFile(path, m_PostProcessFlags);	
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();
@@ -78,7 +82,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models[1]->SetScale(256.0, 1.0, 256.0);
 	
 	m_Models.push_back(new Model(m_FooFoos.at(3)));
-	m_Models[2]->SetTexture(m_Textures->at(4));
+	m_Models[2]->SetTexture(m_Textures->at(texture));
 	m_Models[2]->SetFrame(0);
 	m_Models[2]->SetPosition(128.0, 0.0, 128.0);
 	m_Models[2]->SetScale(256.0, 128.0, 256.0);
@@ -101,7 +105,6 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	
 	BuildParticles(100);
 	
-	int level_index = 0;
 	
 	unsigned char *level = (unsigned char *)malloc(sizeof(unsigned char) * m_LevelFoos->at(level_index)->len);
 	
@@ -122,8 +125,8 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 		m_Models[f]->SetFrame(0);
 		m_Models[f]->SetPosition(x, 3.0, y);
 		m_Models[f]->SetScale(yy, 1.0, yy);
-		m_Models[f]->m_Life = yy;
-		if (level[i] < 180) {
+		m_Models[f]->m_Life = yy * 2.5;
+		if (level[i] < 64) {
 			m_Models[f]->m_IsHelpfulToPlayers = true;
 		}
 		x++;
@@ -203,8 +206,7 @@ int MainMenu::Simulate() {
 			a = kTankAcceleration;
 			moveForward = true;
 		} else {
-			m_Models[0]->m_Position[1] = kPlayerHeight + (m_Models[collided_index]->m_Life * 1.1);
-			//a = kTankAcceleration * 0.25;
+			m_Models[0]->m_Position[1] = kPlayerHeight + (m_Models[collided_index]->m_Life);
 			m_Models[0]->m_Velocity[0] = 10.0;
 			moveForward = true;
 		}
@@ -332,10 +334,10 @@ int MainMenu::Simulate() {
 		*/
 		
 		m_CameraTarget[0] = m_Models[0]->m_Position[0] + (tx * 60.0);
-		m_CameraTarget[1] = 0.0125;
+		m_CameraTarget[1] = 0.1;
 		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 60.0);
 		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 10.0) - (txx * 0.0);
-		m_CameraPosition[1] = 3.0;
+		m_CameraPosition[1] = 1.0;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 10.0) - (tzz * 0.0);
 	} else if (m_CameraIndex == 2) {
 		m_CameraTarget[0] = 128.0;
@@ -367,8 +369,8 @@ void MainMenu::RenderModelPhase() {
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
 	
-	float old_scale = m_Models[0]->m_Scale[1];
-	m_Models[0]->m_Scale[1] = old_scale + (fastSinf(m_SimulationTime * 1.0) * 0.2);
+	//float old_scale = m_Models[0]->m_Scale[1];
+	//m_Models[0]->m_Scale[1] = old_scale + (fastSinf(m_SimulationTime * 1.0) * 0.2);
 	
 	glFrontFace(GL_CW);
 	DrawPlayer(-1.0);
@@ -376,20 +378,19 @@ void MainMenu::RenderModelPhase() {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
-	RenderModelRange(1, 2);
+	//RenderModelRange(1, 2);
 	glDisable(GL_BLEND);
 
-
-	m_Models[0]->m_Scale[1] = old_scale;
+	//m_Models[0]->m_Scale[1] = old_scale;
 	
-	RenderModelRange(2, 3);
-
-	DrawPlayer(1.0);
+	if (m_CameraIndex == 2) {
+		RenderModelRange(3 + m_NumParticles, 256 * 256);
+	} else {
+		RenderModelRange(2, 3);
+		DrawPlayer(1.0);
+	}
 	
 	glDisable(GL_LIGHTING);
-	
-	//DrawPlayer(1.0);
-	//RenderModelRange(3 + m_NumParticles, 256 * 256);
 }
 
 

@@ -6,7 +6,7 @@
 #CXX=~/Desktop/checker-249/libexec/c++-analyzer
 
 build=build
-CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -I../../src -I../../src/include -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
+CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -I../../src -I../../src/include -I../../src/libmodplug -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
 CFLAGS=$(CXXFLAGS)
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -framework WebKit
 
