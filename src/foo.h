@@ -25,3 +25,5 @@ struct foofoo {
 	int m_AnimationStart;
 	int m_AnimationEnd;
 };
+
+

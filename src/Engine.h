@@ -102,5 +102,9 @@ public:
   bool m_IsPushingAudio;
 	
 	int m_AudioDivisor;
+	
+	
+	GlobalInfo g;
+	CURLMcode rc;
 
 };
