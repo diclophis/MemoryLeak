@@ -278,12 +278,10 @@ int MainMenu::Simulate() {
 	// aceleration = (Force / mass)
 	float acel = (netForce / boatMass);
 	//apply the acceleration to the velocity
-	m_Models[0]->m_Velocity[1] += acel * m_DeltaTime;
+	//m_Models[0]->m_Velocity[1] += acel * m_DeltaTime;
 	//apply that to the position
 	//position.Y += yVel * delta;
-	
-	
-	
+
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		int o = m_ParticlesOffset + idx;
 
@@ -456,7 +454,7 @@ void MainMenu::RenderModelPhase() {
 	//m_Models[0]->m_Scale[1] = old_scale;
 	
 	if (m_CameraIndex == 2) {
-		RenderModelRange(3 + m_NumParticles, 256 * 256);
+		//RenderModelRange(3 + m_NumParticles, 256 * 256);
 	} else {
 		RenderModelRange(2, 3);
 		DrawPlayer(1.0);

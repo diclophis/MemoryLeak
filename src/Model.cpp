@@ -288,7 +288,7 @@ float Model::Simulate(float dt, bool pushing) {
 		//m_Position[1] = 0.7 + (fastSinf(m_Life) * 0.1);
 		m_Position[2] += tz * (m_Velocity[0] * dt);
 		
-		LOGV("vy: %f\n", m_Velocity[1]);
+		//LOGV("vy: %f\n", m_Velocity[1]);
 	}
 	
 	return m_Life;

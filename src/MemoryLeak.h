@@ -45,7 +45,7 @@
 
 
 
-#define DPRINT(x...) printf(x)
+#define DPRINT(x...) LOGV(x)
 
 #define MSG_OUT stdout  
 

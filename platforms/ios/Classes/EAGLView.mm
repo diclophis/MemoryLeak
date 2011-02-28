@@ -32,13 +32,11 @@ static std::vector<foo*> models;
 static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
 
-static AudioUnitSampleType **buffer_ana;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
-static volatile int *buffer_ana_flag;
 
-#define PLAYBACK_FREQ 8000
-#define AUDIO_BUFFER_SIZE (186)
-#define BUF_SIZE 4
+#define PLAYBACK_FREQ 44100
+#define AUDIO_BUFFER_SIZE (2048)
+#define BUF_SIZE 512
 
 struct buf_t {
 	volatile int writepos;
@@ -595,7 +593,6 @@ static OSStatus playbackCallback(void *inRefCon,
 	// Initialise
 	status = AudioUnitInitialize(audioUnit);
 	checkStatus(status);
-
 }
 
 
@@ -681,8 +678,8 @@ static OSStatus playbackCallback(void *inRefCon,
 		
 		gameState = 1;
 	
-		//status = AudioOutputUnitStart(audioUnit);
-		//checkStatus(status);
+		status = AudioOutputUnitStart(audioUnit);
+		checkStatus(status);
 	}
 }
 

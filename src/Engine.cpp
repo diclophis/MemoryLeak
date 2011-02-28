@@ -9,64 +9,17 @@
 #include <string.h>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 #include "Model.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #include "Engine.h"
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //static void timer_cb(EV_P_ struct ev_timer *w, int revents);
+static void do_this_in_tick(GlobalInfo *g, int revents);
 
 static void mcode_or_die(const char *where, CURLMcode code)
 {
@@ -85,12 +38,12 @@ static void mcode_or_die(const char *where, CURLMcode code)
 			default: s="CURLM_unknown";
 				break;
 			case     CURLM_BAD_SOCKET:         s="CURLM_BAD_SOCKET";
-				fprintf(MSG_OUT, "ERROR: %s returns %s\n", where, s);
+				LOGV("ERROR: %s returns %s\n", where, s);
 				/* ignore this error */ 
 				return;
 		}
-		fprintf(MSG_OUT, "ERROR: %s returns %s\n", where, s);
-		exit(code);
+		LOGV("ERROR: %s returns %s !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n", where, s);
+		//exit(code);
 	}
 }
 
@@ -104,14 +57,14 @@ static void check_multi_info(GlobalInfo *g)
 	CURL *easy;
 	CURLcode res;
 	
-	fprintf(MSG_OUT, "REMAINING: %d\n", g->still_running);
+	//LOGV("REMAINING: %d\n", g->still_running);
 	while ((msg = curl_multi_info_read(g->multi, &msgs_left))) {
 		if (msg->msg == CURLMSG_DONE) {
 			easy = msg->easy_handle;
 			res = msg->data.result;
 			curl_easy_getinfo(easy, CURLINFO_PRIVATE, &conn);
 			curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &eff_url);
-			fprintf(MSG_OUT, "DONE: %s => (%d) %s\n", eff_url, res, conn->error);
+			LOGV("DONE: %s => (%d) %s\n", eff_url, res, conn->error);
 			curl_multi_remove_handle(g->multi, easy);
 			free(conn->url);
 			curl_easy_cleanup(easy);
@@ -127,7 +80,9 @@ static void check_multi_info(GlobalInfo *g)
 /* Update the event timer after curl_multi library calls */ 
 static int multi_timer_cb(CURLM *multi, long timeout_ms, GlobalInfo *g)
 {
-	DPRINT("%s %li\n", __PRETTY_FUNCTION__,  timeout_ms);
+	
+	//DPRINT("%s %li\n", __PRETTY_FUNCTION__,  timeout_ms);
+	/*
 	//ev_timer_stop(g->loop, &g->timer_event);
 	if (timeout_ms > 0)
 	{
@@ -135,44 +90,29 @@ static int multi_timer_cb(CURLM *multi, long timeout_ms, GlobalInfo *g)
 		//ev_timer_init(&g->timer_event, timer_cb, t, 0.);
 		//ev_timer_start(g->loop, &g->timer_event);
 		LOGV("wtf A???\n");
+		do_this_in_tick(g, 0);
 	} else {
 		//timer_cb(g->loop, &g->timer_event, 0);
 		LOGV("wtf B??\n");
 	}
+	*/
+	//do_this_in_tick(g, 0);
+
 	return 0;
 }
 
 
-/* Called by libevent when we get action on a multi socket */ 
-static void event_cb(EventInfo *w, int revents)
-{
-	//DPRINT("%s  w %p revents %i\n", __PRETTY_FUNCTION__, w, revents);
-	GlobalInfo *g = w->global;
-	curl_socket_t fd = w->fd;
-	
-	CURLMcode rc;
-	
-	int action = (revents&EV_READ?CURL_POLL_IN:0)|
-    (revents&EV_WRITE?CURL_POLL_OUT:0);
-	rc = curl_multi_socket_action(g->multi, fd, action, &g->still_running);
-	mcode_or_die("event_cb: curl_multi_socket_action", rc);
-	check_multi_info(g);
-	if ( g->still_running <= 0 )
-	{
-		fprintf(MSG_OUT, "last transfer done, kill timeout\n");
-		//ev_timer_stop(g->loop, &g->timer_event);
-	}
-}
-
 /* Called by libevent when our timeout expires */ 
-static void do_this_in_tick(EventInfo *w, int revents)
+static void do_this_in_tick(GlobalInfo *g, int revents)
 {
-	DPRINT("%s  w %p revents %i\n", __PRETTY_FUNCTION__, w, revents);
+	//DPRINT("%s g %p revents %i\n", __PRETTY_FUNCTION__, g, revents);
 	
-	GlobalInfo *g = (GlobalInfo *)w->global;
+	//GlobalInfo *g = (GlobalInfo *)w->global;
 	CURLMcode rc;
 	
-	rc = curl_multi_socket_action(g->multi, CURL_SOCKET_TIMEOUT, 0, &g->still_running);
+	//rc = curl_multi_socket_action(g->multi, CURL_SOCKET_TIMEOUT, 0, &g->still_running);
+	int r = 0;
+	rc = curl_multi_perform(g->multi, &r);
 	mcode_or_die("timer_cb: curl_multi_socket_action", rc);
 	check_multi_info(g);
 }
@@ -181,7 +121,7 @@ static void do_this_in_tick(EventInfo *w, int revents)
 /* Clean up the SockInfo structure */ 
 static void remsock(SockInfo *f, GlobalInfo *g)
 {
-	printf("%s  \n", __PRETTY_FUNCTION__);
+	//printf("%s  \n", __PRETTY_FUNCTION__);
 	if ( f )
 	{
 		//if ( f->evset )
@@ -193,19 +133,11 @@ static void remsock(SockInfo *f, GlobalInfo *g)
 /* Assign information to a SockInfo structure */ 
 static void setsock(SockInfo*f, curl_socket_t s, CURL*e, int act, GlobalInfo*g)
 {
-	printf("%s  \n", __PRETTY_FUNCTION__);
-	
-	int kind = (act&CURL_POLL_IN?EV_READ:0)|(act&CURL_POLL_OUT?EV_WRITE:0);
-	
+	//printf("%s  \n", __PRETTY_FUNCTION__);
+		
 	f->sockfd = s;
 	f->action = act;
 	f->easy = e;
-	//if ( f->evset )
-	//	ev_io_stop(g->loop, &f->ev);
-	//ev_io_init(&f->ev, event_cb, f->sockfd, kind);
-	//f->ev.data = g;
-	//f->evset=1;
-	//ev_io_start(g->loop, &f->ev);
 }
 
 
@@ -223,30 +155,27 @@ static void addsock(curl_socket_t s, CURL *easy, int action, GlobalInfo *g)
 /* CURLMOPT_SOCKETFUNCTION */ 
 static int sock_cb(CURL *e, curl_socket_t s, int what, void *cbp, void *sockp)
 {
-	DPRINT("%s e %p s %i what %i cbp %p sockp %p\n",
-		   __PRETTY_FUNCTION__, e, s, what, cbp, sockp);
+	//DPRINT("%s e %p s %i what %i cbp %p sockp %p\n", __PRETTY_FUNCTION__, e, s, what, cbp, sockp);
 	
 	GlobalInfo *g = (GlobalInfo*) cbp;
 	SockInfo *fdp = (SockInfo*) sockp;
 	const char *whatstr[]={ "none", "IN", "OUT", "INOUT", "REMOVE"};
 	
-	fprintf(MSG_OUT,
-			"socket callback: s=%d e=%p what=%s ", s, e, whatstr[what]);
+	LOGV("socket callback: s=%d e=%p what=%s ", s, e, whatstr[what]);
+	
 	if ( what == CURL_POLL_REMOVE )
 	{
-		fprintf(MSG_OUT, "\n");
+		LOGV("\n");
 		remsock(fdp, g);
 	} else
 	{
 		if ( !fdp )
 		{
-			fprintf(MSG_OUT, "Adding data: %s\n", whatstr[what]);
+			//LOGV("Adding data: %s\n", whatstr[what]);
 			addsock(s, e, what, g);
 		} else
 		{
-			fprintf(MSG_OUT,
-					"Changing action from %s to %s\n",
-					whatstr[fdp->action], whatstr[what]);
+			LOGV("Changing action from %s to %s\n", whatstr[fdp->action], whatstr[what]);
 			setsock(fdp, s, e, what, g);
 		}
 	}
@@ -264,14 +193,13 @@ static size_t write_cb(void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 /* CURLOPT_PROGRESSFUNCTION */ 
-static int prog_cb (void *p, double dltotal, double dlnow, double ult,
-                    double uln)
+static int prog_cb (void *p, double dltotal, double dlnow, double ult, double uln)
 {
 	ConnInfo *conn = (ConnInfo *)p;
 	(void)ult;
 	(void)uln;
 	
-	fprintf(MSG_OUT, "Progress: %s (%g/%g)\n", conn->url, dlnow, dltotal);
+	//LOGV("Progress: %s (%g/%g)\n", conn->url, dlnow, dltotal);
 	return 0;
 }
 
@@ -288,15 +216,16 @@ static void new_conn(char *url, GlobalInfo *g )
 	conn->easy = curl_easy_init();
 	if ( !conn->easy )
 	{
-		fprintf(MSG_OUT, "curl_easy_init() failed, exiting!\n");
-		exit(2);
+		LOGV("curl_easy_init() failed, exiting!\n");
+		//exit(2);
 	}
+	
 	conn->global = g;
 	conn->url = strdup(url);
 	curl_easy_setopt(conn->easy, CURLOPT_URL, conn->url);
 	curl_easy_setopt(conn->easy, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(conn->easy, CURLOPT_WRITEDATA, &conn);
-	curl_easy_setopt(conn->easy, CURLOPT_VERBOSE, 1L);
+	//curl_easy_setopt(conn->easy, CURLOPT_VERBOSE, 1L);
 	curl_easy_setopt(conn->easy, CURLOPT_ERRORBUFFER, conn->error);
 	curl_easy_setopt(conn->easy, CURLOPT_PRIVATE, conn);
 	curl_easy_setopt(conn->easy, CURLOPT_NOPROGRESS, 0L);
@@ -304,9 +233,12 @@ static void new_conn(char *url, GlobalInfo *g )
 	curl_easy_setopt(conn->easy, CURLOPT_PROGRESSDATA, conn);
 	curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_TIME, 3L);
 	curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_LIMIT, 10L);
+	curl_easy_setopt(conn->easy, CURLOPT_TIMEOUT, 30L);
+	curl_easy_setopt(conn->easy, CURLOPT_CONNECTTIMEOUT, 5L);
+
+
+	LOGV("Adding easy %p to multi %p (%s)\n", conn->easy, g->multi, url);
 	
-	fprintf(MSG_OUT,
-			"Adding easy %p to multi %p (%s)\n", conn->easy, g->multi, url);
 	rc = curl_multi_add_handle(g->multi, conn->easy);
 	mcode_or_die("new_conn: curl_multi_add_handle", rc);
 	
@@ -464,14 +396,7 @@ void Engine::WaitAudioSync() {
 
 int Engine::RunThread() {
 	
-	
 
-
-	
-	
-	
-	
-	
 	memset(&g, 0, sizeof(GlobalInfo));
 	g.multi = curl_multi_init();
 	
@@ -483,12 +408,9 @@ int Engine::RunThread() {
 	
 	char s[1024];
 	//GlobalInfo *g = (GlobalInfo *)w->data;
+	sprintf(s, "http://qa.api.openfsdsdsdds.com/internal/revision");
+
 	new_conn(s, &g);  /* if we read a URL, go get it! */ 
-	
-	
-	
-	
-	
 	
 	Build();
 	
@@ -506,7 +428,14 @@ int Engine::RunThread() {
 	double interp = 1.0;
 
 	while (m_GameState != 0) {
+				
+		do_this_in_tick(&g, 0);
 		
+		if (g.still_running < 1) {
+			//LOGV("new url\n");
+			new_conn(s, &g);  /* if we read a URL, go get it! */ 
+		}
+
 		gettimeofday(&tim, NULL);
 		t2=tim.tv_sec+(tim.tv_usec/1000000.0);
 		averageWait = t2 - t1;
@@ -524,10 +453,11 @@ int Engine::RunThread() {
 		if (m_PumpedAudioLastTick) {			
 			if (m_IsPushingAudio) {
 				int len = m_AudioBufferSize / m_AudioDivisor;
-				//LOGV("modplug read: %d\n", len);
+				
 				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-				//LOGV("just read this much size/len: %d %d\n", m_AudioBufferSize, len);
 				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
+				
+
 			} else {
 				m_PumpedAudioLastTick = start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
 			}
