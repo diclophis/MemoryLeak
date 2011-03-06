@@ -217,6 +217,7 @@
 		FCA63D6D131B6C760050F9A2 /* inet_net_pton.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D3E131B6C760050F9A2 /* inet_net_pton.c */; };
 		FCA63D6E131B6C760050F9A2 /* inet_ntop.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D3F131B6C760050F9A2 /* inet_ntop.c */; };
 		FCA63D6F131B6C760050F9A2 /* windows_port.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D40131B6C760050F9A2 /* windows_port.c */; };
+		FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
 		FCDE088E12D924A3004CE9B7 /* fastmix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086A12D924A3004CE9B7 /* fastmix.cpp */; };
 		FCDE088F12D924A3004CE9B7 /* load_669.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086B12D924A3004CE9B7 /* load_669.cpp */; };
@@ -802,6 +803,7 @@
 		FCA63D3E131B6C760050F9A2 /* inet_net_pton.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = inet_net_pton.c; sourceTree = "<group>"; };
 		FCA63D3F131B6C760050F9A2 /* inet_ntop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = inet_ntop.c; sourceTree = "<group>"; };
 		FCA63D40131B6C760050F9A2 /* windows_port.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = windows_port.c; sourceTree = "<group>"; };
+		FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		FCDE086A12D924A3004CE9B7 /* fastmix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fastmix.cpp; sourceTree = "<group>"; };
 		FCDE086B12D924A3004CE9B7 /* load_669.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_669.cpp; sourceTree = "<group>"; };
@@ -871,6 +873,7 @@
 				FCE2EE1312913F2D00A82A88 /* libpthread.dylib in Frameworks */,
 				FCDE095112D92F17004CE9B7 /* AudioToolbox.framework in Frameworks */,
 				FCDE095312D92F17004CE9B7 /* AVFoundation.framework in Frameworks */,
+				FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -913,6 +916,7 @@
 				FCE2EE1212913F2D00A82A88 /* libpthread.dylib */,
 				FCDE095012D92F17004CE9B7 /* AudioToolbox.framework */,
 				FCDE095212D92F17004CE9B7 /* AVFoundation.framework */,
+				FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2018,6 +2022,7 @@
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DDEBUGBUILD";
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;

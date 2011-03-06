@@ -107,4 +107,6 @@ public:
 	GlobalInfo g;
 	CURLMcode rc;
 
+  CURLSH *share;
+
 };

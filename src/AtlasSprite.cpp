@@ -7,6 +7,10 @@
 
 static GLuint g_lastTexture = 0;
 
+void AtlasSprite::ReleaseBuffers() {
+	g_lastTexture = 0;
+}
+
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
 	m_Position = new float[2];
 	m_Velocity = new float[2];

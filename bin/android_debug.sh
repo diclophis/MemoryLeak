@@ -6,7 +6,7 @@ rm assets/textures/.DS_Store
 
 cd platforms/android
 
-~/android-ndk-r4-crystax/ndk-build && \
+~/android-ndk-r4-crystax/ndk-build clean && ~/android-ndk-r4-crystax/ndk-build && \
 ant debug && ant uninstall && ant install
 
 #~/android-ndk-r4-crystax/ndk-build

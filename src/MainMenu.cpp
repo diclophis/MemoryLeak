@@ -10,17 +10,17 @@
 #include "Engine.h"
 #include "MainMenu.h"
 
-#define kMaxTankSpeed 30.0
-#define kTurnRate 1.0
-#define kTankAcceleration 0.5
+#define kMaxTankSpeed 60.0
+#define kTurnRate 2.0
+#define kTankAcceleration 0.1
 #define kPlayerHeight 0.0
 
 /* Global ambient light. */
-static const GLfloat globalAmbient[4]      = { 0.8, 0.8, 0.8, 1.0 };
+static const GLfloat globalAmbient[4]      = { 5.9, 5.9, 5.9, 1.0 };
 
 /* Lamp parameters. */
 static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 1.0, 1.0 };
-static const GLfloat lightAmbientLamp[4]   = { 0.4, 0.4, 0.4, 1.0 };
+static const GLfloat lightAmbientLamp[4]   = { 0.74, 0.74, 0.74, 1.0 };
 static const GLfloat lightPositionLamp[4]  = { 25.0, 25.0, 25.0, 25.0 };
 
 #ifdef DESKTOP
@@ -29,7 +29,8 @@ static const GLfloat lightPositionLamp[4]  = { 25.0, 25.0, 25.0, 25.0 };
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
-	m_CameraIndex = 2;
+	m_CameraIndex = 3;
+	m_SecondCameraHeight = 0;
 	
 	leftSliderValue = 0.0;
 	rightSliderValue = 0.0;
@@ -63,9 +64,9 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();
 	
-	int model = 6;
-	int texture = 6;
-	int level_index = 2;
+	int model = 4;
+	int texture = 4;
+	int level_index = 0;
 
 	snprintf(path, sizeof(s), "%d", model);
 	m_Importer.ReadFile(path, m_PostProcessFlags);	
@@ -81,7 +82,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models.push_back(new Model(m_FooFoos.at(2)));
 	m_Models[1]->SetTexture(m_Textures->at(1));
 	m_Models[1]->SetFrame(0);
-	m_Models[1]->SetPosition(128.0, 0.5, 128.0);
+	m_Models[1]->SetPosition(128.0, 0.0, 128.0);
 	m_Models[1]->SetScale(256.0, 1.0, 256.0);
 	
 	m_Models.push_back(new Model(m_FooFoos.at(3)));
@@ -91,22 +92,31 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	m_Models[2]->SetScale(256.0, 128.0, 256.0);
 	m_Models[2]->m_Rotation[1] = 90.0;
 
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 1.25, "", 0, 16, 0.25));
+	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 16.0, "", 0, 16, 0.25));
 	m_AtlasSprites[0]->SetPosition(0.0 - (0.4 * m_ScreenWidth), 0.0);
 	m_AtlasSprites[0]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[0]->m_IsAlive = true;
+	m_AtlasSprites[0]->m_IsAlive = false;
 	m_AtlasSprites[0]->m_IsReady = true;
-	m_AtlasSprites[0]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[0]->Build(10);
+	m_AtlasSprites[0]->SetEmitVelocity(-100.0, 0.0);
+	m_AtlasSprites[0]->Build(0);
 	
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 1.25, "", 0, 16, 2.25));
+	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 8.0, "", 0, 16, 0.25));
 	m_AtlasSprites[1]->SetPosition(0.0 + (0.4 * m_ScreenWidth), 0.0);
 	m_AtlasSprites[1]->SetVelocity(0.0, 0.0);
 	m_AtlasSprites[1]->m_IsAlive = false;
 	m_AtlasSprites[1]->m_IsReady = true;
-	m_AtlasSprites[1]->Build(0);
+	m_AtlasSprites[1]->SetEmitVelocity(0.0, 750.0);
+	m_AtlasSprites[1]->Build(100);
 	
-	BuildParticles(100);
+	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, 1.0, "", 0, 16, 0.25));
+	m_AtlasSprites[2]->SetPosition(0.0, -(m_ScreenHeight * 0.5));
+	m_AtlasSprites[2]->SetVelocity(0.0, 0.0);
+	m_AtlasSprites[2]->m_IsAlive = false;
+	m_AtlasSprites[2]->m_IsReady = true;
+	m_AtlasSprites[2]->SetEmitVelocity(0.0, 0.0);
+	m_AtlasSprites[2]->Build(0);
+	
+	BuildParticles(50);
 	
 	
 	unsigned char *level = (unsigned char *)malloc(sizeof(unsigned char) * m_LevelFoos->at(level_index)->len);
@@ -129,7 +139,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 		m_Models[f]->SetPosition(x, 3.0, y);
 		m_Models[f]->SetScale(yy, 1.0, yy);
 		m_Models[f]->m_Life = yy * 2.5;
-		if (level[i] < 64) {
+		if (level[i] < 200) {
 			m_Models[f]->m_IsHelpfulToPlayers = true;
 		}
 		x++;
@@ -152,8 +162,29 @@ void MainMenu::Hit(float x, float y, int hitState) {
 
 	float dpx;
 	float dpy;
-	
-	if (y < (0.15 * m_ScreenHeight)) {
+	float foo = -(0.30 * m_ScreenHeight);
+	//LOGV("%f %f, %f\n", foo, xx, yy);
+	if (yy < foo) {
+		//LOGV("the fuck\n");
+		if (hitState == 2) {
+			rightSliderValue = 0.0;
+			leftSliderValue = 0.0;
+			m_AtlasSprites[2]->SetPosition(0, m_AtlasSprites[2]->m_Position[1]);
+		} else {
+			dpx = m_AtlasSprites[2]->m_Position[0] - xx;
+			dpy = m_AtlasSprites[2]->m_Position[1] - yy;
+			xx = m_AtlasSprites[2]->m_Position[0] - dpx;
+			//yy = y; //m_AtlasSprites[2]->m_Position[1];
+			m_AtlasSprites[2]->SetPosition(xx, yy);
+			if (xx > 0) {
+				rightSliderValue = 50.0;
+				leftSliderValue = -50.0;
+			} else {
+				rightSliderValue = -50.0;
+				leftSliderValue = 50.0;
+			}
+		}
+	} else if (y < (0.15 * m_ScreenHeight)) {
 		if (hitState == 2) {
 			m_CameraIndex++;
 			if (m_CameraIndex > 3) {
@@ -161,23 +192,32 @@ void MainMenu::Hit(float x, float y, int hitState) {
 			}
 		}
 	} else {
+		
 		if (xx < 0) {
 			dpx = m_AtlasSprites[0]->m_Position[0] - xx;
 			dpy = m_AtlasSprites[0]->m_Position[1] - yy;
-			xx = m_AtlasSprites[0]->m_Position[0] = -
-			(0.4 * m_ScreenWidth);
+			xx = m_AtlasSprites[0]->m_Position[0] = -(0.4 * m_ScreenWidth);
 			yy = m_AtlasSprites[0]->m_Position[1] - dpy;
 			m_AtlasSprites[0]->SetPosition(xx, yy);
-			rightSliderValue = yy;
+			//rightSliderValue = yy;
+			m_SecondCameraHeight = fastAbs(yy * 0.1);
 		} else {
 			dpx = m_AtlasSprites[1]->m_Position[0] - xx;
 			dpy = m_AtlasSprites[1]->m_Position[1] - yy;
 			xx = m_AtlasSprites[1]->m_Position[0] = (0.4 * m_ScreenWidth);
 			yy = m_AtlasSprites[1]->m_Position[1] - dpy;
 			m_AtlasSprites[1]->SetPosition(xx, yy);
-			leftSliderValue = yy;
+			//leftSliderValue = yy;
+		}
+		
+		if (hitState == 1) {
+			m_AtlasSprites[1]->m_IsAlive = true;
+		} else {
+			m_AtlasSprites[1]->m_IsAlive = false;
 		}
 	}
+	
+
 }
 
 void MainMenu::Build() {
@@ -188,12 +228,14 @@ inline float clamp(float x, float a, float b){    return x < a ? a : (x > b ? b 
 
 int MainMenu::Simulate() {
 	m_AtlasSprites[0]->Simulate(m_DeltaTime);
+	m_AtlasSprites[1]->Simulate(m_DeltaTime);
+	m_AtlasSprites[2]->Simulate(m_DeltaTime);
 
 	int shot_this_tick = 0;
 	int not_shot_this_tick = 0;
-	float m_ShotMaxLife = 0.5;
+	float m_ShotMaxLife = 0.33;
 	
-	float g = 200.0;
+	float g = 8.0;
 	float x = 0.0;
 	float y = 0.0;
 	float a = 0.0;
@@ -203,10 +245,6 @@ int MainMenu::Simulate() {
 	bool turnLeft = false;
 	bool turnRight = false;
 	float sliderDelta;
-	
-	
-	
-	
 	
 	//This would take place inside an Update(float delta) type function, where delta is the amount of time passed
 	// since the last frame:
@@ -233,7 +271,7 @@ int MainMenu::Simulate() {
 			//m_Models[0]->m_Position[1] = kPlayerHeight + (m_Models[collided_index]->m_Life);
 			waterHeight = 1.0;
 			boatDensity = fluidDensity;
-			m_Models[0]->m_Velocity[0] = 10.0;
+			m_Models[0]->m_Velocity[0] = 4.0;
 			moveForward = true;
 		}
 	}
@@ -379,7 +417,7 @@ int MainMenu::Simulate() {
 		m_CameraTarget[2] = m_Models[0]->m_Position[2];
 
 		m_CameraRotation += DEGREES_TO_RADIANS(0.5);
-		m_CameraHeight = 1.25; // + (fastSinf(m_SimulationTime * 0.5) * 5.0);
+		m_CameraHeight = 4.25; // + (fastSinf(m_SimulationTime * 0.5) * 5.0);
 		float m_CameraDiameter = 20.0; // + fastAbs(fastSinf(m_SimulationTime * 0.1) * 25.0);
 		float cx = (cos(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[0];
 		float cz = (fastSinf(m_CameraRotation) * m_CameraDiameter) + m_CameraTarget[2];
@@ -403,25 +441,25 @@ int MainMenu::Simulate() {
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 0.25) - (tzz * 0.4);
 		*/
 		
-		m_CameraTarget[0] = m_Models[0]->m_Position[0] + (tx * 60.0);
+		m_CameraTarget[0] = m_Models[0]->m_Position[0] + (tx * 20.0);
 		m_CameraTarget[1] = 0.1;
-		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 60.0);
-		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 10.0) - (txx * 0.0);
-		m_CameraPosition[1] = 3.0;
-		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 10.0) - (tzz * 0.0);
+		m_CameraTarget[2] = m_Models[0]->m_Position[2] + (tz * 20.0);
+		m_CameraPosition[0] = m_Models[0]->m_Position[0] - (tx * 20.0) - (txx * 0.0);
+		m_CameraPosition[1] = m_SecondCameraHeight;
+		m_CameraPosition[2] = m_Models[0]->m_Position[2] - (tz * 20.0) - (tzz * 0.0);
 	} else if (m_CameraIndex == 2) {
 		m_CameraTarget[0] = 128.0;
 		m_CameraTarget[1] = 0.0;
 		m_CameraTarget[2] = 128.0;
 		m_CameraPosition[0] = 0.0;
-		m_CameraPosition[1] = 512.0;
+		m_CameraPosition[1] = 128.0;
 		m_CameraPosition[2] = 0.0;
 	} else if (m_CameraIndex == 3) {
 		m_CameraTarget[0] = m_Models[0]->m_Position[0];
 		m_CameraTarget[1] = m_Models[0]->m_Position[1];
 		m_CameraTarget[2] = m_Models[0]->m_Position[2];
 		m_CameraPosition[0] = m_Models[0]->m_Position[0] + 1;
-		m_CameraPosition[1] = m_Models[0]->m_Position[1] + 60.0;
+		m_CameraPosition[1] = m_Models[0]->m_Position[1] + 50.0;
 		m_CameraPosition[2] = m_Models[0]->m_Position[2] + 1;
 	}
 	
@@ -448,13 +486,13 @@ void MainMenu::RenderModelPhase() {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
-	//RenderModelRange(1, 2);
+	RenderModelRange(1, 2);
 	glDisable(GL_BLEND);
 
 	//m_Models[0]->m_Scale[1] = old_scale;
 	
 	if (m_CameraIndex == 2) {
-		//RenderModelRange(3 + m_NumParticles, 256 * 256);
+		RenderModelRange(3 + m_NumParticles, 256 * 256);
 	} else {
 		RenderModelRange(2, 3);
 		DrawPlayer(1.0);
@@ -485,7 +523,7 @@ void MainMenu::DrawPlayer(float yScale) {
 	
 	RenderModelRange(0, 1);
 	
-	if (m_Models[0]->m_Velocity[0] > 25.0) {
+	if (m_Models[0]->m_Velocity[0] > 45.0) {
 		glEnable(GL_BLEND);
 		//glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendFunc(GL_ONE, GL_ONE);
@@ -500,7 +538,7 @@ void MainMenu::DrawPlayer(float yScale) {
 
 
 void MainMenu::RenderSpritePhase() {
-	RenderSpriteRange(0, 2);
+	RenderSpriteRange(0, 3);
 }
 
 
@@ -529,9 +567,9 @@ void MainMenu::ResetParticles() {
 void MainMenu::ResetParticle(int idx) {	
 	m_Models[idx]->SetPosition(m_Models[0]->m_Position[0], m_Models[0]->m_Position[1], m_Models[0]->m_Position[2]);
 	m_Models[idx]->m_Life = 0.0 - (randf() * 20);
-	m_Models[idx]->SetScale(0.5, 0.5, 0.5);
+	m_Models[idx]->SetScale(1.25, 1.25, 1.25);
 	m_Models[idx]->m_Theta = DEGREES_TO_RADIANS(45);
-	m_Models[idx]->m_Velocity[0] = (fastAbs(randf()) * 25.0) + 15.0;
+	m_Models[idx]->m_Velocity[0] = (fastAbs(randf()) * 0.0) + 10.0;
 	m_Models[idx]->m_IsAlive = false;
 }
 

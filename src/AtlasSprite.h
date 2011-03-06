@@ -47,10 +47,8 @@ public:
 		m_Position[1] = y;
 	}
 	
-	//static void ReleaseBuffers();
-static void ReleaseBuffers() {
-	//g_lastTexture = 0;
-}
+	static void ReleaseBuffers();
+
 	
 	float *m_Position;
 	float *m_Velocity;

@@ -64,7 +64,14 @@ static void check_multi_info(GlobalInfo *g)
 			res = msg->data.result;
 			curl_easy_getinfo(easy, CURLINFO_PRIVATE, &conn);
 			curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &eff_url);
-			LOGV("DONE: %s => (%d) %s\n", eff_url, res, conn->error);
+			
+			//TODO: what is the good res????!
+		
+      if (res != 0) {
+        LOGV("DONE: %s => (%d) %s\n", eff_url, res, conn->error);
+      }
+
+      //just remove if reuse
 			curl_multi_remove_handle(g->multi, easy);
 			free(conn->url);
 			curl_easy_cleanup(easy);
@@ -111,6 +118,10 @@ static void do_this_in_tick(GlobalInfo *g, int revents)
 	CURLMcode rc;
 	
 	//rc = curl_multi_socket_action(g->multi, CURL_SOCKET_TIMEOUT, 0, &g->still_running);
+  /*
+  A little note here about the return codes from the multi functions, and especially the curl_multi_perform(3): if you receive CURLM_CALL_MULTI_PERFORM, this basically means that you should call curl_multi_perform(3) again, before you select() on more actions. You don't have to do it immediately, but the return code means that libcurl may have more data available to return or that there may be more data to send off before it is "satisfied". 
+  */
+
 	int r = 0;
 	rc = curl_multi_perform(g->multi, &r);
 	mcode_or_die("timer_cb: curl_multi_socket_action", rc);
@@ -204,7 +215,7 @@ static int prog_cb (void *p, double dltotal, double dlnow, double ult, double ul
 }
 
 /* Create a new easy handle, and add it to the global curl_multi */ 
-static void new_conn(char *url, GlobalInfo *g )
+static void new_conn(char *url, GlobalInfo *g, CURLSH *share)
 {
 	ConnInfo *conn;
 	CURLMcode rc;
@@ -222,6 +233,9 @@ static void new_conn(char *url, GlobalInfo *g )
 	
 	conn->global = g;
 	conn->url = strdup(url);
+	curl_easy_setopt(conn->easy, CURLOPT_NOSIGNAL, 1);
+	curl_easy_setopt(conn->easy, CURLOPT_DNS_USE_GLOBAL_CACHE, 1);
+	curl_easy_setopt(conn->easy, CURLOPT_DNS_CACHE_TIMEOUT, -1);
 	curl_easy_setopt(conn->easy, CURLOPT_URL, conn->url);
 	curl_easy_setopt(conn->easy, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(conn->easy, CURLOPT_WRITEDATA, &conn);
@@ -235,9 +249,10 @@ static void new_conn(char *url, GlobalInfo *g )
 	curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_LIMIT, 10L);
 	curl_easy_setopt(conn->easy, CURLOPT_TIMEOUT, 30L);
 	curl_easy_setopt(conn->easy, CURLOPT_CONNECTTIMEOUT, 5L);
+  curl_easy_setopt(conn->easy, CURLOPT_SHARE, share);
 
 
-	LOGV("Adding easy %p to multi %p (%s)\n", conn->easy, g->multi, url);
+	//LOGV("Adding easy %p to multi %p (%s)\n", conn->easy, g->multi, url);
 	
 	rc = curl_multi_add_handle(g->multi, conn->easy);
 	mcode_or_die("new_conn: curl_multi_add_handle", rc);
@@ -254,11 +269,6 @@ static void new_conn(char *url, GlobalInfo *g )
 
 //ev_loop(g.loop, 0);
 //curl_multi_cleanup(g.multi);
-
-
-
-
-
 
 
 #ifndef DESKTOP
@@ -397,20 +407,36 @@ void Engine::WaitAudioSync() {
 int Engine::RunThread() {
 	
 
+	curl_version_info_data*info=curl_version_info(CURLVERSION_NOW);
+	if (info->features&CURL_VERSION_ASYNCHDNS) {
+		printf( "ares enabled\n");
+	} else {
+		printf( "ares NOT enabled\n");
+	}
+
+	
 	memset(&g, 0, sizeof(GlobalInfo));
+	
+	curl_global_init(CURL_GLOBAL_ALL);
+
+share = curl_share_init();
+curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
+	
+	
 	g.multi = curl_multi_init();
 	
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETFUNCTION, sock_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETDATA, &g);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERFUNCTION, multi_timer_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERDATA, &g);
+
 	
 	
 	char s[1024];
 	//GlobalInfo *g = (GlobalInfo *)w->data;
-	sprintf(s, "http://qa.api.openfsdsdsdds.com/internal/revision");
+	sprintf(s, "http://qa.api.openfeint.com/internal/revision");
 
-	new_conn(s, &g);  /* if we read a URL, go get it! */ 
+	new_conn(s, &g, &share);  /* if we read a URL, go get it! */ 
 	
 	Build();
 	
@@ -433,7 +459,7 @@ int Engine::RunThread() {
 		
 		if (g.still_running < 1) {
 			//LOGV("new url\n");
-			new_conn(s, &g);  /* if we read a URL, go get it! */ 
+			//new_conn(s, &g, &share);  /* if we read a URL, go get it! */ 
 		}
 
 		gettimeofday(&tim, NULL);
@@ -463,7 +489,7 @@ int Engine::RunThread() {
 			}
 		} else {
 			if (m_SkipLimit++ > 0) {
-				LOGV("resume\n");
+				//LOGV("resume\n");
 				//WaitAudioSync();
 				m_PumpedAudioLastTick = true;
 				m_SkipLimit = 0;
@@ -548,5 +574,6 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
+	//glViewport(0, 0, m_ScreenWidth / 2, m_ScreenHeight / 2);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 }
