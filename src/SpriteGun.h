@@ -37,6 +37,8 @@ public:
 		m_EmitVelocity[1] = y;
 	}
 	
+	float m_TimeSinceLastShot;
+	
 	bool m_IsReady;
 	
 	void Fire() {

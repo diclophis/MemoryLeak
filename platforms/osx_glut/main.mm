@@ -13,6 +13,7 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "MainMenu.h"
+#include "BlockBuster.h"
 
 //#define kWindowWidth 480
 //#define kWindowHeight 320
@@ -218,7 +219,7 @@ NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 		sounds.push_back(firstModel);
 	}
 
-  game = new MainMenu(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 16);
+  game = new BlockBuster(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 16);
   game->CreateThread(Callbacks::PumpAudio);
 
   glutKeyboardFunc(processNormalKeys);

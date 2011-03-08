@@ -16,6 +16,7 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "MainMenu.h"
+#include "BlockBuster.h"
 
 
 #import "EAGLView.h"
@@ -445,6 +446,40 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)initAudio2 {
 
+	
+	AudioSessionInitialize (
+							
+							NULL,                            // 1
+							
+							NULL,                            // 2
+							
+							interruptionListenerCallback,    // 3
+							
+							NULL                         // 4
+							
+							);
+	
+	//OSStatus  = NULL;
+	
+	status = AudioSessionSetActive (true);
+	checkStatus(status);
+	
+	UInt32 sessionCategory = kAudioSessionCategory_AmbientSound;    // 1
+	
+	
+	
+	AudioSessionSetProperty (
+							 
+							 kAudioSessionProperty_AudioCategory,                        // 2
+							 
+							 sizeof (sessionCategory),                                   // 3
+							 
+							 &sessionCategory                                            // 4
+							 
+							 );
+
+	
+	
 #define kOutputBus 0
 //#define kInputBus 1
 
@@ -575,7 +610,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	LOGV("current duration: %f\n", aBufferLength);
 	
 	
-	aBufferLength = 1.0;
+	aBufferLength = 0.005;
 	
 	status = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, 
 							size, &aBufferLength);
@@ -666,20 +701,26 @@ static OSStatus playbackCallback(void *inRefCon,
 		
 		pthread_cond_init(&m_AudioSyncCond, NULL);
 		pthread_mutex_init(&m_Mutex, NULL);
-
-		m_SyncAudio = false;
 		
 		ring = alloc();
+
+		/*
+		m_SyncAudio = false;
+		
 		
 		[self initAudio2];
+		status = AudioOutputUnitStart(audioUnit);
+		checkStatus(status);
+		*/
 		
-		game = new MainMenu(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
+		game = new BlockBuster(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
 		game->CreateThread(Callbacks::PumpAudio);
 		
 		gameState = 1;
 	
-		status = AudioOutputUnitStart(audioUnit);
-		checkStatus(status);
+
+		
+		
 	}
 }
 

@@ -76,7 +76,6 @@
 		FC141C361285415900166578 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A881285415900166578 /* Model.cpp */; };
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
 		FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */; };
-		FC6CE5F812F6966100CCE264 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6CE5F612F6966100CCE264 /* MainMenu.cpp */; };
 		FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */; };
 		FC99BDDA131A42F600566984 /* axtls.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD1B131A42F600566984 /* axtls.c */; };
 		FC99BDDB131A42F600566984 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD1D131A42F600566984 /* base64.c */; };
@@ -219,6 +218,7 @@
 		FCA63D6F131B6C760050F9A2 /* windows_port.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D40131B6C760050F9A2 /* windows_port.c */; };
 		FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
+		FCC386471324218C00A083CC /* BlockBuster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCC386451324218C00A083CC /* BlockBuster.cpp */; };
 		FCDE088E12D924A3004CE9B7 /* fastmix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086A12D924A3004CE9B7 /* fastmix.cpp */; };
 		FCDE088F12D924A3004CE9B7 /* load_669.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086B12D924A3004CE9B7 /* load_669.cpp */; };
 		FCDE089012D924A3004CE9B7 /* load_abc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086C12D924A3004CE9B7 /* load_abc.cpp */; };
@@ -805,6 +805,8 @@
 		FCA63D40131B6C760050F9A2 /* windows_port.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = windows_port.c; sourceTree = "<group>"; };
 		FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FCC386451324218C00A083CC /* BlockBuster.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlockBuster.cpp; sourceTree = "<group>"; };
+		FCC386461324218C00A083CC /* BlockBuster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockBuster.h; sourceTree = "<group>"; };
 		FCDE086A12D924A3004CE9B7 /* fastmix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fastmix.cpp; sourceTree = "<group>"; };
 		FCDE086B12D924A3004CE9B7 /* load_669.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_669.cpp; sourceTree = "<group>"; };
 		FCDE086C12D924A3004CE9B7 /* load_abc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_abc.cpp; sourceTree = "<group>"; };
@@ -935,6 +937,8 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FCC386451324218C00A083CC /* BlockBuster.cpp */,
+				FCC386461324218C00A083CC /* BlockBuster.h */,
 				FCA63D11131B6C760050F9A2 /* ares */,
 				FC99BD17131A42F600566984 /* curl */,
 				FCDE086912D924A3004CE9B7 /* libmodplug */,
@@ -1833,7 +1837,6 @@
 				FCDE08AD12D924A3004CE9B7 /* snd_fx.cpp in Sources */,
 				FCDE08AE12D924A3004CE9B7 /* sndfile.cpp in Sources */,
 				FCDE08AF12D924A3004CE9B7 /* sndmix.cpp in Sources */,
-				FC6CE5F812F6966100CCE264 /* MainMenu.cpp in Sources */,
 				FC99BDDA131A42F600566984 /* axtls.c in Sources */,
 				FC99BDDB131A42F600566984 /* base64.c in Sources */,
 				FC99BDDC131A42F600566984 /* connect.c in Sources */,
@@ -1971,6 +1974,7 @@
 				FCA63D6D131B6C760050F9A2 /* inet_net_pton.c in Sources */,
 				FCA63D6E131B6C760050F9A2 /* inet_ntop.c in Sources */,
 				FCA63D6F131B6C760050F9A2 /* windows_port.c in Sources */,
+				FCC386471324218C00A083CC /* BlockBuster.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

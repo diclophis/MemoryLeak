@@ -234,7 +234,7 @@ static void new_conn(char *url, GlobalInfo *g, CURLSH *share)
 	conn->global = g;
 	conn->url = strdup(url);
 	curl_easy_setopt(conn->easy, CURLOPT_NOSIGNAL, 1);
-	curl_easy_setopt(conn->easy, CURLOPT_DNS_USE_GLOBAL_CACHE, 1);
+	//curl_easy_setopt(conn->easy, CURLOPT_DNS_USE_GLOBAL_CACHE, 1);
 	curl_easy_setopt(conn->easy, CURLOPT_DNS_CACHE_TIMEOUT, -1);
 	curl_easy_setopt(conn->easy, CURLOPT_URL, conn->url);
 	curl_easy_setopt(conn->easy, CURLOPT_WRITEFUNCTION, write_cb);
@@ -419,24 +419,24 @@ int Engine::RunThread() {
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 
-share = curl_share_init();
-curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
+	//share = curl_share_init();
+	//curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
 	
-	
+	/*
 	g.multi = curl_multi_init();
 	
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETFUNCTION, sock_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETDATA, &g);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERFUNCTION, multi_timer_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERDATA, &g);
-
+	*/
 	
 	
 	char s[1024];
 	//GlobalInfo *g = (GlobalInfo *)w->data;
 	sprintf(s, "http://qa.api.openfeint.com/internal/revision");
 
-	new_conn(s, &g, &share);  /* if we read a URL, go get it! */ 
+	//new_conn(s, &g, &share);  /* if we read a URL, go get it! */ 
 	
 	Build();
 	
@@ -451,11 +451,11 @@ curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 1.0;
+	double interp = 8.0;
 
 	while (m_GameState != 0) {
 				
-		do_this_in_tick(&g, 0);
+		//do_this_in_tick(&g, 0);
 		
 		if (g.still_running < 1) {
 			//LOGV("new url\n");
@@ -482,8 +482,6 @@ curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS);
 				
 				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
 				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
-				
-
 			} else {
 				m_PumpedAudioLastTick = start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
 			}
@@ -552,7 +550,7 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			glOrthof(-m_ScreenHalfHeight*m_ScreenAspect, m_ScreenHalfHeight*m_ScreenAspect, -m_ScreenHalfHeight, m_ScreenHalfHeight, 1.0f, -1.0f );
+			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * 5.0, (m_ScreenHalfHeight*m_ScreenAspect) * 5.0, (-m_ScreenHalfHeight) * 5.0, m_ScreenHalfHeight * 5.0, 1.0f, -1.0f );
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
