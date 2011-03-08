@@ -24,6 +24,7 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "MainMenu.h"
+#include "BlockBuster.h"
 
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
@@ -162,7 +163,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	for (int i=0; i<count; i++) {
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
-  gameController = new MainMenu(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer, 16);
+  gameController = new BlockBuster(sWindowWidth, sWindowHeight, textures, models, levels, sounds, min_buffer, 16);
   gameController->CreateThread(Callbacks::PumpAudio);
   gameState = 1;
 }

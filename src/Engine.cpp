@@ -249,7 +249,7 @@ static void new_conn(char *url, GlobalInfo *g, CURLSH *share)
 	curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_LIMIT, 10L);
 	curl_easy_setopt(conn->easy, CURLOPT_TIMEOUT, 30L);
 	curl_easy_setopt(conn->easy, CURLOPT_CONNECTTIMEOUT, 5L);
-  curl_easy_setopt(conn->easy, CURLOPT_SHARE, share);
+	//curl_easy_setopt(conn->easy, CURLOPT_SHARE, share);
 
 
 	//LOGV("Adding easy %p to multi %p (%s)\n", conn->easy, g->multi, url);
@@ -307,7 +307,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_SimulationTime = 0.0;		
 	m_GameState = -1;
-	
 	
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
@@ -413,7 +412,6 @@ int Engine::RunThread() {
 	} else {
 		printf( "ares NOT enabled\n");
 	}
-
 	
 	memset(&g, 0, sizeof(GlobalInfo));
 	
@@ -422,15 +420,13 @@ int Engine::RunThread() {
 	//share = curl_share_init();
 	//curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
 	
-	/*
+	
 	g.multi = curl_multi_init();
 	
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETFUNCTION, sock_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETDATA, &g);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERFUNCTION, multi_timer_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERDATA, &g);
-	*/
-	
 	
 	char s[1024];
 	//GlobalInfo *g = (GlobalInfo *)w->data;
@@ -455,7 +451,7 @@ int Engine::RunThread() {
 
 	while (m_GameState != 0) {
 				
-		//do_this_in_tick(&g, 0);
+		do_this_in_tick(&g, 0);
 		
 		if (g.still_running < 1) {
 			//LOGV("new url\n");
@@ -550,7 +546,8 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * 5.0, (m_ScreenHalfHeight*m_ScreenAspect) * 5.0, (-m_ScreenHalfHeight) * 5.0, m_ScreenHalfHeight * 5.0, 1.0f, -1.0f );
+			float zoom = 7.0; //2.0 + (fastAbs(fastSinf(m_SimulationTime * 0.5)) * 10.0);
+			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * zoom, (m_ScreenHalfHeight*m_ScreenAspect) * zoom, (-m_ScreenHalfHeight) * zoom, m_ScreenHalfHeight * zoom, 1.0f, -1.0f );
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{

@@ -110,6 +110,10 @@ void AtlasSprite::Render() {
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, texture);
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
+		//this works with tartan thing
+		//glLineWidth(10.0);
+		//glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
+
 		ax += m_Sprites[i].dx;
 		ay += w;
 	}
@@ -123,5 +127,17 @@ void AtlasSprite::Simulate(float deltaTime) {
 	m_Position[1] += dy;
 
 	m_Life += deltaTime;
-	m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
+	
+	float m_Fps = 30.0;
+	//LOGV("life: %f\n", m_Life);
+	if (m_Life > (1.0 / (float)m_Fps)) {
+		m_Frame++;
+		m_Life = 0.0;
+	}
+	
+	if (m_Frame >= m_AnimationLength) {
+		m_Frame = 0;
+	}
+	
+	//m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
 };

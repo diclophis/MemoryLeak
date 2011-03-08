@@ -9,7 +9,6 @@
 
 
 void SpriteGun::Build(int n) {
-
 	m_NumParticles = n;
 	m_ShootInterval = 1.0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
@@ -27,9 +26,11 @@ void SpriteGun::Reset() {
 
 
 void SpriteGun::ResetParticle(int idx) {
-	m_AtlasSprites[idx]->SetLife(0.0 - (randf() * 20));
-	m_AtlasSprites[idx]->SetScale(1.0, 1.0);
-	m_AtlasSprites[idx]->m_Frame = 0;
+	//m_AtlasSprites[idx]->SetLife(0.0 - (randf() * 20));
+	m_AtlasSprites[idx]->SetLife(0.0);
+	m_AtlasSprites[idx]->SetScale(m_Scale[0], m_Scale[1]);
+	m_AtlasSprites[idx]->m_Frame = m_Frame;
+	//LOGV("first frame: %d\n", m_Frame);
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
 	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
 	m_AtlasSprites[idx]->m_IsAlive = false;
@@ -52,7 +53,7 @@ void SpriteGun::Simulate(float deltaTime) {
 		int not_shot_this_tick = 0;
 		for (unsigned int i=0; i<m_NumParticles; i++) {
 			//(shot_this_tick < (randf() * 2.0)) && 
-			if ((shot_this_tick < 1) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive) && m_TimeSinceLastShot > 0.1) {
+			if ((shot_this_tick < 1) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive) && m_TimeSinceLastShot > 0.05) {
 				//LOGV("shoot %d\n", i);
 				ShootParticle(i);
 				shot_this_tick++;
@@ -75,8 +76,8 @@ void SpriteGun::Simulate(float deltaTime) {
 			}
 			m_AtlasSprites[i]->Simulate(deltaTime);
 		}
+		AtlasSprite::Simulate(deltaTime);
 	}
-	AtlasSprite::Simulate(deltaTime);
 }
 
 
