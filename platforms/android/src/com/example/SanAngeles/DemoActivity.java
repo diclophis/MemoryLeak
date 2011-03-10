@@ -183,7 +183,6 @@ class DemoGLSurfaceView extends GLSurfaceView {
             nativeTouch(x, y, 2);
           }
         }
-        event.recycle();
       }
     });
     return true;

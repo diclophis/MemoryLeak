@@ -447,7 +447,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 8.0;
+	double interp = 4.0;
 
 	while (m_GameState != 0) {
 				
@@ -546,7 +546,7 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			float zoom = 7.0; //2.0 + (fastAbs(fastSinf(m_SimulationTime * 0.5)) * 10.0);
+			float zoom = 10.0; //2.0 + (fastAbs(fastSinf(m_SimulationTime * 0.5)) * 10.0);
 			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * zoom, (m_ScreenHalfHeight*m_ScreenAspect) * zoom, (-m_ScreenHalfHeight) * zoom, m_ScreenHalfHeight * zoom, 1.0f, -1.0f );
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();

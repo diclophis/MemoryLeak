@@ -30,6 +30,7 @@ public:
 	Sprite *m_Sprites;
 	unsigned int m_AnimationLength;
 	float m_AnimationDuration;
+	float m_AnimationLife;
 	float m_MaxLife;
 	float m_Rotation;
 	

@@ -11,6 +11,7 @@
 void SpriteGun::Build(int n) {
 	m_NumParticles = n;
 	m_ShootInterval = 1.0;
+	m_FrameCounter = 0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_ShotStart, m_ShotEnd, m_ShotMaxLife));
 		ResetParticle(idx);
@@ -29,7 +30,7 @@ void SpriteGun::ResetParticle(int idx) {
 	//m_AtlasSprites[idx]->SetLife(0.0 - (randf() * 20));
 	m_AtlasSprites[idx]->SetLife(0.0);
 	m_AtlasSprites[idx]->SetScale(m_Scale[0], m_Scale[1]);
-	m_AtlasSprites[idx]->m_Frame = m_Frame;
+	m_AtlasSprites[idx]->m_Frame = (m_FrameCounter++ % 64);
 	//LOGV("first frame: %d\n", m_Frame);
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
 	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
@@ -52,9 +53,23 @@ void SpriteGun::Simulate(float deltaTime) {
 		int shot_this_tick = 0;
 		int not_shot_this_tick = 0;
 		for (unsigned int i=0; i<m_NumParticles; i++) {
-			//(shot_this_tick < (randf() * 2.0)) && 
+			//(shot_this_tick < (randf() * 2.0)) &&
+			if ((shot_this_tick < 1) && m_TimeSinceLastShot > 0.1 && !m_AtlasSprites[i]->m_IsAlive) {
+			  //LOGV("shot:%d, max: %f, life: %f, alive?: %d\n", shot_this_tick, m_MaxLife, m_AtlasSprites[i]->m_Life, m_AtlasSprites[i]->m_IsAlive);
+				//LOGV("shoot %d/%d\n", i, m_NumParticles);
+				ShootParticle(i);
+				shot_this_tick++;
+      } else {
+      //nothing
+        //LOGV("foo %f > %f ???\n", m_AtlasSprites[i]->m_Life, m_ShotMaxLife);
+				if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {
+					//LOGV("reset %d\n", i);
+					ResetParticle(i);
+				}
+      }
+/*
 			if ((shot_this_tick < 1) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive) && m_TimeSinceLastShot > 0.05) {
-				//LOGV("shoot %d\n", i);
+				LOGV("shoot %d\n", i);
 				ShootParticle(i);
 				shot_this_tick++;
 			} else {
@@ -63,17 +78,8 @@ void SpriteGun::Simulate(float deltaTime) {
 					ResetParticle(i);
 					//LOGV("reset %d\n", i);
 				}
-				
-				//m_AtlasSprites[i]->m_Velocity[1] -= 60.0;
-				/*
-				m_AtlasSprites[i]->m_Scale[0] -= 0.01;
-				m_AtlasSprites[i]->m_Scale[1] -= 0.01;
-				if (m_AtlasSprites[i]->m_Scale[0] < 0.25) {
-					m_AtlasSprites[i]->m_Scale[0] = 0.25;
-					m_AtlasSprites[i]->m_Scale[1] = 0.25;
-				}
-				*/
 			}
+*/
 			m_AtlasSprites[i]->Simulate(deltaTime);
 		}
 		AtlasSprite::Simulate(deltaTime);

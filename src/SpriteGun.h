@@ -29,6 +29,7 @@ public:
 	std::string m_ShotAnimation;
 	int m_ShotStart;
 	int m_ShotEnd;
+	int m_FrameCounter;
 	float m_ShotMaxLife;
 	
 	float *m_EmitVelocity;

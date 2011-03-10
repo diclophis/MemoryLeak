@@ -22,6 +22,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m) : m
 	m_Velocity[0] = 0.0;
 	m_Velocity[1] = 0.0;
 	m_Life = 0.0;
+	m_AnimationLife = 0.0;
 	m_IsAlive = true;
 	m_Frame = 0;
 	m_AnimationSpeed = 1.0;
@@ -127,12 +128,17 @@ void AtlasSprite::Simulate(float deltaTime) {
 	m_Position[1] += dy;
 
 	m_Life += deltaTime;
+	m_AnimationLife += deltaTime;
 	
-	float m_Fps = 30.0;
+	float m_Fps = 15.0;
 	//LOGV("life: %f\n", m_Life);
-	if (m_Life > (1.0 / (float)m_Fps)) {
+	if (m_AnimationLife > (1.0 / (float)m_Fps)) {
 		m_Frame++;
-		m_Life = 0.0;
+		m_AnimationLife = 0.0;
+	}
+	
+	if (m_Frame < 0) {
+		m_Frame = m_AnimationLength - 1;
 	}
 	
 	if (m_Frame >= m_AnimationLength) {
