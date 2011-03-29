@@ -51,3 +51,16 @@ clean:
 
 wang:
 	echo 1 $(objects) 
+
+YourApp.app: Info.plist $(build)/raptor_island version.plist InfoPlist.strings
+	mkdir YourApp.app    
+	mkdir YourApp.app/Contents
+	mkdir YourApp.app/Contents/MacOS
+	mkdir YourApp.app/Contents/Resources
+	mkdir YourApp.app/Contents/Resources/English.lproj
+	cp Info.plist YourApp.app/Contents/
+	cp version.plist YourApp.app/Contents/
+	cp InfoPlist.strings YourApp.app/Contents/Resources/English.lproj/
+	echo -n 'APPL????' > YourApp.app/Contents/PkgInfo
+	cp $(build)/raptor_island YourApp.app/Contents/MacOS/YourApp
+	cp Icons.icns YourApp.app/Contents/Resources/

@@ -447,7 +447,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 1.0;
+	double interp = 2.0;
 
 	while (m_GameState != 0) {
 				
@@ -464,7 +464,7 @@ int Engine::RunThread() {
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 		
-		if (averageWait > (1.0 / 30.0)) {
+		if (averageWait > (1.0 / 10.0)) {
 			LOGV("avg: %f %f\n", averageWait, 1.0 / 30.0);
 		} else {
 			for (unsigned int i=0; i<interp; i++) {
@@ -574,5 +574,5 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
 	//glViewport(0, 0, m_ScreenWidth / 2, m_ScreenHeight / 2);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	//glClearColor(1.0, 0.0, 0.0, 1.0);
 }

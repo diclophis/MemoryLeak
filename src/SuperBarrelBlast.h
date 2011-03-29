@@ -13,6 +13,23 @@ public:
 	void RenderSpritePhase();
 	
 	Octree<int> *m_Space;
-	
+
+  int m_SpriteCount;
+
+  int m_BarrelStartIndex;
+  int m_BarrelStopIndex;
+  int m_BarrelCount;
+
+  int m_DebugBoxesStartIndex;
+  int m_DebugBoxesStopIndex;
+  int m_DebugBoxesCount;
+
+  int m_CurrentBarrelIndex;
+
 	float m_CameraOffsetX;
+	float m_CameraOffsetY;
+
+  float m_LaunchTimeout;
+
+  float m_RotateTimeout;
 };

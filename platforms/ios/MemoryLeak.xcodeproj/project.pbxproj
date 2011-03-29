@@ -172,6 +172,7 @@
 		FC99BE75131A534400566984 /* if2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD74131A42F600566984 /* if2ip.c */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
+		FCA0A15913404A8200C739F4 /* SuperBarrelBlast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCA0A15713404A8200C739F4 /* SuperBarrelBlast.cpp */; };
 		FCA63D44131B6C760050F9A2 /* ares__close_sockets.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D15131B6C760050F9A2 /* ares__close_sockets.c */; };
 		FCA63D45131B6C760050F9A2 /* ares__get_hostent.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D16131B6C760050F9A2 /* ares__get_hostent.c */; };
 		FCA63D46131B6C760050F9A2 /* ares__read_line.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D17131B6C760050F9A2 /* ares__read_line.c */; };
@@ -218,7 +219,6 @@
 		FCA63D6F131B6C760050F9A2 /* windows_port.c in Sources */ = {isa = PBXBuildFile; fileRef = FCA63D40131B6C760050F9A2 /* windows_port.c */; };
 		FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
-		FCC386471324218C00A083CC /* BlockBuster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCC386451324218C00A083CC /* BlockBuster.cpp */; };
 		FCDE088E12D924A3004CE9B7 /* fastmix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086A12D924A3004CE9B7 /* fastmix.cpp */; };
 		FCDE088F12D924A3004CE9B7 /* load_669.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086B12D924A3004CE9B7 /* load_669.cpp */; };
 		FCDE089012D924A3004CE9B7 /* load_abc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086C12D924A3004CE9B7 /* load_abc.cpp */; };
@@ -574,8 +574,6 @@
 		FC5F1EBB129A13FD00E5F9FB /* point3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = point3d.h; sourceTree = "<group>"; };
 		FC5F1EBC129A13FD00E5F9FB /* shareddata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shareddata.h; sourceTree = "<group>"; };
 		FC5F1EBD129A13FD00E5F9FB /* tinyvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyvector.h; sourceTree = "<group>"; };
-		FC6CE5F612F6966100CCE264 /* MainMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainMenu.cpp; sourceTree = "<group>"; };
-		FC6CE5F712F6966100CCE264 /* MainMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenu.h; sourceTree = "<group>"; };
 		FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteGun.cpp; sourceTree = "<group>"; };
 		FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteGun.h; sourceTree = "<group>"; };
 		FC99BD1A131A42F600566984 /* arpa_telnet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arpa_telnet.h; sourceTree = "<group>"; };
@@ -759,6 +757,8 @@
 		FC99BE3F131A489A00566984 /* curl_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_config.h; sourceTree = "<group>"; };
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FCA0A15713404A8200C739F4 /* SuperBarrelBlast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SuperBarrelBlast.cpp; sourceTree = "<group>"; };
+		FCA0A15813404A8200C739F4 /* SuperBarrelBlast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperBarrelBlast.h; sourceTree = "<group>"; };
 		FCA63D15131B6C760050F9A2 /* ares__close_sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ares__close_sockets.c; sourceTree = "<group>"; };
 		FCA63D16131B6C760050F9A2 /* ares__get_hostent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ares__get_hostent.c; sourceTree = "<group>"; };
 		FCA63D17131B6C760050F9A2 /* ares__read_line.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ares__read_line.c; sourceTree = "<group>"; };
@@ -805,8 +805,6 @@
 		FCA63D40131B6C760050F9A2 /* windows_port.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = windows_port.c; sourceTree = "<group>"; };
 		FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		FCC386451324218C00A083CC /* BlockBuster.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlockBuster.cpp; sourceTree = "<group>"; };
-		FCC386461324218C00A083CC /* BlockBuster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockBuster.h; sourceTree = "<group>"; };
 		FCDE086A12D924A3004CE9B7 /* fastmix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fastmix.cpp; sourceTree = "<group>"; };
 		FCDE086B12D924A3004CE9B7 /* load_669.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_669.cpp; sourceTree = "<group>"; };
 		FCDE086C12D924A3004CE9B7 /* load_abc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_abc.cpp; sourceTree = "<group>"; };
@@ -937,8 +935,8 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				FCC386451324218C00A083CC /* BlockBuster.cpp */,
-				FCC386461324218C00A083CC /* BlockBuster.h */,
+				FCA0A15713404A8200C739F4 /* SuperBarrelBlast.cpp */,
+				FCA0A15813404A8200C739F4 /* SuperBarrelBlast.h */,
 				FCA63D11131B6C760050F9A2 /* ares */,
 				FC99BD17131A42F600566984 /* curl */,
 				FCDE086912D924A3004CE9B7 /* libmodplug */,
@@ -955,8 +953,6 @@
 				FC141A8A1285415900166578 /* OpenGLCommon.h */,
 				FC1419B51285415900166578 /* Engine.h */,
 				FC1419B41285415900166578 /* Engine.cpp */,
-				FC6CE5F712F6966100CCE264 /* MainMenu.h */,
-				FC6CE5F612F6966100CCE264 /* MainMenu.cpp */,
 				FC141A891285415900166578 /* Model.h */,
 				FC141A881285415900166578 /* Model.cpp */,
 				FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */,
@@ -1974,7 +1970,7 @@
 				FCA63D6D131B6C760050F9A2 /* inet_net_pton.c in Sources */,
 				FCA63D6E131B6C760050F9A2 /* inet_ntop.c in Sources */,
 				FCA63D6F131B6C760050F9A2 /* windows_port.c in Sources */,
-				FCC386471324218C00A083CC /* BlockBuster.cpp in Sources */,
+				FCA0A15913404A8200C739F4 /* SuperBarrelBlast.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

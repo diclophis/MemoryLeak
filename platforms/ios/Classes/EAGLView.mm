@@ -15,8 +15,8 @@
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "MainMenu.h"
-#include "BlockBuster.h"
+
+#include "SuperBarrelBlast.h"
 
 
 #import "EAGLView.h"
@@ -713,7 +713,7 @@ static OSStatus playbackCallback(void *inRefCon,
 		checkStatus(status);
 		*/
 		
-		game = new BlockBuster(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
+		game = new SuperBarrelBlast(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
 		game->CreateThread(Callbacks::PumpAudio);
 		
 		gameState = 1;

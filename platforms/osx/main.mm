@@ -16,7 +16,7 @@
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "MainMenu.h"
+#include "SuperBarrelBlast.h"
 
 
 //#define kWindowWidth  480
@@ -167,7 +167,7 @@ public:
     game->DrawScreen(0);
   } else {
 
-    game = new MainMenu(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 16);
+    game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 16);
     game->CreateThread(Callbacks::PumpAudio);
 
     built = 1;

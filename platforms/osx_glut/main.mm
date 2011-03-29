@@ -12,7 +12,6 @@
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "MainMenu.h"
 #include "SuperBarrelBlast.h"
 
 //#define kWindowWidth 480
@@ -150,7 +149,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char** argv) {
-NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
+  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -158,7 +158,7 @@ NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
-  glutCreateWindow(argv[0]);
+  glutCreateWindow("main");
 
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
 	for (NSString *path in model_names) {
