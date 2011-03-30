@@ -41,7 +41,7 @@ void SpriteGun::ResetParticle(int idx) {
 void SpriteGun::ShootParticle(int idx) {
 	m_TimeSinceLastShot = 0.0;
 	m_AtlasSprites[idx]->SetLife(0.0);
-	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
+	//m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
 	m_AtlasSprites[idx]->SetVelocity(m_EmitVelocity[0], m_EmitVelocity[1]);
 	m_AtlasSprites[idx]->m_IsAlive = true;
 }
@@ -53,8 +53,9 @@ void SpriteGun::Simulate(float deltaTime) {
 		int shot_this_tick = 0;
 		int not_shot_this_tick = 0;
 		for (unsigned int i=0; i<m_NumParticles; i++) {
+      m_AtlasSprites[i]->m_Rotation = m_Rotation;
 			//(shot_this_tick < (randf() * 2.0)) &&
-			if ((shot_this_tick < 1) && m_TimeSinceLastShot > 0.025 && !m_AtlasSprites[i]->m_IsAlive) {
+			if ((shot_this_tick < 1) && m_TimeSinceLastShot > 0.001 && !m_AtlasSprites[i]->m_IsAlive) {
 			  //LOGV("shot:%d, max: %f, life: %f, alive?: %d\n", shot_this_tick, m_MaxLife, m_AtlasSprites[i]->m_Life, m_AtlasSprites[i]->m_IsAlive);
 				//LOGV("shoot %d/%d\n", i, m_NumParticles);
 				ShootParticle(i);

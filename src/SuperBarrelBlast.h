@@ -31,6 +31,7 @@ public:
 	float m_CameraOffsetY;
 
   float m_LaunchTimeout;
+  float m_ReloadTimeout;
 
   float m_RotateTimeout;
 };
