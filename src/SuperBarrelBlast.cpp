@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
+#define SUBDIVIDE 20
 
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
@@ -53,8 +54,8 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
     m_AtlasSprites[m_SpriteCount]->Build(1);
 
-    sx = (x / 10.0);
-    sy = (y / 10.0);
+    sx = (x / SUBDIVIDE);
+    sy = (y / SUBDIVIDE);
     int existing_index = m_Space->at(sx, sy, 0); 
     if (existing_index == -1) {
       m_Space->set(sx, sy, 0, m_SpriteCount);
@@ -122,11 +123,11 @@ int SuperBarrelBlast::Simulate() {
 
 	float collide_x = m_AtlasSprites[0]->m_Position[0];
 	float collide_y = m_AtlasSprites[0]->m_Position[1];
-  int collide_index = m_Space->at((collide_x / 10.0), collide_y / 10.0, 0);
+  int collide_index = m_Space->at((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0);
 
-  m_AtlasSprites[0]->m_Velocity[1] -= (100.0 * m_DeltaTime);
+  m_AtlasSprites[0]->m_Velocity[1] -= (90.0 * m_DeltaTime);
 
-  if (collide_index != -1 && m_LaunchTimeout > 0.25) {
+  if (collide_index != -1 && m_LaunchTimeout > 0.5) {
     //LOGV("collide\n");
     m_ReloadTimeout += m_DeltaTime;
     m_CurrentBarrelIndex = collide_index;
