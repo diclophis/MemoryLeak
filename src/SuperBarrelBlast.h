@@ -25,6 +25,7 @@ public:
   int m_DebugBoxesCount;
 
   int m_CurrentBarrelIndex;
+  int m_LastShotBarrelIndex;
 
 	float m_CameraOffsetX;
 	float m_CameraOffsetY;

@@ -89,6 +89,7 @@ void SpriteGun::Simulate(float deltaTime) {
 
 void SpriteGun::Render() {
 	if (m_IsAlive) {
+		AtlasSprite::Render();
 		if (true) { //TODO: reverse render
 			int i=(m_NumParticles);
 			while (i-- > 0) {
@@ -104,7 +105,6 @@ void SpriteGun::Render() {
 				}
 			}
 		}
-		AtlasSprite::Render();
 	} else {
 		AtlasSprite::Render();
 	}

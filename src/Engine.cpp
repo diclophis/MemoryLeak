@@ -405,7 +405,7 @@ void Engine::WaitAudioSync() {
 
 int Engine::RunThread() {
 	
-
+/*
 	curl_version_info_data*info=curl_version_info(CURLVERSION_NOW);
 	if (info->features&CURL_VERSION_ASYNCHDNS) {
 		printf( "ares enabled\n");
@@ -432,8 +432,9 @@ int Engine::RunThread() {
 	//GlobalInfo *g = (GlobalInfo *)w->data;
 	sprintf(s, "http://qa.api.openfeint.com/internal/revision");
 
-	//new_conn(s, &g, &share);  /* if we read a URL, go get it! */ 
-	
+	//new_conn(s, &g, &share);
+*/
+
 	Build();
 	
 	m_IsSceneBuilt = true;
@@ -447,11 +448,11 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 2.0;
+	double interp = 3.0;
 
 	while (m_GameState != 0) {
 				
-		do_this_in_tick(&g, 0);
+		//do_this_in_tick(&g, 0);
 		
 		if (g.still_running < 1) {
 			//LOGV("new url\n");
@@ -464,19 +465,23 @@ int Engine::RunThread() {
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 		
-		if (averageWait > (1.0 / 10.0)) {
-			LOGV("avg: %f %f\n", averageWait, 1.0 / 30.0);
-		} else {
+		//if (averageWait > (1.0 / 29.0)) {
+		//	LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
+		//} else {
+		if (averageWait > (1.0 / 29.0)) {
+		  LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
+    }
 			for (unsigned int i=0; i<interp; i++) {
 				m_DeltaTime = (averageWait / interp);
 				m_SimulationTime += (m_DeltaTime);
 				m_GameState = Simulate();
 			}
-		}
+		//}
 		
 		//WaitAudioSync();
 
 		if (m_PumpedAudioLastTick) {			
+      /*
 			if (m_IsPushingAudio) {
 				int len = m_AudioBufferSize / m_AudioDivisor;
 				
@@ -485,6 +490,7 @@ int Engine::RunThread() {
 			} else {
 				m_PumpedAudioLastTick = start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
 			}
+      */
 		} else {
 			if (m_SkipLimit++ > 0) {
 				//LOGV("resume\n");

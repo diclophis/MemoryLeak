@@ -131,7 +131,7 @@ void AtlasSprite::Simulate(float deltaTime) {
 	m_Life += deltaTime;
 	m_AnimationLife += deltaTime;
 	
-	float m_Fps = 3.0;
+	float m_Fps = 60.0;
 	//LOGV("life: %f\n", m_Life);
 	if (m_AnimationLife > (1.0 / (float)m_Fps)) {
 		m_Frame++;

@@ -177,6 +177,7 @@ int main(int argc, char** argv) {
 
 	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/textures"];
 	for (NSString *path in texture_names) {
+    NSLog(@"path: %@", path);
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
     NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
     

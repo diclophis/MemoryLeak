@@ -37,7 +37,7 @@ static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
 #define PLAYBACK_FREQ 44100
 #define AUDIO_BUFFER_SIZE (2048)
-#define BUF_SIZE 512
+#define BUF_SIZE 8
 
 struct buf_t {
 	volatile int writepos;

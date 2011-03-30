@@ -20,6 +20,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_SpriteCount = 0;
   m_CurrentBarrelIndex = -1;
+  m_LastShotBarrelIndex = -1;
 
   m_LaunchTimeout = 0.0;
   m_RotateTimeout = 0.0;
@@ -42,14 +43,14 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_BarrelCount = 5;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, 1.0, "", 0, 0, 0.0, 50.0, 50.0));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, 1.0, "", 8, 11, 2.0, 50.0, 50.0));
     m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
     m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
     m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-    m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-    m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
+    m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
+    //m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 10.0);
     m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-    m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_AtlasSprites[m_SpriteCount]->Build(2);
 
     sx = (x / 10.0);
     sy = (y / 10.0);
@@ -62,211 +63,6 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
     r += 45.0;
   }
   m_BarrelStopIndex = m_SpriteCount;
-
-
-  /*
-  x = 0;
-  y = 0;
-  m_DebugBoxesStartIndex = m_SpriteCount + 1;
-  m_DebugBoxesCount = 1000;
-  for (unsigned int i=0; i<m_DebugBoxesCount; i++) {
-    m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 28, 29, 1.0, "", 0, 0, 0.0, 10.0, 10.0));
-    m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
-    m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-    m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-    m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-    m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-    m_AtlasSprites[m_SpriteCount]->Build(0);
-
-    sx = (x / 10.0);
-    sy = (y / 10.0);
-    int existing_index = m_Space->at(sx, sy, 0); 
-    if (existing_index == -1) {
-      m_Space->set(sx, sy, 0, m_SpriteCount);
-    }
-
-    x += 10.0;
-    if (x > (50 * 10)) {
-      x = 0.0;
-      y += 10.0;
-    }
-  }
-  m_DebugBoxesStopIndex = m_SpriteCount;
-  */
-
-/*
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 2, 4, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 100.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 4, 8, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 150.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 8, 11, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 11, 14, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 200.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 14, 16, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(50.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 16, 20, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(50.0, 50.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 20, 24, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(50.0, 100.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 24, 26, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(50.0, 150.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 26, 28, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 32, 38, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 50.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 40, 42, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 100.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 42, 44, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 150.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 200.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 48, 50, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(-50.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 50, 52, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(-50.0, 50.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 52, 54, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(-50.0, 100.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 54, 56, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(-50.0, 150.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 56, 60, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(-100.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-
-  m_SpriteCount++;
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 61, 64, 1.0, "", 0, 0, 0.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(-100.0, 50.0);
-	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
-	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-	m_AtlasSprites[m_SpriteCount]->Build(0);
-*/
-	
 }
 
 
@@ -282,7 +78,11 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
     m_AtlasSprites[0]->m_Velocity[0] = 100.0 * cos(theta);
     m_AtlasSprites[0]->m_Velocity[1] = 100.0 * fastSinf(theta);
     //LOGV("%f %f \n", m_AtlasSprites[0]->m_Velocity[0], m_AtlasSprites[0]->m_Velocity[1]);
-    m_CurrentBarrelIndex = -1;
+      //float theta = DEGREES_TO_RADIANS(m_AtlasSprites[m_CurrentBarrelIndex]->m_Rotation + 90.0);
+    float x = 500.0 * cos(theta);
+    float y = 500.0 * fastSinf(theta);
+    m_AtlasSprites[m_CurrentBarrelIndex]->SetEmitVelocity(x, y);
+    m_LastShotBarrelIndex = m_CurrentBarrelIndex;
   }
 }
 
@@ -307,28 +107,33 @@ int SuperBarrelBlast::Simulate() {
 	float collide_y = m_AtlasSprites[0]->m_Position[1];
   int collide_index = -1;
 
-  collide_index = m_Space->at(collide_x / 10.0, collide_y / 10.0, 0);
-  
-  m_CurrentBarrelIndex = collide_index;
+  //int directions[3] = {-1, 0, 1};
+      if (m_CurrentBarrelIndex != -1) {
+        m_AtlasSprites[m_CurrentBarrelIndex]->m_Life = 0.0;
+        m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = false;
+      }
 
-  //if (collide_index != -1) {
-    //if (collide_index > m_DebugBoxesStartIndex && collide_index < m_DebugBoxesStopIndex) {
-    //  m_CurrentBarrelIndex = -1;
-    //  m_AtlasSprites[collide_index]->m_Scale[0] = 2.0;
-    //  m_AtlasSprites[collide_index]->m_Scale[1] = 2.0;
-    //} else {
-      //m_CurrentBarrelIndex = collide_index;
-    //}
+    if (m_CurrentBarrelIndex != -1 && m_LaunchTimeout > 0.0 && m_LaunchTimeout < 10.0) {
+      m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = true;
+    } else {
+    }
+
+  //for (unsigned int i=0; i<3; i++) {
+    collide_index = m_Space->at((collide_x / 10.0), collide_y / 10.0, 0);
+    if (collide_index != -1) {
+      m_CurrentBarrelIndex = collide_index;
+    //  break;
+    }
   //}
 
-  if (m_CurrentBarrelIndex != -1 && m_LaunchTimeout > 0.5) {
-    //LOGV("locking into: %d\n", m_CurrentBarrelIndex);
+  if (m_CurrentBarrelIndex != -1 && m_LaunchTimeout > 0.125) {
     m_AtlasSprites[0]->m_Velocity[0] = 0.0;
     m_AtlasSprites[0]->m_Velocity[1] = 0.0;
     m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0];
     m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[1];
   } else {
-    m_AtlasSprites[0]->m_Velocity[1] -= (110.0 * m_DeltaTime);
+
+    m_AtlasSprites[0]->m_Velocity[1] -= (100.0 * m_DeltaTime);
   }
 
   if (m_RotateTimeout > 0.5) {
