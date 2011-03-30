@@ -10,7 +10,7 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 20
+#define SUBDIVIDE 18
 
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
@@ -33,7 +33,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   float y = 100.0;
   float r = 0.0;
 
-	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 56, 60, 1.0, "", 0, 0, 0.0, 50.0, 50.0));
+	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 56, 60, 1.0, "", 0, 0, 0.0, 60.0, 60.0));
 	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 200.0);
 	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, -10.0);
 	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
@@ -45,7 +45,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_BarrelCount = 5;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, 1.0, "", 8, 11, 5.0, 50.0, 50.0));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, 1.0, "", 8, 11, 5.0, 65.0, 65.0));
     m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
     m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
     m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
