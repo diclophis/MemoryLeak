@@ -17,7 +17,7 @@
 //#define kWindowWidth 480
 //#define kWindowHeight 320
 
-#define kWindowWidth 320
+#define kWindowWidth 32
 #define kWindowHeight 480
 
 //#define kWindowWidth 480

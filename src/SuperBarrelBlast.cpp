@@ -19,6 +19,9 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 	m_CameraOffsetX = 0;
 	m_CameraOffsetY = 0;
 
+  m_PlayerLastX = 0;
+  m_PlayerLastY = 0;
+
   m_SpriteCount = 0;
   m_CurrentBarrelIndex = -1;
   m_LastShotBarrelIndex = -1;
@@ -198,6 +201,9 @@ int SuperBarrelBlast::Simulate() {
   for (unsigned int i=0; i<m_SpriteCount+1; i++) {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
   }
+
+	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
+	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
 
 	m_CameraOffsetX = m_AtlasSprites[0]->m_Position[0];
 	m_CameraOffsetY = m_AtlasSprites[0]->m_Position[1];

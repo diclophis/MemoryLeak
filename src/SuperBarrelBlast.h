@@ -34,4 +34,8 @@ public:
   float m_ReloadTimeout;
 
   float m_RotateTimeout;
+
+  float m_PlayerLastX;
+  float m_PlayerLastY;
+
 };
