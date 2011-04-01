@@ -33,14 +33,12 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_RotateTimeout = 0.0;
   m_ReloadTimeout = 0.0;
 
-  int sx = 0;
-  int sy = 0;
   float x = 100.0;
   float y = 100.0;
   float r = 0.0;
 
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 56, 60, 1.0, "", 0, 0, 0.0, 60.0, 60.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 200.0);
+	m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 300.0);
 	m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, -10.0);
 	m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
 	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
@@ -50,27 +48,36 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_BarrelStartIndex = m_SpriteCount + 1;
   m_BarrelCount = 5;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
-    m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, 1.0, "", 8, 11, 5.0, 65.0, 65.0));
-    m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
-    m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
-    m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-    m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
-    //m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 10.0);
-    m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
-    m_AtlasSprites[m_SpriteCount]->Build(1);
-
-    sx = (x / SUBDIVIDE);
-    sy = (y / SUBDIVIDE);
-    int existing_index = m_Space->at(sx, sy, 0); 
-    if (existing_index == -1) {
-      m_Space->set(sx, sy, 0, m_SpriteCount);
-    }
-
+    CreateBarrel(x, y, r);
     x += 100;
     r += 45.0;
   }
+
+  CreateBarrel(100.0, 250.0, 0.0);
+
   m_BarrelStopIndex = m_SpriteCount;
+}
+
+
+void SuperBarrelBlast::CreateBarrel(float x, float y, float r) {
+  int sx = 0;
+  int sy = 0;
+  m_SpriteCount++;
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, 1.0, "", 8, 11, 5.0, 65.0, 65.0));
+  m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
+  m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
+  m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
+  m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
+  //m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 10.0);
+  m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
+  m_AtlasSprites[m_SpriteCount]->Build(1);
+
+  sx = (x / SUBDIVIDE);
+  sy = (y / SUBDIVIDE);
+  int existing_index = m_Space->at(sx, sy, 0); 
+  if (existing_index == -1) {
+    m_Space->set(sx, sy, 0, m_SpriteCount);
+  }
 }
 
 
@@ -137,7 +144,7 @@ int SuperBarrelBlast::Simulate() {
 	float collide_y = m_AtlasSprites[0]->m_Position[1];
   int collide_index = m_LastCollideIndex = m_Space->at((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0);
 
-  m_AtlasSprites[0]->m_Velocity[1] -= (90.0 * m_DeltaTime);
+  //m_AtlasSprites[0]->m_Velocity[1] -= (90.0 * m_DeltaTime);
 
   if (collide_index != -1 && m_LaunchTimeout > 0.5 && (m_LastFailedCollideIndex != collide_index)) {
     //LOGV("collide\n");

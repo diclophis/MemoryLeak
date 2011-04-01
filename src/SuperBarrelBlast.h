@@ -11,6 +11,7 @@ public:
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();
+  void CreateBarrel(float x, float y, float r);
 	
 	Octree<int> *m_Space;
 
