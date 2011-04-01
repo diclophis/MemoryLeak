@@ -38,4 +38,7 @@ public:
   float m_PlayerLastX;
   float m_PlayerLastY;
 
+  int m_LastCollideIndex;
+  int m_LastFailedCollideIndex;
+
 };

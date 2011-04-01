@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  glutGameModeString("1440x900:32@65");
+  //glutGameModeString("1440x900:32@65");
 
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);

@@ -14,13 +14,16 @@
 
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
-	m_Space = new Octree<int>(512 * 512, -1);
+	m_Space = new Octree<int>(256 * 256, -1);
 
-	m_CameraOffsetX = 0;
-	m_CameraOffsetY = 0;
+	m_CameraOffsetX = 0.0;
+	m_CameraOffsetY = 0.0;
 
-  m_PlayerLastX = 0;
-  m_PlayerLastY = 0;
+  m_PlayerLastX = 0.0;
+  m_PlayerLastY = 0.0;
+
+  m_LastCollideIndex = -1;
+  m_LastFailedCollideIndex = -1;
 
   m_SpriteCount = 0;
   m_CurrentBarrelIndex = -1;
@@ -118,88 +121,99 @@ int SuperBarrelBlast::Simulate() {
   m_LaunchTimeout += m_DeltaTime;
   m_RotateTimeout += m_DeltaTime;
 
+  for (unsigned int i=0; i<m_SpriteCount+1; i++) {
+    m_AtlasSprites[i]->Simulate(m_DeltaTime);
+  }
+
   if (m_AtlasSprites[0]->m_Position[1] < 0.0 || m_AtlasSprites[0]->m_Position[0] < 0.0) {
     m_AtlasSprites[0]->SetPosition(100.0, 300.0);
     m_AtlasSprites[0]->m_Velocity[0] = 0.0;
     m_AtlasSprites[0]->m_Velocity[1] = 0.0;
   }
 
+  bool was_falling_before = (m_LastCollideIndex == -1);
+
 	float collide_x = m_AtlasSprites[0]->m_Position[0];
 	float collide_y = m_AtlasSprites[0]->m_Position[1];
-  int collide_index = m_Space->at((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0);
+  int collide_index = m_LastCollideIndex = m_Space->at((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0);
 
   m_AtlasSprites[0]->m_Velocity[1] -= (90.0 * m_DeltaTime);
 
-  if (collide_index != -1 && m_LaunchTimeout > 0.5) {
+  if (collide_index != -1 && m_LaunchTimeout > 0.5 && (m_LastFailedCollideIndex != collide_index)) {
     //LOGV("collide\n");
-    m_ReloadTimeout += m_DeltaTime;
-    m_CurrentBarrelIndex = collide_index;
-    m_AtlasSprites[0]->m_Velocity[0] = 0.0;
-    m_AtlasSprites[0]->m_Velocity[1] = 0.0;
-    m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
-    m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
-    if (m_RotateTimeout > 0.5) {
-      //for (unsigned int i=0; i<m_BarrelCount; i++) {
-      //  m_AtlasSprites[m_BarrelStartIndex + i]->m_Rotation += 45.0;
-      //}
-      m_AtlasSprites[collide_index]->m_Rotation += 45.0;
-      m_RotateTimeout = 0.0;
-    }
-  } else {
-    m_ReloadTimeout = -1.0;
-  }
+    float dx = m_AtlasSprites[0]->m_Position[0] - m_PlayerLastX;
+    float dy = (m_AtlasSprites[0]->m_Position[1] - m_PlayerLastY);
 
-        if (m_CurrentBarrelIndex != -1) {
-          if (m_LaunchTimeout < 1.0) {
-            //LOGV("a\n");
-            m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = true;
-          } else {
-            //LOGV("b\n");
-            m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = false;
-            m_AtlasSprites[m_CurrentBarrelIndex]->Reset();
-            m_LaunchTimeout = 10.0;
-          }
-        }
+    float theta = DEGREES_TO_RADIANS(m_AtlasSprites[collide_index]->m_Rotation + 90.0);
+    float tx = 1.0 * cos(theta);
+    float ty = 1.0 * fastSinf(theta);
 
 
+//X= R*cos(Theta)
+//Y= R*sin(Theta)
+    
+
+    float angle_of_incidence = 0.0;
+
+    if (was_falling_before) {
+      LOGV("dx:%f dy:%f tx:%f ty:%f\n", dx, dy, tx, ty);
+      angle_of_incidence = RadiansToDegrees(fastAbs(atan2f(tx, ty) - atan2f(dx, dy)));
+      //float theta_delta = atan2f(dx, dy) - atan2f(tx, ty);
+      LOGV("td:%f\n", angle_of_incidence);
 
 
+//angle of 2 relative to 1= atan2(v2.y,v2.x) - atan2(v1.y,v1.x)
 
 
 /*
-  //int directions[3] = {-1, 0, 1};
-      if (m_CurrentBarrelIndex != -1) {
-        m_AtlasSprites[m_CurrentBarrelIndex]->m_Life = 0.0;
-        m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = false;
+      float angle_of_colliding_thing = DEGREES_TO_RADIANS((int)(direct + 90.0) % 360);
+      float raw_angle = (atan2f(dy, dx));
+      if (raw_angle < 0) {
+        //raw_angle = M_PI + raw_angle;
       }
+      //if (dx != 0) {
+           //r    := hypot(x,y);  ... := sqrt(x*x+y*y)
+           //theta     := atan2(y,x).
+  
+        angle_of_incidence = RadiansToDegrees(raw_angle + angle_of_colliding_thing);
+      //}
+      LOGV("incidence: direct:%f rr:%f raw:%f thing:%f diff:%f %f %f\n", direct, raw_angle, RadiansToDegrees(raw_angle), RadiansToDegrees(angle_of_colliding_thing), angle_of_incidence, dx, dy);
+*/
+    }
 
-    if (m_CurrentBarrelIndex != -1 && m_LaunchTimeout > 0.0 && m_LaunchTimeout < 10.0) {
+    if ((angle_of_incidence > 170.0 && angle_of_incidence < 190.0) || (angle_of_incidence > -10 && angle_of_incidence < 10)) {
+      //LOGV("collide\n");
+      m_ReloadTimeout += m_DeltaTime;
+      m_CurrentBarrelIndex = collide_index;
+      m_AtlasSprites[0]->m_Velocity[0] = 0.0;
+      m_AtlasSprites[0]->m_Velocity[1] = 0.0;
+      m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
+      m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
+
+      if (m_RotateTimeout > 0.5) {
+        //for (unsigned int i=0; i<m_BarrelCount; i++) {
+        //  m_AtlasSprites[m_BarrelStartIndex + i]->m_Rotation += 45.0;
+        //}
+        m_AtlasSprites[collide_index]->m_Rotation += 45.0;
+        m_RotateTimeout = 0.0;
+      }
+    } else {
+      LOGV("failed %d\n", collide_index);
+      m_LastFailedCollideIndex = collide_index;
+    }
+  } else {
+    //LOGV("reset\n");
+    m_ReloadTimeout = -1.0;
+  }
+
+  if (m_CurrentBarrelIndex != -1) {
+    if (m_LaunchTimeout < 1.0) {
       m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = true;
     } else {
+      m_AtlasSprites[m_CurrentBarrelIndex]->m_IsAlive = false;
+      m_AtlasSprites[m_CurrentBarrelIndex]->Reset();
+      m_LaunchTimeout = 10.0;
     }
-
-  //for (unsigned int i=0; i<3; i++) {
-    collide_index = m_Space->at((collide_x / 10.0), collide_y / 10.0, 0);
-    if (collide_index != -1) {
-      m_CurrentBarrelIndex = collide_index;
-    //  break;
-    }
-  //}
-
-  if (m_CurrentBarrelIndex != -1 && m_LaunchTimeout > 0.125) {
-    m_AtlasSprites[0]->m_Velocity[0] = 0.0;
-    m_AtlasSprites[0]->m_Velocity[1] = 0.0;
-    m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0];
-    m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[1];
-  } else {
-
-    m_AtlasSprites[0]->m_Velocity[1] -= (100.0 * m_DeltaTime);
-  }
-*/
-
-
-  for (unsigned int i=0; i<m_SpriteCount+1; i++) {
-    m_AtlasSprites[i]->Simulate(m_DeltaTime);
   }
 
 	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
