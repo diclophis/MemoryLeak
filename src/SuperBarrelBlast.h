@@ -35,6 +35,7 @@ public:
   float m_ReloadTimeout;
   float m_SwipeTimeout;
   float m_RotateTimeout;
+  float m_MirrorRotateTimeout;
 
   float m_PlayerLastX;
   float m_PlayerLastY;
