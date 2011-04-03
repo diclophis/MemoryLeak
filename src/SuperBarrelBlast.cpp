@@ -12,6 +12,11 @@
 
 #define SUBDIVIDE 30
 
+enum colliders {
+  BARREL = 1,
+  MIRROR = 2 
+};
+
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
 
 	m_Space = new Octree<int>(256 * 256, -1);
@@ -66,22 +71,39 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 	m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 0.0);
 	m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
 	m_AtlasSprites[m_SpriteCount]->Build(0);
+  LOGV("get: %d=%d\n", 1, m_AtlasSprites[1]->m_IsFlags);
 }
 
 
 void SuperBarrelBlast::CreateBarrel(float x, float y, float r) {
   int sx = 0;
   int sy = 0;
+  int flag = 0;
   m_SpriteCount++;
   float l = 30 * (1.0 / 60.0);
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, l * 0.5, "", 8, 11, l, 70.0, 70.0));
-  //m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 70.0, 70.0));
+  if ((m_SpriteCount % 2) == 0) {
+    flag = BARREL;
+  } else {
+    flag = MIRROR;
+  }
+
+  if (flag & BARREL) {
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, l * 0.5, "", 8, 11, l, 70.0, 70.0));
+  } else if (flag & MIRROR) {
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 70.0, 70.0));
+  }
+
+  LOGV("create: %d=%d\n", m_SpriteCount, flag);
+  m_AtlasSprites[m_SpriteCount]->m_IsFlags = flag;
+  LOGV("get: %d=%d\n", m_SpriteCount, m_AtlasSprites[m_SpriteCount]->m_IsFlags);
+
   m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
   m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
-  m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
-  m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
+  //m_AtlasSprites[m_SpriteCount]->SetVelocity(0.0, 0.0);
+  //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
   //m_AtlasSprites[m_SpriteCount]->SetEmitVelocity(0.0, 10.0);
-  m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
+  //m_AtlasSprites[m_SpriteCount]->SetScale(1.0, 1.0);
+  LOGV("get bb: %d=%d\n", m_SpriteCount, m_AtlasSprites[m_SpriteCount]->m_IsFlags);
   m_AtlasSprites[m_SpriteCount]->Build(1);
   sx = (x / SUBDIVIDE);
   sy = (y / SUBDIVIDE);
@@ -89,6 +111,7 @@ void SuperBarrelBlast::CreateBarrel(float x, float y, float r) {
   if (existing_index == -1) {
     m_Space->set(sx, sy, 0, m_SpriteCount);
   }
+  LOGV("get CC: %d=%d\n", m_SpriteCount, m_AtlasSprites[m_SpriteCount]->m_IsFlags);
 }
 
 
@@ -146,6 +169,8 @@ void SuperBarrelBlast::Build() {
 
 
 int SuperBarrelBlast::Simulate() {
+  //LOGV("get: %d=%d\n", 1, m_AtlasSprites[1]->m_IsFlags);
+  //exit(1);
 
   m_LaunchTimeout += m_DeltaTime;
   m_RotateTimeout += m_DeltaTime;
@@ -190,7 +215,9 @@ int SuperBarrelBlast::Simulate() {
 
     if ((angle_of_incidence > 130.0 && angle_of_incidence < 230.0) || (angle_of_incidence > -50 && angle_of_incidence < 50)) {
       bool mirror = false;
-      if (mirror) {
+      //LOGV("mir%d bar:%d\n", m_AtlasSprites[collide_index]->m_IsFlags & MIRROR, m_AtlasSprites[collide_index]->m_IsFlags & BARREL);
+
+      if (m_AtlasSprites[collide_index]->m_IsFlags & MIRROR) {
 
         if (was_falling_before) {
           float rt = DEGREES_TO_RADIANS(angle_of_incidence) + theta;
@@ -202,13 +229,13 @@ int SuperBarrelBlast::Simulate() {
           m_AtlasSprites[0]->m_Velocity[0] = rx * 100.0;
           m_AtlasSprites[0]->m_Velocity[1] = ry * 100.0;
 
-          LOGV("rt:%f vx:%f vy:%f rx:%f ry:%f ex:%f ey:%f\n", (int)RadiansToDegrees(rt) % 360, vx, vy, rx, ry, m_AtlasSprites[0]->m_Velocity[0], m_AtlasSprites[0]->m_Velocity[1]);
+          //LOGV("rt:%f vx:%f vy:%f rx:%f ry:%f ex:%f ey:%f\n", (int)RadiansToDegrees(rt) % 360, vx, vy, rx, ry, m_AtlasSprites[0]->m_Velocity[0], m_AtlasSprites[0]->m_Velocity[1]);
 
           m_LastFailedCollideIndex = collide_index;
         }
-      } else {
+      } else if (m_AtlasSprites[collide_index]->m_IsFlags & BARREL) {
         if (was_falling_before) {
-          LOGV("collide %d\n", collide_index);
+          LOGV("collide %d flag:%d\n", collide_index, m_AtlasSprites[collide_index]->m_IsFlags);
           m_CurrentBarrelIndex = collide_index;
           m_AtlasSprites[0]->m_Velocity[0] = 0.0;
           m_AtlasSprites[0]->m_Velocity[1] = 0.0;
@@ -216,7 +243,7 @@ int SuperBarrelBlast::Simulate() {
           m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
           m_ReloadTimeout = 0.0;
         }
-        if (m_RotateTimeout > 0.125) {
+        if (m_RotateTimeout > 0.33) {
           //LOGV("spin: %d\n", collide_index);
           m_AtlasSprites[collide_index]->m_Rotation += 15.0;
           m_RotateTimeout = 0.0;
@@ -246,8 +273,14 @@ int SuperBarrelBlast::Simulate() {
 	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
 	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
 
-	m_CameraOffsetX = m_AtlasSprites[0]->m_Position[0];
-	m_CameraOffsetY = m_AtlasSprites[0]->m_Position[1];
+  float ox = m_PlayerLastX - m_CameraOffsetX;
+  float oy = m_PlayerLastY - m_CameraOffsetY;
+
+  ox *= 0.001;
+  oy *= 0.001;
+
+	m_CameraOffsetX += ox;
+	m_CameraOffsetY += oy;
 
 	return 1;
 }

@@ -74,4 +74,6 @@ public:
 		m_Scale[0] = x;
 		m_Scale[1] = y;
 	}
+
+
 };
