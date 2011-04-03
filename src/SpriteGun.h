@@ -22,6 +22,7 @@ public:
 	void Simulate(float deltaTime);
 	void Render();
 	void Reset();
+	void Fire();
 	
 	unsigned int m_NumParticles;
 	std::vector<AtlasSprite *> m_AtlasSprites;	
@@ -42,7 +43,4 @@ public:
 	
 	bool m_IsReady;
 	
-	void Fire() {
-		m_IsAlive = true;
-	}
 };

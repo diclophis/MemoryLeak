@@ -33,7 +33,7 @@ public:
 
   float m_LaunchTimeout;
   float m_ReloadTimeout;
-
+  float m_SwipeTimeout;
   float m_RotateTimeout;
 
   float m_PlayerLastX;
@@ -41,5 +41,7 @@ public:
 
   int m_LastCollideIndex;
   int m_LastFailedCollideIndex;
+
+  float m_Gravity;
 
 };

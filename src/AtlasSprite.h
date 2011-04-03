@@ -21,6 +21,7 @@ public:
 	std::string m_Animation;
 	
 	GLuint m_Texture;
+  int m_Fps;
 	int m_SpritesPerRow;
 	int m_Rows;
 	int m_Frame;

@@ -12,6 +12,7 @@ void AtlasSprite::ReleaseBuffers() {
 }
 
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, float vdx, float vdy) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
+  m_Fps = 0;
 	m_Rotation = 0.0;
 	m_Position = new float[2];
 	m_Velocity = new float[2];
@@ -111,10 +112,26 @@ void AtlasSprite::Render() {
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, texture);
+
+	//glPushMatrix();
+	//{
+		//glTranslatef(-15, -15, 0.0);
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
+  //}
+  //glPopMatrix();
+
 		//this works with tartan thing
-		//glLineWidth(10.0);
-		//glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
+    if (true) {
+      //glPushMatrix();
+      //{
+        //glTranslatef(15, 15, 0.0);
+        glDisable(GL_TEXTURE_2D);
+        glLineWidth(2.0);
+        glColor4f(1.0, 1.0, 1.0, 1.0);
+        glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_BYTE, indices);
+        glEnable(GL_TEXTURE_2D);
+      //}
+    }
 
 		ax += m_Sprites[i].dx;
 		ay += w;
@@ -130,21 +147,23 @@ void AtlasSprite::Simulate(float deltaTime) {
 
 	m_Life += deltaTime;
 	m_AnimationLife += deltaTime;
-	
-	float m_Fps = 4.0;
-	//LOGV("life: %f\n", m_Life);
-	if (m_AnimationLife > (1.0 / (float)m_Fps)) {
-		m_Frame++;
-		m_AnimationLife = 0.0;
-	}
-	
-	if (m_Frame < 0) {
-		m_Frame = m_AnimationLength - 1;
-	}
-	
-	if (m_Frame >= m_AnimationLength) {
-		m_Frame = 0;
-	}
-	
-	//m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
+
+  if (m_IsAlive) {
+    if (m_Fps > 0) {
+      if (m_AnimationLife > (1.0 / (float)m_Fps)) {
+        m_Frame++;
+        m_AnimationLife = 0.0;
+      }
+      
+      if (m_Frame < 0) {
+        m_Frame = m_AnimationLength - 1;
+      }
+      
+      if (m_Frame >= m_AnimationLength) {
+        m_Frame = 0;
+      }
+    } else {
+      m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
+    }
+  }
 };
