@@ -59,9 +59,9 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     CreateBarrel(x, y, r);
     x += 120;
-    r += 45.0;
+    r += 0.0;
   }
-  CreateBarrel(270.0, 270.0, 360.0 + 45.0);
+  CreateBarrel(270.0, 270.0, 0.0);
   m_BarrelStopIndex = m_SpriteCount;
 
   m_SpriteCount++;
@@ -255,26 +255,24 @@ int SuperBarrelBlast::Simulate() {
   if (collide_index != -1 && m_LaunchTimeout > 0.5 && (m_LastFailedCollideIndex != collide_index)) {
     float dx = m_AtlasSprites[0]->m_Position[0] - m_PlayerLastX;
     float dy = (m_AtlasSprites[0]->m_Position[1] - m_PlayerLastY);
-    float theta = DEGREES_TO_RADIANS((int)(m_AtlasSprites[collide_index]->m_Rotation + 90.0));
-    float theta_unclamped = DEGREES_TO_RADIANS((m_AtlasSprites[collide_index]->m_Rotation + 90.0));
+    float theta = DEGREES_TO_RADIANS((int)(m_AtlasSprites[collide_index]->m_Rotation));
     float tx = 1.0 * cos(theta);
     float ty = 1.0 * fastSinf(theta);
     float angle_of_incidence = 0.0;
-    float angle_of_incidence_unclamped = 0.0;
     if (was_falling_before) {
       LOGV("rotation of collider:%f\n", m_AtlasSprites[collide_index]->m_Rotation);
       angle_of_incidence = (int)RadiansToDegrees(fastAbs(atan2f(tx, ty) - atan2f(dx, dy)));
-      angle_of_incidence_unclamped = (int)RadiansToDegrees(fastAbs(atan2f(tx, ty) - atan2f(dx, dy)));
       LOGV("collide normal:%f player angle:%f\n", RadiansToDegrees(atan2f(tx, ty)), RadiansToDegrees(atan2f(dx, dy)));
       LOGV("angle of incidence:%f\n", angle_of_incidence);
     }
 
     float max_theta_delta = 61;
 
-
     if (
       (angle_of_incidence >= (360 - max_theta_delta) && angle_of_incidence <= (360 + max_theta_delta)) ||
+      (angle_of_incidence >= (270 - max_theta_delta) && angle_of_incidence <= (270 + max_theta_delta)) ||
       (angle_of_incidence >= (180 - max_theta_delta) && angle_of_incidence <= (180 + max_theta_delta)) ||
+      (angle_of_incidence >= (90 - max_theta_delta) && angle_of_incidence <= (90 + max_theta_delta)) ||
       (angle_of_incidence >= -max_theta_delta && angle_of_incidence <= max_theta_delta)
     ) {
       bool mirror = false;
@@ -283,13 +281,18 @@ int SuperBarrelBlast::Simulate() {
       if (m_AtlasSprites[collide_index]->m_IsFlags & MIRROR) {
 
         if (was_falling_before) {
-          float rt = DEGREES_TO_RADIANS((int)RadiansToDegrees(DEGREES_TO_RADIANS(angle_of_incidence) + theta) % 360);
-          //if (rt > DEGREES_TO_RADIANS(358.0) && rt < DEGREES_TO_RADIANS(362.0)) {
+          /*
+          float rt = DEGREES_TO_RADIANS(angle_of_incidence) + theta;//DEGREES_TO_RADIANS((int)RadiansToDegrees(DEGREES_TO_RADIANS(angle_of_incidence) + theta) % 360);
+          LOGV("raw rt:%f\n", RadiansToDegrees(rt));
+          if (rt > DEGREES_TO_RADIANS(358.0)) {
           //  LOGV("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-          //  rt -= DEGREES_TO_RADIANS(180);
+            rt = DEGREES_TO_RADIANS(0);
+          }
+          */
+          float rt = atan2f(dx, dy) - DEGREES_TO_RADIANS(90) - DEGREES_TO_RADIANS(angle_of_incidence); //atan2f(dx, dy);
           //}
-          float rx = -1.0 * cos(rt);
-          float ry = -1.0 * fastSinf(rt);
+          float rx = 1.0 * cos(rt);
+          float ry = 1.0 * fastSinf(rt);
 
           //float vx = m_AtlasSprites[0]->m_Velocity[0];
           //float vy = m_AtlasSprites[0]->m_Velocity[1];
