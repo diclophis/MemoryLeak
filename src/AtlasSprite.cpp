@@ -109,28 +109,18 @@ void AtlasSprite::Render() {
 			tx + tw, ty,
 			tx, ty
 		};
+
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, texture);
-
-	//glPushMatrix();
-	//{
-		//glTranslatef(-15, -15, 0.0);
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
-  //}
-  //glPopMatrix();
 
-		//this works with tartan thing
-    if (true) {
-      //glPushMatrix();
-      //{
-        //glTranslatef(15, 15, 0.0);
-        glDisable(GL_TEXTURE_2D);
-        glLineWidth(2.0);
-        glColor4f(1.0, 1.0, 1.0, 1.0);
-        glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_BYTE, indices);
-        glEnable(GL_TEXTURE_2D);
-      //}
+    if (false) {
+      glDisable(GL_TEXTURE_2D);
+      glLineWidth(2.0);
+      glColor4f(1.0, 1.0, 1.0, 1.0);
+      glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_BYTE, indices);
+      glEnable(GL_TEXTURE_2D);
     }
 
 		ax += m_Sprites[i].dx;
