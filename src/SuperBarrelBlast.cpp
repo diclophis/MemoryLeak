@@ -61,7 +61,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
     x += 120;
     r += 0.0;
   }
-  CreateBarrel(270.0, 270.0, 0.0);
+  CreateBarrel(270.0, 270.0, 180.0);
   m_BarrelStopIndex = m_SpriteCount;
 
   m_SpriteCount++;
@@ -154,7 +154,10 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
   if (hitState == 2 && collide_index != -1) {
     m_AtlasSprites[collide_index]->m_Rotation += 15.0;
   } else {
+    LOGV("maybe\b");
+
     if (collide_index == -1 && m_CurrentBarrelIndex != -1) {
+    LOGV("shoot\b");
       float theta = DEGREES_TO_RADIANS(m_AtlasSprites[m_CurrentBarrelIndex]->m_Rotation + 90.0);
       float cost = cos(theta);
       float sint = fastSinf(theta);
@@ -182,9 +185,8 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
           m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0] -= cost * 20.0;
           m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[1] -= sint * 20.0;
           m_AtlasSprites[m_CurrentBarrelIndex]->Fire();
-
-
         } else {
+        LOGV("what\n");
           if (m_SwipeTimeout < 0.125) {
             LOGV("boosting\n");
             m_AtlasSprites[0]->m_Velocity[0] *= 1.075; 
@@ -252,12 +254,77 @@ int SuperBarrelBlast::Simulate() {
     LOGV("switch %d %d\n", m_LastCollideIndex, collide_index);
   } 
 
+  //0 -> up
+  //180 -> down
   if (collide_index != -1 && m_LaunchTimeout > 0.5 && (m_LastFailedCollideIndex != collide_index)) {
+    
     float dx = m_AtlasSprites[0]->m_Position[0] - m_PlayerLastX;
     float dy = (m_AtlasSprites[0]->m_Position[1] - m_PlayerLastY);
-    float theta = DEGREES_TO_RADIANS((int)(m_AtlasSprites[collide_index]->m_Rotation));
-    float tx = 1.0 * cos(theta);
-    float ty = 1.0 * fastSinf(theta);
+    float player_theta = atan2f(dx, dy);
+
+    float collider_theta = DEGREES_TO_RADIANS((int)(m_AtlasSprites[collide_index]->m_Rotation));
+    float collider_xoft = 1.0 * cos(collider_theta);
+    float collider_yoft = 1.0 * fastSinf(collider_theta);
+    float readjusted_collider_theta = atan2f(collider_xoft, collider_yoft);
+    float clamped_collider_theta = (int)RadiansToDegrees(readjusted_collider_theta) % 180;
+
+
+    LOGV("collider_theta:%f player_theta:%f ==> %f %f\n", RadiansToDegrees(collider_theta), RadiansToDegrees(player_theta), RadiansToDegrees(readjusted_collider_theta), clamped_collider_theta);
+
+    //-44 => -135
+    //44 => 135
+
+    if ((clamped_collider_theta > -136 && clamped_collider_theta < -43) || (clamped_collider_theta < 136 && clamped_collider_theta > 43)) {
+      bool mirror = false;
+      //LOGV("mir%d bar:%d\n", m_AtlasSprites[collide_index]->m_IsFlags & MIRROR, m_AtlasSprites[collide_index]->m_IsFlags & BARREL);
+
+      if (m_AtlasSprites[collide_index]->m_IsFlags & MIRROR) {
+
+        if (was_falling_before) {
+
+          //out = incidentVec - 2.f * Dot(incidentVec, normal) * normal;
+
+          LOGV("reflect\n");
+          LOGV("collider_theta:%f player_theta:%f ==> %f %f\n", RadiansToDegrees(collider_theta), RadiansToDegrees(player_theta), RadiansToDegrees(readjusted_collider_theta), clamped_collider_theta);
+
+          float rt = DEGREES_TO_RADIANS(90) + 2.0 * collider_theta; //(2.0 * DEGREES_TO_RADIANS(clamped_collider_theta)) - player_theta;
+          float rx = 100.0 * cos(rt);
+          float ry = 100.0 * fastSinf(rt);
+
+          m_AtlasSprites[0]->m_Velocity[0] = rx;
+          m_AtlasSprites[0]->m_Velocity[1] = ry;
+          m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
+          m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
+
+          LOGV("!!!mirror:%d rt:%f p:%f,%f v:%f,%f r:%f,%f\n",
+            collide_index, RadiansToDegrees(rt), m_AtlasSprites[collide_index]->m_Position[0], m_AtlasSprites[collide_index]->m_Position[1], m_AtlasSprites[0]->m_Velocity[0], m_AtlasSprites[0]->m_Velocity[1], rx, ry);
+
+
+          m_LastFailedCollideIndex = collide_index;
+        }
+      } else if (m_AtlasSprites[collide_index]->m_IsFlags & BARREL) {
+        if (was_falling_before) {
+          LOGV("collide %d flag:%d\n", collide_index, m_AtlasSprites[collide_index]->m_IsFlags);
+          m_CurrentBarrelIndex = collide_index;
+          m_LastFailedCollideIndex = -1;
+          m_AtlasSprites[0]->m_Velocity[0] = 0.0;
+          m_AtlasSprites[0]->m_Velocity[1] = 0.0;
+          m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
+          m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
+          m_ReloadTimeout = 0.0;
+        } else {
+          //LOGV("failed %d\n", collide_index);
+        }
+      }
+    }
+    //else {
+    //  LOGV("failed %d\n", collide_index);
+    //  m_LastFailedCollideIndex = collide_index;
+    //}
+
+/*
+
+
     float angle_of_incidence = 0.0;
     if (was_falling_before) {
       LOGV("rotation of collider:%f\n", m_AtlasSprites[collide_index]->m_Rotation);
@@ -281,14 +348,6 @@ int SuperBarrelBlast::Simulate() {
       if (m_AtlasSprites[collide_index]->m_IsFlags & MIRROR) {
 
         if (was_falling_before) {
-          /*
-          float rt = DEGREES_TO_RADIANS(angle_of_incidence) + theta;//DEGREES_TO_RADIANS((int)RadiansToDegrees(DEGREES_TO_RADIANS(angle_of_incidence) + theta) % 360);
-          LOGV("raw rt:%f\n", RadiansToDegrees(rt));
-          if (rt > DEGREES_TO_RADIANS(358.0)) {
-          //  LOGV("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-            rt = DEGREES_TO_RADIANS(0);
-          }
-          */
           float rt = atan2f(dx, dy) - DEGREES_TO_RADIANS(90) - DEGREES_TO_RADIANS(angle_of_incidence); //atan2f(dx, dy);
           //}
           float rx = 1.0 * cos(rt);
@@ -330,6 +389,7 @@ int SuperBarrelBlast::Simulate() {
       LOGV("failed %d\n", collide_index);
       m_LastFailedCollideIndex = collide_index;
     }
+*/
   } else {
     m_ReloadTimeout = -1;
     m_AtlasSprites[0]->m_Velocity[1] -= (m_Gravity * m_DeltaTime);
