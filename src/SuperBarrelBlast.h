@@ -11,7 +11,7 @@ public:
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();
-  void CreateBarrel(float x, float y, float r);
+  void CreateCollider(float x, float y, float r, int f);
 	
 	Octree<int> *m_Space;
 
