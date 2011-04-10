@@ -45,8 +45,6 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	m_Sprites = new Sprite[m_Count];
 	float tdx = 1.0 / (float)m_SpritesPerRow;
 	float tdy = 1.0 / (float)m_Rows;
-	//float vdx = 50.0;
-	//float vdy = 50.0;
 	float texture_x = 0.0;
 	float texture_y = 0.0;
 	for (unsigned i=0; i<m_Count; i++) {
@@ -82,17 +80,11 @@ void AtlasSprite::Render() {
 	glPushMatrix();
 	{
 		glTranslatef(ax, ay, 0.0);
-		//glRotatef(randf() * 2.0, 0.0, 0.0, 1.0);
-		//m_Rotation *= (randf() > 0.99) ? -1.0 : 1.0;
-		//glRotatef((m_Life * (25.0 * m_Rotation)), 0.0, 0.0, 1.0);
 		glRotatef(m_Rotation, 0.0, 0.0, 1.0);
 		glScalef(m_Scale[0], m_Scale[1], 1.0);
-	
 		int i = m_Frames[m_Frame % m_AnimationLength];
-
 		float w = m_Sprites[i].dx;
 		float h = m_Sprites[i].dy;
-		//upper left, lower right
 		float tx = m_Sprites[i].tx1;
 		float ty = m_Sprites[i].ty1;
 		float tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
@@ -109,7 +101,6 @@ void AtlasSprite::Render() {
 			tx + tw, ty,
 			tx, ty
 		};
-
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, texture);

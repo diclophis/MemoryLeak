@@ -62,54 +62,30 @@ void SpriteGun::ShootParticle(int idx) {
 
 void SpriteGun::Fire() {
   m_IsAlive = true;
+  int shot = 0;
   for (unsigned int i=0; i<m_NumParticles; i++) {
-    if (m_TimeSinceLastShot > 0.0 && !m_AtlasSprites[i]->m_IsAlive) {
+    if (shot == 0 && (m_TimeSinceLastShot > 0.01 && !m_AtlasSprites[i]->m_IsAlive)) {
       ShootParticle(i);
+      shot++;
     }
   }
 }
 
 
 void SpriteGun::Simulate(float deltaTime) {	
-//	if (m_IsAlive) {
-		m_TimeSinceLastShot += deltaTime;
-		int shot_this_tick = 0;
-		int not_shot_this_tick = 0;
-		for (unsigned int i=0; i<m_NumParticles; i++) {
-      m_AtlasSprites[i]->m_Rotation = m_Rotation;
-			//(shot_this_tick < (randf() * 2.0)) &&
-			//if ((shot_this_tick < 1) && m_TimeSinceLastShot > 0.25 && !m_AtlasSprites[i]->m_IsAlive) {
-			  //LOGV("shot:%d, max: %f, life: %f, alive?: %d\n", shot_this_tick, m_MaxLife, m_AtlasSprites[i]->m_Life, m_AtlasSprites[i]->m_IsAlive);
-				//LOGV("shoot %d/%d\n", i, m_NumParticles);
-				//ShootParticle(i);
-				//shot_this_tick++;
-      //} else {
-      //nothing
-        //LOGV("foo %f > %f ???\n", m_AtlasSprites[i]->m_Life, m_ShotMaxLife);
-				if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {
-					//LOGV("reset %d\n", i);
-					ResetParticle(i);
-				}
-      //}
-/*
-			if ((shot_this_tick < 1) && ((m_AtlasSprites[i]->m_Life > m_MaxLife) || !m_AtlasSprites[i]->m_IsAlive) && m_TimeSinceLastShot > 0.05) {
-				LOGV("shoot %d\n", i);
-				ShootParticle(i);
-				shot_this_tick++;
-			} else {
-				not_shot_this_tick++;
-				if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {
-					ResetParticle(i);
-					//LOGV("reset %d\n", i);
-				}
-			}
-*/
-      
-			m_AtlasSprites[i]->SetScale((m_AtlasSprites[i]->m_Life * 5.0) + 1.0, (m_AtlasSprites[i]->m_Life * 5.0) + 1.0);
-			m_AtlasSprites[i]->Simulate(deltaTime);
-		}
-		AtlasSprite::Simulate(deltaTime);
-//	}
+  m_TimeSinceLastShot += deltaTime;
+  int shot_this_tick = 0;
+  int not_shot_this_tick = 0;
+  for (unsigned int i=0; i<m_NumParticles; i++) {
+    m_AtlasSprites[i]->m_Rotation = m_Rotation;
+    if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {
+      ResetParticle(i);
+    }
+    
+    m_AtlasSprites[i]->SetScale((m_AtlasSprites[i]->m_Life * 3.0) + 1.0, (m_AtlasSprites[i]->m_Life * 3.0) + 1.0);
+    m_AtlasSprites[i]->Simulate(deltaTime);
+  }
+  AtlasSprite::Simulate(deltaTime);
 }
 
 
