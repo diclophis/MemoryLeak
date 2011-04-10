@@ -160,12 +160,10 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
 	float collide_y = dy;
   int cx = (collide_x / SUBDIVIDE);
   int cy = (collide_y / SUBDIVIDE);
-  //LOGV("target:100,250 xx:%f,%f hit:%f,%f cam:%f,%f d:%f,%f %f %f\n", xx, yy, x, y, m_CameraOffsetX, m_CameraOffsetY, dx, dy, collide_x, collide_y);
   int collide_index = -1;
   if (collide_x > 0 && collide_y > 0) {
     collide_index = m_Space->at(cx, cy, 0);
   }
-  //LOGV("found: %d\n", collide_index);
   if (collide_index != -1) {
     if (collide_index >= m_DebugBoxesStartIndex && collide_index <= m_DebugBoxesStopIndex) {
       m_AtlasSprites[collide_index]->m_Rotation += 5.0;
@@ -179,31 +177,26 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
     m_LastTouchedIndex = collide_index;
   } else if (hitState == 1 && m_LastTouchedIndex != -1) {
     //move
-    //LOGV("collide: %d touch: %d\n", collide_index, m_LastTouchedIndex);
     if (collide_index == -1 && (cx > 0 && cy > 0)) {
       float tx = (int)(collide_x / SUBDIVIDE) * SUBDIVIDE;
       float ty = (int)(collide_y / SUBDIVIDE) * SUBDIVIDE;
       m_AtlasSprites[m_LastTouchedIndex]->SetPosition(tx, ty);
       m_Space->set(cx, cy, 0, m_LastTouchedIndex);
-      LOGV("move %d %f %f\n", m_LastTouchedIndex, tx, ty);
       m_DidDrag = true;
     }
   } else if (hitState == 2 && m_LastTouchedIndex != -1 && !m_DidDrag) {
     m_AtlasSprites[m_LastTouchedIndex]->m_Rotation += 45.0;
     m_DidDrag = false;
   } else if (hitState == 2 && m_LastTouchedIndex != -1 && m_DidDrag) {
-    LOGV("wtf: %d %d\n", cx, cy);
     if (cx > 0 && cy > 0) {
       if (m_LastTouchedIndex) {
         m_Space->set(cx, cy, 0, m_LastTouchedIndex);
         m_LastTouchedIndex = -1;
       }
       m_DidDrag = false;
-      LOGV("wtf 2: %d %d\n", cx, cy);
     }
   } else {
     if (collide_index == m_CurrentBarrelIndex) {
-      LOGV("shoot\n");
       float theta = DEGREES_TO_RADIANS(m_AtlasSprites[m_CurrentBarrelIndex]->m_Rotation + 90.0);
       float cost = cos(theta);
       float sint = fastSinf(theta);
@@ -211,9 +204,8 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       float py = SHOOT_VELOCITY * sint;
       float sx = SHOOT_VELOCITY * 0.1 * cost;
       float sy = SHOOT_VELOCITY * 0.1 * sint;
-      if (hitState == 0 || hitState == 1) {
+      if (hitState == 2) {
         //if (m_ReloadTimeout > 0.5) {
-          LOGV("shot\n");
           m_LaunchTimeout = 0.0;
           m_SwipeTimeout = 0.0;
           m_ReloadTimeout = 0.0;
