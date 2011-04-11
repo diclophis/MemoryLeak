@@ -52,21 +52,11 @@ public:
   void IndexToXY(int index, int *x, int *y);
   int XYToIndex(int x, int y);
 
-	static void NodeToXY( void* node, int* x, int* y )
-	{
-    int*  data = reinterpret_cast<int*>(node);
-    int   index    = *data;
-    delete data;
+  float m_CameraPanX;
+  float m_CameraPanY;
 
+  float m_PanStartX;
+  float m_PanStartY;
 
-		//int index = (int)node;
-		*y = index / 64;
-		*x = index - *y * 64;
-	}
-	
-	static void* XYToNode( int x, int y )
-	{
-		return (void*) ( y*64 + x );
-	}
 
 };

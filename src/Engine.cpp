@@ -468,15 +468,15 @@ int Engine::RunThread() {
 		//if (averageWait > (1.0 / 29.0)) {
 		//	LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
 		//} else {
-		if (averageWait > (1.0 / 29.0)) {
+		if (averageWait > (1.0 / 15.0)) {
 		  LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
-    }
+    } else {
 			for (unsigned int i=0; i<interp; i++) {
 				m_DeltaTime = (averageWait / interp);
 				m_SimulationTime += (m_DeltaTime);
 				m_GameState = Simulate();
 			}
-		//}
+		}
 		
 		//WaitAudioSync();
 
@@ -556,7 +556,7 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			float zoom = 1.0; //m_SimulationTime; //2.0 + (fastAbs(fastSinf(m_SimulationTime * 0.5)) * 10.0);
+			float zoom = 2.0; //m_SimulationTime; //2.0 + (fastAbs(fastSinf(m_SimulationTime * 0.5)) * 10.0);
 			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * zoom, (m_ScreenHalfHeight*m_ScreenAspect) * zoom, (-m_ScreenHalfHeight) * zoom, m_ScreenHalfHeight * zoom, 1.0f, -1.0f );
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
