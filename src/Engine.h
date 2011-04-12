@@ -109,4 +109,6 @@ public:
 
   CURLSH *share;
 
+  float m_Zoom;
+
 };

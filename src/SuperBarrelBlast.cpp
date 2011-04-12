@@ -13,8 +13,8 @@
 #define SUBDIVIDE 50.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 45.0 
-#define SHOOT_VELOCITY 150.0
-#define GRID_SIZE 21
+#define SHOOT_VELOCITY 300.0
+#define GRID_SIZE 11
 
 enum colliders {
   BARREL = 1,
@@ -70,15 +70,13 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_BarrelCount = 100;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     CreateCollider(x, y, r, BARREL);
-    x += SUBDIVIDE * 5;
+    x += SUBDIVIDE * 3;
     if (x > SUBDIVIDE * 16) {
-      x = SUBDIVIDE;
-      y += SUBDIVIDE * 5;
+      x = SUBDIVIDE * 2;
+      y += SUBDIVIDE * 3;
     }
     r += 0.0;
   }
-  //CreateCollider(270.0, 240.0, 90.0 + 45.0, MIRROR);
-  //CreateCollider(390.0, 30.0, 90.0 + 45.0, BARREL);
   m_BarrelStopIndex = m_SpriteCount;
 
   m_SpriteCount++;
@@ -143,10 +141,8 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
-
-	float xx = (x - (0.5 * (m_ScreenWidth))) * 2.0;
-	float yy = (0.5 * (m_ScreenHeight) - y) * 2.0;
-
+	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
+	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);
   float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE * 0.5);
 	float collide_x = dx;
@@ -190,8 +186,8 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       //LOGV("didDrop\n");
     }
   } else if ((hitState == 0 || hitState == 1) && collide_index < 0) {
-    float px = (int)(collide_x / SUBDIVIDE) * SUBDIVIDE;
-    float py = (int)(collide_y / SUBDIVIDE) * SUBDIVIDE;
+    float px = collide_x;//(int)(collide_x / SUBDIVIDE) * SUBDIVIDE;
+    float py = collide_y;//(int)(collide_y / SUBDIVIDE) * SUBDIVIDE;
     if (hitState == 0) {
       m_PanStartX = px;
       m_PanStartY = py;
@@ -200,16 +196,17 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       float dpy = (m_PanStartY - py);
       float apx = 0.0;
       float apy = 0.0;
-
-      apx = (dpx / 100.0) * 30.0;
-      apy = (dpy / 100.0) * 30.0;
-
-      m_CameraPanX += apx;
-      m_CameraPanY += apy;
+      //LOGV("dpx:%f dpy:%f\n", dpx, dpy);
+      //if (dpx > 50.0 && dpy > 50.0) {
+        apx = (dpx / 100.0) * 35.0;
+        apy = (dpy / 100.0) * 35.0;
+        m_CameraPanX += apx;
+        m_CameraPanY += apy;
+      //}
     }
   } else {
     //shoot
-    if (collide_index == m_CurrentBarrelIndex) {
+    if (collide_index >= 0 && (collide_index == m_CurrentBarrelIndex)) {
       float theta = DEGREES_TO_RADIANS(m_AtlasSprites[m_CurrentBarrelIndex]->m_Rotation + 90.0);
       float cost = cos(theta);
       float sint = fastSinf(theta);
@@ -277,8 +274,8 @@ int SuperBarrelBlast::Simulate() {
       int ox = -1;
       int oy = -1;
       IndexToXY(i - m_DebugBoxesStartIndex, &ox, &oy);
-      float ax = (ox * SUBDIVIDE) + (m_AtlasSprites[0]->m_Position[0]) - (((GRID_SIZE - 1) / 2) * SUBDIVIDE);
-      float ay = (oy * SUBDIVIDE) + (m_AtlasSprites[0]->m_Position[1]) - (((GRID_SIZE - 1) / 2) * SUBDIVIDE);
+      float ax = (ox * SUBDIVIDE) + (m_CameraOffsetX) - (((GRID_SIZE - 1) / 2) * SUBDIVIDE);
+      float ay = (oy * SUBDIVIDE) + (m_CameraOffsetY) - (((GRID_SIZE - 1) / 2) * SUBDIVIDE);
       float wtfx = (int)(ax / SUBDIVIDE) * SUBDIVIDE;
       float wtfy = (int)(ay / SUBDIVIDE) * SUBDIVIDE;
       m_AtlasSprites[i]->SetPosition(wtfx, wtfy);

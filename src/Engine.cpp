@@ -307,6 +307,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_SimulationTime = 0.0;		
 	m_GameState = -1;
+  m_Zoom = 1.0;
 	
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
@@ -556,8 +557,7 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			float zoom = 2.0; //m_SimulationTime; //2.0 + (fastAbs(fastSinf(m_SimulationTime * 0.5)) * 10.0);
-			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * zoom, (m_ScreenHalfHeight*m_ScreenAspect) * zoom, (-m_ScreenHalfHeight) * zoom, m_ScreenHalfHeight * zoom, 1.0f, -1.0f );
+			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f );
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
