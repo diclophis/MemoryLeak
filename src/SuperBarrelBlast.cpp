@@ -250,7 +250,7 @@ void SuperBarrelBlast::Build() {
 
 int SuperBarrelBlast::Simulate() {
   bool rotate_mirrors_this_tick = false;
-  bool was_falling_before = ((m_LastCollideIndex < 0) || (m_CollideTimeout < 0.1));
+  bool was_falling_before = ((m_LastCollideIndex < 0) || (m_CollideTimeout < 0.05));
 	float collide_x = ((m_AtlasSprites[0]->m_Position[0]) + (SUBDIVIDE * 0.5));
 	float collide_y = ((m_AtlasSprites[0]->m_Position[1]) + (SUBDIVIDE * 0.5));
 
@@ -310,7 +310,7 @@ int SuperBarrelBlast::Simulate() {
     m_CollideTimeout = 0.0;
   } 
   
-  if ((collide_index >= 0) && (m_CollideTimeout > 0.1)) { // && (m_LaunchTimeout > 0.0) && (m_LastFailedCollideIndex >= 0) && (m_LastFailedCollideIndex != collide_index)) {
+  if ((collide_index >= 0) && (m_CollideTimeout > 0.05)) { // && (m_LaunchTimeout > 0.0) && (m_LastFailedCollideIndex >= 0) && (m_LastFailedCollideIndex != collide_index)) {
     //LOGV("collideTimeoutWhen: %f\n", m_CollideTimeout);
     //LOGV("wtf\n");
     float dx = (m_AtlasSprites[0]->m_Position[0] - m_PlayerLastX);
