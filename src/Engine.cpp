@@ -469,15 +469,15 @@ int Engine::RunThread() {
 		//if (averageWait > (1.0 / 29.0)) {
 		//	LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
 		//} else {
-		if (averageWait > (1.0 / 15.0)) {
-		  LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
-    } else {
+		//if (averageWait > (1.0 / 15.0)) {
+		//  LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
+    //} else {
 			for (unsigned int i=0; i<interp; i++) {
 				m_DeltaTime = (averageWait / interp);
 				m_SimulationTime += (m_DeltaTime);
 				m_GameState = Simulate();
 			}
-		}
+		//}
 		
 		//WaitAudioSync();
 

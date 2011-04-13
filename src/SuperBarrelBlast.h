@@ -60,5 +60,6 @@ public:
 
   float m_CollideTimeout;
 
+  float m_TouchTimeout;
 
 };

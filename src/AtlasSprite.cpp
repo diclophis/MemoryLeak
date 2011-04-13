@@ -30,13 +30,14 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	m_AnimationSpeed = 1.0;
 	m_AnimationDuration = m_MaxLife + 0.1;
 	m_AnimationLength = m_Animation.length();
-	m_Frames = new int[1024];
 	if (m_AnimationLength > 0) {
+	  m_Frames = new int[m_AnimationLength];
 		for (unsigned int i=0; i<m_AnimationLength; i++) {
 			m_Frames[i] = m_Animation[i % m_AnimationLength] - 50;
 		}
 	} else {
 		m_AnimationLength = m_End - m_Start;
+	  m_Frames = new int[m_AnimationLength];
 		for (unsigned int i=0; i<m_AnimationLength; i++) {
 			m_Frames[i] = m_Start + i;
 		}
