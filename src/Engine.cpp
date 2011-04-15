@@ -16,7 +16,7 @@
 
 #include "Engine.h"
 
-
+static Engine *g_Thang;
 
 //static void timer_cb(EV_P_ struct ev_timer *w, int revents);
 static void do_this_in_tick(GlobalInfo *g, int revents);
@@ -73,16 +73,17 @@ static void check_multi_info(GlobalInfo *g)
 
       //just remove if reuse
 			curl_multi_remove_handle(g->multi, easy);
+			/*
 			free(conn->url);
 			curl_easy_cleanup(easy);
 			free(conn);
+			*/
 		}
 	}
 }
 
 #define EV_READ 1
 #define EV_WRITE 2
-
 
 /* Update the event timer after curl_multi library calls */ 
 static int multi_timer_cb(CURLM *multi, long timeout_ms, GlobalInfo *g)
@@ -112,12 +113,13 @@ static int multi_timer_cb(CURLM *multi, long timeout_ms, GlobalInfo *g)
 /* Called by libevent when our timeout expires */ 
 static void do_this_in_tick(GlobalInfo *g, int revents)
 {
-	//DPRINT("%s g %p revents %i\n", __PRETTY_FUNCTION__, g, revents);
+	//LOGV("%s g %p revents %i\n", __PRETTY_FUNCTION__, g, revents);
 	
 	//GlobalInfo *g = (GlobalInfo *)w->global;
 	CURLMcode rc;
 	
 	//rc = curl_multi_socket_action(g->multi, CURL_SOCKET_TIMEOUT, 0, &g->still_running);
+
   /*
   A little note here about the return codes from the multi functions, and especially the curl_multi_perform(3): if you receive CURLM_CALL_MULTI_PERFORM, this basically means that you should call curl_multi_perform(3) again, before you select() on more actions. You don't have to do it immediately, but the return code means that libcurl may have more data available to return or that there may be more data to send off before it is "satisfied". 
   */
@@ -132,7 +134,7 @@ static void do_this_in_tick(GlobalInfo *g, int revents)
 /* Clean up the SockInfo structure */ 
 static void remsock(SockInfo *f, GlobalInfo *g)
 {
-	//printf("%s  \n", __PRETTY_FUNCTION__);
+	printf("%s  \n", __PRETTY_FUNCTION__);
 	if ( f )
 	{
 		//if ( f->evset )
@@ -166,7 +168,7 @@ static void addsock(curl_socket_t s, CURL *easy, int action, GlobalInfo *g)
 /* CURLMOPT_SOCKETFUNCTION */ 
 static int sock_cb(CURL *e, curl_socket_t s, int what, void *cbp, void *sockp)
 {
-	//DPRINT("%s e %p s %i what %i cbp %p sockp %p\n", __PRETTY_FUNCTION__, e, s, what, cbp, sockp);
+	DPRINT("%s e %p s %i what %i cbp %p sockp %p\n", __PRETTY_FUNCTION__, e, s, what, cbp, sockp);
 	
 	GlobalInfo *g = (GlobalInfo*) cbp;
 	SockInfo *fdp = (SockInfo*) sockp;
@@ -174,15 +176,15 @@ static int sock_cb(CURL *e, curl_socket_t s, int what, void *cbp, void *sockp)
 	
 	LOGV("socket callback: s=%d e=%p what=%s ", s, e, whatstr[what]);
 	
-	if ( what == CURL_POLL_REMOVE )
+	if (what == CURL_POLL_REMOVE)
 	{
 		LOGV("\n");
 		remsock(fdp, g);
 	} else
 	{
-		if ( !fdp )
+		if (!fdp)
 		{
-			//LOGV("Adding data: %s\n", whatstr[what]);
+			LOGV("Adding data: %s\n", whatstr[what]);
 			addsock(s, e, what, g);
 		} else
 		{
@@ -198,8 +200,17 @@ static size_t write_cb(void *ptr, size_t size, size_t nmemb, void *data)
 {
 	size_t realsize = size * nmemb;
 	ConnInfo *conn = (ConnInfo*) data;
-	(void)ptr;
-	(void)conn;
+
+	char s[realsize];
+  //if (realsize < 1024) {
+    memcpy(s, ptr, realsize);
+    LOGV("recv: %s\n", s);
+  //} else {
+  //  LOGV("the fuck\n");
+  //}
+	//(void)ptr;
+	//(void)conn;
+
 	return realsize;
 }
 
@@ -215,60 +226,55 @@ static int prog_cb (void *p, double dltotal, double dlnow, double ult, double ul
 }
 
 /* Create a new easy handle, and add it to the global curl_multi */ 
-static void new_conn(char *url, GlobalInfo *g, CURLSH *share)
+static void new_conn(char *url, GlobalInfo *g, CURLSH *share, ConnInfo *conn)
 {
-	ConnInfo *conn;
+
 	CURLMcode rc;
-	
-	conn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
-	memset(conn, 0, sizeof(ConnInfo));
-	conn->error[0]='\0';
-	
-	conn->easy = curl_easy_init();
-	if ( !conn->easy )
-	{
-		LOGV("curl_easy_init() failed, exiting!\n");
-		//exit(2);
-	}
-	
-	conn->global = g;
-	conn->url = strdup(url);
-	curl_easy_setopt(conn->easy, CURLOPT_NOSIGNAL, 1);
-	//curl_easy_setopt(conn->easy, CURLOPT_DNS_USE_GLOBAL_CACHE, 1);
-	curl_easy_setopt(conn->easy, CURLOPT_DNS_CACHE_TIMEOUT, -1);
-	curl_easy_setopt(conn->easy, CURLOPT_URL, conn->url);
-	curl_easy_setopt(conn->easy, CURLOPT_WRITEFUNCTION, write_cb);
-	curl_easy_setopt(conn->easy, CURLOPT_WRITEDATA, &conn);
-	//curl_easy_setopt(conn->easy, CURLOPT_VERBOSE, 1L);
-	curl_easy_setopt(conn->easy, CURLOPT_ERRORBUFFER, conn->error);
-	curl_easy_setopt(conn->easy, CURLOPT_PRIVATE, conn);
-	curl_easy_setopt(conn->easy, CURLOPT_NOPROGRESS, 0L);
-	curl_easy_setopt(conn->easy, CURLOPT_PROGRESSFUNCTION, prog_cb);
-	curl_easy_setopt(conn->easy, CURLOPT_PROGRESSDATA, conn);
-	curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_TIME, 3L);
-	curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_LIMIT, 10L);
-	curl_easy_setopt(conn->easy, CURLOPT_TIMEOUT, 30L);
-	curl_easy_setopt(conn->easy, CURLOPT_CONNECTTIMEOUT, 5L);
-	//curl_easy_setopt(conn->easy, CURLOPT_SHARE, share);
+
+  if (conn->easy == NULL) {
+    LOGV("MAKE\n");
+    
+    conn->easy = curl_easy_init();
+    if ( !conn->easy )
+    {
+      LOGV("curl_easy_init() failed, exiting!\n");
+      //exit(2);
+    }
+	  conn->global = g;
+	  conn->url = strdup(url);
+    curl_easy_setopt(conn->easy, CURLOPT_NOSIGNAL, 1);
+    //curl_easy_setopt(conn->easy, CURLOPT_DNS_USE_GLOBAL_CACHE, 1);
+    curl_easy_setopt(conn->easy, CURLOPT_DNS_CACHE_TIMEOUT, -1);
+    curl_easy_setopt(conn->easy, CURLOPT_URL, conn->url);
+    curl_easy_setopt(conn->easy, CURLOPT_WRITEFUNCTION, write_cb);
+    curl_easy_setopt(conn->easy, CURLOPT_WRITEDATA, &conn);
+    //curl_easy_setopt(conn->easy, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(conn->easy, CURLOPT_ERRORBUFFER, conn->error);
+    curl_easy_setopt(conn->easy, CURLOPT_PRIVATE, conn);
+    curl_easy_setopt(conn->easy, CURLOPT_NOPROGRESS, 0L);
+    curl_easy_setopt(conn->easy, CURLOPT_PROGRESSFUNCTION, prog_cb);
+    curl_easy_setopt(conn->easy, CURLOPT_PROGRESSDATA, conn);
+    curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_TIME, 1L);
+    curl_easy_setopt(conn->easy, CURLOPT_LOW_SPEED_LIMIT, 32L);
+    curl_easy_setopt(conn->easy, CURLOPT_TIMEOUT, 0L);
+    curl_easy_setopt(conn->easy, CURLOPT_CONNECTTIMEOUT, 5L);
+    //curl_easy_setopt(conn->easy, CURLOPT_SHARE, share);
+  } else {
+    //conn = prev_conn;
+	  //LOGV("reuse\n");
+    rc = curl_multi_remove_handle(g->multi, conn->easy);
+    mcode_or_die("new_conn: curl_multi_remove_handle", rc);
+  }
 
 
 	//LOGV("Adding easy %p to multi %p (%s)\n", conn->easy, g->multi, url);
 	
 	rc = curl_multi_add_handle(g->multi, conn->easy);
 	mcode_or_die("new_conn: curl_multi_add_handle", rc);
-	
+
 	/* note that the add_handle() will set a time-out to trigger very soon so
      that the necessary socket_action() call will be called by this app */ 
 }
-
-
-
-
-/* we don't call any curl_multi_socket*() function yet as we have no handles
- added! */ 
-
-//ev_loop(g.loop, 0);
-//curl_multi_cleanup(g.multi);
 
 
 #ifndef DESKTOP
@@ -298,6 +304,8 @@ Engine::~Engine() {
 
 
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s), m_AudioBufferSize(bs), m_AudioDivisor(sd) {
+
+  m_PingServerTimeout = 0.0;
 
 	m_IsSceneBuilt = false;
 	
@@ -339,23 +347,12 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
-	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST );
-	
-	glShadeModel( GL_SMOOTH );
-	
-	
 
-	
-	
-	
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	glShadeModel( GL_SMOOTH );
 	glLoadIdentity();
 
 	
-
-	//4458 vs 1114
-	//m_AudioDivisor = 3;
-
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
@@ -385,6 +382,7 @@ void *Engine::EnterThread(void *obj) {
 
 
 void Engine::PauseThread() {
+  LOGV("Pause!!!!!!!!!!!!!!!!!!!!!\n");
 	pthread_mutex_lock(&m_Mutex);
 	m_GameState = 0;
 	pthread_mutex_unlock(&m_Mutex);
@@ -403,10 +401,28 @@ void Engine::WaitAudioSync() {
   pthread_mutex_unlock(&m_Mutex);
 }
 
+void Engine::PingServer () {
+  //LOGV("ping\n");
+	char s[1024];
+	sprintf(s, "http://192.168.1.144:10101/foo");
+
+  //if (m_Ha) {
+  //  m_PingConn = new_conn(s, &g, &share, NULL);
+  //} else {
+  //  LOGV("reuse\n");
+  new_conn(s, &g, &share, m_PingConn);
+  //}
+}
 
 int Engine::RunThread() {
+
+  g_Thang = this;
+
+
+    m_PingConn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
+    memset(m_PingConn, 0, sizeof(ConnInfo));
+    m_PingConn->error[0]='\0';
 	
-/*
 	curl_version_info_data*info=curl_version_info(CURLVERSION_NOW);
 	if (info->features&CURL_VERSION_ASYNCHDNS) {
 		printf( "ares enabled\n");
@@ -418,9 +434,8 @@ int Engine::RunThread() {
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 
-	//share = curl_share_init();
-	//curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
-	
+	share = curl_share_init();
+	curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
 	
 	g.multi = curl_multi_init();
 	
@@ -428,13 +443,21 @@ int Engine::RunThread() {
 	curl_multi_setopt(g.multi, CURLMOPT_SOCKETDATA, &g);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERFUNCTION, multi_timer_cb);
 	curl_multi_setopt(g.multi, CURLMOPT_TIMERDATA, &g);
+	curl_multi_setopt(g.multi, CURLMOPT_PIPELINING , 1L);
+
+	ConnInfo *conn;
+    conn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
+    memset(conn, 0, sizeof(ConnInfo));
+    conn->error[0]='\0';
 	
 	char s[1024];
 	//GlobalInfo *g = (GlobalInfo *)w->data;
-	sprintf(s, "http://qa.api.openfeint.com/internal/revision");
+	sprintf(s, "http://192.168.1.144:10101/");
+	//sprintf(s, "http://www.google.com/ig");
+	//new_conn(s, &g, &share, conn);
 
-	//new_conn(s, &g, &share);
-*/
+
+	rc = curl_multi_socket_action(g.multi, CURL_SOCKET_TIMEOUT, 0, &g.still_running);
 
 	Build();
 	
@@ -453,11 +476,11 @@ int Engine::RunThread() {
 
 	while (m_GameState != 0) {
 				
-		//do_this_in_tick(&g, 0);
+		do_this_in_tick(&g, 0);
 		
-		if (g.still_running < 1) {
-			//LOGV("new url\n");
-			//new_conn(s, &g, &share);  /* if we read a URL, go get it! */ 
+		if (g.still_running < 1 && m_PingServerTimeout > 0.5) {
+      PingServer();
+      m_PingServerTimeout = 0.0;
 		}
 
 		gettimeofday(&tim, NULL);
@@ -474,6 +497,7 @@ int Engine::RunThread() {
     //} else {
 			for (unsigned int i=0; i<interp; i++) {
 				m_DeltaTime = (averageWait / interp);
+        m_PingServerTimeout += (m_DeltaTime);
 				m_SimulationTime += (m_DeltaTime);
 				m_GameState = Simulate();
 			}

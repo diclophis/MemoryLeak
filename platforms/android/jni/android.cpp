@@ -75,7 +75,7 @@ extern "C" {
   );
   void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr);
   void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
-  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env );
+  void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv*  env);
   void Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv* env);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState);
 }

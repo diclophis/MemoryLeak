@@ -111,4 +111,10 @@ public:
 
   float m_Zoom;
 
+  void PingServer();
+
+  float m_PingServerTimeout;
+
+  ConnInfo *m_PingConn;
+
 };
