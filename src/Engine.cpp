@@ -9,6 +9,7 @@
 #include <string.h>
 
 
+#include "Glue.h"
 #include "Model.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
@@ -240,27 +241,6 @@ static void new_conn(char *url, GlobalInfo *g, CURLSH *share, ConnInfo *conn)
 }
 
 
-#ifndef DESKTOP
-static void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
-	GLfloat xmin, xmax, ymin, ymax;
-	
-	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-	ymin = -ymax;
-	xmin = ymin * aspect;
-	xmax = ymax * aspect;
-	
-	glFrustumx(
-			   (GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-			   (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-			   (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536)
-			   );
-}
-#endif
-
-#ifdef DESKTOP
-  #define glOrthof glOrtho
-#endif
-
 Engine::~Engine() {
   LOGV("dealloc mofo\n");
 }
@@ -450,6 +430,11 @@ int Engine::RunThread() {
 		
 		//WaitAudioSync();
 
+				int len = m_AudioBufferSize / m_AudioDivisor;
+				
+				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
+				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
+
 		if (m_PumpedAudioLastTick) {			
       /*
 			if (m_IsPushingAudio) {
@@ -504,12 +489,12 @@ void Engine::DrawScreen(float rotation) {
 		{
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
-			gluPerspective(50, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.5, 1000.0);
+			gluePerspective(50, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.5, 1000.0);
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
 				glLoadIdentity();
-				gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+				glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				RenderModelPhase();
 				Model::ReleaseBuffers();
 			}
@@ -550,4 +535,101 @@ void Engine::ResizeScreen(int width, int height) {
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
 	//glViewport(0, 0, m_ScreenWidth / 2, m_ScreenHeight / 2);
 	//glClearColor(1.0, 0.0, 0.0, 1.0);
+}
+
+// This is a modified version of the function of the same name from 
+// the Mesa3D project ( http://mesa3d.org/ ), which is  licensed
+// under the MIT license, which allows use, modification, and 
+// redistribution
+void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz)
+{
+	GLfloat m[16];
+	GLfloat x[3], y[3], z[3];
+	GLfloat mag;
+	
+	/* Make rotation matrix */
+	
+	/* Z vector */
+	z[0] = eyex - centerx;
+	z[1] = eyey - centery;
+	z[2] = eyez - centerz;
+	mag = sqrtf(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
+	if (mag) {			/* mpichler, 19950515 */
+		z[0] /= mag;
+		z[1] /= mag;
+		z[2] /= mag;
+	}
+	
+	/* Y vector */
+	y[0] = upx;
+	y[1] = upy;
+	y[2] = upz;
+	
+	/* X vector = Y cross Z */
+	x[0] = y[1] * z[2] - y[2] * z[1];
+	x[1] = -y[0] * z[2] + y[2] * z[0];
+	x[2] = y[0] * z[1] - y[1] * z[0];
+	
+	/* Recompute Y = Z cross X */
+	y[0] = z[1] * x[2] - z[2] * x[1];
+	y[1] = -z[0] * x[2] + z[2] * x[0];
+	y[2] = z[0] * x[1] - z[1] * x[0];
+	
+	/* mpichler, 19950515 */
+	/* cross product gives area of parallelogram, which is < 1.0 for
+	 * non-perpendicular unit-length vectors; so normalize x, y here
+	 */
+	
+	mag = sqrtf(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
+	if (mag) {
+		x[0] /= mag;
+		x[1] /= mag;
+		x[2] /= mag;
+	}
+	
+	mag = sqrtf(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
+	if (mag) {
+		y[0] /= mag;
+		y[1] /= mag;
+		y[2] /= mag;
+	}
+	
+#define M(row,col)  m[col*4+row]
+	M(0, 0) = x[0];
+	M(0, 1) = x[1];
+	M(0, 2) = x[2];
+	M(0, 3) = 0.0;
+	M(1, 0) = y[0];
+	M(1, 1) = y[1];
+	M(1, 2) = y[2];
+	M(1, 3) = 0.0;
+	M(2, 0) = z[0];
+	M(2, 1) = z[1];
+	M(2, 2) = z[2];
+	M(2, 3) = 0.0;
+	M(3, 0) = 0.0;
+	M(3, 1) = 0.0;
+	M(3, 2) = 0.0;
+	M(3, 3) = 1.0;
+#undef M
+	glMultMatrixf(m);
+	
+	/* Translate Eye to Origin */
+	glTranslatef(-eyex, -eyey, -eyez);
+	
+}
+
+void Engine::gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+	GLfloat xmin, xmax, ymin, ymax;
+	
+	ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+	ymin = -ymax;
+	xmin = ymin * aspect;
+	xmax = ymax * aspect;
+	
+	glFrustum(
+			   (GLint)(xmin * 65536), (GLint)(xmax * 65536),
+			   (GLint)(ymin * 65536), (GLint)(ymax * 65536),
+			   (GLint)(zNear * 65536), (GLint)(zFar * 65536)
+			   );
 }

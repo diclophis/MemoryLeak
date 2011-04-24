@@ -640,7 +640,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have the strlcat function. */
-#define HAVE_STRLCAT 1
+//#define HAVE_STRLCAT 1
 
 /* Define to 1 if you have the `strlcpy' function. */
 /* #undef HAVE_STRLCPY */

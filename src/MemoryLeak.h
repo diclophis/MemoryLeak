@@ -12,25 +12,8 @@
 #endif
 
 #include <stdio.h>
+#include <stdint.h>
 #include <sys/time.h>
-
-#include <sstream>
-#include <vector>
-
-#include "importgl.h"
-#include "OpenGLCommon.h"
-
-#include "assimp.hpp"
-#include "aiPostProcess.h"
-#include <include/IOStream.h>
-#include <include/IOSystem.h>
-
-#include "foo.h"
-#include "modplug.h"
-
-
-//libcurl
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -43,13 +26,27 @@
 #include <errno.h>
 #include <assert.h>
 
+#include <sstream>
+#include <vector>
+#include <string>
+#include <math.h>
 
 
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
+
+#include "OpenGLCommon.h"
+#include "assimp.hpp"
+#include "aiPostProcess.h"
+#include <include/IOStream.h>
+#include <include/IOSystem.h>
+#include "foo.h"
+#include "modplug.h"
 
 #define DPRINT(x...) LOGV(x)
 
 #define MSG_OUT stdout  
-
 
 /* Global information, common to all connections */ 
 typedef struct _GlobalInfo

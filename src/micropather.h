@@ -40,6 +40,8 @@ distribution.
 
 #include <vector>
 #include <float.h>
+#include <cstring>
+#include <stdint.h>
 
 #ifdef _DEBUG
 	#ifndef DEBUG

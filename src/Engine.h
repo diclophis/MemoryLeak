@@ -93,4 +93,16 @@ public:
 
   ConnInfo *m_PingConn;
 
+// This is a modified version of the function of the same name from 
+// the Mesa3D project ( http://mesa3d.org/ ), which is  licensed
+// under the MIT license, which allows use, modification, and 
+// redistribution
+
+  void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
+  void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
+
+//#ifdef DESKTOP
+//  #define glOrthof glOrtho
+//#endif
+
 };
