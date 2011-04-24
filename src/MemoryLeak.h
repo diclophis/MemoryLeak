@@ -32,8 +32,8 @@
 #include <math.h>
 
 #define GL_GLEXT_PROTOTYPES
-#ifdef __APPLE__
 
+#ifdef __APPLE__
   #ifdef DESKTOP
 	#include <OpenGL/gl.h>    // Header File For The OpenGL32 Library
 	#include <OpenGL/glu.h>   // Header File For The GLu32 Library
@@ -51,6 +51,12 @@
     #include <GL/glext.h>
   #endif
 #endif
+
+#ifdef ANDROID_NDK
+  #include <GLES/gl.h>
+  #define glFrustum glFrustumf
+#endif
+
 
 #include "OpenGLCommon.h"
 #include "assimp.hpp"

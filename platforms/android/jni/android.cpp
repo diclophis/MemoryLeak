@@ -13,7 +13,6 @@
 #include "stdafx.h"
 #include "sndfile.h"
 
-#include "importgl.h"
 #include "MemoryLeak.h"
 
 #include "Model.h"
@@ -120,7 +119,7 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
   int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
 ) {
-	importGLInit();
+	//importGLInit();
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
