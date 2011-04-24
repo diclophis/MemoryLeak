@@ -3,6 +3,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSImage.h>
 #import <QuartzCore/QuartzCore.h>
+#include <CoreAudio/AudioHardware.h>
+
 
 #include "MemoryLeak.h"
 #include "Model.h"
@@ -29,6 +31,20 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int min_buffer;
+
+
+
+
+
+
+AudioDeviceID device; //the default device
+UInt32 deviceBufferSize; //bufferSize returned by kAudioDevicePropertyBufferSize
+AudioStreamBasicDescription deviceFormat; //info about the default device
+
+
+
+
+
 
 class Callbacks {
 public:

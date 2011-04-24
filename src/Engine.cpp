@@ -13,12 +13,10 @@
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
 
-
 #include "Engine.h"
 
 static Engine *g_Thang;
 
-//static void timer_cb(EV_P_ struct ev_timer *w, int revents);
 static void do_this_in_tick(GlobalInfo *g, int revents);
 
 static void mcode_or_die(const char *where, CURLMcode code)
@@ -43,7 +41,6 @@ static void mcode_or_die(const char *where, CURLMcode code)
 				return;
 		}
 		LOGV("ERROR: %s returns %s !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n", where, s);
-		//exit(code);
 	}
 }
 
@@ -85,31 +82,6 @@ static void check_multi_info(GlobalInfo *g)
 #define EV_READ 1
 #define EV_WRITE 2
 
-/* Update the event timer after curl_multi library calls */ 
-static int multi_timer_cb(CURLM *multi, long timeout_ms, GlobalInfo *g)
-{
-	
-	//DPRINT("%s %li\n", __PRETTY_FUNCTION__,  timeout_ms);
-	/*
-	//ev_timer_stop(g->loop, &g->timer_event);
-	if (timeout_ms > 0)
-	{
-		double  t = timeout_ms / 1000;
-		//ev_timer_init(&g->timer_event, timer_cb, t, 0.);
-		//ev_timer_start(g->loop, &g->timer_event);
-		LOGV("wtf A???\n");
-		do_this_in_tick(g, 0);
-	} else {
-		//timer_cb(g->loop, &g->timer_event, 0);
-		LOGV("wtf B??\n");
-	}
-	*/
-	//do_this_in_tick(g, 0);
-
-	return 0;
-}
-
-
 /* Called by libevent when our timeout expires */ 
 static void do_this_in_tick(GlobalInfo *g, int revents)
 {
@@ -137,8 +109,6 @@ static void remsock(SockInfo *f, GlobalInfo *g)
 	printf("%s  \n", __PRETTY_FUNCTION__);
 	if ( f )
 	{
-		//if ( f->evset )
-		//	ev_io_stop(g->loop, &f->ev);
 		free(f);
 	}
 }
@@ -202,15 +172,8 @@ static size_t write_cb(void *ptr, size_t size, size_t nmemb, void *data)
 	ConnInfo *conn = (ConnInfo*) data;
 
 	char s[realsize];
-  //if (realsize < 1024) {
-    memcpy(s, ptr, realsize);
-    LOGV("recv: %s\n", s);
-  //} else {
-  //  LOGV("the fuck\n");
-  //}
-	//(void)ptr;
-	//(void)conn;
-
+  memcpy(s, ptr, realsize);
+  LOGV("recv: %s\n", s);
 	return realsize;
 }
 
@@ -319,24 +282,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
-	/*
-	//m_FooFoos.resize(m_ModelFoos->size());
-	int m_PostProcessFlags = aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality; 
-	//aiProcess_ImproveCacheLocality | aiProcess_GenNormals; //aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality | aiProcess_GenSmoothNormals | aiProcess_GenNormals | aiProcess_FixInfacingNormals | aiProcess_Triangulate;
-	for (unsigned int i = 0; i<m_ModelFoos->size(); i++) {
-		char path[128];
-		snprintf(path, sizeof(s), "%d", i);
-		m_Importer.ReadFile(path, m_PostProcessFlags);	
-		if (i>0 && i<3) {
-			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 75));
-		} else {
-			m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
-		}
-		m_Importer.FreeScene();
-	}
-	*/
-	
-
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
 	glMatrixMode(GL_MODELVIEW);
@@ -352,7 +297,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glShadeModel( GL_SMOOTH );
 	glLoadIdentity();
 
-	
 	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
 	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
 	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
@@ -410,18 +354,16 @@ void Engine::PingServer () {
   //  m_PingConn = new_conn(s, &g, &share, NULL);
   //} else {
   //  LOGV("reuse\n");
-  new_conn(s, &g, &share, m_PingConn);
+  //new_conn(s, &g, &share, m_PingConn);
   //}
 }
 
 int Engine::RunThread() {
 
-  g_Thang = this;
-
-
-    m_PingConn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
-    memset(m_PingConn, 0, sizeof(ConnInfo));
-    m_PingConn->error[0]='\0';
+  /*
+  m_PingConn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
+  memset(m_PingConn, 0, sizeof(ConnInfo));
+  m_PingConn->error[0]='\0';
 	
 	curl_version_info_data*info=curl_version_info(CURLVERSION_NOW);
 	if (info->features&CURL_VERSION_ASYNCHDNS) {
@@ -458,6 +400,7 @@ int Engine::RunThread() {
 
 
 	rc = curl_multi_socket_action(g.multi, CURL_SOCKET_TIMEOUT, 0, &g.still_running);
+  */
 
 	Build();
 	
@@ -475,13 +418,15 @@ int Engine::RunThread() {
 	double interp = 1.0;
 
 	while (m_GameState != 0) {
-				
+		
+    /*
 		do_this_in_tick(&g, 0);
 		
 		if (g.still_running < 1 && m_PingServerTimeout > 0.5) {
       PingServer();
       m_PingServerTimeout = 0.0;
 		}
+    */
 
 		gettimeofday(&tim, NULL);
 		t2=tim.tv_sec+(tim.tv_usec/1000000.0);
