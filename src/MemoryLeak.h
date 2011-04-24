@@ -31,10 +31,26 @@
 #include <string>
 #include <math.h>
 
-
 #define GL_GLEXT_PROTOTYPES
-#include <GL/gl.h>
-#include <GL/glext.h>
+#ifdef __APPLE__
+
+  #ifdef DESKTOP
+	#include <OpenGL/gl.h>    // Header File For The OpenGL32 Library
+	#include <OpenGL/glu.h>   // Header File For The GLu32 Library
+	#include <OpenGL/glext.h>   // Header File For The GLu32 Library
+    #include <GLUT/glut.h>    // Header File For The GLut Library
+    #define glOrthof glOrtho
+  #else
+    #include <OpenGLES/ES1/gl.h>
+    #include <OpenGLES/ES1/glext.h>
+    #define glFrustum glFrustumf
+  #endif
+#else
+  #ifdef DESKTOP
+    #include <GL/gl.h>
+    #include <GL/glext.h>
+  #endif
+#endif
 
 #include "OpenGLCommon.h"
 #include "assimp.hpp"

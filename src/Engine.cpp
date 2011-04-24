@@ -9,7 +9,6 @@
 #include <string.h>
 
 
-#include "Glue.h"
 #include "Model.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"

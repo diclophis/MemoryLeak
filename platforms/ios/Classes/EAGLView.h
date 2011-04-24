@@ -6,12 +6,9 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
-//#import <Foundation/Foundation.h>
-//#import <UIKit/UIKit.h>
+
 #import <AudioToolbox/AudioToolbox.h>
 #import <QuartzCore/QuartzCore.h>
-
-#include "importgl.h"
 
 
 void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer);
