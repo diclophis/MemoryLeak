@@ -49,6 +49,7 @@
   #ifdef DESKTOP
     #include <GL/gl.h>
     #include <GL/glext.h>
+    #define glOrthof glOrtho
   #endif
 #endif
 
