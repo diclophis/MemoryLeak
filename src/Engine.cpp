@@ -79,10 +79,7 @@ static void check_multi_info(GlobalInfo *g)
 	}
 }
 
-#define EV_READ 1
-#define EV_WRITE 2
 
-/* Called by libevent when our timeout expires */ 
 static void do_this_in_tick(GlobalInfo *g, int revents)
 {
 	//LOGV("%s g %p revents %i\n", __PRETTY_FUNCTION__, g, revents);
@@ -276,16 +273,26 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glShadeModel( GL_SMOOTH );
 	glLoadIdentity();
 
-	void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(0)->len);
-	fseek(m_SoundFoos->at(0)->fp, m_SoundFoos->at(0)->off, SEEK_SET);
-	size_t r = fread(buffer, 1, m_SoundFoos->at(0)->len, m_SoundFoos->at(0)->fp);
-  if (r > 0) { 
-    m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(0)->len));
-  }
+	for (unsigned int i=0; i<2; i++) {
+		void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(i)->len);
+		fseek(m_SoundFoos->at(i)->fp, m_SoundFoos->at(i)->off, SEEK_SET);
+		size_t r = fread(buffer, 1, m_SoundFoos->at(i)->len, m_SoundFoos->at(i)->fp);
+		if (r > 0) { 
+LOGV("load sound\n");
+			m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
+		}
+	}
 
 	m_AudioBuffer = new unsigned char[m_AudioBufferSize];
+	m_AudioBufferTwo = new unsigned char[m_AudioBufferSize];
+	m_AudioMixBuffer = new unsigned char[m_AudioBufferSize];
 	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
+
+	memset(m_AudioBuffer, 0, m_AudioBufferSize);
+	memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
+	memset(m_AudioMixBuffer, 0, m_AudioBufferSize);
 	memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
+
 	m_IsPushingAudio = false;
 	m_PumpedAudioLastTick = false;
 	m_SkipLimit = 0;
@@ -389,8 +396,6 @@ int Engine::RunThread() {
 	timeval tim;
 	gettimeofday(&tim, NULL);
 
-	int buffer_position = 0;
-
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
@@ -413,46 +418,24 @@ int Engine::RunThread() {
 		gettimeofday(&tim, NULL);
 		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 		
-		//if (averageWait > (1.0 / 29.0)) {
-		//	LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
-		//} else {
-		//if (averageWait > (1.0 / 15.0)) {
-		//  LOGV("avg: %f %f\n", averageWait, 1.0 / 29.0);
-    //} else {
-			for (unsigned int i=0; i<interp; i++) {
-				m_DeltaTime = (averageWait / interp);
-        m_PingServerTimeout += (m_DeltaTime);
-				m_SimulationTime += (m_DeltaTime);
-				m_GameState = Simulate();
-			}
-		//}
-		
-		//WaitAudioSync();
-
-				int len = m_AudioBufferSize / m_AudioDivisor;
-				
-				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
-
-		if (m_PumpedAudioLastTick) {			
-      /*
-			if (m_IsPushingAudio) {
-				int len = m_AudioBufferSize / m_AudioDivisor;
-				
-				ModPlug_Read(m_Sounds[0], m_AudioBuffer, len);
-				m_PumpedAudioLastTick = start_routine(m_AudioBuffer, buffer_position, m_AudioDivisor);
-			} else {
-				m_PumpedAudioLastTick = start_routine(m_AudioSilenceBuffer, buffer_position, m_AudioDivisor);
-			}
-      */
-		} else {
-			if (m_SkipLimit++ > 0) {
-				//LOGV("resume\n");
-				//WaitAudioSync();
-				m_PumpedAudioLastTick = true;
-				m_SkipLimit = 0;
-			}
+		for (unsigned int i=0; i<interp; i++) {
+			m_DeltaTime = (averageWait / interp);
+			m_PingServerTimeout += (m_DeltaTime);
+			m_SimulationTime += (m_DeltaTime);
+			m_GameState = Simulate();
 		}
+
+		ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize / m_AudioDivisor);
+		ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, m_AudioBufferSize / m_AudioDivisor);
+
+		for (unsigned int i=0; i<m_AudioBufferSize; i++) {	
+			m_AudioMixBuffer[i] = m_AudioBuffer[i] + m_AudioBufferTwo[i];
+		}
+
+		start_routine(m_AudioMixBuffer, 0, m_AudioDivisor);
+
+		//ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize);
+		//start_routine(m_AudioBuffer, 0, 0);
 		
 		WaitVsync();
 	}	

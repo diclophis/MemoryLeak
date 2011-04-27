@@ -74,6 +74,8 @@ public:
 
   int m_AudioBufferSize;
   unsigned char *m_AudioBuffer;
+  unsigned char *m_AudioBufferTwo;
+  unsigned char *m_AudioMixBuffer;
   unsigned char *m_AudioSilenceBuffer;
 	void *(* start_routine)(void *, int, int);
 

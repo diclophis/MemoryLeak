@@ -62,4 +62,6 @@ public:
 
   float m_TouchTimeout;
 
+int m_SoundOffset;
+
 };

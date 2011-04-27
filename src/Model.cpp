@@ -114,7 +114,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 		glBindBuffer(GL_ARRAY_BUFFER, ff->m_TextureBuffer[0]);
 		glBufferData(GL_ARRAY_BUFFER, aimesh.mNumVertices * 3 * sizeof(float), aimesh.mTextureCoords[0], GL_STATIC_DRAW);
 	} else {
-		throw 1;
+		exit(1);
 	}
 
 	int used_buffer = 0;

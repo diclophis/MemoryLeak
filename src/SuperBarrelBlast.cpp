@@ -22,6 +22,7 @@ enum colliders {
 };
 
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
+m_SoundOffset = 0;
 
 	m_Space = new Octree<int>(32 * 32, -1);
 
@@ -105,10 +106,10 @@ void SuperBarrelBlast::CreateCollider(float x, float y, float r, int flag) {
   int sx = 0;
   int sy = 0;
   m_SpriteCount++;
-  float l = 30 * (1.0 / 60.0);
+  float l = 120 * (1.0 / 60.0);
 
   if (flag & BARREL) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 2, l * 0.5, "", 8, 11, l, 100.0, 100.0));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & MIRROR) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   }
@@ -117,6 +118,7 @@ void SuperBarrelBlast::CreateCollider(float x, float y, float r, int flag) {
 
   m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
   m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
+  m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
   m_AtlasSprites[m_SpriteCount]->Build(10);
   sx = (x / SUBDIVIDE);
   sy = (y / SUBDIVIDE);
@@ -143,6 +145,10 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
+if (hitState == 0) {
+	ModPlug_Seek(m_Sounds[0], 32500);
+}
+
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);
@@ -442,8 +448,8 @@ void SuperBarrelBlast::RenderSpritePhase() {
 	//glBlendFunc(GL_ONE, GL_ONE);
 	glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
 	RenderSpriteRange(m_BarrelStopIndex + 1, m_BarrelStopIndex + 2);
-	RenderSpriteRange(m_DebugBoxesStartIndex, m_DebugBoxesStopIndex + 1);
-	RenderSpriteRange(0, 1);
+	//RenderSpriteRange(m_DebugBoxesStartIndex, m_DebugBoxesStopIndex + 1);
+	//RenderSpriteRange(0, 1);
 	RenderSpriteRange(m_BarrelStartIndex, m_BarrelStopIndex + 1);
 	glDisable(GL_BLEND);
 }

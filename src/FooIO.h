@@ -36,7 +36,8 @@ class FooStream : public Assimp::IOStream {
 
 	      break;
 	    default:
-        throw 1;
+exit(1);
+        //throw 1;
 	    }
 
 		  if (seeked == 0) {
