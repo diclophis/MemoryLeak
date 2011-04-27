@@ -47,7 +47,7 @@ class Callbacks {
 public:
   static void *PumpAudio(void *buffer, int buffer_position, int divisor) {
 
-int num_frames = 2048;
+int num_frames = min_buffer / 2;
     //LOGV("pump up the jam\n");
     /* Write num_frames frames from buffer data to    */ 
     /* the PCM device pointed to by pcm_handle.       */
@@ -55,7 +55,7 @@ int num_frames = 2048;
 
     snd_pcm_sframes_t foo;
 
-//foo = snd_pcm_writei(pcm_handle, buffer, num_frames);
+foo = snd_pcm_writei(pcm_handle, buffer, num_frames);
 
     /* Write num_frames frames from buffer data to    */ 
     /* the PCM device pointed to by pcm_handle.       */ 
@@ -64,6 +64,8 @@ int num_frames = 2048;
 
 if (foo < 0) {
 	LOGV("problem: %d %s\n", foo, snd_strerror(foo));
+} else {
+	//LOGV("foo: %d\n", foo);
 }
 
     return NULL;
@@ -104,6 +106,12 @@ void processMouseMotion(int x, int y) {
 void processNormalKeys(unsigned char key, int x, int y) {
   switch (key) {
     case 27:
+int save_result = SOIL_save_screenshot
+(
+"/tmp/awesomenessity.png",
+SOIL_SAVE_TYPE_BMP,
+0, 0, 320, 480
+);
 	exit(0);
     break;
   }
@@ -142,14 +150,30 @@ tmp = path_cat(dir_path, dp->d_name);
 if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
 } else {
 printf("%s\n", tmp);
+
+
+  GLuint text = 0;
+  glEnable(GL_TEXTURE_2D);
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+  glGenTextures(1, &text);
+  glBindTexture(GL_TEXTURE_2D, text);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
 GLuint tex_2d = SOIL_load_OGL_texture
 (
 tmp,
-SOIL_LOAD_RGBA,
-SOIL_CREATE_NEW_ID,
-SOIL_FLAG_MULTIPLY_ALPHA
+SOIL_LOAD_AUTO,
+//SOIL_CREATE_NEW_ID,
+text,
+0//SOIL_FLAG_INVERT_Y
 );
-textures.push_back(tex_2d);
+
+        printf( "SOIL loading error: '%s'\n", SOIL_last_result());
+
+textures.push_back(text);
 }
 
 free(tmp);
@@ -280,7 +304,8 @@ closedir(dir);
                       /* exact_rate < rate  --> dir = -1 */
                       /* exact_rate > rate  --> dir = 1 */
     int periods = 2;       /* Number of periods */
-    snd_pcm_uframes_t periodsize = 8192 * 2; /* Periodsize (bytes) */
+    snd_pcm_uframes_t periodsize = (8192) * 2; /* Periodsize (bytes) */
+    min_buffer = 2048 * 2;
 
     /* Set access type. This can be either    */
     /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
@@ -363,7 +388,6 @@ LOGV("fuck %d\n", frames);
  */ 
 
 
-min_buffer = 2048;
 
   game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 1);
   game->CreateThread(Callbacks::PumpAudio);
