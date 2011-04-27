@@ -24,6 +24,11 @@
 #include "ModelOctree.h"
 #include "SuperBarrelBlast.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
 static jshortArray ab = NULL;
@@ -61,7 +66,7 @@ public:
 };
 
 
-extern "C" {
+//extern "C" {
   int Java_com_example_SanAngeles_DemoActivity_initNative(
     JNIEnv * env, jclass envClass,
     int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
@@ -77,7 +82,7 @@ extern "C" {
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv*  env);
   void Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv* env);
   void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState);
-}
+//}
 
 
 static std::vector<GLuint> textures;
@@ -188,3 +193,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
     gameController->DrawScreen(0);
   } 
 }
+
+#ifdef __cplusplus
+}
+#endif
+

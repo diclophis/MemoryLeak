@@ -28,6 +28,47 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
+class DemoGLSurfaceView extends GLSurfaceView {
+  public DemoGLSurfaceView(Context context) {
+    super(context);
+    mRenderer = new DemoRenderer(context);
+    setRenderer(mRenderer);
+  }
+
+@Override
+  public boolean onTouchEvent(final MotionEvent event) {
+    queueEvent(new Runnable() {
+      public void run() {
+        for (int i=0; i<event.getPointerCount(); i++) {
+          float x = event.getX(i);
+          float y = event.getY(i);
+          if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            nativeTouch(x, y, 0);
+          }
+          if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            nativeTouch(x, y, 1);
+          }
+          if (event.getAction() == MotionEvent.ACTION_UP) {
+            nativeTouch(x, y, 2);
+          }
+        }
+      }
+    });
+    return true;
+  }
+
+@Override
+  public void onPause() {
+    super.onPause();
+    nativePause();
+  }
+
+  DemoRenderer mRenderer;
+
+  private static native void nativePause();
+  private static native void nativeTouch(float x, float y, int hitState);
+}
+
 public class DemoActivity extends Activity {
 
   protected static AudioTrack at1;
@@ -128,7 +169,7 @@ public class DemoActivity extends Activity {
         }
       }
 
-		  int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
+      int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
     } catch (java.io.IOException e) {
       Log.v(this.toString(), e.toString());
@@ -159,46 +200,6 @@ public class DemoActivity extends Activity {
   }
 }
 
-class DemoGLSurfaceView extends GLSurfaceView {
-  public DemoGLSurfaceView(Context context) {
-    super(context);
-    mRenderer = new DemoRenderer(context);
-    setRenderer(mRenderer);
-  }
-
-@Override
-  public boolean onTouchEvent(final MotionEvent event) {
-    queueEvent(new Runnable() {
-      public void run() {
-        for (int i=0; i<event.getPointerCount(); i++) {
-          float x = event.getX(i);
-          float y = event.getY(i);
-          if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            nativeTouch(x, y, 0);
-          }
-          if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            nativeTouch(x, y, 1);
-          }
-          if (event.getAction() == MotionEvent.ACTION_UP) {
-            nativeTouch(x, y, 2);
-          }
-        }
-      }
-    });
-    return true;
-  }
-
-@Override
-  public void onPause() {
-    super.onPause();
-    nativePause();
-  }
-
-  DemoRenderer mRenderer;
-
-  private static native void nativePause();
-  private static native void nativeTouch(float x, float y, int hitState);
-}
 
 class DemoRenderer implements GLSurfaceView.Renderer {
 
