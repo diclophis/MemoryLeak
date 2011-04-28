@@ -425,14 +425,16 @@ int Engine::RunThread() {
 			m_GameState = Simulate();
 		}
 
-		ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize / m_AudioDivisor);
-		ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, m_AudioBufferSize / m_AudioDivisor);
+    for (unsigned int i=0; i<2; i++) {
+      ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize / m_AudioDivisor);
+      ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, m_AudioBufferSize / m_AudioDivisor);
 
-		for (unsigned int i=0; i<m_AudioBufferSize; i++) {	
-			m_AudioMixBuffer[i] = m_AudioBuffer[i] + m_AudioBufferTwo[i];
-		}
+      for (unsigned int i=0; i<m_AudioBufferSize; i++) {	
+        m_AudioMixBuffer[i] = m_AudioBuffer[i] + m_AudioBufferTwo[i];
+      }
 
-		start_routine(m_AudioMixBuffer, 0, m_AudioDivisor);
+      start_routine(m_AudioMixBuffer, 0, m_AudioDivisor);
+    }
 
 		//ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize);
 		//start_routine(m_AudioBuffer, 0, 0);

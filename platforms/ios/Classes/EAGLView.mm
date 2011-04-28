@@ -36,7 +36,7 @@ static std::vector<foo*> sounds;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
 #define PLAYBACK_FREQ 44100
-#define AUDIO_BUFFER_SIZE (2048)
+#define AUDIO_BUFFER_SIZE (1024)
 #define BUF_SIZE 8
 
 struct buf_t {
@@ -73,50 +73,7 @@ buf_t *alloc () {
 
 class Callbacks {
 	static void *PumpAudio(void *b, int buffer_position, int d) {
-
-			//void *f = (void *)malloc(sizeof(short) * 1024);
-		memcpy(produce(ring), b, AUDIO_BUFFER_SIZE);
-
-		//memcpy(buffer_ana[buffer_ana_gen_ofs], (short *)b + (i * len), len);
-
-		/*
-		if (m_SyncAudio) {
-			pthread_mutex_lock(&m_Mutex);
-			pthread_cond_wait(&m_AudioSyncCond, &m_Mutex);
-			pthread_mutex_unlock(&m_Mutex);
-		}
-		
-		bool r = true;
-		
-		int t = (AUDIO_BUFFER_SIZE / AUDIO_SEG);
-		
-		int len = AUDIO_SEG;
-			
-		for (unsigned int i=0; i<t; i++) {
-			//LOGV("!!!! %d\n", buffer_ana_flag[buffer_ana_gen_ofs]);
-			//if (buffer_ana_flag[buffer_ana_gen_ofs]) {
-			//	LOGV("skip\n");
-			//	return (void *)false;
-			//}
-			
-			memcpy(buffer_ana[buffer_ana_gen_ofs], (short *)b + (i * len), len);
-			buffer_ana_flag[buffer_ana_gen_ofs] = 1;
-			buffer_ana_gen_ofs++;
-			if ((buffer_ana_gen_ofs) == SOUND_BUFFER_NB) {
-				buffer_ana_gen_ofs = 0;
-			}
-			r = true;
-		}
-		
-		//LOGV(" end %d \n", buffer_ana_gen_ofs);
-		
-		//pthread_cond_signal(&m_AudioSyncCond);
-		
-		
-		
-		return (void *)r;
-		*/
-		
+		memcpy(produce(ring), b, AUDIO_BUFFER_SIZE);		
 		return (void *)true;
 	};
 };
@@ -305,6 +262,7 @@ void propertyListenerCallback (void                   *inUserData,
 	}
 }
 
+
 GLuint loadTexture(UIImage *image) {
 	GLuint text = 0;
 	
@@ -381,13 +339,14 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-	//LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
+	LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
 	
 	if (m_SyncAudio) {
 		void *b;
 		if ((b = (void *)consume(ring))) {
 			memcpy(ioData->mData, b, ioData->mDataByteSize);
 		} else {
+			LOGV("wtf\n");
 			*ioActionFlags = kAudioUnitRenderAction_OutputIsSilence;
 			memset(ioData->mData, 0, ioData->mDataByteSize);
 
@@ -704,14 +663,14 @@ static OSStatus playbackCallback(void *inRefCon,
 		
 		ring = alloc();
 
-		/*
+		
 		m_SyncAudio = false;
 		
 		
 		[self initAudio2];
 		status = AudioOutputUnitStart(audioUnit);
 		checkStatus(status);
-		*/
+		
 		
 		game = new SuperBarrelBlast(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
 		game->CreateThread(Callbacks::PumpAudio);
