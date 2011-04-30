@@ -52,19 +52,6 @@ typedef struct Engine Engine;
 	OSStatus status;
 	AudioComponentInstance audioUnit;
 
-	//General infos
-	int mod_message_updated,mod_subsongs;
-	int mod_currentsub,mod_minsub,mod_maxsub;
-	int mp_datasize,numChannels;
-	int iCurrentTime,iModuleLength;
-
-	//for spectrum analyzer
-	short int **buffer_ana_cpy;
-		
-	//Modplug stuff
-	int *genRow,*genPattern,*playRow,*playPattern;	
-	char *mp_data;
-	int numPatterns,numSamples,numInstr;
 	
 	//AVFoundation
 	AudioQueueRef mAudioQueue;
@@ -78,54 +65,12 @@ typedef struct Engine Engine;
 @property (nonatomic) NSInteger animationFrameInterval;
 
 
-//Modplug stuff
-
-@property char *mp_data;
-@property int *genRow,*genPattern,*playRow,*playPattern;
-@property int numChannels,numPatterns,numSamples,numInstr;
-
-
-//for spectrum analyzer
-@property short int **buffer_ana_cpy;
-@property AudioQueueRef mAudioQueue;
-@property AudioQueueBufferRef *mBuffers;
-
-
-
+-(Engine *)game;
 -(void)build;
 -(void)startAnimation;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
 -(void)startGame;
--(void)parse:(const char*)json withLength:(size_t)length;
--(void)pump_audio;
-
-
-
-
-
-
-
-
-
-
--(void)initAudio;
--(BOOL)iPhoneDrv_FillAudioBuffer:(AudioQueueBufferRef) mBuffer;
--(BOOL)iPhoneDrv_Init;
--(void)iPhoneDrv_Exit;
--(BOOL)iPhoneDrv_PlayStart;
--(void)iPhoneDrv_PlayStop;
--(void)iPhoneDrv_PlayWaitStop;
--(void)iPhoneDrv_Update:(AudioQueueBufferRef) mBuffer;
--(int)getCurrentPlayedBufferIdx;
-
-
-
-
-
-
-
-
 
 
 @end

@@ -1,4 +1,4 @@
-//
+//JonBardin GPL 2011
 
 #include "MemoryLeak.h"
 
@@ -14,8 +14,6 @@
 #include "SpriteGun.h"
 
 #include "Engine.h"
-
-static Engine *g_Thang;
 
 static void do_this_in_tick(GlobalInfo *g, int revents);
 
@@ -114,7 +112,6 @@ static void remsock(SockInfo *f, GlobalInfo *g)
 static void setsock(SockInfo*f, curl_socket_t s, CURL*e, int act, GlobalInfo*g)
 {
 	//printf("%s  \n", __PRETTY_FUNCTION__);
-		
 	f->sockfd = s;
 	f->action = act;
 	f->easy = e;
@@ -242,7 +239,7 @@ Engine::~Engine() {
 }
 
 
-Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s), m_AudioBufferSize(bs), m_AudioDivisor(sd) {
+Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
 
   m_PingServerTimeout = 0.0;
 
@@ -278,15 +275,16 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 		fseek(m_SoundFoos->at(i)->fp, m_SoundFoos->at(i)->off, SEEK_SET);
 		size_t r = fread(buffer, 1, m_SoundFoos->at(i)->len, m_SoundFoos->at(i)->fp);
 		if (r > 0) { 
-LOGV("load sound\n");
 			m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
 		}
+    free(buffer);
 	}
 
-	m_AudioBuffer = new unsigned char[m_AudioBufferSize];
-	m_AudioBufferTwo = new unsigned char[m_AudioBufferSize];
-	m_AudioMixBuffer = new unsigned char[m_AudioBufferSize];
-	m_AudioSilenceBuffer = new unsigned char[m_AudioBufferSize];
+	int m_AudioBufferSize = 1024;
+	m_AudioBuffer = new short[m_AudioBufferSize];
+	m_AudioBufferTwo = new short[m_AudioBufferSize];
+	m_AudioMixBuffer = new short[m_AudioBufferSize];
+	m_AudioSilenceBuffer = new short[m_AudioBufferSize];
 
 	memset(m_AudioBuffer, 0, m_AudioBufferSize);
 	memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
@@ -294,13 +292,10 @@ LOGV("load sound\n");
 	memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
 
 	m_IsPushingAudio = false;
-	m_PumpedAudioLastTick = false;
-	m_SkipLimit = 0;
 }
 
 
-void Engine::CreateThread(void *(*sr)(void *, int, int)) {
-	start_routine = sr;
+void Engine::CreateThread() {
 	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
 }
 
@@ -312,7 +307,6 @@ void *Engine::EnterThread(void *obj) {
 
 
 void Engine::PauseThread() {
-  LOGV("Pause!!!!!!!!!!!!!!!!!!!!!\n");
 	pthread_mutex_lock(&m_Mutex);
 	m_GameState = 0;
 	pthread_mutex_unlock(&m_Mutex);
@@ -425,23 +419,21 @@ int Engine::RunThread() {
 			m_GameState = Simulate();
 		}
 
-    for (unsigned int i=0; i<2; i++) {
-      ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize / m_AudioDivisor);
-      ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, m_AudioBufferSize / m_AudioDivisor);
-
-      for (unsigned int i=0; i<m_AudioBufferSize; i++) {	
-        m_AudioMixBuffer[i] = m_AudioBuffer[i] + m_AudioBufferTwo[i];
-      }
-
-      start_routine(m_AudioMixBuffer, 0, m_AudioDivisor);
-    }
-
-		//ModPlug_Read(m_Sounds[0], m_AudioBuffer, m_AudioBufferSize);
-		//start_routine(m_AudioBuffer, 0, 0);
-		
 		WaitVsync();
 	}	
 	return m_GameState;
+}
+
+
+void *Engine::DoAudio(int bytes) {
+    ModPlug_Read(m_Sounds[0], m_AudioBuffer, bytes);
+    ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, bytes);
+
+    for (unsigned int i=0; i<bytes; i++) {	
+      m_AudioMixBuffer[i] = (m_AudioBuffer[i]); // + (m_AudioBufferTwo[i]);
+    }
+
+    return m_AudioMixBuffer;
 }
 
 
@@ -457,6 +449,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 		m_AtlasSprites[i]->Render();
 	}
 }
+
 
 
 void Engine::DrawScreen(float rotation) {

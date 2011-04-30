@@ -9,7 +9,7 @@ class Engine {
 	
 public:
 	
-	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd);
+	Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
 	virtual ~Engine();
 
  
@@ -20,8 +20,9 @@ public:
 	int RunThread();
   void PauseThread();
 
-
-	void CreateThread(void *(*sr)(void *, int, int));
+  //Function pointer to thingy
+	//void CreateThread(void *(*sr)(void *, int, int));
+	void CreateThread();
 	static void *EnterThread(void *);
 	
 
@@ -32,13 +33,11 @@ public:
 	virtual void RenderSpritePhase() = 0;
   void WaitVsync();
   void WaitAudioSync();
+  void *DoAudio(int b);
 	
 	void RenderModelRange(unsigned int s, unsigned int e);
 
 	void RenderSpriteRange(unsigned int s, unsigned int e);
-
-	bool m_PumpedAudioLastTick;
-	int m_SkipLimit;
 
 	// World Engine
 	bool m_IsSceneBuilt;
@@ -72,16 +71,13 @@ public:
 
 	int m_RenderIndex;
 
-  int m_AudioBufferSize;
-  unsigned char *m_AudioBuffer;
-  unsigned char *m_AudioBufferTwo;
-  unsigned char *m_AudioMixBuffer;
-  unsigned char *m_AudioSilenceBuffer;
-	void *(* start_routine)(void *, int, int);
+  short *m_AudioBuffer;
+  short *m_AudioBufferTwo;
+  short *m_AudioMixBuffer;
+  short *m_AudioSilenceBuffer;
+	//void *(* start_routine)(void *, int, int);
 
   bool m_IsPushingAudio;
-	
-	int m_AudioDivisor;
 	
 	GlobalInfo g;
 	CURLMcode rc;
@@ -95,16 +91,7 @@ public:
 
   ConnInfo *m_PingConn;
 
-// This is a modified version of the function of the same name from 
-// the Mesa3D project ( http://mesa3d.org/ ), which is  licensed
-// under the MIT license, which allows use, modification, and 
-// redistribution
-
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
-
-//#ifdef DESKTOP
-//  #define glOrthof glOrtho
-//#endif
 
 };

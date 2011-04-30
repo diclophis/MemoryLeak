@@ -36,48 +36,6 @@ static std::vector<foo*> sounds;
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
 #define PLAYBACK_FREQ 44100
-#define AUDIO_BUFFER_SIZE (1024)
-#define BUF_SIZE 8
-
-struct buf_t {
-	volatile int writepos;
-	volatile void **buffer[BUF_SIZE][AUDIO_BUFFER_SIZE]; 
-    volatile int readpos;
-};
-
-void *produce (buf_t *b) {
-    int next = (b->writepos+1) % BUF_SIZE;
-    if (b->readpos == next); // queue is full. wait
-	b->writepos = next;
-	return b->buffer[b->writepos];
-}
-
-volatile void *consume (buf_t *b) {
-    //while (b->readpos == b->writepos); // nothing to consume. wait
-	if (b->readpos == b->writepos) {
-		return NULL;
-	}
-	
-    int next = (b->readpos+1) % BUF_SIZE;
-    volatile void *res = b->buffer[b->readpos]; b->readpos = next;
-    return res;
-}
-
-buf_t *ring;
-
-buf_t *alloc () {
-    buf_t *b = (buf_t *)malloc(sizeof(buf_t));
-    b->writepos = 0; b->readpos = 0; return b;
-}
-
-
-class Callbacks {
-	static void *PumpAudio(void *b, int buffer_position, int d) {
-		memcpy(produce(ring), b, AUDIO_BUFFER_SIZE);		
-		return (void *)true;
-	};
-};
-
  
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	LOGV("interupption\n");
@@ -296,7 +254,6 @@ GLuint loadTexture(UIImage *image) {
 
 
 void checkStatus(OSStatus status) {
-	
 	if(status == 0)
 		NSLog(@"success");
 	else if(status == errSecNotAvailable)
@@ -326,13 +283,11 @@ static OSStatus playbackCallback(void *inRefCon,
 								 UInt32 inBusNumber, 
 								 UInt32 inNumberFrames, 
 								 AudioBufferList *ioDataList) {
-	
-
-	
 
 	// Notes: ioData contains buffers (may be more than one!)
     // Fill them up as much as you can. Remember to set the size value in each buffer to match how
     // much data is in the buffer.
+	
 	if (ioDataList->mNumberBuffers != 1) {
 		LOGV("the fuck\n");
 	}
@@ -341,106 +296,23 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
 	
-	if (m_SyncAudio) {
-		void *b;
-		if ((b = (void *)consume(ring))) {
-			memcpy(ioData->mData, b, ioData->mDataByteSize);
-		} else {
-			LOGV("wtf\n");
-			*ioActionFlags = kAudioUnitRenderAction_OutputIsSilence;
-			memset(ioData->mData, 0, ioData->mDataByteSize);
-
-			//for(unsigned int currentBuffer = 0; currentBuffer < ioData->mNumberBuffers; ++currentBuffer) {
-			//	memset(ioData->mBuffers[currentBuffer].mData, 0, ioData->mBuffers[currentBuffer].mDataByteSize);
-			//}
-		}			
+	//Signal to get audio
+	Engine *f = [g_View game];
+	if (f) {
+		memcpy(ioData->mData, f->DoAudio((int)ioData->mDataByteSize), ioData->mDataByteSize);
 	}
-	
-	//LOGV("got: %d\n", ioData->mDataByteSize);
-
-	/*
-	int len = AUDIO_SEG;
-
-	int desired = ioData->mDataByteSize;
-	
-	ioData->mDataByteSize = 0;
-
-	int got = 0;
-	int tried = 0;
-	
-	//buffer_ana_play_ofs = 0;	
-	//while (buffer_ana_play_ofs < SOUND_BUFFER_NB) {
-	
-	while (tried++ < SOUND_BUFFER_NB && ioData->mDataByteSize < desired) {
-	
-		if (buffer_ana_play_ofs >= SOUND_BUFFER_NB) {
-			buffer_ana_play_ofs = 0;
-		}
 		
-		if (buffer_ana_flag[buffer_ana_play_ofs]) {
-			
-			//LOGV("#### gen: %d=>%d play: %d=>%d\n", buffer_ana_gen_ofs, buffer_ana_flag[buffer_ana_gen_ofs], buffer_ana_play_ofs, buffer_ana_flag[buffer_ana_play_ofs]);
-
-			memcpy(ioData->mData, buffer_ana[buffer_ana_play_ofs], len);
-			ioData->mDataByteSize += len;
-			buffer_ana_flag[buffer_ana_play_ofs] = 0;
-			got++;
-		}
-		
-		buffer_ana_play_ofs++;
-	}
-	
-	if (got == 0) {
-		LOGV("MISSED %d %d\n", buffer_ana_play_ofs, desired);
-	} else {
-		LOGV("PUMPED: %d\n", ioData->mDataByteSize);
-	}
-	
-	pthread_cond_signal(&m_AudioSyncCond);
-
-	*/
-	
     return noErr;
 }
 
 -(void)initAudio2 {
-
-	
-	AudioSessionInitialize (
-							
-							NULL,                            // 1
-							
-							NULL,                            // 2
-							
-							interruptionListenerCallback,    // 3
-							
-							NULL                         // 4
-							
-							);
-	
-	//OSStatus  = NULL;
-	
+	AudioSessionInitialize (NULL, NULL, interruptionListenerCallback, NULL);
 	status = AudioSessionSetActive (true);
 	checkStatus(status);
-	
-	UInt32 sessionCategory = kAudioSessionCategory_AmbientSound;    // 1
-	
-	
-	
-	AudioSessionSetProperty (
-							 
-							 kAudioSessionProperty_AudioCategory,                        // 2
-							 
-							 sizeof (sessionCategory),                                   // 3
-							 
-							 &sessionCategory                                            // 4
-							 
-							 );
+	UInt32 sessionCategory = kAudioSessionCategory_AmbientSound;
+	AudioSessionSetProperty (kAudioSessionProperty_AudioCategory, sizeof (sessionCategory), &sessionCategory);
 
-	
-	
-#define kOutputBus 0
-//#define kInputBus 1
+	#define kOutputBus 0
 
 	// Describe audio component
 	AudioComponentDescription desc;
@@ -470,61 +342,16 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	size_t bytesPerSample = sizeof(short);
 	AudioStreamBasicDescription audioFormat = {0};
-	/*
-	audioFormat.mFormatID          = kAudioFormatLinearPCM;
-	
-	//audioFormat.mFormatFlags       = kAudioFormatFlagsAudioUnitCanonical;
-	
-	audioFormat.mBytesPerPacket    = bytesPerSample;
-	
-	audioFormat.mBytesPerFrame     = bytesPerSample;
-	
-	audioFormat.mFramesPerPacket   = 1;
-	
-	audioFormat.mBitsPerChannel    = 8 * bytesPerSample;
-	
-	audioFormat.mChannelsPerFrame  = 1;           // 2 indicates stereo
-	
-	audioFormat.mSampleRate        = 44100.0;
-	 */
-	
-	audioFormat.mSampleRate			= PLAYBACK_FREQ;
-	audioFormat.mFormatID			= kAudioFormatLinearPCM;
-	audioFormat.mFormatFlags		= kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-	audioFormat.mFramesPerPacket	= 1;
-	audioFormat.mChannelsPerFrame	= 1;
-	audioFormat.mBitsPerChannel		= 16;
-	audioFormat.mBytesPerPacket		= 2;
-	audioFormat.mBytesPerFrame		= 2;
-	
-	
-	/*
-	AudioStreamBasicDescription audioFormat;
 
-	// Describe format
+	
 	audioFormat.mSampleRate			= PLAYBACK_FREQ;
 	audioFormat.mFormatID			= kAudioFormatLinearPCM;
-	audioFormat.mFormatFlags		= kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+	audioFormat.mFormatFlags		= kAudioFormatFlagsCanonical;
 	audioFormat.mFramesPerPacket	= 1;
 	audioFormat.mChannelsPerFrame	= 1;
 	audioFormat.mBitsPerChannel		= 16;
-	audioFormat.mBytesPerPacket		= sizeof(short);
-	audioFormat.mBytesPerFrame		= sizeof(short);
-	
-	
-	
-	
-	*/
-	/*
-	// Apply format
-	status = AudioUnitSetProperty(audioUnit, 
-								  kAudioUnitProperty_StreamFormat, 
-								  kAudioUnitScope_Output, 
-								  kInputBus, 
-								  &audioFormat, 
-								  sizeof(audioFormat));
-	checkStatus(status);
-	*/
+	audioFormat.mBytesPerPacket		= bytesPerSample;
+	audioFormat.mBytesPerFrame		= bytesPerSample;
 	
 	status = AudioUnitSetProperty(audioUnit, 
 								  kAudioUnitProperty_StreamFormat, 
@@ -547,18 +374,6 @@ static OSStatus playbackCallback(void *inRefCon,
 								  sizeof(callbackStruct));
 	checkStatus(status);
 	
-	/*
-	buffer_ana_flag=(int*)malloc(SOUND_BUFFER_NB*sizeof(int));
-	buffer_ana=(AudioUnitSampleType**)malloc(SOUND_BUFFER_NB*sizeof(AudioUnitSampleType *));
-	for (int i=0;i<SOUND_BUFFER_NB;i++) {
-		buffer_ana[i]= (AudioUnitSampleType *)malloc(AUDIO_BUFFER_SIZE);
-		buffer_ana_flag[i] = 0;
-	}
-	
-	buffer_ana_gen_ofs = 0;
-	buffer_ana_play_ofs = 0;
-	*/
-	
 	Float32 aBufferLength; // In seconds
 	UInt32 size = sizeof(aBufferLength);
 	
@@ -567,7 +382,6 @@ static OSStatus playbackCallback(void *inRefCon,
 	checkStatus(status);
 
 	LOGV("current duration: %f\n", aBufferLength);
-	
 	
 	aBufferLength = 0.005;
 	
@@ -583,7 +397,6 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	checkStatus(status);
 
-	
 	// Initialise
 	status = AudioUnitInitialize(audioUnit);
 	checkStatus(status);
@@ -601,8 +414,6 @@ static OSStatus playbackCallback(void *inRefCon,
 	}
 	
 	{
-
-	
 		NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
 		for (NSString *path in model_names) {
 			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
@@ -661,7 +472,7 @@ static OSStatus playbackCallback(void *inRefCon,
 		pthread_cond_init(&m_AudioSyncCond, NULL);
 		pthread_mutex_init(&m_Mutex, NULL);
 		
-		ring = alloc();
+		//ring = alloc();
 
 		
 		m_SyncAudio = false;
@@ -671,18 +482,18 @@ static OSStatus playbackCallback(void *inRefCon,
 		status = AudioOutputUnitStart(audioUnit);
 		checkStatus(status);
 		
-		
-		game = new SuperBarrelBlast(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, AUDIO_BUFFER_SIZE, 1);
-		game->CreateThread(Callbacks::PumpAudio);
+		g_View = self;
+
+		game = new SuperBarrelBlast(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
+		game->CreateThread();
 		
 		gameState = 1;
-	
-
-		
-		
 	}
 }
 
+-(Engine *)game {
+	return game;
+}
 
 -(void)reset {
 	[self stopAnimation];	
@@ -721,7 +532,6 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)startAnimation {
     if (!animating) {
-		g_View = self;
 		[self build];
 		animating = TRUE;
         if (displayLinkSupported) {
@@ -769,7 +579,6 @@ static OSStatus playbackCallback(void *inRefCon,
         [EAGLContext setCurrentContext:nil];
 	}
 	
-
 	
     [context release];
     context = nil;

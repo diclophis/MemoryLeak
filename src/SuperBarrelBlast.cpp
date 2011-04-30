@@ -21,8 +21,8 @@ enum colliders {
   MIRROR = 2 
 };
 
-SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, int bs, int sd) : Engine(w, h, t, m, l, s, bs, sd) {
-m_SoundOffset = 0;
+SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+  m_SoundOffset = 0;
 
 	m_Space = new Octree<int>(32 * 32, -1);
 
@@ -146,7 +146,8 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
 if (hitState == 0) {
-	ModPlug_Seek(m_Sounds[0], 32500);
+	//ModPlug_Seek(m_Sounds[0], 32500);
+	ModPlug_Seek(m_Sounds[0], 0);
 }
 
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
