@@ -430,7 +430,7 @@ void *Engine::DoAudio(int bytes) {
     ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, bytes);
 
     for (unsigned int i=0; i<bytes; i++) {	
-      m_AudioMixBuffer[i] = (m_AudioBuffer[i]); // + (m_AudioBufferTwo[i]);
+      m_AudioMixBuffer[i] = (m_AudioBuffer[i]) + (m_AudioBufferTwo[i]);
     }
 
     return m_AudioMixBuffer;
