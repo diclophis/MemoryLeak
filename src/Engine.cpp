@@ -280,7 +280,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
     free(buffer);
 	}
 
-	int m_AudioBufferSize = 1024;
+	int m_AudioBufferSize = 24576;
 	m_AudioBuffer = new short[m_AudioBufferSize];
 	m_AudioBufferTwo = new short[m_AudioBufferSize];
 	m_AudioMixBuffer = new short[m_AudioBufferSize];

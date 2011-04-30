@@ -28,45 +28,23 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int min_buffer;
 
-/* Handle for the PCM device */ 
+// Handle for the PCM device
 snd_pcm_t *pcm_handle;          
 
-/* Playback stream */
+// Playback stream
 snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
 
-/* This structure contains information about    */
-/* the hardware and can be used to specify the  */      
-/* configuration to be used for the PCM stream. */ 
+// This structure contains information about
+// the hardware and can be used to specify the
+// configuration to be used for the PCM stream.
 snd_pcm_hw_params_t *hwparams;
 
-/* Name of the PCM device, like plughw:0,0          */
-/* The first number is the number of the soundcard, */
-/* the second number is the number of the device.   */
+// Name of the PCM device, like plughw:0,0
+// The first number is the number of the soundcard,
+// the second number is the number of the device.
 char *pcm_name;
+
   
-/*
-class Callbacks {
-public:
-  static void *PumpAudio(void *buffer, int buffer_position, int divisor) {
-
-int num_frames = min_buffer / 2;
-
-    snd_pcm_sframes_t foo;
-
-foo = snd_pcm_writei(pcm_handle, buffer, num_frames);
-
-
-if (foo < 0) {
-	LOGV("problem: %d %s\n", foo, snd_strerror(foo));
-} else {
-	//LOGV("foo: %d\n", foo);
-}
-
-    return NULL;
-  };
-};
-*/
-
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
   while (true) {
@@ -74,16 +52,17 @@ void *pump_audio(void *) {
   }
 }
 
+
 void draw(void) {
-
-
   game->DrawScreen(0);
   glutSwapBuffers();
 }
 
+
 void resize(int width, int height) {
   game->ResizeScreen(width, height);
 }
+
 
 void processMouse(int button, int state, int x, int y) {
   switch (state) {
@@ -105,12 +84,7 @@ void processMouseMotion(int x, int y) {
 void processNormalKeys(unsigned char key, int x, int y) {
   switch (key) {
     case 27:
-      int save_result = SOIL_save_screenshot
-      (
-      "/tmp/awesomenessity.png",
-      SOIL_SAVE_TYPE_BMP,
-      0, 0, 320, 480
-      );
+      int save_result = SOIL_save_screenshot("/tmp/awesomenessity.png", SOIL_SAVE_TYPE_BMP, 0, 0, 320, 480);
       exit(0);
     break;
   }
@@ -151,29 +125,17 @@ if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
 printf("%s\n", tmp);
 
 
-  GLuint text = 0;
-  glEnable(GL_TEXTURE_2D);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-  glGenTextures(1, &text);
-  glBindTexture(GL_TEXTURE_2D, text);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
 GLuint tex_2d = SOIL_load_OGL_texture
 (
 tmp,
 SOIL_LOAD_AUTO,
-//SOIL_CREATE_NEW_ID,
-text,
-0//SOIL_FLAG_INVERT_Y
+SOIL_CREATE_NEW_ID,
+SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
 );
 
         printf( "SOIL loading error: '%s'\n", SOIL_last_result());
 
-textures.push_back(text);
+textures.push_back(tex_2d);
 }
 
 free(tmp);
@@ -361,40 +323,10 @@ closedir(dir);
       return(-1);
     }
 
-//int num_frames = 10;
-/*
-    unsigned char *data;
-    int pcmreturn, l1, l2;
-    short s1, s2;
-    int frames;
-
-    data = (unsigned char *)malloc(periodsize);
-    frames = periodsize >> 2;
-LOGV("fuck %d\n", frames);
-    for(l1 = 0; l1 < 100; l1++) {
-      for(l2 = 0; l2 < frames; l2++) {
-        s1 = (l2 % 128) * 100 - 5000;  
-        s2 = (l2 % 256) * 100 - 5000;  
-        data[4*l2] = (unsigned char)s1;
-        data[4*l2+1] = s1 >> 8;
-        data[4*l2+2] = (unsigned char)s2;
-        data[4*l2+3] = s2 >> 8;
-      }
-      while ((pcmreturn = snd_pcm_writei(pcm_handle, data, frames)) < 0) {
-        snd_pcm_prepare(pcm_handle);
-        fprintf(stderr, "<<<<<<<<<<<<<<< Buffer Underrun >>>>>>>>>>>>>>>\n");
-      }
-    }
- */ 
-
-
-
   game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
   game->CreateThread();
 
 	pthread_create(&audio_thread, 0, pump_audio, NULL);
-
-  
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);

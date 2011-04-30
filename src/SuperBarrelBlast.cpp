@@ -109,7 +109,7 @@ void SuperBarrelBlast::CreateCollider(float x, float y, float r, int flag) {
   float l = 120 * (1.0 / 60.0);
 
   if (flag & BARREL) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 4, 4, 0, 16, l * 0.5, "", 8, 11, l, 100.0, 100.0));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 1, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & MIRROR) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   }
@@ -417,8 +417,9 @@ int SuperBarrelBlast::Simulate() {
   float ox = (m_PlayerLastX + m_CameraPanX) - m_CameraOffsetX;
   float oy = (m_PlayerLastY + m_CameraPanY) - m_CameraOffsetY;
 
-  float aox = (ox / 10.0) * 15.0 * m_DeltaTime;
-  float aoy = (oy / 10.0) * 15.0 * m_DeltaTime;
+  float aox = (ox); // * 1.0 * m_DeltaTime;
+  float aoy = (oy); // * 1.0 * m_DeltaTime;
+
   /*
   if (ox < 50 && oy < 50) { 
     ox *= 1.0 * m_DeltaTime;
@@ -449,8 +450,8 @@ void SuperBarrelBlast::RenderSpritePhase() {
 	//glBlendFunc(GL_ONE, GL_ONE);
 	glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
 	RenderSpriteRange(m_BarrelStopIndex + 1, m_BarrelStopIndex + 2);
-	//RenderSpriteRange(m_DebugBoxesStartIndex, m_DebugBoxesStopIndex + 1);
-	//RenderSpriteRange(0, 1);
+	RenderSpriteRange(m_DebugBoxesStartIndex, m_DebugBoxesStopIndex + 1);
+	RenderSpriteRange(0, 1);
 	RenderSpriteRange(m_BarrelStartIndex, m_BarrelStopIndex + 1);
 	glDisable(GL_BLEND);
 }

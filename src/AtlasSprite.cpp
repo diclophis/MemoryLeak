@@ -58,6 +58,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 		m_Sprites[i].ty2 = texture_y + tdy;
 		texture_x += tdx;
 		if (b == (m_SpritesPerRow - 1)) {
+      texture_x = 0.0;
 			texture_y += tdy;
 		}
 	}
@@ -105,10 +106,11 @@ void AtlasSprite::Render() {
 
 		glVertexPointer(2, GL_FLOAT, 0, vertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, texture);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		//const GLubyte indices [] = {1, 2, 0, 3};
-		//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
+		const GLubyte indices [] = {1, 2, 0, 3};
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
 /*
     if (true) {
       glDisable(GL_TEXTURE_2D);
