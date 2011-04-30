@@ -19,6 +19,8 @@
 #define kWindowWidth 320
 #define kWindowHeight 480
 
+static pthread_t audio_thread;
+
 static Engine *game;
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -26,41 +28,33 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int min_buffer;
 
-    /* Handle for the PCM device */ 
-    snd_pcm_t *pcm_handle;          
+/* Handle for the PCM device */ 
+snd_pcm_t *pcm_handle;          
 
-    /* Playback stream */
-    snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
+/* Playback stream */
+snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
 
-    /* This structure contains information about    */
-    /* the hardware and can be used to specify the  */      
-    /* configuration to be used for the PCM stream. */ 
-    snd_pcm_hw_params_t *hwparams;
+/* This structure contains information about    */
+/* the hardware and can be used to specify the  */      
+/* configuration to be used for the PCM stream. */ 
+snd_pcm_hw_params_t *hwparams;
 
-    /* Name of the PCM device, like plughw:0,0          */
-    /* The first number is the number of the soundcard, */
-    /* the second number is the number of the device.   */
-    char *pcm_name;
+/* Name of the PCM device, like plughw:0,0          */
+/* The first number is the number of the soundcard, */
+/* the second number is the number of the device.   */
+char *pcm_name;
   
-
+/*
 class Callbacks {
 public:
   static void *PumpAudio(void *buffer, int buffer_position, int divisor) {
 
 int num_frames = min_buffer / 2;
-    //LOGV("pump up the jam\n");
-    /* Write num_frames frames from buffer data to    */ 
-    /* the PCM device pointed to by pcm_handle.       */
-    /* Returns the number of frames actually written. */
 
     snd_pcm_sframes_t foo;
 
 foo = snd_pcm_writei(pcm_handle, buffer, num_frames);
 
-    /* Write num_frames frames from buffer data to    */ 
-    /* the PCM device pointed to by pcm_handle.       */ 
-    /* Returns the number of frames actually written. */
-    //snd_pcm_sframes_t foo = snd_pcm_writen(pcm_handle, &buffer, num_frames);
 
 if (foo < 0) {
 	LOGV("problem: %d %s\n", foo, snd_strerror(foo));
@@ -71,13 +65,18 @@ if (foo < 0) {
     return NULL;
   };
 };
+*/
 
-GLuint loadTexture(void *image) {
-  GLuint text = 0;
-  return text;
+void *pump_audio(void *) {
+  snd_pcm_sframes_t foo;
+  while (true) {
+    foo = snd_pcm_writei(pcm_handle, game->DoAudio(min_buffer), min_buffer / 2);
+  }
 }
 
 void draw(void) {
+
+
   game->DrawScreen(0);
   glutSwapBuffers();
 }
@@ -106,13 +105,13 @@ void processMouseMotion(int x, int y) {
 void processNormalKeys(unsigned char key, int x, int y) {
   switch (key) {
     case 27:
-int save_result = SOIL_save_screenshot
-(
-"/tmp/awesomenessity.png",
-SOIL_SAVE_TYPE_BMP,
-0, 0, 320, 480
-);
-	exit(0);
+      int save_result = SOIL_save_screenshot
+      (
+      "/tmp/awesomenessity.png",
+      SOIL_SAVE_TYPE_BMP,
+      0, 0, 320, 480
+      );
+      exit(0);
     break;
   }
 }
@@ -159,6 +158,7 @@ printf("%s\n", tmp);
   glBindTexture(GL_TEXTURE_2D, text);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
@@ -304,8 +304,8 @@ closedir(dir);
                       /* exact_rate < rate  --> dir = -1 */
                       /* exact_rate > rate  --> dir = 1 */
     int periods = 2;       /* Number of periods */
-    snd_pcm_uframes_t periodsize = (8192) * 2; /* Periodsize (bytes) */
-    min_buffer = 2048 * 2;
+    snd_pcm_uframes_t periodsize = (1024) * 2; /* Periodsize (bytes) */
+    min_buffer = 512;
 
     /* Set access type. This can be either    */
     /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
@@ -389,8 +389,12 @@ LOGV("fuck %d\n", frames);
 
 
 
-  game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 1);
-  game->CreateThread(Callbacks::PumpAudio);
+  game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
+  game->CreateThread();
+
+	pthread_create(&audio_thread, 0, pump_audio, NULL);
+
+  
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);
