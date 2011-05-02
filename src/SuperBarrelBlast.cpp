@@ -147,7 +147,7 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
 if (hitState == 0) {
 	//ModPlug_Seek(m_Sounds[0], 32500);
-	ModPlug_Seek(m_Sounds[0], 0);
+	//ModPlug_Seek(m_Sounds[0], 0);
 }
 
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
