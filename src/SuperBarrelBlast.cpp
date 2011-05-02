@@ -10,7 +10,7 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 30.0
+#define SUBDIVIDE 50.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 22.5 
 #define SHOOT_VELOCITY 400.0
@@ -146,19 +146,6 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
-if (hitState == 0) {
-  m_AudioTimeout = 0.0;
-  m_IsPushingAudio = true;
-      float r;
-
-      r = 0;//fastAbs(randf()) * 0;
-      ModPlug_Seek(m_Sounds[0], 1000 * r);
-      //ModPlug_Seek(m_Sounds[1], 1000 * r);
-	//ModPlug_Seek(m_Sounds[0], 32500);
-	//ModPlug_Seek(m_Sounds[0], 0);
-} else {
-  //m_IsPushingAudio = false;
-}
 
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
@@ -252,6 +239,13 @@ if (hitState == 0) {
         m_LastFailedCollideIndex = -1;
         m_AtlasSprites[0]->m_Velocity[0] = px; 
         m_AtlasSprites[0]->m_Velocity[1] = py;
+
+  m_AudioTimeout = 0.0;
+  m_IsPushingAudio = true;
+  float r;
+  r = 0;//fastAbs(randf()) * 0;
+  ModPlug_Seek(m_Sounds[0], 1000 * r);
+
         /*
         m_AtlasSprites[m_CurrentBarrelIndex]->SetEmitVelocity(sx, sy);
         m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0] += cost * 20.0;

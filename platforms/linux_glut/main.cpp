@@ -268,11 +268,12 @@ closedir(dir);
       return(-1);
     }
 
-    unsigned int rate = 11025; /* Sample rate */
-    min_buffer = 64;
+    unsigned int rate = 44100; /* Sample rate */
+    //min_buffer = 64;
+    min_buffer = 64 * 4;
 
     int periods = 2;       /* Number of periods */
-    snd_pcm_uframes_t periodsize = 256; /* Periodsize (bytes) */
+    snd_pcm_uframes_t periodsize = 256 * 4; /* Periodsize (bytes) */
 
 
     /* Set access type. This can be either    */

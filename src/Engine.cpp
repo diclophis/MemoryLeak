@@ -431,13 +431,13 @@ void Engine::DoAudio(short buffer[], int size) {
       memset(m_AudioMixBuffer, 0, size * sizeof(short));
     }
 
-    ModPlug_SetMasterVolume(m_Sounds[0], 100.0);
-    ModPlug_SetMasterVolume(m_Sounds[1], 200.0);
+    //ModPlug_SetMasterVolume(m_Sounds[0], 100.0);
+    //ModPlug_SetMasterVolume(m_Sounds[1], 200.0);
     if (m_AudioTimeout < 0.0) {
     } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.75) {
       ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
-      ModPlug_SetMasterVolume(m_Sounds[0], 200.0);
-      ModPlug_SetMasterVolume(m_Sounds[1], 100.0);
+      //ModPlug_SetMasterVolume(m_Sounds[0], 200.0);
+      //ModPlug_SetMasterVolume(m_Sounds[1], 100.0);
     } else if (m_AudioTimeout > 0.25) {
       m_AudioTimeout = -1.0;
     }
