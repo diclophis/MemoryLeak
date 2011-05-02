@@ -35,7 +35,7 @@ static std::vector<foo*> sounds;
 
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
-#define PLAYBACK_FREQ 11025
+#define PLAYBACK_FREQ 44100
  
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	LOGV("interupption\n");

@@ -146,6 +146,13 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
+if (hitState == 0) {
+  m_AudioTimeout = 0.0;
+  m_IsPushingAudio = true;
+  float r;
+  r = 0;//fastAbs(randf()) * 0;
+  ModPlug_Seek(m_Sounds[0], 1000 * r);
+}
 
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
@@ -240,11 +247,6 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
         m_AtlasSprites[0]->m_Velocity[0] = px; 
         m_AtlasSprites[0]->m_Velocity[1] = py;
 
-  m_AudioTimeout = 0.0;
-  m_IsPushingAudio = true;
-  float r;
-  r = 0;//fastAbs(randf()) * 0;
-  ModPlug_Seek(m_Sounds[0], 1000 * r);
 
         /*
         m_AtlasSprites[m_CurrentBarrelIndex]->SetEmitVelocity(sx, sy);

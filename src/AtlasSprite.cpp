@@ -92,18 +92,20 @@ void AtlasSprite::Render() {
 		glScalef(m_Scale[0], m_Scale[1], 1.0);
 		//int i = m_Frames[m_Frame % m_AnimationLength];
 		int i = (m_Frame % m_AnimationLength);
-		GLfloat w = m_Sprites[i].dx;
-		GLfloat h = m_Sprites[i].dy;
+		GLshort w = m_Sprites[i].dx;
+		GLshort h = m_Sprites[i].dy;
 		GLfloat tx = m_Sprites[i].tx1;
 		GLfloat ty = m_Sprites[i].ty1;
 		GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
 		GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
-		GLfloat vertices[8] = {
+
+		GLshort vertices[8] = {
 			(-w / 2.0), (-h / 2.0),
 			(w / 2.0), (-h / 2.0),
 			(w / 2.0), (h / 2.0),
 			(-w / 2.0), (h / 2.0)
 		};
+
 		GLfloat texture[8] = {
 			tx, (ty + th),
 			tx + tw, (ty + th),
@@ -111,22 +113,11 @@ void AtlasSprite::Render() {
 			tx, ty
 		};
 
-		glVertexPointer(2, GL_FLOAT, 0, vertices);
+		glVertexPointer(2, GL_SHORT, 0, vertices);
 		glTexCoordPointer(2, GL_FLOAT, 0, texture);
     
-    //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
-/*
-    if (true) {
-      glDisable(GL_TEXTURE_2D);
-      glLineWidth(2.0);
-      glColor4f(1.0, 1.0, 1.0, 1.0);
-      glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
-      glEnable(GL_TEXTURE_2D);
-    }
-*/
 
 		ax += m_Sprites[i].dx;
 		ay += w;
