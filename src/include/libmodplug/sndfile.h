@@ -919,7 +919,7 @@ typedef struct WAVEEXTRAHEADER
 ///////////////////////////////////////////////////////////
 // Low-level Mixing functions
 
-#define MIXBUFFERSIZE		2048
+#define MIXBUFFERSIZE		32
 #define MIXING_ATTENUATION	4
 #define MIXING_CLIPMIN		(-0x08000000)
 #define MIXING_CLIPMAX		(0x07FFFFFF)

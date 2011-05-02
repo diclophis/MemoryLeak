@@ -280,7 +280,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
     free(buffer);
 	}
 
-
+	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
 }
 
@@ -417,15 +417,20 @@ int Engine::RunThread() {
 
 void Engine::DoAudio(short buffer[], int size) {
 
-  if (!m_AudioMixBuffer) {
-    m_AudioMixBuffer = new short[size];
-  }
+  if (m_IsPushingAudio) {
+    if (m_AudioBufferSize == 0) {
+      m_AudioBufferSize = size;
+      LOGV("make audio buffer %d\n", size);
+      m_AudioMixBuffer = new short[size];
+    }
 
-  ModPlug_Read(m_Sounds[0], buffer, size);
-  ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size);
+    ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
+    ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size * sizeof(short));
 
-  for (unsigned int i=0; i<size; i++) {	
-    buffer[i] = (buffer[i] + m_AudioMixBuffer[i]) / 2;
+    for (unsigned int i=0; i<size; i++) {
+      //LOGV("foo %d / %d\n", i, size);
+      buffer[i] = (buffer[i] + m_AudioMixBuffer[i]) / 2;
+    }
   }
 }
 

@@ -1777,6 +1777,7 @@ DWORD MPPASMCALL X86_Convert32To16(LPVOID lp16, int *pBuffer, DWORD lSampleCount
 	signed short *p = (signed short *)lp16;
 	for (UINT i=0; i<lSampleCount; i++)
 	{
+		//printf("wtf--- %d / %d\n", i, lSampleCount);
 		int n = pBuffer[i];
 		if (n < MIXING_CLIPMIN)
 			n = MIXING_CLIPMIN;

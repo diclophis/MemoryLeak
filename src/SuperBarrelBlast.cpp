@@ -94,7 +94,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<m_DebugBoxesCount; i++) {
     m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 2, 2, 0, 4, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 2, 2, 0, 4, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
     m_AtlasSprites[m_SpriteCount]->Build(0);
   }
@@ -420,13 +420,13 @@ int SuperBarrelBlast::Simulate() {
   float aox = (ox); // * 1.0 * m_DeltaTime;
   float aoy = (oy); // * 1.0 * m_DeltaTime;
 
-  if (ox < 50 && oy < 50) { 
+  //if (ox < 50 && oy < 50) { 
+  //  ox *= 1.0 * m_DeltaTime;
+  //  oy *= 1.0 * m_DeltaTime;
+  //} else {
     ox *= 1.0 * m_DeltaTime;
     oy *= 1.0 * m_DeltaTime;
-  } else {
-    ox *= 4.0 * m_DeltaTime;
-    oy *= 4.0 * m_DeltaTime;
-  }
+  //}
 	m_CameraOffsetX += ox;
 	m_CameraOffsetY += oy;
 

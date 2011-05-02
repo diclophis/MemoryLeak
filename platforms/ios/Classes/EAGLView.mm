@@ -299,7 +299,8 @@ static OSStatus playbackCallback(void *inRefCon,
 	//Signal to get audio
 	Engine *f = [g_View game];
 	if (f) {
-		f->DoAudio(ioData->mData, ioData->mDataByteSize);
+		memset(ioData->mData, 0, ioData->mDataByteSize);
+		f->DoAudio((short int *)ioData->mData, inNumberFrames);
 	}
 		
     return noErr;

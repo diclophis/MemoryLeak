@@ -72,6 +72,7 @@ public:
 	int m_RenderIndex;
 
   short *m_AudioMixBuffer;
+	int m_AudioBufferSize;
 
   bool m_IsPushingAudio;
 	
