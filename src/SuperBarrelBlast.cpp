@@ -146,7 +146,7 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
-if (hitState == 0) {
+if (hitState == 0 && m_AudioTimeout < 0.0) {
   m_AudioTimeout = 0.0;
   m_IsPushingAudio = true;
 	//ModPlug_Seek(m_Sounds[0], 32500);
