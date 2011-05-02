@@ -33,7 +33,7 @@ public:
 	virtual void RenderSpritePhase() = 0;
   void WaitVsync();
   void WaitAudioSync();
-  short* DoAudio(int b);
+  void* DoAudio(void *buffer, int bytes);
 	
 	void RenderModelRange(unsigned int s, unsigned int e);
 
@@ -71,11 +71,10 @@ public:
 
 	int m_RenderIndex;
 
-  short *m_AudioBuffer;
-  short *m_AudioBufferTwo;
-  short *m_AudioMixBuffer;
-  short *m_AudioSilenceBuffer;
-	//void *(* start_routine)(void *, int, int);
+  void *m_AudioBuffer;
+  void *m_AudioBufferTwo;
+  void *m_AudioMixBuffer;
+  void *m_AudioSilenceBuffer;
 
   bool m_IsPushingAudio;
 	

@@ -2025,7 +2025,7 @@
 				OTHER_CFLAGS = "-DDEBUGBUILD";
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				RUN_CLANG_STATIC_ANALYZER = YES;
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = iphonesimulator4.1;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -2054,6 +2054,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = iphonesimulator4.1;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

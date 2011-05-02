@@ -415,37 +415,44 @@ int Engine::RunThread() {
 }
 
 
-short* Engine::DoAudio(int bytes) {
+void* Engine::DoAudio(void *buffer, int bytes) {
 
+  ModPlug_Read(m_Sounds[0], buffer, bytes);
+  //ModPlug_Read(m_Sounds[1], buffer, bytes);
+
+  return NULL;
+
+  /*
   if (!m_AudioBuffer) {
 
-    m_AudioBuffer = (short *)malloc(bytes);
-    m_AudioBufferTwo = (short *)malloc(bytes);
-    m_AudioMixBuffer = (short *)malloc(bytes);
-    m_AudioSilenceBuffer = (short *)malloc(bytes);
+    m_AudioBuffer = malloc(bytes);
+    m_AudioBufferTwo = malloc(bytes);
+    m_AudioMixBuffer = malloc(bytes);
+    m_AudioSilenceBuffer = malloc(bytes);
 
-    /*
-    int m_AudioBufferSize = bytes;
-    m_AudioBuffer = new short[m_AudioBufferSize];
-    m_AudioBufferTwo = new short[m_AudioBufferSize];
-    m_AudioMixBuffer = new short[m_AudioBufferSize];
-    m_AudioSilenceBuffer = new short[m_AudioBufferSize];
+    //int m_AudioBufferSize = bytes;
+    //m_AudioBuffer = new short[m_AudioBufferSize];
+    //m_AudioBufferTwo = new short[m_AudioBufferSize];
+    //m_AudioMixBuffer = new short[m_AudioBufferSize];
+    //m_AudioSilenceBuffer = new short[m_AudioBufferSize];
 
-    memset(m_AudioBuffer, 0, m_AudioBufferSize);
-    memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
-    memset(m_AudioMixBuffer, 0, m_AudioBufferSize);
-    memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
-    */
+    //memset(m_AudioBuffer, 0, m_AudioBufferSize);
+    //memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
+    //memset(m_AudioMixBuffer, 0, m_AudioBufferSize);
+    //memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
   }
 
     ModPlug_Read(m_Sounds[0], m_AudioBuffer, bytes);
-    ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, bytes);
+    //m_AudioBuffer = (&m_AudioBuffer - bytes * 2);
+    //ModPlug_Read(m_Sounds[1], m_AudioBuffer, bytes);
+    //ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, bytes);
 
-    for (unsigned int i=0; i<bytes; i++) {	
-      m_AudioMixBuffer[i] = (m_AudioBuffer[i]); // + (m_AudioBufferTwo[i]);
-    }
+    //for (unsigned int i=0; i<bytes; i++) {	
+    //  m_AudioMixBuffer[i] = m_AudioBuffer[i];
+    //}
 
-    return m_AudioMixBuffer;
+    return m_AudioBuffer;
+  */
 }
 
 

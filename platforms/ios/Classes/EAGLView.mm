@@ -35,7 +35,7 @@ static std::vector<foo*> sounds;
 
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
-#define PLAYBACK_FREQ 44100
+#define PLAYBACK_FREQ 11025
  
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	LOGV("interupption\n");
@@ -299,7 +299,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	//Signal to get audio
 	Engine *f = [g_View game];
 	if (f) {
-		memcpy(ioData->mData, f->DoAudio((int)ioData->mDataByteSize), ioData->mDataByteSize);
+		f->DoAudio(ioData->mData, ioData->mDataByteSize);
 	}
 		
     return noErr;

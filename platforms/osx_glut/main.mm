@@ -32,19 +32,9 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int min_buffer;
 
-
-
-
-
-
 AudioDeviceID device; //the default device
 UInt32 deviceBufferSize; //bufferSize returned by kAudioDevicePropertyBufferSize
 AudioStreamBasicDescription deviceFormat; //info about the default device
-
-
-
-
-
 
 class Callbacks {
 public:
@@ -236,8 +226,8 @@ int main(int argc, char** argv) {
 		sounds.push_back(firstModel);
 	}
 
-  game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds, min_buffer, 16);
-  game->CreateThread(Callbacks::PumpAudio);
+  game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
+  game->CreateThread();
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);
