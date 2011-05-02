@@ -53,7 +53,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	int ii = 0;
 	for (unsigned i=0; i<m_TotalCount; i++) {
 		int b = (i % m_SpritesPerRow);
-		if (i == m_Frames[ii]) {
+		if (i == m_Frames[ii] && ii < m_Count) {
 			m_Sprites[ii].dx = vdx;
 			m_Sprites[ii].dy = vdy;
 			m_Sprites[ii].tx1 = texture_x;
@@ -61,11 +61,6 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 			m_Sprites[ii].tx2 = texture_x + tdx;
 			m_Sprites[ii].ty2 = texture_y + tdy;
 			ii++;
-			if (ii > m_Count) {
-				LOGV("wtf\n");
-				break;
-			}
-			
 		}
 		texture_x += tdx;
 		if (b == (m_SpritesPerRow - 1)) {

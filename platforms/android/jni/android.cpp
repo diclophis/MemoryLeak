@@ -70,6 +70,7 @@ void *pump_audio(void *) {
   if (g_Env == NULL) {
     g_Vm->AttachCurrentThread(&g_Env, NULL);
   }
+
   if (ab == NULL) {
     jobject tmp;
     ab = g_Env->NewShortArray(min_buffer);
@@ -77,16 +78,18 @@ void *pump_audio(void *) {
     ab = (jshortArray)g_Env->NewGlobalRef(ab);
     g_Env->DeleteLocalRef(tmp);
   }
+
   if (android_dumpAudio == NULL) {
     android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
   }
 
+  jshort *b = (jshort *)malloc(min_buffer * sizeof(short));
+
   while (gameState) {
-    int len = min_buffer;
-    //LOGV("len: %d %d\n", len, min_buffer / 4);
     if (game) {
-      g_Env->SetShortArrayRegion(ab, 0, min_buffer, (jshort *)(game->DoAudio(min_buffer * sizeof(short))));
-      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, len);
+      game->DoAudio(b, min_buffer * sizeof(short));
+      g_Env->SetShortArrayRegion(ab, 0, min_buffer, b);
+      g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer);
     }
   }
 }

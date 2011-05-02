@@ -33,7 +33,7 @@ public:
 	virtual void RenderSpritePhase() = 0;
   void WaitVsync();
   void WaitAudioSync();
-  void* DoAudio(void *buffer, int bytes);
+  void DoAudio(short buffer[], int bytes);
 	
 	void RenderModelRange(unsigned int s, unsigned int e);
 

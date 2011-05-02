@@ -415,12 +415,20 @@ int Engine::RunThread() {
 }
 
 
-void* Engine::DoAudio(void *buffer, int bytes) {
+void Engine::DoAudio(short buffer[], int size) {
 
-  ModPlug_Read(m_Sounds[0], buffer, bytes);
-  //ModPlug_Read(m_Sounds[1], buffer, bytes);
+  short *bb;
+  bb = new short[size];
 
-  return NULL;
+  //ModPlug_SetMasterVolume(m_Sounds[0], 50);
+  //ModPlug_SetMasterVolume(m_Sounds[1], 50);
+
+  ModPlug_Read(m_Sounds[0], buffer, size);
+  ModPlug_Read(m_Sounds[1], bb, size);
+
+  for (unsigned int i=0; i<size; i++) {	
+    buffer[i] = ((short)buffer[i] + (short)bb[i]) / 2;
+  }
 
   /*
   if (!m_AudioBuffer) {

@@ -47,8 +47,14 @@ char *pcm_name;
   
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
+
+  short *buffer;
+  buffer = new short[min_buffer];
+  memset(buffer, 0, min_buffer * sizeof(short));
+
   while (true) {
-    foo = snd_pcm_writei(pcm_handle, game->DoAudio(min_buffer * sizeof(short)), min_buffer);
+    game->DoAudio(buffer, min_buffer);
+    foo = snd_pcm_writei(pcm_handle, buffer, min_buffer / sizeof(short));
   }
 }
 
@@ -260,7 +266,7 @@ closedir(dir);
     }
 
     unsigned int rate = 11025; /* Sample rate */
-    min_buffer = 512;
+    min_buffer = 4096;
 
     /* Set access type. This can be either    */
     /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
