@@ -384,7 +384,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 1.0;
+	double interp = 2.0;
 
 	while (m_GameState != 0) {
 		
@@ -432,7 +432,7 @@ void Engine::DoAudio(short buffer[], int size) {
     }
 
     if (m_AudioTimeout < 0.0) {
-    } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.5) {
+    } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.75) {
       ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
     } else if (m_AudioTimeout > 0.25) {
       m_AudioTimeout = -1.0;
