@@ -436,10 +436,6 @@ void Engine::DoAudio(short buffer[], int size) {
     } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.33) {
       ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
     } else if (m_AudioTimeout > 0.25) {
-      int r;
-
-      r = fastAbs(randf()) * 0;
-      ModPlug_Seek(m_Sounds[0], 1000 * r);
 
 /*
       r = fastAbs(randf()) * 200;
