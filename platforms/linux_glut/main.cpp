@@ -48,7 +48,7 @@ char *pcm_name;
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
   while (true) {
-    foo = snd_pcm_writei(pcm_handle, game->DoAudio(min_buffer), min_buffer / 2);
+    foo = snd_pcm_writei(pcm_handle, game->DoAudio(min_buffer * sizeof(short)), min_buffer);
   }
 }
 
@@ -259,14 +259,7 @@ closedir(dir);
       return(-1);
     }
 
-    unsigned int rate = 44100; /* Sample rate */
-    unsigned int exact_rate;   /* Sample rate returned by */
-                      /* snd_pcm_hw_params_set_rate_near */ 
-    int direction;          /* exact_rate == rate --> dir = 0 */
-                      /* exact_rate < rate  --> dir = -1 */
-                      /* exact_rate > rate  --> dir = 1 */
-    int periods = 2;       /* Number of periods */
-    snd_pcm_uframes_t periodsize = (1024) * 2; /* Periodsize (bytes) */
+    unsigned int rate = 11025; /* Sample rate */
     min_buffer = 512;
 
     /* Set access type. This can be either    */
@@ -281,20 +274,17 @@ closedir(dir);
     }
   
     /* Set sample format */
-    if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16) < 0) {
+    if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
       fprintf(stderr, "Error setting format.\n");
       return(-1);
     }
 
     /* Set sample rate. If the exact rate is not supported */
     /* by the hardware, use nearest possible rate.         */ 
-    exact_rate = rate;
-    if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &exact_rate, 0) < 0) {
+    //exact_rate = rate;
+    if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &rate, 0) < 0) {
       fprintf(stderr, "Error setting rate.\n");
       return(-1);
-    }
-    if (rate != exact_rate) {
-      fprintf(stderr, "The rate %d Hz is not supported by your hardware.\n ==> Using %d Hz instead.\n", rate, exact_rate);
     }
 
     /* Set number of channels */
@@ -304,22 +294,27 @@ closedir(dir);
     }
 
     /* Set number of periods. Periods used to be called fragments. */ 
-    if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
-      fprintf(stderr, "Error setting periods.\n");
-      return(-1);
-    }
+    //if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
+    //  fprintf(stderr, "Error setting periods.\n");
+    //  return(-1);
+    //}
 
     /* Set buffer size (in frames). The resulting latency is given by */
     /* latency = periodsize * periods / (rate * bytes_per_frame)     */
-    if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, (periodsize * periods)>>2) < 0) {
-      fprintf(stderr, "Error setting buffersize.\n");
-      return(-1);
-    }
+    //if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, (periodsize * periods)>>2) < 0) {
+    //  fprintf(stderr, "Error setting buffersize.\n");
+    //  return(-1);
+    //}
   
     /* Apply HW parameter settings to */
     /* PCM device and prepare device  */
     if (snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
       fprintf(stderr, "Error setting HW params.\n");
+      return(-1);
+    }
+
+    if (snd_pcm_prepare(pcm_handle) < 0) {
+      fprintf (stderr, "cannot prepare audio interface for use\n");
       return(-1);
     }
 

@@ -82,10 +82,10 @@ void *pump_audio(void *) {
   }
 
   while (gameState) {
-    int len = min_buffer / (4 * sizeof(short));
+    int len = min_buffer;
     //LOGV("len: %d %d\n", len, min_buffer / 4);
     if (game) {
-      g_Env->SetShortArrayRegion(ab, 0, min_buffer, (jshort *)((short *)game->DoAudio(min_buffer / 4)));
+      g_Env->SetShortArrayRegion(ab, 0, min_buffer, (jshort *)(game->DoAudio(min_buffer * sizeof(short))));
       g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, len);
     }
   }

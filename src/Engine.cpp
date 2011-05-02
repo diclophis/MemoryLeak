@@ -280,16 +280,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
     free(buffer);
 	}
 
-	int m_AudioBufferSize = 24576;
-	m_AudioBuffer = new short[m_AudioBufferSize];
-	m_AudioBufferTwo = new short[m_AudioBufferSize];
-	m_AudioMixBuffer = new short[m_AudioBufferSize];
-	m_AudioSilenceBuffer = new short[m_AudioBufferSize];
-
-	memset(m_AudioBuffer, 0, m_AudioBufferSize);
-	memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
-	memset(m_AudioMixBuffer, 0, m_AudioBufferSize);
-	memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
 
 	m_IsPushingAudio = false;
 }
@@ -393,7 +383,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 1.0;
+	double interp = 4.0;
 
 	while (m_GameState != 0) {
 		
@@ -425,12 +415,34 @@ int Engine::RunThread() {
 }
 
 
-void *Engine::DoAudio(int bytes) {
+short* Engine::DoAudio(int bytes) {
+
+  if (!m_AudioBuffer) {
+
+    m_AudioBuffer = (short *)malloc(bytes);
+    m_AudioBufferTwo = (short *)malloc(bytes);
+    m_AudioMixBuffer = (short *)malloc(bytes);
+    m_AudioSilenceBuffer = (short *)malloc(bytes);
+
+    /*
+    int m_AudioBufferSize = bytes;
+    m_AudioBuffer = new short[m_AudioBufferSize];
+    m_AudioBufferTwo = new short[m_AudioBufferSize];
+    m_AudioMixBuffer = new short[m_AudioBufferSize];
+    m_AudioSilenceBuffer = new short[m_AudioBufferSize];
+
+    memset(m_AudioBuffer, 0, m_AudioBufferSize);
+    memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
+    memset(m_AudioMixBuffer, 0, m_AudioBufferSize);
+    memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
+    */
+  }
+
     ModPlug_Read(m_Sounds[0], m_AudioBuffer, bytes);
     ModPlug_Read(m_Sounds[1], m_AudioBufferTwo, bytes);
 
     for (unsigned int i=0; i<bytes; i++) {	
-      m_AudioMixBuffer[i] = (m_AudioBuffer[i]) + (m_AudioBufferTwo[i]);
+      m_AudioMixBuffer[i] = (m_AudioBuffer[i]); // + (m_AudioBufferTwo[i]);
     }
 
     return m_AudioMixBuffer;
