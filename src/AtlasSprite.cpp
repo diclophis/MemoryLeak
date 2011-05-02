@@ -42,23 +42,34 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 			m_Frames[i] = m_Start + i;
 		}
 	}
-	m_Count = m_SpritesPerRow * m_Rows;
+	//m_Count = m_SpritesPerRow * m_Rows;
+	int m_TotalCount = m_SpritesPerRow * m_Rows;
+	m_Count = m_AnimationLength;
 	m_Sprites = new Sprite[m_Count];
 	float tdx = 1.0 / (float)m_SpritesPerRow;
 	float tdy = 1.0 / (float)m_Rows;
 	float texture_x = 0.0;
 	float texture_y = 0.0;
-	for (unsigned i=0; i<m_Count; i++) {
+	int ii = 0;
+	for (unsigned i=0; i<m_TotalCount; i++) {
 		int b = (i % m_SpritesPerRow);
-		m_Sprites[i].dx = vdx;
-		m_Sprites[i].dy = vdy;
-		m_Sprites[i].tx1 = texture_x;
-		m_Sprites[i].ty1 = texture_y;
-		m_Sprites[i].tx2 = texture_x + tdx;
-		m_Sprites[i].ty2 = texture_y + tdy;
+		if (i == m_Frames[ii]) {
+			m_Sprites[ii].dx = vdx;
+			m_Sprites[ii].dy = vdy;
+			m_Sprites[ii].tx1 = texture_x;
+			m_Sprites[ii].ty1 = texture_y;
+			m_Sprites[ii].tx2 = texture_x + tdx;
+			m_Sprites[ii].ty2 = texture_y + tdy;
+			ii++;
+			if (ii > m_Count) {
+				LOGV("wtf\n");
+				break;
+			}
+			
+		}
 		texture_x += tdx;
 		if (b == (m_SpritesPerRow - 1)) {
-      texture_x = 0.0;
+			texture_x = 0.0;
 			texture_y += tdy;
 		}
 	}
@@ -84,7 +95,8 @@ void AtlasSprite::Render() {
 		glTranslatef(ax, ay, 0.0);
 		glRotatef(m_Rotation, 0.0, 0.0, 1.0);
 		glScalef(m_Scale[0], m_Scale[1], 1.0);
-		int i = m_Frames[m_Frame % m_AnimationLength];
+		//int i = m_Frames[m_Frame % m_AnimationLength];
+		int i = (m_Frame % m_AnimationLength);
 		GLfloat w = m_Sprites[i].dx;
 		GLfloat h = m_Sprites[i].dy;
 		GLfloat tx = m_Sprites[i].tx1;

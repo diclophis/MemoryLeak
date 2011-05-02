@@ -420,7 +420,6 @@ int SuperBarrelBlast::Simulate() {
   float aox = (ox); // * 1.0 * m_DeltaTime;
   float aoy = (oy); // * 1.0 * m_DeltaTime;
 
-  /*
   if (ox < 50 && oy < 50) { 
     ox *= 1.0 * m_DeltaTime;
     oy *= 1.0 * m_DeltaTime;
@@ -430,10 +429,11 @@ int SuperBarrelBlast::Simulate() {
   }
 	m_CameraOffsetX += ox;
 	m_CameraOffsetY += oy;
-  */
 
+/*
 	m_CameraOffsetX += aox;
 	m_CameraOffsetY += aoy;
+*/
 
 	return 1;
 }

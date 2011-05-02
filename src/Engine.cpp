@@ -383,7 +383,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
-	double interp = 4.0;
+	double interp = 1.0;
 
 	while (m_GameState != 0) {
 		

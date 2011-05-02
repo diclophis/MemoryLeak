@@ -294,7 +294,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-	LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
+	//LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
 	
 	//Signal to get audio
 	Engine *f = [g_View game];
