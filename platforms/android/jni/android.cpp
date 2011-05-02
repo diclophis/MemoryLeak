@@ -114,7 +114,7 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
   JNIEnv * env, jclass envClass,
   int size
 ) {
-  min_buffer = size;
+  min_buffer = size / 4;
 }
 
 

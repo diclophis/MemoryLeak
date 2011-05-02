@@ -430,7 +430,7 @@ void Engine::DoAudio(short buffer[], int size) {
       m_AudioMixBuffer = new short[size];
     }
 
-    if (m_AudioTimeout > 3.33) {
+    if (m_AudioTimeout > 0.33) {
       int r;
 
       r = fastAbs(randf()) * 200;
