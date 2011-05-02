@@ -421,7 +421,6 @@ int Engine::RunThread() {
 
 void Engine::DoAudio(short buffer[], int size) {
 
-  //m_Balance = fastSinf(m_SimulationTime);
   memset(buffer, 0, size * sizeof(short));
 
   if (m_IsPushingAudio) {
@@ -433,26 +432,14 @@ void Engine::DoAudio(short buffer[], int size) {
     }
 
     if (m_AudioTimeout < 0.0) {
-    } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.33) {
+    } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.5) {
       ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
     } else if (m_AudioTimeout > 0.25) {
-
-/*
-      r = fastAbs(randf()) * 200;
-      LOGV("timeout %d\n", r);
-      ModPlug_Seek(m_Sounds[0], 1000 * r);
-
-      r = fastAbs(randf()) * 200;
-      LOGV("timeout %d\n", r);
-      ModPlug_Seek(m_Sounds[1], 1000 * r);
-*/
-
       m_AudioTimeout = -1.0;
-      //m_IsPushingAudio = false;
     }
 
-    ModPlug_SetMasterVolume(m_Sounds[0], 200.0); //(m_Balance * 100));
-    ModPlug_SetMasterVolume(m_Sounds[1], 25.0); //(-m_Balance * 100));
+    ModPlug_SetMasterVolume(m_Sounds[0], 200.0);
+    ModPlug_SetMasterVolume(m_Sounds[1], 100.0);
 
     ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size * sizeof(short));
 
