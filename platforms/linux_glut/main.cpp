@@ -54,7 +54,7 @@ void *pump_audio(void *) {
 
   while (true) {
     game->DoAudio(buffer, min_buffer);
-    foo = snd_pcm_writei(pcm_handle, buffer, min_buffer / sizeof(short));
+    foo = snd_pcm_writei(pcm_handle, buffer, min_buffer);
   }
 }
 
@@ -266,7 +266,7 @@ closedir(dir);
     }
 
     unsigned int rate = 11025; /* Sample rate */
-    min_buffer = 4096;
+    min_buffer = 64;
 
     /* Set access type. This can be either    */
     /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
