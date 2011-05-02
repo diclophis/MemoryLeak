@@ -10,11 +10,12 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 50.0
+#define SUBDIVIDE 25.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 22.5 
 #define SHOOT_VELOCITY 400.0
-#define GRID_SIZE 11
+#define GRID_SIZE 31 
+#define COLLIDE_TIMEOUT 0.001
 
 enum colliders {
   BARREL = 1,
@@ -33,7 +34,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_LastTouchedIndex = -1;
   m_DidDrag = false;
 
-	m_Gravity = 0.0;
+	m_Gravity = 500.0;
 
 	m_CameraOffsetX = 0.0;
 	m_CameraOffsetY = 0.0;
@@ -70,7 +71,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 	m_CameraOffsetY = m_AtlasSprites[0]->m_Position[1];
 
   m_BarrelStartIndex = m_SpriteCount + 1;
-  m_BarrelCount = 100;
+  m_BarrelCount = 4;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     CreateCollider(x, y, r, BARREL);
     x += SUBDIVIDE * 3;
@@ -94,7 +95,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<m_DebugBoxesCount; i++) {
     m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 2, 2, 0, 4, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 47, 50, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
     m_AtlasSprites[m_SpriteCount]->Build(0);
   }
@@ -328,7 +329,7 @@ int SuperBarrelBlast::Simulate() {
     m_CollideTimeout = 0.0;
   } 
   
-  if ((collide_index >= 0) && (m_CollideTimeout > 0.075)) { // && (m_LaunchTimeout > 0.0) && (m_LastFailedCollideIndex >= 0) && (m_LastFailedCollideIndex != collide_index)) {
+  if ((collide_index >= 0) && (m_CollideTimeout > COLLIDE_TIMEOUT)) { // && (m_LaunchTimeout > 0.0) && (m_LastFailedCollideIndex >= 0) && (m_LastFailedCollideIndex != collide_index)) {
     //LOGV("collideTimeoutWhen: %f\n", m_CollideTimeout);
     //LOGV("wtf\n");
     float dx = (m_AtlasSprites[0]->m_Position[0] - m_PlayerLastX);
@@ -379,6 +380,8 @@ int SuperBarrelBlast::Simulate() {
           m_AtlasSprites[0]->m_Velocity[1] = 0.0;
           m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
           m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
+	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
+	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
           m_ReloadTimeout = 0.0;
         } else {
           //LOGV("the fuck 2\n");
@@ -388,7 +391,7 @@ int SuperBarrelBlast::Simulate() {
       //LOGV("the fuck\n");
     }
   } else {
-    if (collide_index < 0 && (m_CollideTimeout > 0.075)) {
+    if (collide_index < 0 && (m_CollideTimeout > COLLIDE_TIMEOUT)) {
       m_Space->set((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0, -2);
     }
     m_ReloadTimeout = -1;
@@ -411,8 +414,8 @@ int SuperBarrelBlast::Simulate() {
 
   m_LastCollideIndex = collide_index;
 
-	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
-	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
+	//m_PlayerLastX = 0; //m_AtlasSprites[0]->m_Position[0];
+	//m_PlayerLastY = 0; //m_AtlasSprites[0]->m_Position[1];
 
   float ox = (m_PlayerLastX + m_CameraPanX) - m_CameraOffsetX;
   float oy = (m_PlayerLastY + m_CameraPanY) - m_CameraOffsetY;
