@@ -455,8 +455,8 @@ void Engine::DoAudio(short buffer[], int size) {
       //m_IsPushingAudio = false;
     }
 
-    //ModPlug_SetMasterVolume(m_Sounds[0], (fastSinf(m_SimulationTime) * 180.0) + 20.0); //(m_Balance * 100));
-    ModPlug_SetMasterVolume(m_Sounds[1], 50.0); //(-m_Balance * 100));
+    ModPlug_SetMasterVolume(m_Sounds[0], 200.0); //(m_Balance * 100));
+    ModPlug_SetMasterVolume(m_Sounds[1], 25.0); //(-m_Balance * 100));
 
     ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size * sizeof(short));
 

@@ -192,10 +192,12 @@ if (hitState == 0 && m_AudioTimeout < 0.0) {
   } else if (hitState == 2 && m_LastTouchedIndex < 0 && !m_DidDrag) {
       if (m_TouchTimeout < 0.25) {
         LOGV("double tap\n");
+        /*
         m_Zoom += 0.5;
         if (m_Zoom > 3.0) {
           m_Zoom = 1.0;
         }
+        */
       } else {
         m_TouchTimeout = 0.0;
       }

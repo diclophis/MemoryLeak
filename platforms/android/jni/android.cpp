@@ -89,8 +89,8 @@ void *pump_audio(void *) {
 
   while (gameState) {
     if (game) {
-      game->DoAudio(b, min_buffer);
-      g_Env->SetShortArrayRegion(ab, 0, min_buffer, b);
+      game->DoAudio(b, min_buffer / sizeof(short));
+      g_Env->SetShortArrayRegion(ab, 0, min_buffer / sizeof(short), b);
       g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / sizeof(short));
     }
   }
@@ -114,7 +114,7 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
   JNIEnv * env, jclass envClass,
   int size
 ) {
-  min_buffer = size / 4;
+  min_buffer = size / 8;
 }
 
 
