@@ -55,6 +55,9 @@ void *pump_audio(void *) {
   while (true) {
     game->DoAudio(buffer, min_buffer);
     foo = snd_pcm_writei(pcm_handle, buffer, min_buffer);
+    if (foo < 0) {
+      LOGV("wtf: %s\n", snd_strerror(foo));
+    }
   }
 }
 
@@ -268,6 +271,10 @@ closedir(dir);
     unsigned int rate = 11025; /* Sample rate */
     min_buffer = 64;
 
+    int periods = 2;       /* Number of periods */
+    snd_pcm_uframes_t periodsize = 256; /* Periodsize (bytes) */
+
+
     /* Set access type. This can be either    */
     /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
     /* SND_PCM_ACCESS_RW_NONINTERLEAVED.      */
@@ -300,17 +307,17 @@ closedir(dir);
     }
 
     /* Set number of periods. Periods used to be called fragments. */ 
-    //if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
-    //  fprintf(stderr, "Error setting periods.\n");
-    //  return(-1);
-    //}
+    if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
+      fprintf(stderr, "Error setting periods.\n");
+      return(-1);
+    }
 
     /* Set buffer size (in frames). The resulting latency is given by */
     /* latency = periodsize * periods / (rate * bytes_per_frame)     */
-    //if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, (periodsize * periods)>>2) < 0) {
-    //  fprintf(stderr, "Error setting buffersize.\n");
-    //  return(-1);
-    //}
+    if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, (periodsize * periods)>>2) < 0) {
+      fprintf(stderr, "Error setting buffersize.\n");
+      return(-1);
+    }
   
     /* Apply HW parameter settings to */
     /* PCM device and prepare device  */

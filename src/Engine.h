@@ -82,6 +82,8 @@ public:
 
   float m_Zoom;
 
+  float m_Balance;
+
   void PingServer();
 
   float m_PingServerTimeout;
@@ -90,5 +92,7 @@ public:
 
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
+
+  float m_AudioTimeout;
 
 };

@@ -282,6 +282,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
+  m_AudioTimeout = 0.0;
 }
 
 
@@ -385,6 +386,8 @@ int Engine::RunThread() {
 	
 	double interp = 1.0;
 
+  m_AudioTimeout = 0;
+
 	while (m_GameState != 0) {
 		
     /*
@@ -406,6 +409,7 @@ int Engine::RunThread() {
 			m_DeltaTime = (averageWait / interp);
 			m_PingServerTimeout += (m_DeltaTime);
 			m_SimulationTime += (m_DeltaTime);
+			m_AudioTimeout += (m_DeltaTime);
 			m_GameState = Simulate();
 		}
 
@@ -417,6 +421,8 @@ int Engine::RunThread() {
 
 void Engine::DoAudio(short buffer[], int size) {
 
+  //m_Balance = fastSinf(m_SimulationTime);
+
   if (m_IsPushingAudio) {
     if (m_AudioBufferSize == 0) {
       m_AudioBufferSize = size;
@@ -424,13 +430,33 @@ void Engine::DoAudio(short buffer[], int size) {
       m_AudioMixBuffer = new short[size];
     }
 
+    if (m_AudioTimeout > 3.33) {
+      int r;
+
+      r = fastAbs(randf()) * 200;
+      LOGV("timeout %d\n", r);
+      ModPlug_Seek(m_Sounds[0], 1000 * r);
+
+      r = fastAbs(randf()) * 200;
+      LOGV("timeout %d\n", r);
+      ModPlug_Seek(m_Sounds[1], 1000 * r);
+
+      m_AudioTimeout = 0.0;
+      m_IsPushingAudio = false;
+    }
+
+    //ModPlug_SetMasterVolume(m_Sounds[0], (fastSinf(m_SimulationTime) * 180.0) + 20.0); //(m_Balance * 100));
+    //ModPlug_SetMasterVolume(m_Sounds[1], (cosf(m_SimulationTime) * 180.0) + 20.0); //(-m_Balance * 100));
+
     ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
     ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size * sizeof(short));
 
     for (unsigned int i=0; i<size; i++) {
-      //LOGV("foo %d / %d\n", i, size);
       buffer[i] = (buffer[i] + m_AudioMixBuffer[i]) / 2;
     }
+  } else {
+    //LOGV("silence\n");
+    memset(buffer, 0, size * sizeof(short));
   }
 }
 

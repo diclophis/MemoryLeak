@@ -10,11 +10,11 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 25.0
+#define SUBDIVIDE 30.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 22.5 
 #define SHOOT_VELOCITY 400.0
-#define GRID_SIZE 31 
+#define GRID_SIZE 11 
 #define COLLIDE_TIMEOUT 0.001
 
 enum colliders {
@@ -147,8 +147,12 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
 if (hitState == 0) {
+  m_AudioTimeout = 0.0;
+  m_IsPushingAudio = true;
 	//ModPlug_Seek(m_Sounds[0], 32500);
 	//ModPlug_Seek(m_Sounds[0], 0);
+} else {
+  //m_IsPushingAudio = false;
 }
 
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
@@ -262,7 +266,6 @@ if (hitState == 0) {
 
 
 void SuperBarrelBlast::Build() {
-  m_IsPushingAudio = true;
 }
 
 
