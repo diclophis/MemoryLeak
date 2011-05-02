@@ -71,10 +71,7 @@ public:
 
 	int m_RenderIndex;
 
-  void *m_AudioBuffer;
-  void *m_AudioBufferTwo;
-  void *m_AudioMixBuffer;
-  void *m_AudioSilenceBuffer;
+  short *m_AudioMixBuffer;
 
   bool m_IsPushingAudio;
 	

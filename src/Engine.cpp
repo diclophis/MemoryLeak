@@ -417,50 +417,16 @@ int Engine::RunThread() {
 
 void Engine::DoAudio(short buffer[], int size) {
 
-  short *bb;
-  bb = new short[size];
-
-  //ModPlug_SetMasterVolume(m_Sounds[0], 50);
-  //ModPlug_SetMasterVolume(m_Sounds[1], 50);
+  if (!m_AudioMixBuffer) {
+    m_AudioMixBuffer = new short[size];
+  }
 
   ModPlug_Read(m_Sounds[0], buffer, size);
-  ModPlug_Read(m_Sounds[1], bb, size);
+  ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size);
 
   for (unsigned int i=0; i<size; i++) {	
-    buffer[i] = ((short)buffer[i] + (short)bb[i]) / 2;
+    buffer[i] = (buffer[i] + m_AudioMixBuffer[i]) / 2;
   }
-
-  /*
-  if (!m_AudioBuffer) {
-
-    m_AudioBuffer = malloc(bytes);
-    m_AudioBufferTwo = malloc(bytes);
-    m_AudioMixBuffer = malloc(bytes);
-    m_AudioSilenceBuffer = malloc(bytes);
-
-    //int m_AudioBufferSize = bytes;
-    //m_AudioBuffer = new short[m_AudioBufferSize];
-    //m_AudioBufferTwo = new short[m_AudioBufferSize];
-    //m_AudioMixBuffer = new short[m_AudioBufferSize];
-    //m_AudioSilenceBuffer = new short[m_AudioBufferSize];
-
-    //memset(m_AudioBuffer, 0, m_AudioBufferSize);
-    //memset(m_AudioBufferTwo, 0, m_AudioBufferSize);
-    //memset(m_AudioMixBuffer, 0, m_AudioBufferSize);
-    //memset(m_AudioSilenceBuffer, 0, m_AudioBufferSize);
-  }
-
-    ModPlug_Read(m_Sounds[0], m_AudioBuffer, bytes);
-    //m_AudioBuffer = (&m_AudioBuffer - bytes * 2);
-    //ModPlug_Read(m_Sounds[1], m_AudioBuffer, bytes);
-    //ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, bytes);
-
-    //for (unsigned int i=0; i<bytes; i++) {	
-    //  m_AudioMixBuffer[i] = m_AudioBuffer[i];
-    //}
-
-    return m_AudioBuffer;
-  */
 }
 
 
