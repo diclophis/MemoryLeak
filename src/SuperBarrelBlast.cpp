@@ -31,6 +31,9 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_CameraPanX = 0.0;
   m_CameraPanY = 0.0;
 
+  m_PanSpeedX = 0.0;
+  m_PanSpeedY = 0.0;
+
   m_TouchTimeout = 0.0;
   m_LastTouchedIndex = -1;
   m_DidDrag = false;
@@ -91,14 +94,12 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_DebugBoxesStartIndex = m_SpriteCount + 1;
   m_DebugBoxesCount = GRID_X * GRID_Y;
+
   x = 0.0;
   y = 0.0;
 
   int xx = 0;
   int yy = 0;
-
-  int xxx = 0;
-  int yyy = 0;
 
   m_DebugBoxesPositions = new int[m_DebugBoxesCount * 2];
 
@@ -113,8 +114,6 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
       xx = 0;
       yy++;
     }
-    IndexToXY(i, &xxx, &yyy);
-    LOGV("%d %d %d\n", i, xxx, yyy);
   }
   m_DebugBoxesStopIndex = m_SpriteCount;
 
@@ -170,18 +169,13 @@ SuperBarrelBlast::~SuperBarrelBlast() {
 
 
 void SuperBarrelBlast::Hit(float x, float y, int hitState) {
-if (hitState == 0) {
-  m_AudioTimeout = 0.0;
-  m_IsPushingAudio = true;
-  float r;
-  r = 0;//fastAbs(randf()) * 0;
-  ModPlug_Seek(m_Sounds[0], 1000 * r);
-}
 
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);
   float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE * 0.5);
+  //float rdx = (xx) + (SUBDIVIDE * 0.5);
+  //float rdy = (yy) + (SUBDIVIDE * 0.5);
 	float collide_x = (dx);
 	float collide_y = (dy);
   int cx = (collide_x / SUBDIVIDE);
@@ -213,6 +207,7 @@ if (hitState == 0) {
     m_LastTouchedIndex = -1;
     //LOGV("didRotate\n");
   } else if (hitState == 2 && m_LastTouchedIndex < 0 && !m_DidDrag) {
+    LOGV("wha\n");
       if (m_TouchTimeout < 0.25) {
         LOGV("double tap\n");
         /*
@@ -223,6 +218,14 @@ if (hitState == 0) {
         */
       } else {
         m_TouchTimeout = 0.0;
+
+        //m_PanSpeedX = (m_PanStartX - rdx);
+        //m_PanSpeedY = (m_PanStartY - rdy);
+        //LOGV("done swipe %f %f %f\n", m_PanStartX, rdx, m_PanSpeedX);
+        LOGV("done swipe: %f %f \n", m_CameraPanX, m_CameraPanY);
+        //m_CameraOffsetX += m_CameraPanX;
+        //m_CameraOffsetY += m_CameraPanY;
+
       }
   } else if (hitState == 2 && m_LastTouchedIndex >= 0 && m_DidDrag) {
     if (m_LastTouchedIndex >= 0) {
@@ -234,18 +237,27 @@ if (hitState == 0) {
     m_DidDrag = false;
     LOGV("didDrop\n");
   } else if ((hitState == 0 || hitState == 1) && collide_index < 0) {
-    float px = collide_x;//(int)(collide_x / SUBDIVIDE) * SUBDIVIDE;
-    float py = collide_y;//(int)(collide_y / SUBDIVIDE) * SUBDIVIDE;
     if (hitState == 0) {
-      m_PanStartX = px;
-      m_PanStartY = py;
+      //m_PanStartX = px;
+      //m_PanStartY = py;
+      m_CameraPanX = 0.0;
+      m_CameraPanY = 0.0;
+      m_PanStartX = collide_x;
+      m_PanStartY = collide_y;
+      LOGV("start pan %f\n", m_PanStartX);
     } else {
-      float dpx = (m_PanStartX - px);
-      float dpy = (m_PanStartY - py);
-      m_CameraOffsetX += dpx;
-      m_CameraOffsetY += dpy;
+      float dpx = (m_PanStartX - collide_x);
+      float dpy = (m_PanStartY - collide_y);
+      LOGV("delta pan %f\n", dpx);
+      //m_CameraOffsetX = (dpx);
+      //m_CameraOffsetY = -(dpy);
+      m_CameraPanX = dpx;
+      m_CameraPanY = dpy;
+      //m_CameraOffsetX += dpx;
+      //m_CameraOffsetY += dpy;
     }
   } else {
+    LOGV("maybe shoot\n");
     //shoot
     if (collide_index >= 0 && (collide_index == m_CurrentBarrelIndex)) {
       float theta = DEGREES_TO_RADIANS(m_AtlasSprites[m_CurrentBarrelIndex]->m_Rotation + 90.0);
@@ -263,7 +275,13 @@ if (hitState == 0) {
         m_LastFailedCollideIndex = -1;
         m_AtlasSprites[0]->m_Velocity[0] = px; 
         m_AtlasSprites[0]->m_Velocity[1] = py;
-        /*
+
+  m_AudioTimeout = 0.0;
+  m_IsPushingAudio = true;
+  float r;
+  r = 0;//fastAbs(randf()) * 0;
+  ModPlug_Seek(m_Sounds[0], 1000 * r);
+
         m_AtlasSprites[m_CurrentBarrelIndex]->SetEmitVelocity(sx, sy);
         m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0] += cost * 20.0;
         m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[1] += sint * 20.0;
@@ -271,7 +289,7 @@ if (hitState == 0) {
         m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0] -= cost * 20.0;
         m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[1] -= sint * 20.0;
         m_AtlasSprites[m_CurrentBarrelIndex]->Fire();
-        */
+
         LOGV("didShoot\n");
       } else {
         LOGV("notTouchingDown\n");
@@ -462,6 +480,15 @@ int SuperBarrelBlast::Simulate() {
 
 	//m_CameraOffsetX += aox;
 	//m_CameraOffsetY += aoy;
+
+  //m_PanSpeedX *= 0.9;
+  //m_PanSpeedY *= 0.9;
+
+  //m_CameraOffsetX += (m_PanSpeedX * m_DeltaTime);
+  //m_CameraOffsetY += (m_PanSpeedY * m_DeltaTime);
+
+  m_CameraOffsetX += (((m_CameraPanX) / 300.0) * 5000.0 * m_DeltaTime);
+  m_CameraOffsetY += (((m_CameraPanY) / 300.0) * 5000.0 * m_DeltaTime);
 
 	return 1;
 }

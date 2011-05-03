@@ -57,6 +57,8 @@ public:
 
   float m_PanStartX;
   float m_PanStartY;
+  float m_PanSpeedX;
+  float m_PanSpeedY;
 
   float m_CollideTimeout;
 
