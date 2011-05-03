@@ -236,7 +236,7 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       m_PanStartX = collide_x;
       m_PanStartY = collide_y;
       //LOGV("start pan %f\n", m_PanStartX);
-    } else if(m_TouchTimeout < 0.5) {
+    } else if (m_TouchTimeout > 0.1 && m_TouchTimeout < 0.5) {
       float dpx = (m_PanStartX - collide_x);
       float dpy = (m_PanStartY - collide_y);
       //LOGV("delta pan %f\n", dpx);
