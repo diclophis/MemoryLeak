@@ -10,11 +10,12 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 50.0
+#define SUBDIVIDE 60.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 22.5 
 #define SHOOT_VELOCITY 400.0
-#define GRID_SIZE 11 
+#define GRID_X 13 
+#define GRID_Y 19 
 #define COLLIDE_TIMEOUT 0.001
 
 enum colliders {
@@ -89,17 +90,35 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 	m_AtlasSprites[m_SpriteCount]->Build(0);
 
   m_DebugBoxesStartIndex = m_SpriteCount + 1;
-  m_DebugBoxesCount = GRID_SIZE * GRID_SIZE;
+  m_DebugBoxesCount = GRID_X * GRID_Y;
   x = 0.0;
   y = 0.0;
 
+  int xx = 0;
+  int yy = 0;
+
+  int xxx = 0;
+  int yyy = 0;
+
+  m_DebugBoxesPositions = new int[m_DebugBoxesCount * 2];
+
   for (unsigned int i=0; i<m_DebugBoxesCount; i++) {
     m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 47, 50, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
-    m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_DebugBoxesPositions[(i * 2)] = xx;
+    m_DebugBoxesPositions[(i * 2) + 1] = yy;
+    xx++;
+    if (xx >= GRID_X) {
+      xx = 0;
+      yy++;
+    }
+    IndexToXY(i, &xxx, &yyy);
+    LOGV("%d %d %d\n", i, xxx, yyy);
   }
   m_DebugBoxesStopIndex = m_SpriteCount;
+
+  m_Zoom = 2.0;
 }
 
 
@@ -131,13 +150,18 @@ void SuperBarrelBlast::CreateCollider(float x, float y, float r, int flag) {
 
 
 void SuperBarrelBlast::IndexToXY(int index, int* x, int* y) {
-  *y = index / GRID_SIZE;
-  *x = index - *y * GRID_SIZE;
+  /*
+  *y = index / GRID_X;
+  *x = index - *y * GRID_X;
+  */
+  *x = m_DebugBoxesPositions[(index * 2)];
+  *y = m_DebugBoxesPositions[(index * 2) + 1];
 }
 
 
 int XYToIndex(int x, int y) {
-  return (y * GRID_SIZE + x);
+  return -1;
+  //return (y * GRID_SIZE + x);
 }
 
 
@@ -246,8 +270,6 @@ if (hitState == 0) {
         m_LastFailedCollideIndex = -1;
         m_AtlasSprites[0]->m_Velocity[0] = px; 
         m_AtlasSprites[0]->m_Velocity[1] = py;
-
-
         /*
         m_AtlasSprites[m_CurrentBarrelIndex]->SetEmitVelocity(sx, sy);
         m_AtlasSprites[m_CurrentBarrelIndex]->m_Position[0] += cost * 20.0;
@@ -298,15 +320,31 @@ int SuperBarrelBlast::Simulate() {
         m_AtlasSprites[i]->m_Rotation += 45.0;
       }
     }
+
+/*
+    wtf: 0 -60.000000 -60.000000 0 0 -62.445648 -68.986687
+    wtf: 1 0.000000 -60.000000 1 0 -62.445648 -68.986687
+    wtf: 2 0.000000 -60.000000 2 0 -62.445648 -68.986687
+    wtf: 3 -60.000000 0.000000 0 1 -62.445648 -68.986687
+    wtf: 4 0.000000 0.000000 1 1 -62.445648 -68.986687
+    wtf: 5 0.000000 0.000000 2 1 -62.445648 -68.986687
+    wtf: 6 -60.000000 0.000000 0 2 -62.445648 -68.986687
+    wtf: 7 0.000000 0.000000 1 2 -62.445648 -68.986687
+    wtf: 8 0.000000 0.000000 2 2 -62.445648 -68.986687
+*/
+
     if (i >= m_DebugBoxesStartIndex && i <= m_DebugBoxesStopIndex) {
       int annotate_index = -1;
       int ox = -1;
       int oy = -1;
       IndexToXY(i - m_DebugBoxesStartIndex, &ox, &oy);
-      float ax = (ox * SUBDIVIDE) + (m_CameraOffsetX) - (((GRID_SIZE - 1) / 2) * SUBDIVIDE);
-      float ay = (oy * SUBDIVIDE) + (m_CameraOffsetY) - (((GRID_SIZE - 1) / 2) * SUBDIVIDE);
-      float wtfx = (int)(ax / SUBDIVIDE) * SUBDIVIDE;
-      float wtfy = (int)(ay / SUBDIVIDE) * SUBDIVIDE;
+      float ax = (ox * SUBDIVIDE) + (m_CameraOffsetX) - (((GRID_X - 1) / 2) * SUBDIVIDE);
+      float ay = (oy * SUBDIVIDE) + (m_CameraOffsetY) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
+      //float ax = ((ox * SUBDIVIDE) + (m_CameraOffsetX));
+      //float ay = ((oy * SUBDIVIDE) + (m_CameraOffsetY));
+      float wtfx = (int)((ax) / SUBDIVIDE) * SUBDIVIDE;
+      float wtfy = (int)((ay) / SUBDIVIDE) * SUBDIVIDE;
+      //LOGV("wtf: %d %f %f %d %d %f %f\n", (i - m_DebugBoxesStartIndex), wtfx, wtfy, ox, oy, m_CameraOffsetX, m_CameraOffsetY);
       m_AtlasSprites[i]->SetPosition(wtfx, wtfy);
       if (ax > 0 & ay > 0) {
         annotate_index = m_Space->at((ax / SUBDIVIDE), (ay / SUBDIVIDE), 0);

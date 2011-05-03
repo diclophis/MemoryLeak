@@ -62,6 +62,8 @@ public:
 
   float m_TouchTimeout;
 
-int m_SoundOffset;
+  int m_SoundOffset;
+
+  int *m_DebugBoxesPositions;
 
 };
