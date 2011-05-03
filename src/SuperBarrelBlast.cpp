@@ -207,7 +207,7 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
     m_LastTouchedIndex = -1;
     //LOGV("didRotate\n");
   } else if (hitState == 2 && m_LastTouchedIndex < 0 && !m_DidDrag) {
-      if (m_TouchTimeout < 0.33) {
+      if (m_TouchTimeout < 0.25) {
         //LOGV("double tap\n");
         /*
         m_Zoom += 0.5;
@@ -236,7 +236,7 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       m_PanStartX = collide_x;
       m_PanStartY = collide_y;
       //LOGV("start pan %f\n", m_PanStartX);
-    } else if(m_TouchTimeout < 0.33) {
+    } else if(m_TouchTimeout < 0.5) {
       float dpx = (m_PanStartX - collide_x);
       float dpy = (m_PanStartY - collide_y);
       //LOGV("delta pan %f\n", dpx);
@@ -474,8 +474,8 @@ int SuperBarrelBlast::Simulate() {
   //m_CameraOffsetX += (m_PanSpeedX * m_DeltaTime);
   //m_CameraOffsetY += (m_PanSpeedY * m_DeltaTime);
 
-  m_CameraOffsetX += (((m_CameraPanX *= 0.95) / 300.0) * 5000.0 * m_DeltaTime);
-  m_CameraOffsetY += (((m_CameraPanY *= 0.95) / 300.0) * 5000.0 * m_DeltaTime);
+  m_CameraOffsetX += (((m_CameraPanX *= 0.99) / 300.0) * 5000.0 * m_DeltaTime);
+  m_CameraOffsetY += (((m_CameraPanY *= 0.99) / 300.0) * 5000.0 * m_DeltaTime);
 
 	return 1;
 }
