@@ -37,8 +37,8 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
 @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    queueEvent(new Runnable() {
-      public void run() {
+//    queueEvent(new Runnable() {
+//      public void run() {
 //        for (int i=0; i<event.getPointerCount(); i++) {
 //          float x = event.getX(i);
 //          float y = event.getY(i);
@@ -54,8 +54,8 @@ class DemoGLSurfaceView extends GLSurfaceView {
             nativeTouch(x, y, 2);
           }
 //        }
-      }
-    });
+//      }
+//    });
     return true;
   }
 
