@@ -26,7 +26,7 @@ enum colliders {
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_SoundOffset = 0;
 
-	m_Space = new Octree<int>(32 * 32, -1);
+	m_Space = new Octree<int>(64 * 64, -1);
 
   m_CameraPanX = 0.0;
   m_CameraPanY = 0.0;
