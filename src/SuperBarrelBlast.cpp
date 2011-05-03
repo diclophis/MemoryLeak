@@ -474,8 +474,8 @@ int SuperBarrelBlast::Simulate() {
   //m_CameraOffsetX += (m_PanSpeedX * m_DeltaTime);
   //m_CameraOffsetY += (m_PanSpeedY * m_DeltaTime);
 
-  m_CameraOffsetX += (((m_CameraPanX *= 0.99) / 300.0) * 5000.0 * m_DeltaTime);
-  m_CameraOffsetY += (((m_CameraPanY *= 0.99) / 300.0) * 5000.0 * m_DeltaTime);
+  m_CameraOffsetX += (((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
+  m_CameraOffsetY += (((m_CameraPanY *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
 
 	return 1;
 }
