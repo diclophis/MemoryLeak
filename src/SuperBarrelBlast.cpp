@@ -12,10 +12,10 @@
 
 #define SUBDIVIDE 60.0
 #define BARREL_ROTATE_TIMEOUT 0.33
-#define BARREL_ROTATE_PER_TICK 22.5 
+#define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 400.0
-#define GRID_X 13 
-#define GRID_Y 19 
+#define GRID_X 7 
+#define GRID_Y 10 
 #define COLLIDE_TIMEOUT 0.001
 
 enum colliders {
@@ -118,7 +118,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   }
   m_DebugBoxesStopIndex = m_SpriteCount;
 
-  m_Zoom = 2.0;
+  m_Zoom = 1.0;
 }
 
 
