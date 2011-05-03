@@ -10,10 +10,10 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 60.0
+#define SUBDIVIDE 70.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
-#define SHOOT_VELOCITY 400.0
+#define SHOOT_VELOCITY 500.0
 #define GRID_X 7 
 #define GRID_Y 10 
 #define COLLIDE_TIMEOUT 0.001
@@ -138,7 +138,7 @@ void SuperBarrelBlast::CreateCollider(float x, float y, float r, int flag) {
   m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
   m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
   m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-  m_AtlasSprites[m_SpriteCount]->Build(10);
+  m_AtlasSprites[m_SpriteCount]->Build(1);
   sx = (x / SUBDIVIDE);
   sy = (y / SUBDIVIDE);
   int existing_index = m_Space->at(sx, sy, 0); 
@@ -246,7 +246,7 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
   } else {
     //LOGV("maybe shoot\n");
     //shoot
-    if (collide_index >= 0 && (collide_index == m_CurrentBarrelIndex)) {
+    if (collide_index >= 0 && (collide_index == m_CurrentBarrelIndex) && m_LastShotBarrelIndex != collide_index) {
       float theta = DEGREES_TO_RADIANS(m_AtlasSprites[m_CurrentBarrelIndex]->m_Rotation + 90.0);
       float cost = cos(theta);
       float sint = fastSinf(theta);
@@ -414,6 +414,7 @@ int SuperBarrelBlast::Simulate() {
           if (m_CurrentBarrelIndex >= 0) {
             m_AtlasSprites[m_CurrentBarrelIndex]->Reset();
           }
+          m_LastShotBarrelIndex = -1;
           m_CurrentBarrelIndex = collide_index;
           m_LastFailedCollideIndex = -1;
           //m_CameraPanX = 0;
