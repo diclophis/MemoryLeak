@@ -242,15 +242,8 @@ if (hitState == 0) {
     } else {
       float dpx = (m_PanStartX - px);
       float dpy = (m_PanStartY - py);
-      float apx = 0.0;
-      float apy = 0.0;
-      //LOGV("dpx:%f dpy:%f\n", dpx, dpy);
-      //if (dpx > 50.0 && dpy > 50.0) {
-        apx = (dpx / 100.0) * 35.0;
-        apy = (dpy / 100.0) * 35.0;
-        m_CameraPanX += apx;
-        m_CameraPanY += apy;
-      //}
+      m_CameraOffsetX += dpx;
+      m_CameraOffsetY += dpy;
     }
   } else {
     //shoot
@@ -418,8 +411,8 @@ int SuperBarrelBlast::Simulate() {
           }
           m_CurrentBarrelIndex = collide_index;
           m_LastFailedCollideIndex = -1;
-          m_CameraPanX = 0;
-          m_CameraPanY = 0;
+          //m_CameraPanX = 0;
+          //m_CameraPanY = 0;
           m_AtlasSprites[0]->m_Velocity[0] = 0.0;
           m_AtlasSprites[0]->m_Velocity[1] = 0.0;
           m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
@@ -461,26 +454,14 @@ int SuperBarrelBlast::Simulate() {
 	//m_PlayerLastX = 0; //m_AtlasSprites[0]->m_Position[0];
 	//m_PlayerLastY = 0; //m_AtlasSprites[0]->m_Position[1];
 
-  float ox = (m_PlayerLastX + m_CameraPanX) - m_CameraOffsetX;
-  float oy = (m_PlayerLastY + m_CameraPanY) - m_CameraOffsetY;
+  //float ox = (m_PlayerLastX + m_CameraPanX) - m_CameraOffsetX;
+  //float oy = (m_PlayerLastY + m_CameraPanY) - m_CameraOffsetY;
 
-  float aox = (ox); // * 1.0 * m_DeltaTime;
-  float aoy = (oy); // * 1.0 * m_DeltaTime;
+  //float aox = (ox) * 0.01; // * 1.0 * m_DeltaTime;
+  //float aoy = (oy) * 0.01; // * 1.0 * m_DeltaTime;
 
-  //if (ox < 50 && oy < 50) { 
-  //  ox *= 1.0 * m_DeltaTime;
-  //  oy *= 1.0 * m_DeltaTime;
-  //} else {
-    ox *= m_DeltaTime;
-    oy *= m_DeltaTime;
-  //}
-	m_CameraOffsetX += ox;
-	m_CameraOffsetY += oy;
-
-/*
-	m_CameraOffsetX += aox;
-	m_CameraOffsetY += aoy;
-*/
+	//m_CameraOffsetX += aox;
+	//m_CameraOffsetY += aoy;
 
 	return 1;
 }
