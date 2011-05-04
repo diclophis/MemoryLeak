@@ -239,12 +239,11 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       m_CameraPanY = 0.0;
       m_PanStartX = collide_x;
       m_PanStartY = collide_y;
-      //LOGV("start pan %f\n", m_PanStartX);
+      LOGV("start pan %f\n", m_PanStartX);
     } else { //if (m_TouchTimeout > 0.1 && m_TouchTimeout < 0.5) {
       m_CameraPanX = (m_PanStartX - collide_x);
       m_CameraPanY = (m_PanStartY - collide_y);
-      //LOGV("delta pan %f\n", m_CameraPanX);
-
+      LOGV("delta pan %f\n", m_CameraPanX, m_CameraPanY);
     }
   } else {
     //LOGV("maybe shoot\n");
@@ -478,24 +477,27 @@ int SuperBarrelBlast::Simulate() {
   //m_CameraOffsetX += (m_PanSpeedX * m_DeltaTime);
   //m_CameraOffsetY += (m_PanSpeedY * m_DeltaTime);
 
-      if (m_CameraPanX > 500.0) {
-        m_CameraPanX = 500.0;
+/*
+      if (m_CameraPanX > 0.0) {
+        m_CameraPanX -= 0.001;
       }
 
-      if (m_CameraPanX < -500.0) {
-        m_CameraPanX = -500.0;
+      if (m_CameraPanX < 0.0) {
+        m_CameraPanX += 0.001;
       }
 
-      if (m_CameraPanY > 500.0) {
-        m_CameraPanY = 500.0;
+      if (m_CameraPanY > 0.0) {
+        m_CameraPanY -= 0.001;
       }
 
-      if (m_CameraPanY < -500.0) {
-        m_CameraPanY = -500.0;
+      if (m_CameraPanY < 0.0) {
+        m_CameraPanY += 0.001;
       }
+*/
 
       //m_CameraPanX = m_CameraPanX;
       //m_CameraPanY = ;
+      /*
       if (m_CameraPanX > 0) {
         m_CameraPanX -= 3.0 * m_DeltaTime;
       } else {
@@ -507,9 +509,10 @@ int SuperBarrelBlast::Simulate() {
       } else {
         m_CameraPanY += 3.0 * m_DeltaTime;
       }
+      */
 
-  m_CameraOffsetX += (m_CameraPanX * 70.0) * m_DeltaTime;//(((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
-  m_CameraOffsetY += (m_CameraPanY * 70.0) * m_DeltaTime;//(((m_CameraPanY *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
+  m_CameraOffsetX += (m_CameraPanX) * m_DeltaTime;//(((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
+  m_CameraOffsetY += (m_CameraPanY) * m_DeltaTime;//(((m_CameraPanY *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
 
 	return 1;
 }
