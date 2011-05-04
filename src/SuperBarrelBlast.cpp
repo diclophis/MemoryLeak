@@ -497,15 +497,15 @@ int SuperBarrelBlast::Simulate() {
       //m_CameraPanX = m_CameraPanX;
       //m_CameraPanY = ;
       if (m_CameraPanX > 0) {
-        m_CameraPanX -= 30.0 * m_DeltaTime;
+        m_CameraPanX -= 3.0 * m_DeltaTime;
       } else {
-        m_CameraPanX += 30.0 * m_DeltaTime;
+        m_CameraPanX += 3.0 * m_DeltaTime;
       }
 
       if (m_CameraPanY > 0) {
-        m_CameraPanY -= 30.0 * m_DeltaTime;
+        m_CameraPanY -= 3.0 * m_DeltaTime;
       } else {
-        m_CameraPanY += 30.0 * m_DeltaTime;
+        m_CameraPanY += 3.0 * m_DeltaTime;
       }
 
   m_CameraOffsetX += (m_CameraPanX * 70.0) * m_DeltaTime;//(((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
