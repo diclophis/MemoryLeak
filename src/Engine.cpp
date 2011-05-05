@@ -266,8 +266,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-	glShadeModel( GL_SMOOTH );
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	//glShadeModel( GL_SMOOTH );
 	glLoadIdentity();
 
 	for (unsigned int i=0; i<2; i++) {
@@ -475,7 +475,7 @@ void Engine::DrawScreen(float rotation) {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		//glEnable(GL_LIGHTING);
-		glDepthFunc(GL_LESS);
+		//glDepthFunc(GL_LESS); //redund here
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		{

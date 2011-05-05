@@ -70,10 +70,8 @@ public:
 	void Simulate(float deltaTime);
 	
 	float *m_Scale;
-	void SetScale(float x, float y) {
-		m_Scale[0] = x;
-		m_Scale[1] = y;
-	}
 
+  void SetScale(float, float);
+  static void Scrub();
 
 };

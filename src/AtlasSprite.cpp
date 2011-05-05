@@ -5,10 +5,17 @@
 
 #define GL_PIXEL_UNPACK_BUFFER_ARB 0x88EC
 
-static GLuint g_lastTexture = 0;
+static GLuint g_lastTexture = -1;
+static float g_lastRotation = 0.0;
+static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
-	g_lastTexture = 0;
+	g_lastTexture = -1;
+}
+
+void AtlasSprite::Scrub() {
+  g_lastFrame = -1;
+  g_lastRotation = -999.0;
 }
 
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, float vdx, float vdy) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
@@ -82,48 +89,70 @@ void AtlasSprite::Render() {
 		g_lastTexture = m_Texture;
 	}
 	
-	float ax = m_Position[0];
-	float ay = m_Position[1];
+	//float ax = m_Position[0];
+	//float ay = m_Position[1];
 
 	glPushMatrix();
 	{
-		glTranslatef(ax, ay, 0.0);
-		glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-		glScalef(m_Scale[0], m_Scale[1], 1.0);
+		glTranslatef(m_Position[0], m_Position[1], 0.0);
+    //f (m_Rotation != g_lastRotation) {
+      glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+      g_lastRotation = m_Rotation;
+    //}
+		//glScalef(m_Scale[0], m_Scale[1], 1.0);
 		//int i = m_Frames[m_Frame % m_AnimationLength];
 		int i = (m_Frame % m_AnimationLength);
-		GLshort w = m_Sprites[i].dx;
-		GLshort h = m_Sprites[i].dy;
-		GLfloat tx = m_Sprites[i].tx1;
-		GLfloat ty = m_Sprites[i].ty1;
-		GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
-		GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
+    GLshort w = m_Sprites[i].dx;
+    GLshort h = m_Sprites[i].dy;
+    GLfloat tx = m_Sprites[i].tx1;
+    GLfloat ty = m_Sprites[i].ty1;
+    GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
+    GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
 
-		GLshort vertices[8] = {
-			(-w / 2.0), (-h / 2.0),
-			(w / 2.0), (-h / 2.0),
-			(w / 2.0), (h / 2.0),
-			(-w / 2.0), (h / 2.0)
-		};
+    if (i != g_lastFrame) {
 
-		GLfloat texture[8] = {
-			tx, (ty + th),
-			tx + tw, (ty + th),
-			tx + tw, ty,
-			tx, ty
-		};
+      GLshort vertices[8] = {
+        (-w / 2.0), (-h / 2.0),
+        (w / 2.0), (-h / 2.0),
+        (w / 2.0), (h / 2.0),
+        (-w / 2.0), (h / 2.0)
+      };
+      glVertexPointer(2, GL_SHORT, 0, vertices);
 
-		glVertexPointer(2, GL_SHORT, 0, vertices);
-		glTexCoordPointer(2, GL_FLOAT, 0, texture);
+      GLfloat texture[8] = {
+        tx, (ty + th),
+        tx + tw, (ty + th),
+        tx + tw, ty,
+        tx, ty
+      };
+
+      glTexCoordPointer(2, GL_FLOAT, 0, texture);
+
+      g_lastFrame = i;
+    }
+
+    //if (rebound_texture) {
+    //}
     
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
 
-		ax += m_Sprites[i].dx;
-		ay += w;
+		//ax += m_Sprites[i].dx;
+		//ax += m_Sprites[i].dy;
+		//ay += w;
 	}
 	glPopMatrix();
 }
+
+	void AtlasSprite::SetScale(float x, float y) {
+		//m_Scale[0] = x;
+		//m_Scale[1] = y;
+		int i = (m_Frame % m_AnimationLength);
+    //GLshort w = m_Sprites[i].dx;
+    //GLshort h = m_Sprites[i].dy;
+    m_Sprites[i].dx = (100.0 * x);
+    m_Sprites[i].dy = (100.0 * y);
+	}
 
 void AtlasSprite::Simulate(float deltaTime) {
 	float dx = m_Velocity[0] * deltaTime;

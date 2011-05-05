@@ -10,7 +10,7 @@
 #include "Engine.h"
 #include "SuperBarrelBlast.h"
 
-#define SUBDIVIDE 70.0
+#define SUBDIVIDE 50.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 500.0
@@ -62,7 +62,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   float x = SUBDIVIDE * 2;
   float y = SUBDIVIDE;
-  float r = 0.0;
+  float r = -45.0;
 
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 56, 60, 1.0, "", 0, 0, 0.0, 100.0, 100.0));
 	m_AtlasSprites[m_SpriteCount]->SetPosition(SUBDIVIDE * 2, SUBDIVIDE * 75.0);
@@ -75,14 +75,14 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 	m_CameraOffsetY = m_AtlasSprites[0]->m_Position[1];
 
   m_BarrelStartIndex = m_SpriteCount + 1;
-  m_BarrelCount = 4;
+  m_BarrelCount = 20;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     CreateCollider(x, y, r, BARREL);
-    x += SUBDIVIDE * 3;
-    if (x > SUBDIVIDE * 16) {
-      x = SUBDIVIDE * 2;
-      y += SUBDIVIDE * 3;
-    }
+    x += SUBDIVIDE * 11;
+    //if (x > SUBDIVIDE * 16) {
+    //  x = SUBDIVIDE * 2;
+    //  y += SUBDIVIDE * 3;
+    //}
     r += 0.0;
   }
   m_BarrelStopIndex = m_SpriteCount;
@@ -118,6 +118,9 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_DebugBoxesStopIndex = m_SpriteCount;
 
   m_Zoom = 1.0;
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -202,8 +205,8 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
     }
   } else if (hitState == 2 && m_LastTouchedIndex >= 0 && !m_DidDrag) {
     //tap to rotate
-    m_AtlasSprites[m_LastTouchedIndex]->m_Rotation += 45.0;
-    m_Space->set(cx, cy, 0, m_LastTouchedIndex);
+    //m_AtlasSprites[m_LastTouchedIndex]->m_Rotation += 45.0;
+    //m_Space->set(cx, cy, 0, m_LastTouchedIndex);
     m_DidDrag = false;
     m_LastTouchedIndex = -1;
     //LOGV("didRotate\n");
@@ -459,8 +462,6 @@ int SuperBarrelBlast::Simulate() {
 
   m_LastCollideIndex = collide_index;
 
-	//m_PlayerLastX = 0; //m_AtlasSprites[0]->m_Position[0];
-	//m_PlayerLastY = 0; //m_AtlasSprites[0]->m_Position[1];
 
   //float ox = (m_PlayerLastX + m_CameraPanX) - m_CameraOffsetX;
   //float oy = (m_PlayerLastY + m_CameraPanY) - m_CameraOffsetY;
@@ -511,8 +512,14 @@ int SuperBarrelBlast::Simulate() {
       }
       */
 
-  m_CameraOffsetX += (m_CameraPanX) * m_DeltaTime;//(((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
-  m_CameraOffsetY += (m_CameraPanY) * m_DeltaTime;//(((m_CameraPanY *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
+  //m_CameraOffsetX += (m_CameraPanX * 1.01) * m_DeltaTime;//(((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
+  //m_CameraOffsetY += (m_CameraPanY * 1.01) * m_DeltaTime;//(((m_CameraPanY *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
+
+  m_CameraOffsetX -= (m_DeltaTime * 10.0 * (m_CameraOffsetX - m_AtlasSprites[0]->m_Position[0]));
+  m_CameraOffsetY -= (m_DeltaTime * 10.0 * (m_CameraOffsetY - m_AtlasSprites[0]->m_Position[1]));
+
+	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
+	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
 
 	return 1;
 }
@@ -523,14 +530,20 @@ void SuperBarrelBlast::RenderModelPhase() {
 
 
 void SuperBarrelBlast::RenderSpritePhase() {
-	glClearColor(0.8, 0.8, 0.9, 1.0);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	//glBlendFunc(GL_ONE, GL_ONE);
 	glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
+  AtlasSprite::Scrub();
 	RenderSpriteRange(m_BarrelStopIndex + 1, m_BarrelStopIndex + 2);
+
+  AtlasSprite::Scrub();
 	RenderSpriteRange(m_DebugBoxesStartIndex, m_DebugBoxesStopIndex + 1);
+
+  AtlasSprite::Scrub();
 	RenderSpriteRange(0, 1);
+
+  AtlasSprite::Scrub();
+	RenderSpriteRange(0, 1);
+
+  AtlasSprite::Scrub();
 	RenderSpriteRange(m_BarrelStartIndex, m_BarrelStopIndex + 1);
-	glDisable(GL_BLEND);
 }

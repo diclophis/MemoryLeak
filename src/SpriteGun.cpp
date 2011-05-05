@@ -96,7 +96,9 @@ void SpriteGun::Render() {
 			int i=(m_NumParticles);
 			while (i-- > 0) {
 				if (m_AtlasSprites[i]->m_IsAlive) {
+          AtlasSprite::Scrub();
 					m_AtlasSprites[i]->Render();
+          AtlasSprite::Scrub();
 				}
 			}
 		} else {
