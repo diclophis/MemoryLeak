@@ -7,7 +7,7 @@
 class Wang {
 public:
   Wang() {
-    LOGV("wtf\n");
+    //LOGV("wtf\n");
   }
 
 	//Wang(Wang const&);
@@ -23,7 +23,6 @@ OOLUA_CLASS_NO_BASES(Wang)
 OOLUA_CLASS_END
 
 EXPORT_OOLUA_NO_FUNCTIONS(Wang)
-
 
 #include "FooIO.h"
 
@@ -314,8 +313,19 @@ void Engine::CreateThread() {
 }
 
 
+void Engine::CreateScriptThread() {
+	pthread_create(&m_ScriptThread, 0, Engine::EnterScriptThread, this);
+}
+
+
 void *Engine::EnterThread(void *obj) {
 	reinterpret_cast<Engine *>(obj)->RunThread();
+	return NULL;
+}
+
+
+void *Engine::EnterScriptThread(void *obj) {
+	reinterpret_cast<Engine *>(obj)->RunScriptThread();
 	return NULL;
 }
 
@@ -408,8 +418,9 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
 	double interp = 10.0;
-
-  LuaMain();
+LOGV("?????\n");
+  CreateScriptThread();
+  LOGV("yea????\n");
 
 	while (m_GameState != 0) {
 		
@@ -439,11 +450,11 @@ int Engine::RunThread() {
 
       bool result = false;
       //result = m_Script->call("mainLoop");
-      result = m_Script->run_chunk("mainLoop()");
-      if (!result) {
-        LOGV("%s", OOLUA::get_last_error(m_Script->get_ptr()).c_str());
-        exit(1);
-      }
+      //result = m_Script->run_chunk("mainLoop()");
+      //if (!result) {
+      //  LOGV("%s", OOLUA::get_last_error(m_Script->get_ptr()).c_str());
+      //  exit(1);
+      //}
 		}
 
 		WaitVsync();
@@ -468,7 +479,7 @@ void Engine::DoAudio(short buffer[], int size) {
     //ModPlug_SetMasterVolume(m_Sounds[1], 200.0);
     if (m_AudioTimeout < 0.0) {
     } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.75) {
-      ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
+      //ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
       //ModPlug_SetMasterVolume(m_Sounds[0], 200.0);
       //ModPlug_SetMasterVolume(m_Sounds[1], 100.0);
     } else if (m_AudioTimeout > 0.25) {
@@ -476,11 +487,11 @@ void Engine::DoAudio(short buffer[], int size) {
     }
 
 
-    ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size * sizeof(short));
+    ModPlug_Read(m_Sounds[1], buffer, size * sizeof(short));
 
-    for (int i=0; i<size; i++) {
-      buffer[i] = (buffer[i] + m_AudioMixBuffer[i]) / 2;
-    }
+    //for (int i=0; i<size; i++) {
+    //  buffer[i] = (buffer[i] + m_AudioMixBuffer[i]);
+    //}
   }
 }
 
@@ -659,8 +670,8 @@ void Engine::gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloa
 			   );
 }
 
-void Engine::LuaMain() {
-  
+void Engine::RunScriptThread() {
+LOGV("wtf\n");  
   m_Script = new OOLUA::Script;
   
   m_Script->register_class<Wang>();
@@ -675,7 +686,5 @@ void Engine::LuaMain() {
   if (!result) {
     LOGV("%s", OOLUA::get_last_error(m_Script->get_ptr()).c_str());
     exit(1);
-  } else {
-    LOGV("SUCESS!!!");
   }
 }

@@ -1,12 +1,14 @@
 # OSX Makefile, needs to know where the main src root is
 
 build=build
-CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
+CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api -I../../src/lua -I../../src/oolua
 CFLAGS=$(CXXFLAGS)
 LDFLAGS=-lpthread -lresolv -lGL -lglut -lSOIL -lasound
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/lua/*.c)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/oolua/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/ares/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/curl/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/assimp/*.cpp)))
@@ -40,6 +42,8 @@ $(build):
 	mkdir -p $(build)/libmodplug
 	mkdir -p $(build)/curl
 	mkdir -p $(build)/ares
+	mkdir -p $(build)/lua
+	mkdir -p $(build)/oolua
 
 clean:
 	rm -Rf $(build)

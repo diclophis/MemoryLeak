@@ -96,6 +96,9 @@ public:
   float m_AudioTimeout;
 
   OOLUA::Script *m_Script;
-
-  void LuaMain();
+	pthread_mutex_t m_ScriptMutex;
+	pthread_t m_ScriptThread;
+	static void *EnterScriptThread(void *);
+  void CreateScriptThread();
+  void RunScriptThread();
 };
