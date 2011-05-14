@@ -148,7 +148,7 @@ void propertyListenerCallback (void                   *inUserData,
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		NSSet *allTouches = [event allTouches];
+		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
 		bounds = [self bounds];
@@ -164,7 +164,7 @@ void propertyListenerCallback (void                   *inUserData,
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		NSSet *allTouches = [event allTouches];
+		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
 		bounds = [self bounds];
@@ -180,7 +180,7 @@ void propertyListenerCallback (void                   *inUserData,
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		NSSet *allTouches = [event allTouches];
+		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
 		bounds = [self bounds];

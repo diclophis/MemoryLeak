@@ -2,6 +2,29 @@
 
 #include "MemoryLeak.h"
 
+
+
+class Wang {
+public:
+  Wang() {
+    LOGV("wtf\n");
+  }
+
+	//Wang(Wang const&);
+
+  int newGroup() {
+    return 1;
+  }
+};
+
+OOLUA_CLASS_NO_BASES(Wang)
+  OOLUA_NO_TYPEDEFS
+  OOLUA_ONLY_DEFAULT_CONSTRUCTOR
+OOLUA_CLASS_END
+
+EXPORT_OOLUA_NO_FUNCTIONS(Wang)
+
+
 #include "FooIO.h"
 
 #include <stdio.h>
@@ -163,7 +186,7 @@ static int sock_cb(CURL *e, curl_socket_t s, int what, void *cbp, void *sockp)
 static size_t write_cb(void *ptr, size_t size, size_t nmemb, void *data)
 {
 	size_t realsize = size * nmemb;
-	ConnInfo *conn = (ConnInfo*) data;
+	//ConnInfo *conn = (ConnInfo*) data;
 
 	char s[realsize];
   memcpy(s, ptr, realsize);
@@ -174,7 +197,7 @@ static size_t write_cb(void *ptr, size_t size, size_t nmemb, void *data)
 /* CURLOPT_PROGRESSFUNCTION */ 
 static int prog_cb (void *p, double dltotal, double dlnow, double ult, double uln)
 {
-	ConnInfo *conn = (ConnInfo *)p;
+	//ConnInfo *conn = (ConnInfo *)p;
 	(void)ult;
 	(void)uln;
 	
@@ -386,6 +409,8 @@ int Engine::RunThread() {
 	
 	double interp = 10.0;
 
+  LuaMain();
+
 	while (m_GameState != 0) {
 		
     /*
@@ -411,6 +436,14 @@ int Engine::RunThread() {
         m_AudioTimeout += (m_DeltaTime);
       }
 			m_GameState = Simulate();
+
+      bool result = false;
+      //result = m_Script->call("mainLoop");
+      result = m_Script->run_chunk("mainLoop()");
+      if (!result) {
+        LOGV("%s", OOLUA::get_last_error(m_Script->get_ptr()).c_str());
+        exit(1);
+      }
 		}
 
 		WaitVsync();
@@ -445,7 +478,7 @@ void Engine::DoAudio(short buffer[], int size) {
 
     ModPlug_Read(m_Sounds[1], m_AudioMixBuffer, size * sizeof(short));
 
-    for (unsigned int i=0; i<size; i++) {
+    for (int i=0; i<size; i++) {
       buffer[i] = (buffer[i] + m_AudioMixBuffer[i]) / 2;
     }
   }
@@ -624,4 +657,25 @@ void Engine::gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloa
 			   (GLint)(ymin * 65536), (GLint)(ymax * 65536),
 			   (GLint)(zNear * 65536), (GLint)(zFar * 65536)
 			   );
+}
+
+void Engine::LuaMain() {
+  
+  m_Script = new OOLUA::Script;
+  
+  m_Script->register_class<Wang>();
+
+  int lua_code_index = 0;
+  char *lua_code = (char *)malloc(sizeof(char) * m_LevelFoos->at(lua_code_index)->len);
+  fseek(m_LevelFoos->at(lua_code_index)->fp, m_LevelFoos->at(lua_code_index)->off, SEEK_SET);
+  fread(lua_code, sizeof(char), m_LevelFoos->at(lua_code_index)->len, m_LevelFoos->at(lua_code_index)->fp);
+
+  bool result = false;
+  result = m_Script->run_chunk(lua_code);
+  if (!result) {
+    LOGV("%s", OOLUA::get_last_error(m_Script->get_ptr()).c_str());
+    exit(1);
+  } else {
+    LOGV("SUCESS!!!");
+  }
 }

@@ -6,12 +6,14 @@
 #CXX=~/Desktop/checker-249/libexec/c++-analyzer
 
 build=build
-CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
+CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api -I../../src/lua -DLUA_USE_MACOSX -I../../src/oolua
 CFLAGS=$(CXXFLAGS)
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -framework WebKit -lresolv
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/oolua/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/lua/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/ares/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/curl/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/assimp/*.cpp)))
@@ -45,6 +47,8 @@ $(build):
 	mkdir -p $(build)/libmodplug
 	mkdir -p $(build)/curl
 	mkdir -p $(build)/ares
+	mkdir -p $(build)/lua
+	mkdir -p $(build)/oolua
 
 clean:
 	touch $(build) && rm -R $(build) && rm -R ../../src/*.o

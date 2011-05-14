@@ -68,4 +68,6 @@ public:
 
   int *m_DebugBoxesPositions;
 
+  float m_Rotation;
+
 };

@@ -111,3 +111,14 @@ typedef struct _SockInfo
 	GlobalInfo *global;
 } SockInfo;
 
+extern "C" {
+  #define loslib_c
+  #define LUA_LIB
+  #include "lua.h"
+  #include "lauxlib.h"
+  #include "lualib.h"
+}
+
+#include "oolua.h"
+
+

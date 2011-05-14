@@ -95,4 +95,7 @@ public:
 
   float m_AudioTimeout;
 
+  OOLUA::Script *m_Script;
+
+  void LuaMain();
 };

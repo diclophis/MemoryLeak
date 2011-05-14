@@ -13,10 +13,11 @@
 #define SUBDIVIDE 50.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
-#define SHOOT_VELOCITY 500.0
-#define GRID_X 9 
+#define SHOOT_VELOCITY 425.0
+#define GRID_X 13 
 #define GRID_Y 13 
 #define COLLIDE_TIMEOUT 0.001
+#define BARREL_SHOT_LENGTH 7 
 
 enum colliders {
   BARREL = 1,
@@ -24,9 +25,12 @@ enum colliders {
 };
 
 SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+
+  m_Rotation = 0.0;
+
   m_SoundOffset = 0;
 
-	m_Space = new Octree<int>(16 * 16, -1);
+	m_Space = new Octree<int>(16 * 16, -63);
 
   m_CameraPanX = 0.0;
   m_CameraPanY = 0.0;
@@ -38,7 +42,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_LastTouchedIndex = -1;
   m_DidDrag = false;
 
-	m_Gravity = 500.0;
+	m_Gravity = 600.0;
 
 	m_CameraOffsetX = 0.0;
 	m_CameraOffsetY = 0.0;
@@ -65,7 +69,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   float r = -45.0;
 
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 56, 60, 1.0, "", 0, 0, 0.0, 100.0, 100.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(SUBDIVIDE * 2, SUBDIVIDE * 75.0);
+	m_AtlasSprites[m_SpriteCount]->SetPosition(SUBDIVIDE * 2, SUBDIVIDE * 5.0);
   float st = DEGREES_TO_RADIANS(-90);
   float vx = SHOOT_VELOCITY * cos(st);
   float vy = SHOOT_VELOCITY * fastSinf(st);
@@ -78,7 +82,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   m_BarrelCount = 20;
   for (unsigned int i=0; i<m_BarrelCount; i++) {
     CreateCollider(x, y, r, BARREL);
-    x += SUBDIVIDE * 11;
+    x += SUBDIVIDE * BARREL_SHOT_LENGTH;
     //if (x > SUBDIVIDE * 16) {
     //  x = SUBDIVIDE * 2;
     //  y += SUBDIVIDE * 3;
@@ -89,7 +93,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_SpriteCount++;
 	m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 1, 1, 0, 1, 1.0, "", 0, 0, 0.0, 4096.0, 4096.0));
-	m_AtlasSprites[m_SpriteCount]->SetPosition(2048.0 - 100.0, 2048.0 - 100.0);
+	m_AtlasSprites[m_SpriteCount]->SetPosition(2048.0 - 500.0, 2048.0 - 500.0);
 	m_AtlasSprites[m_SpriteCount]->Build(0);
 
   m_DebugBoxesStartIndex = m_SpriteCount + 1;
@@ -105,7 +109,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<m_DebugBoxesCount; i++) {
     m_SpriteCount++;
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 0, 0, 0.0, SUBDIVIDE, SUBDIVIDE));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_DebugBoxesPositions[(i * 2)] = xx;
     m_DebugBoxesPositions[(i * 2) + 1] = yy;
@@ -117,7 +121,7 @@ SuperBarrelBlast::SuperBarrelBlast(int w, int h, std::vector<GLuint> &t, std::ve
   }
   m_DebugBoxesStopIndex = m_SpriteCount;
 
-  m_Zoom = 1.0;
+  m_Zoom = 1.25;
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -145,7 +149,7 @@ void SuperBarrelBlast::CreateCollider(float x, float y, float r, int flag) {
   sx = (x / SUBDIVIDE);
   sy = (y / SUBDIVIDE);
   int existing_index = m_Space->at(sx, sy, 0); 
-  if (existing_index == -1) {
+  if (existing_index < 0) {
     m_Space->set(sx, sy, 0, m_SpriteCount);
   }
 }
@@ -161,9 +165,8 @@ void SuperBarrelBlast::IndexToXY(int index, int* x, int* y) {
 }
 
 
-int XYToIndex(int x, int y) {
-  return -1;
-  //return (y * GRID_SIZE + x);
+int SuperBarrelBlast::XYToIndex(int x, int y) {
+  return (y * GRID_X + x);
 }
 
 
@@ -185,7 +188,9 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
   int cx = (collide_x / SUBDIVIDE);
   int cy = (collide_y / SUBDIVIDE);
   int collide_index = -1;
-  if (collide_x > 0 && collide_y > 0) {
+  bool collide_index_set = false;
+  if (cx > 0 && cy > 0) {
+    collide_index_set = true;
     collide_index = m_Space->at(cx, cy, 0);
   }
   if (hitState == 0 && collide_index >= 0 && collide_index != m_CurrentBarrelIndex) {
@@ -211,21 +216,14 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
     m_LastTouchedIndex = -1;
     //LOGV("didRotate\n");
   } else if (hitState == 2 && m_LastTouchedIndex < 0 && !m_DidDrag) {
-      LOGV("lift up\n");
-      //m_CameraPanX = (m_PanStartX - collide_x);
-      //m_CameraPanY = (m_PanStartY - collide_y);
-      if (m_TouchTimeout < 0.25) {
-        //LOGV("double tap\n");
-        /*
-        m_Zoom += 0.5;
-        if (m_Zoom > 3.0) {
-          m_Zoom = 1.0;
-        }
-        */
-      } else {
-        m_TouchTimeout = 0.0;
-        //LOGV("done swipe: %f %f \n", m_CameraPanX, m_CameraPanY);
-      }
+    LOGV("lift up\n");
+    if (collide_index < 0 && collide_index_set) {
+      m_Space->set(cx, cy, 0, collide_index - 1);
+    }
+    if (m_TouchTimeout < 0.25) {
+    } else {
+      m_TouchTimeout = 0.0;
+    }
   } else if (hitState == 2 && m_LastTouchedIndex >= 0 && m_DidDrag) {
     if (m_LastTouchedIndex >= 0) {
       int px = m_AtlasSprites[m_LastTouchedIndex]->m_Position[0] / SUBDIVIDE;
@@ -247,6 +245,11 @@ void SuperBarrelBlast::Hit(float x, float y, int hitState) {
       m_CameraPanX = (m_PanStartX - collide_x);
       m_CameraPanY = (m_PanStartY - collide_y);
       LOGV("delta pan %f\n", m_CameraPanX, m_CameraPanY);
+    if (collide_index < 0 && collide_index_set) {
+      m_Space->set(cx, cy, 0, collide_index - 1);
+      //int ff = XYToIndex(cx, cy);
+      //m_AtlasSprites[ff - m_DebugBoxesStartIndex]->Fire();
+    }
     }
   } else {
     //LOGV("maybe shoot\n");
@@ -319,7 +322,7 @@ int SuperBarrelBlast::Simulate() {
   for (unsigned int i=0; i<m_SpriteCount+1; i++) {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (rotate_mirrors_this_tick) {
-      if (m_AtlasSprites[i]->m_IsFlags & MIRROR) {
+      if (m_AtlasSprites[i]->m_IsFlags & BARREL) {
         m_AtlasSprites[i]->m_Rotation += 45.0;
       }
     }
@@ -352,6 +355,8 @@ int SuperBarrelBlast::Simulate() {
       if (ax > 0 & ay > 0) {
         annotate_index = m_Space->at((ax / SUBDIVIDE), (ay / SUBDIVIDE), 0);
       }
+      m_AtlasSprites[i]->m_Frame = -annotate_index;
+      /*
       if (annotate_index == -2) {
         m_AtlasSprites[i]->m_Frame = 0;
       } else if (annotate_index == -1) {
@@ -359,6 +364,7 @@ int SuperBarrelBlast::Simulate() {
       } else if (annotate_index >= 0) {
         m_AtlasSprites[i]->m_Frame = 2;
       }
+      */
     }
   }
 
@@ -428,8 +434,8 @@ int SuperBarrelBlast::Simulate() {
           m_AtlasSprites[0]->m_Velocity[1] = 0.0;
           m_AtlasSprites[0]->m_Position[0] = m_AtlasSprites[collide_index]->m_Position[0];
           m_AtlasSprites[0]->m_Position[1] = m_AtlasSprites[collide_index]->m_Position[1];
-	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
-	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
+	//m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
+	//m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
           m_ReloadTimeout = 0.0;
         } else {
           //LOGV("the fuck 2\n");
@@ -440,10 +446,11 @@ int SuperBarrelBlast::Simulate() {
     }
   } else {
     if (collide_index < 0 && (m_CollideTimeout > COLLIDE_TIMEOUT)) {
-      m_Space->set((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0, -2);
+      m_Space->set((collide_x / SUBDIVIDE), collide_y / SUBDIVIDE, 0, -63);
     }
     m_ReloadTimeout = -1;
     m_AtlasSprites[0]->m_Velocity[1] -= (m_Gravity * m_DeltaTime);
+    //m_Rotation += m_DeltaTime * 450.0;
   }
 
   if (m_CurrentBarrelIndex != -1) {
@@ -515,8 +522,8 @@ int SuperBarrelBlast::Simulate() {
   //m_CameraOffsetX += (m_CameraPanX * 1.01) * m_DeltaTime;//(((m_CameraPanX *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
   //m_CameraOffsetY += (m_CameraPanY * 1.01) * m_DeltaTime;//(((m_CameraPanY *= 0.99) / 300.0) * 6000.0 * m_DeltaTime);
 
-  m_CameraOffsetX -= (m_DeltaTime * 10.0 * (m_CameraOffsetX - m_AtlasSprites[0]->m_Position[0]));
-  m_CameraOffsetY -= (m_DeltaTime * 10.0 * (m_CameraOffsetY - m_AtlasSprites[0]->m_Position[1]));
+  m_CameraOffsetX -= (m_DeltaTime * 3.0 * (m_CameraOffsetX - m_AtlasSprites[0]->m_Position[0]));
+  m_CameraOffsetY -= (m_DeltaTime * 3.0 * (m_CameraOffsetY - m_AtlasSprites[0]->m_Position[1]));
 
 	m_PlayerLastX = m_AtlasSprites[0]->m_Position[0];
 	m_PlayerLastY = m_AtlasSprites[0]->m_Position[1];
@@ -530,6 +537,7 @@ void SuperBarrelBlast::RenderModelPhase() {
 
 
 void SuperBarrelBlast::RenderSpritePhase() {
+  glRotatef(m_Rotation, 0.0, 0.0, 1.0);
 	//glBlendFunc(GL_ONE, GL_ONE);
 	glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
   AtlasSprite::Scrub();
