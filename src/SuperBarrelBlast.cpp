@@ -388,7 +388,7 @@ int SuperBarrelBlast::Simulate() {
     float dx = (m_AtlasSprites[0]->m_Position[0] - m_PlayerLastX);
     float dy = (m_AtlasSprites[0]->m_Position[1] - m_PlayerLastY);
     float player_theta = atan2f(dy, dx);
-    float collider_theta = DEGREES_TO_RADIANS((int)(m_AtlasSprites[collide_index]->m_Rotation));
+    float collider_theta = RadiansToDegrees((int)(m_AtlasSprites[collide_index]->m_Rotation));
     float collider_theta_normal = DEGREES_TO_RADIANS((int)((m_AtlasSprites[collide_index]->m_Rotation) + 90) % 180);
     float collider_xoft = 1.0 * cos(collider_theta);
     float collider_yoft = 1.0 * fastSinf(collider_theta);

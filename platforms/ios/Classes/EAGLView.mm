@@ -16,7 +16,7 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 
-#include "SuperBarrelBlast.h"
+#include "FlightControl.h"
 
 
 #import "EAGLView.h"
@@ -485,7 +485,7 @@ static OSStatus playbackCallback(void *inRefCon,
 		
 		g_View = self;
 
-		game = new SuperBarrelBlast(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
+		game = new FlightControl(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
 		game->CreateThread();
 		
 		gameState = 1;

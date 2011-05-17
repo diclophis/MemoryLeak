@@ -2,7 +2,10 @@
 
 #include "MemoryLeak.h"
 
-
+#ifndef GLfixed
+  #define GLfixed GLint
+  #define glFrustumx glFrustum
+#endif
 
 class Wang {
 public:
@@ -418,9 +421,8 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	
 	double interp = 10.0;
-LOGV("?????\n");
-  CreateScriptThread();
-  LOGV("yea????\n");
+
+  //CreateScriptThread();
 
 	while (m_GameState != 0) {
 		
@@ -510,14 +512,13 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 }
 
 
-
 void Engine::DrawScreen(float rotation) {
 	pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		//glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_CULL_FACE);
 		//glEnable(GL_LIGHTING);
 		//glDepthFunc(GL_LESS); //redund here
 		glMatrixMode(GL_PROJECTION);
@@ -525,12 +526,14 @@ void Engine::DrawScreen(float rotation) {
 		{
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
-			gluePerspective(50, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.5, 1000.0);
+			//gluePerspective(30, (float)m_ScreenWidth / (float)m_ScreenHeight, -1.0, 100.0);
+			gluePerspective(40, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.00001, 500.0);
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
 				glLoadIdentity();
-				glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+				//gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				RenderModelPhase();
 				Model::ReleaseBuffers();
 			}
@@ -655,6 +658,7 @@ void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat center
 	
 }
 
+/*
 void Engine::gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
 	GLfloat xmin, xmax, ymin, ymax;
 	
@@ -669,6 +673,23 @@ void Engine::gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloa
 			   (GLint)(zNear * 65536), (GLint)(zFar * 65536)
 			   );
 }
+*/
+
+void Engine::gluePerspective(float fovy, float aspect,
+                           float zNear, float zFar)
+{
+    GLfloat xmin, xmax, ymin, ymax;
+
+    ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+    ymin = -ymax;
+    xmin = ymin * aspect;
+    xmax = ymax * aspect;
+
+    glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
+               (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
+               (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
+}
+
 
 void Engine::RunScriptThread() {
 LOGV("wtf\n");  

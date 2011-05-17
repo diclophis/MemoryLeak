@@ -14,7 +14,7 @@
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "SuperBarrelBlast.h"
+#include "FlightControl.h"
 
 //#define kWindowWidth 480
 //#define kWindowHeight 320
@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
 		sounds.push_back(firstModel);
 	}
 
-  game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
+  game = new FlightControl(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
   game->CreateThread();
 
   glutKeyboardFunc(processNormalKeys);

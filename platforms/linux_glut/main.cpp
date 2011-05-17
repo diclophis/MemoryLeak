@@ -14,7 +14,7 @@
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-#include "SuperBarrelBlast.h"
+#include "FlightControl.h"
 
 #define kWindowWidth 320
 #define kWindowHeight 480
@@ -332,7 +332,7 @@ closedir(dir);
       return(-1);
     }
 
-  game = new SuperBarrelBlast(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
+  game = new FlightControl(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
   game->CreateThread();
 
 	pthread_create(&audio_thread, 0, pump_audio, NULL);

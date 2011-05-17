@@ -185,8 +185,8 @@ void Model::Render() {
 	glPushMatrix();
 	{
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
-		glRotatef(m_Rotation[1],0,-1,0);
-		glRotatef(m_Rotation[0],0,0,1);
+		//glRotatef(m_Rotation[1],0,-1,0);
+		//glRotatef(m_Rotation[0],0,0,1);
 		//glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	

@@ -979,7 +979,7 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
 		if (!imp)	{
 			// not so bad yet ... try format auto detection.
 			const std::string::size_type s = pFile.find_last_of('.');
-			if (s != std::string::npos) {
+			//if (s != std::string::npos) {
 				DefaultLogger::get()->info("File extension now known, trying signature-based detection");
 				for( unsigned int a = 0; a < pimpl->mImporter.size(); a++)	{
 
@@ -988,7 +988,7 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
 						break;
 					}
 				}
-			}
+			//}
 			// Put a proper error message if no suitable importer was found
 			if( !imp)	{
 				pimpl->mErrorString = "No suitable reader found for the file format of file \"" + pFile + "\".";

@@ -76,6 +76,10 @@
 		FC141C361285415900166578 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A881285415900166578 /* Model.cpp */; };
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
 		FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */; };
+		FC5EC34B137FAC7000C31CC0 /* FlightControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC349137FAC7000C31CC0 /* FlightControl.cpp */; };
+		FC5EC4D513807C7100C31CC0 /* ObjFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D213807C7100C31CC0 /* ObjFileImporter.cpp */; };
+		FC5EC4D613807C7100C31CC0 /* ObjFileMtlImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D313807C7100C31CC0 /* ObjFileMtlImporter.cpp */; };
+		FC5EC4D713807C7100C31CC0 /* ObjFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D413807C7100C31CC0 /* ObjFileParser.cpp */; };
 		FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */; };
 		FC99BDDA131A42F600566984 /* axtls.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD1B131A42F600566984 /* axtls.c */; };
 		FC99BDDB131A42F600566984 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD1D131A42F600566984 /* base64.c */; };
@@ -606,6 +610,11 @@
 		FC1CDCAB129A330500CAFC54 /* static_assert.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = static_assert.hpp; sourceTree = "<group>"; };
 		FC1CDCAC129A330500CAFC54 /* timer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
 		FC1CDCAE129A330500CAFC54 /* tuple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tuple.hpp; sourceTree = "<group>"; };
+		FC5EC349137FAC7000C31CC0 /* FlightControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlightControl.cpp; sourceTree = "<group>"; };
+		FC5EC34A137FAC7000C31CC0 /* FlightControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlightControl.h; sourceTree = "<group>"; };
+		FC5EC4D213807C7100C31CC0 /* ObjFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileImporter.cpp; sourceTree = "<group>"; };
+		FC5EC4D313807C7100C31CC0 /* ObjFileMtlImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileMtlImporter.cpp; sourceTree = "<group>"; };
+		FC5EC4D413807C7100C31CC0 /* ObjFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileParser.cpp; sourceTree = "<group>"; };
 		FC5F1EB6129A13FD00E5F9FB /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
 		FC5F1EB7129A13FD00E5F9FB /* array2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array2d.h; sourceTree = "<group>"; };
 		FC5F1EB8129A13FD00E5F9FB /* numtraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numtraits.h; sourceTree = "<group>"; };
@@ -1078,6 +1087,8 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FC5EC349137FAC7000C31CC0 /* FlightControl.cpp */,
+				FC5EC34A137FAC7000C31CC0 /* FlightControl.h */,
 				FCC8C1F3137D07D4001802E6 /* oolua */,
 				FCC8C120137B8BA7001802E6 /* lua */,
 				FCA0A15713404A8200C739F4 /* SuperBarrelBlast.cpp */,
@@ -1112,6 +1123,9 @@
 		FC1417741285415800166578 /* assimp */ = {
 			isa = PBXGroup;
 			children = (
+				FC5EC4D213807C7100C31CC0 /* ObjFileImporter.cpp */,
+				FC5EC4D313807C7100C31CC0 /* ObjFileMtlImporter.cpp */,
+				FC5EC4D413807C7100C31CC0 /* ObjFileParser.cpp */,
 				FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */,
 				FC1CDC9E129A330500CAFC54 /* BoostWorkaround */,
 				FC14177B1285415800166578 /* aiAssert.cpp */,
@@ -2273,6 +2287,10 @@
 				FCC8C22D137D07D4001802E6 /* oolua_push_pull.cpp in Sources */,
 				FCC8C22E137D07D4001802E6 /* oolua_storage.cpp in Sources */,
 				FCC8C22F137D07D4001802E6 /* push_pointer_internal.cpp in Sources */,
+				FC5EC34B137FAC7000C31CC0 /* FlightControl.cpp in Sources */,
+				FC5EC4D513807C7100C31CC0 /* ObjFileImporter.cpp in Sources */,
+				FC5EC4D613807C7100C31CC0 /* ObjFileMtlImporter.cpp in Sources */,
+				FC5EC4D713807C7100C31CC0 /* ObjFileParser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
