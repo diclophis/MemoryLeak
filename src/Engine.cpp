@@ -2,9 +2,12 @@
 
 #include "MemoryLeak.h"
 
-#ifndef GLfixed
-  #define GLfixed GLint
+#ifdef DESKTOP
+  #define GLU_PERSPECTIVE gluPerspective
+  #define GLfixed GLfloat
   #define glFrustumx glFrustum
+#else
+  #define GLU_PERSPECTIVE gluePerspective
 #endif
 
 class Wang {
@@ -522,12 +525,13 @@ void Engine::DrawScreen(float rotation) {
 		//glEnable(GL_LIGHTING);
 		//glDepthFunc(GL_LESS); //redund here
 		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		{
+		//glPushMatrix();
+		//{
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
 			//gluePerspective(30, (float)m_ScreenWidth / (float)m_ScreenHeight, -1.0, 100.0);
-			gluePerspective(40, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.00001, 500.0);
+			GLU_PERSPECTIVE(50.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.01, 500.0);
+
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
@@ -538,8 +542,8 @@ void Engine::DrawScreen(float rotation) {
 				Model::ReleaseBuffers();
 			}
 			glPopMatrix();
-		}
-		glPopMatrix();
+		//}
+		//glPopMatrix();
 		glDisable(GL_DEPTH_TEST);
 		//glDisable(GL_LIGHTING);
 		//glDisable(GL_CULL_FACE);
