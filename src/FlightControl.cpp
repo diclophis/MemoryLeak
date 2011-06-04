@@ -25,7 +25,7 @@ static const GLfloat globalAmbient[4]      = { 5.9, 5.9, 5.9, 1.0 };
 /* Lamp parameters. */
 static const GLfloat lightDiffuseLamp[4]   = { 1.0, 1.0, 1.0, 1.0 };
 static const GLfloat lightAmbientLamp[4]   = { 0.74, 0.74, 0.74, 1.0 };
-static const GLfloat lightPositionLamp[4]  = { 25.0, 25.0, 25.0, 25.0 };
+static const GLfloat lightPositionLamp[4]  = { 0.0, 0.0, 0.0, 0.0 };
 
 enum colliders {
   BARREL = 1,
@@ -41,12 +41,13 @@ FlightControl::FlightControl(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_CameraX = 0.0;
   m_CameraY = 0.0;
   m_CameraZ = 0.0;
+
   m_CameraR = 180.0;
 
   m_PadCenters[0][0] = 90;
-  m_PadCenters[0][1] = -150;
+  m_PadCenters[0][1] = 0;
   m_PadCenters[1][0] = -90;
-  m_PadCenters[1][1] = -150;
+  m_PadCenters[1][1] = 0;
 
 	m_Space = new Octree<int>(16 * 16, -63);
 	m_Gravity = 600.0;
@@ -136,7 +137,7 @@ int FlightControl::Simulate() {
   float vf = 0.0;
   float vu = 0.0;
   float vs = 0.0;
-  float sc = 0.075;
+  float sc = 0.105;
 
   if (m_LastPadTouched >= 0) {
     float dx = m_PadCenters[m_LastPadTouched][0] - m_LastTouchX;
@@ -165,14 +166,14 @@ int FlightControl::Simulate() {
         if (m_LastPadTouched == 0) {
           vs = -sc * len;
         } else {
-          m_CameraR -= sc * len * 10.0 * m_DeltaTime;
+          m_CameraR -= sc * len * 0.9 * m_DeltaTime;
         }
       } else if (deg < -150 || deg > 150) {
         //LOGV("right\n");
         if (m_LastPadTouched == 0) {
           vs = sc * len;
         } else {
-          m_CameraR += sc * len * 10.0 * m_DeltaTime;
+          m_CameraR += sc * len * 0.9 * m_DeltaTime;
         }
       }
     }
@@ -185,15 +186,20 @@ int FlightControl::Simulate() {
   float tzz = cos(DEGREES_TO_RADIANS(m_CameraR + 90.0));
 
   m_CameraX += (tx * vf * m_DeltaTime) + (txx * vs * m_DeltaTime);
+  //m_CameraX += m_DeltaTime;
+  //m_CameraX = 0;
   m_CameraY += (vu * m_DeltaTime);
   m_CameraZ += (tz * vf * m_DeltaTime) + (tzz * vs * m_DeltaTime);
 
   m_CameraTarget[0] = m_CameraX + (tx * 100.0);
-  m_CameraTarget[1] = m_CameraY;
+  m_CameraTarget[1] = m_CameraY + fastSinf(m_SimulationTime * 10.0) * 1.0;
   m_CameraTarget[2] = m_CameraZ + (tz * 100.0);
   m_CameraPosition[0] = m_CameraX;
-  m_CameraPosition[1] = m_CameraY;
+  m_CameraPosition[1] = m_CameraY + 10.0; // + fastSinf(m_SimulationTime * 10.0) * 1.0;
   m_CameraPosition[2] = m_CameraZ;
+
+  m_Models[0]->m_Rotation[1] += m_DeltaTime * 100.0;
+  //LOGV("%f\n", m_CameraX);
 
 /*
   m_CameraTarget[0] = 0.0;
@@ -209,6 +215,9 @@ int FlightControl::Simulate() {
 
 
 void FlightControl::RenderModelPhase() {
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_ONE, GL_ONE);
 	glEnable(GL_LIGHTING);
 	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, globalAmbient );
 	glEnable(GL_LIGHT0);
@@ -216,9 +225,6 @@ void FlightControl::RenderModelPhase() {
 	glLightfv(GL_LIGHT0, GL_AMBIENT,  lightAmbientLamp  );
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp  );
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp );
-
-	glEnable(GL_BLEND);
-	//glBlendFunc(GL_ONE, GL_ONE);
 
 	RenderModelRange(0, 1);
 

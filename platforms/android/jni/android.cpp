@@ -23,6 +23,7 @@
 #include "micropather.h"
 #include "ModelOctree.h"
 #include "SuperBarrelBlast.h"
+#include "FlightControl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -166,7 +167,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 
-  game = new SuperBarrelBlast(sWindowWidth, sWindowHeight, textures, models, levels, sounds);
+  game = new FlightControl(sWindowWidth, sWindowHeight, textures, models, levels, sounds);
   game->CreateThread();
 	pthread_create(&audio_thread, 0, pump_audio, NULL);
   

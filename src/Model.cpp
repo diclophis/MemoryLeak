@@ -114,6 +114,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 		glBindBuffer(GL_ARRAY_BUFFER, ff->m_TextureBuffer[0]);
 		glBufferData(GL_ARRAY_BUFFER, aimesh.mNumVertices * 3 * sizeof(float), aimesh.mTextureCoords[0], GL_STATIC_DRAW);
 	} else {
+    LOGV("no tex coords\n");
 		exit(1);
 	}
 
@@ -185,9 +186,9 @@ void Model::Render() {
 	glPushMatrix();
 	{
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
-		//glRotatef(m_Rotation[1],0,-1,0);
-		//glRotatef(m_Rotation[0],0,0,1);
-		//glRotatef(m_Rotation[2],1,0,0);
+		glRotatef(m_Rotation[1],0,-1,0);
+		glRotatef(m_Rotation[0],0,0,1);
+		glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
 		if (m_Texture != g_lastTexture) {

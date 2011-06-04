@@ -533,7 +533,6 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)startAnimation {
     if (!animating) {
-		[self build];
 		animating = TRUE;
         if (displayLinkSupported) {
             displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];
@@ -546,7 +545,7 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)stopAnimation {
     if (animating) {
-		game->PauseThread();
+		//game->PauseThread();
         if (displayLinkSupported) {
             [displayLink invalidate];
             displayLink = nil;

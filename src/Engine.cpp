@@ -530,7 +530,8 @@ void Engine::DrawScreen(float rotation) {
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
 			//gluePerspective(30, (float)m_ScreenWidth / (float)m_ScreenHeight, -1.0, 100.0);
-			GLU_PERSPECTIVE(50.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.01, 500.0);
+			GLU_PERSPECTIVE(40.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 10000.0);
+      //glOrthof(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 100.0f);
 
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
