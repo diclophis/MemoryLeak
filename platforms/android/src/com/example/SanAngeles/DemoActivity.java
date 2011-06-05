@@ -5,6 +5,8 @@ package com.example.SanAngeles;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebChromeClient;
+import android.webkit.WebViewClient;
 import android.util.Log;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
@@ -27,6 +31,17 @@ import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+
 
 class DemoGLSurfaceView extends GLSurfaceView {
   public DemoGLSurfaceView(Context context) {
@@ -79,7 +94,47 @@ public class DemoActivity extends Activity {
     int written = at1.write(bytes, offset, size);
   }
 
+public static InputStream getInputStreamFromUrl(String url) {
+    InputStream content = null;
+    try {
+      HttpGet httpGet = new HttpGet(url);
+      HttpClient httpclient = new DefaultHttpClient();
+      // Execute HTTP Get Request
+      HttpResponse response = httpclient.execute(httpGet);
+      content = response.getEntity().getContent();
+                } catch (Exception e) {
+      //handle the exception !
+    }
+    return content;
+}
+
+  public String getStringContent(String uri) throws Exception {
+    try {
+      HttpClient client = new DefaultHttpClient();
+      HttpGet request = new HttpGet();
+      request.setURI(new URI(uri));
+      HttpResponse response = client.execute(request);
+      InputStream ips  = response.getEntity().getContent();
+      BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
+      StringBuilder sb = new StringBuilder();
+      String s;
+      while(true) {
+        s = buf.readLine();
+        if(s==null || s.length()==0)
+          break;
+        sb.append(s);
+      }
+      buf.close();
+      ips.close();
+      Log.v(this.toString(), sb.toString());
+      Log.v(this.toString(), "foo " + sb.length());
+      return sb.toString();
+    } finally {
+    }
+  } 
+
 	private GLSurfaceView mGLView;
+  private WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +144,66 @@ public class DemoActivity extends Activity {
 
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
+
+    mWebView = new WebView(this);
+    //mWebView.setVisibility(View.VISIBLE);
+    mWebView.setBackgroundColor(Color.argb(0,0,0,0));
+
+    final Context myApp = this; 
+    mWebView.setWebChromeClient(new WebChromeClient() {  
+         @Override  
+         public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result)  
+         {  
+             new AlertDialog.Builder(myApp)  
+                 .setTitle("javaScript dialog")  
+                 .setMessage(message)  
+                 .setPositiveButton(android.R.string.ok,  
+                         new AlertDialog.OnClickListener()  
+                         {  
+                             public void onClick(DialogInterface dialog, int which)  
+                             {  
+                                 result.confirm();  
+                             }  
+                         })  
+                 .setCancelable(false)  
+                 .create()  
+                 .show();  
+       
+             return true;  
+         };  
+    });  
+
+    mWebView.setWebViewClient(new WebViewClient() {
+      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+        Log.v(this.toString(), "WTF!@#!@#" + description);
+      }
+    });
+    
+    WebSettings webSettings = mWebView.getSettings();
+    webSettings.setLoadsImagesAutomatically(true);
+    webSettings.setJavaScriptEnabled(true);
+    webSettings.setSupportZoom(false);
+    webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+    webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
+    webSettings.setBuiltInZoomControls(false);
+
+    try {
+      BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl("http://192.168.1.144:3000/OFConnectJavascript/index.html")), 4096);
+      //BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl("http://www.quirksmode.org/m/tests/scrollayer.html")), 4096);
+      String line;
+      StringBuilder sb =  new StringBuilder();
+      while ((line = rd.readLine()) != null) {
+          sb.append(line);
+      }
+      rd.close();
+      String contentOfMyInputStream = sb.toString();
+      mWebView.loadDataWithBaseURL("https://api.openfeint.com/", contentOfMyInputStream, "text/html", "utf-8", "about:blank");
+    } catch (java.lang.Exception e) {
+      Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      Log.v(this.toString(), e.toString());
+    }
+ 
+    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 144));
 
     AssetManager am = getAssets();
     String path;
@@ -173,10 +288,25 @@ public class DemoActivity extends Activity {
 
       int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
+      /*
+      new Thread(new Runnable() {
+        public void run() {
+          mWebView.loadUrl("javascript:(function() { alert('wang'); })()");  
+        }
+      }).start();
+      */
+
+
     } catch (java.io.IOException e) {
       Log.v(this.toString(), e.toString());
     }
 	}
+
+  public void pushToWebViewQueue(String message) {
+    //mWebView.loadUrl("javascript:(function() { alert('wang'); })()");  
+    //mWebView.loadUrl(message);  
+    Log.v(this.toString(), "wWTF" + message);
+  }
 
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);

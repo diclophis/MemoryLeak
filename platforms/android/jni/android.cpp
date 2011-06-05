@@ -97,6 +97,45 @@ void *pump_audio(void *) {
   }
 }
 
+void *pushToWebViewQueue(void *) {
+LOGV("11111111111111\n");
+  jclass cls;
+  jmethodID mid;
+  jstring js;
+
+  if (g_Env == NULL) {
+    g_Vm->AttachCurrentThread(&g_Env, NULL);
+  }
+LOGV("222222222222222\n");
+
+  cls = g_Env->FindClass("com/example/SanAngeles/DemoActivity");
+
+  if (cls == 0) {
+    LOGV("failed to find class\n");
+    return NULL;
+  }
+
+LOGV("333333333333333333333\n");
+
+  mid = g_Env->GetMethodID(cls, "pushToWebViewQueue", "(Ljava/lang/String;)V");
+
+  if (mid == 0) {
+    LOGV("failed to find method\n");
+    return NULL;
+  }
+
+LOGV("444444444444444444\n");
+
+  js = g_Env->NewStringUTF("javascript:(function() { alert('wang'); })()");
+
+LOGV("555555555555555555555\n");
+
+  //g_Env->CallVoidMethod(&g_Env, thiz, mid, js); 
+  g_Env->CallVoidMethod(cls, mid, js); 
+
+  return NULL;
+}
+
 
 JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   g_Vm = vm;
@@ -187,6 +226,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
+  pushToWebViewQueue(NULL);
 	game->Hit(x, y, (int)hitState);
 }
 

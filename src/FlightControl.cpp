@@ -195,7 +195,7 @@ int FlightControl::Simulate() {
   m_CameraTarget[1] = m_CameraY + fastSinf(m_SimulationTime * 10.0) * 1.0;
   m_CameraTarget[2] = m_CameraZ + (tz * 100.0);
   m_CameraPosition[0] = m_CameraX;
-  m_CameraPosition[1] = m_CameraY + 10.0; // + fastSinf(m_SimulationTime * 10.0) * 1.0;
+  m_CameraPosition[1] = m_CameraY; // + fastSinf(m_SimulationTime * 10.0) * 1.0;
   m_CameraPosition[2] = m_CameraZ;
 
   m_Models[0]->m_Rotation[1] += m_DeltaTime * 100.0;
