@@ -15,27 +15,29 @@
 #include "octree.h"
 #include "micropather.h"
 #include "ModelOctree.h"
-
+#include "stdarg.h"
 #include "FlightControl.h"
 
 
 #import "EAGLView.h"
 
+//const char bufferFoo[1024];
+const char *mLastMessagePoppedCstring;
+
 EAGLView *g_View;
 pthread_mutex_t m_Mutex;
 pthread_cond_t m_AudioSyncCond;
 bool m_SyncAudio;
-
 pthread_mutex_t play_mutex;
-
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
-
 static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
+
 #define PLAYBACK_FREQ 44100
+
  
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	LOGV("interupption\n");
@@ -53,12 +55,8 @@ void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	}
 }
 
-void propertyListenerCallback (void                   *inUserData,                             
-							   AudioSessionPropertyID inPropertyID,                                
-							   UInt32                 inPropertyValueSize,                         
-							   const void             *inPropertyValue ) {
-	LOGV("property\n");
 
+void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inPropertyID, UInt32 inPropertyValueSize, const void *inPropertyValue) {
 	if (inPropertyID==kAudioSessionProperty_AudioRouteChange ) {
 		CFDictionaryRef routeChangeDictionary = (CFDictionaryRef)inPropertyValue;
 		NSString *oldroute = (NSString*)CFDictionaryGetValue (
@@ -73,6 +71,16 @@ void propertyListenerCallback (void                   *inUserData,
 }
 
 
+void pushMessageToWebView(const char *theMessage) {
+	[g_View pushMessageToWebView:theMessage];
+}
+
+
+const char *popMessageFromWebView() {
+	return [g_View popMessageFromWebView];
+}
+
+
 @implementation EAGLView
 
 
@@ -82,11 +90,14 @@ void propertyListenerCallback (void                   *inUserData,
 
 // You must implement this method
 + (Class)layerClass {
-    return [CAEAGLLayer class];
+  return [CAEAGLLayer class];
 }
 
 
--(void)build {
+-(void)build:(UIWebView *)theWebView {
+
+  webView = theWebView;
+
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
 	
@@ -94,10 +105,7 @@ void propertyListenerCallback (void                   *inUserData,
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 	
 	eaglLayer.opaque = TRUE;
-	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
-	
-	
+	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
 	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
 	
 	if (!context || ![EAGLContext setCurrentContext:context]) {
@@ -223,7 +231,6 @@ void propertyListenerCallback (void                   *inUserData,
 
 GLuint loadTexture(UIImage *image) {
 	GLuint text = 0;
-	
 	glEnable(GL_TEXTURE_2D);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 	glGenTextures(1, &text);
@@ -232,8 +239,6 @@ GLuint loadTexture(UIImage *image) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	
-
 	GLuint width = CGImageGetWidth(image.CGImage);
 	GLuint height = CGImageGetHeight(image.CGImage);
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -248,7 +253,6 @@ GLuint loadTexture(UIImage *image) {
 	free(imageData);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-	
 	return text;
 }
 
@@ -411,7 +415,6 @@ static OSStatus playbackCallback(void *inRefCon,
 		textures.clear();
 		levels.clear();
 		delete game;
-
 	}
 	
 	{
@@ -472,12 +475,7 @@ static OSStatus playbackCallback(void *inRefCon,
 		
 		pthread_cond_init(&m_AudioSyncCond, NULL);
 		pthread_mutex_init(&m_Mutex, NULL);
-		
-		//ring = alloc();
-
-		
 		m_SyncAudio = false;
-		
 		
 		[self initAudio2];
 		status = AudioOutputUnitStart(audioUnit);
@@ -486,6 +484,8 @@ static OSStatus playbackCallback(void *inRefCon,
 		g_View = self;
 
 		game = new FlightControl(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
+		mLastMessageReady = NO;
+    game->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
 		game->CreateThread();
 		
 		gameState = 1;
@@ -556,6 +556,57 @@ static OSStatus playbackCallback(void *inRefCon,
         animating = FALSE;
     }
 }
+
+
+-(void)pushMessageToWebView:(const char *)theMessage {
+	[webView stringByEvaluatingJavaScriptFromString:[NSString stringWithCString:theMessage encoding:NSUTF8StringEncoding]];
+}
+
+
+-(const char *)popMessageFromWebView {
+	[self performSelectorOnMainThread:@selector(actuallyPopMessageFromWebView) withObject:nil waitUntilDone:NO];
+	if (mLastMessageReady) {
+		mLastMessageReady = NO;
+		return mLastMessagePoppedCstring;
+	} else {
+		return "unknown";
+	}
+}
+
+
+-(void)actuallyPopMessageFromWebView {
+	@synchronized(self) {
+		mLastMessageReady = NO;
+		NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+		if ([webView isLoading]) {
+			mLastMessagePoppedCstring = "loading";
+			mLastMessageReady = YES;
+		} else {
+			mLastMessagePopped = [webView stringByEvaluatingJavaScriptFromString:@"dequeue()"];
+			mLastMessagePoppedCstring = [mLastMessagePopped cStringUsingEncoding:NSUTF8StringEncoding];
+			mLastMessageReady = YES;
+			if (strcmp("openfeint://show", mLastMessagePoppedCstring) == 0) {
+				[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
+				[UIView beginAnimations:@"toggleWebView" context:nil];
+				[UIView setAnimationDuration:0.33];
+				[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height * 0.3)];
+				[UIView commitAnimations];
+			} else if (strcmp("openfeint://hide", mLastMessagePoppedCstring) == 0) {
+				[UIView beginAnimations:@"toggleWebView" context:nil];
+				[UIView setAnimationDuration:0.33];
+				[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
+				[UIView commitAnimations];
+			} else if (strcmp("openfeint://fullscreen", mLastMessagePoppedCstring) == 0) {
+				[UIView beginAnimations:@"toggleWebView" context:nil];
+				[UIView setAnimationDuration:0.33];
+				[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+				[UIView commitAnimations];
+			}
+		}
+		[pool release];
+	}
+}
+
 
 -(void)dealloc {	
 	// Tear down GL

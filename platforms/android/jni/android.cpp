@@ -286,7 +286,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
   //pushToWebViewQueue(NULL);
-  pushMessageToWebView("javascript:(function() { var p = new Element('p').update('fuck you'); document.body.appendChild(p); })()");
+  pushMessageToWebView("javascript:(function() { var p = new Element('p').update('fuck you'); document.body.appendChild(p); document.body.appendChild(p); Effect.ScrollTo(p); })()");
   LOGV("message from javascript: %s\n", popMessageFromWebView());
 	game->Hit(x, y, (int)hitState);
 }

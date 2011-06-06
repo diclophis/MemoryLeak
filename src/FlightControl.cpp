@@ -101,25 +101,30 @@ void FlightControl::Hit(float x, float y, int hitState) {
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
   //LOGV("hit %f %f %f %f\n", x, y, xx, yy);
-
-  if (hitState == 2 && m_LastPadTouched >= 0) {
-    m_AtlasSprites[m_LastPadTouched]->SetPosition(m_PadCenters[m_LastPadTouched][0], m_PadCenters[m_LastPadTouched][1]);
-    m_LastPadTouched = -1;
-  } else if (hitState == 1 && m_LastPadTouched >= 0) {
-    m_LastTouchX = xx;
-    m_LastTouchY = yy;
+  if (yy < 0) {
+    if (hitState == 0) {
+      PushMessageToWebView(CreateWebViewFunction("show()"));
+    } else if (hitState == 2) {
+      PushMessageToWebView(CreateWebViewFunction("hide()"));
+    }
   } else {
-    m_LastTouchX = xx;
-    m_LastTouchY = yy;
-    //determine moving pad
-    if (xx > 0) { //right side
-      m_LastPadTouched = 0;
-    } else {//left side
-      m_LastPadTouched = 1;
+    if (hitState == 2 && m_LastPadTouched >= 0) {
+      m_AtlasSprites[m_LastPadTouched]->SetPosition(m_PadCenters[m_LastPadTouched][0], m_PadCenters[m_LastPadTouched][1]);
+      m_LastPadTouched = -1;
+    } else if (hitState == 1 && m_LastPadTouched >= 0) {
+      m_LastTouchX = xx;
+      m_LastTouchY = yy;
+    } else {
+      m_LastTouchX = xx;
+      m_LastTouchY = yy;
+      //determine moving pad
+      if (xx > 0) { //right side
+        m_LastPadTouched = 0;
+      } else {//left side
+        m_LastPadTouched = 1;
+      }
     }
   }
-
-
 }
 
 
@@ -128,6 +133,9 @@ void FlightControl::Build() {
 
 
 int FlightControl::Simulate() {
+
+  const char *foo = PopMessageFromWebView();
+
   //bool was_falling_before = ((m_LastCollideIndex < 0) || (m_CollideTimeout < 0.1));
 	//float collide_x = ((m_AtlasSprites[0]->m_Position[0]) + (SUBDIVIDE * 0.5));
 	//float collide_y = ((m_AtlasSprites[0]->m_Position[1]) + (SUBDIVIDE * 0.5));

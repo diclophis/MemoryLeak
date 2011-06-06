@@ -714,3 +714,30 @@ LOGV("wtf\n");
     exit(1);
   }
 }
+
+
+void Engine::SetWebViewPushAndPop(void (*thePusher)(const char *), const char *(*thePopper)()) {
+  m_WebViewMessagePusher = thePusher;
+  m_WebViewMessagePopper = thePopper;
+}
+
+
+char *Engine::CreateWebViewFunction(const char *fmt, ...) {
+  va_list ap;
+  va_start (ap, fmt);
+  vsnprintf (m_WebViewFunctionBuffer, 1024 * sizeof(char), fmt, ap);
+  va_end (ap);	
+  return m_WebViewFunctionBuffer;	
+}
+
+
+const char *Engine::PopMessageFromWebView() {
+  return m_WebViewMessagePopper();
+}
+
+
+void Engine::PushMessageToWebView(char *messageToPush) {
+  sprintf(m_WebViewFunctionBufferTwo, "javascript:(function() { %s })()", messageToPush);
+  LOGV("pushing: %s\n", m_WebViewFunctionBufferTwo);
+  m_WebViewMessagePusher(m_WebViewFunctionBufferTwo);
+}

@@ -13,8 +13,8 @@
 
 
 @interface MemoryLeakAppDelegate : NSObject <UIApplicationDelegate, UIWebViewDelegate> {
-    UIWindow *window;
-    EAGLView *glView;
+  UIWindow *window;
+  EAGLView *glView;
 	UIWebView *webView;
 	BOOL on;
 }
@@ -24,6 +24,5 @@
 @property (nonatomic, retain) IBOutlet EAGLView *glView;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
 
--(void)toggleWebView:(id)sender;
 
 @end
