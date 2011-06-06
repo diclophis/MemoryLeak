@@ -98,6 +98,7 @@ void *pump_audio(void *) {
   }
 }
 
+/*
 void *pushToWebViewQueue(void *) {
   jclass cls;
   jmethodID mid;
@@ -127,6 +128,70 @@ void *pushToWebViewQueue(void *) {
   g_Env->CallVoidMethod(activity, mid, js); 
 
   return NULL;
+}
+*/
+
+void *pushMessageToWebView(const char *messageToPush) {
+  jclass cls;
+  jmethodID mid;
+  jstring js;
+
+  if (g_Env == NULL) {
+    g_Vm->AttachCurrentThread(&g_Env, NULL);
+  }
+
+  cls = g_Env->FindClass("com/example/SanAngeles/DemoActivity");
+
+  if (cls == 0) {
+    LOGV("failed to find class\n");
+    return NULL;
+  }
+
+  mid = g_Env->GetMethodID(cls, "pushMessageToWebView", "(Ljava/lang/String;)V");
+
+  if (mid == 0) {
+    LOGV("failed to find method\n");
+    return NULL;
+  }
+
+  //javascript:(function() { javascriptBridge.pump('foobarbaz'); })()
+  js = g_Env->NewStringUTF(messageToPush);
+
+  g_Env->CallVoidMethod(activity, mid, js); 
+
+  return NULL;
+}
+
+
+const char *popMessageFromWebView() {
+  jclass cls;
+  jmethodID mid;
+  jstring rv;
+
+  if (g_Env == NULL) {
+    g_Vm->AttachCurrentThread(&g_Env, NULL);
+  }
+
+  cls = g_Env->FindClass("com/example/SanAngeles/DemoActivity");
+
+  if (cls == 0) {
+    LOGV("failed to find class\n");
+    return NULL;
+  }
+
+  mid = g_Env->GetMethodID(cls, "popMessageFromWebView", "()Ljava/lang/String;");
+
+  if (mid == 0) {
+    LOGV("failed to find method\n");
+    return NULL;
+  }
+
+  //javascript:(function() { javascriptBridge.pump('foobarbaz'); })()
+  //js = g_Env->NewStringUTF(messageToPush);
+  //g_Env->CallVoidMethod(activity, mid, js); 
+  rv = (jstring) g_Env->CallObjectMethod(activity, mid, 0); 
+  //const char *strReturn = env->GetStringUTFChars(env, rv, 0);
+  return g_Env->GetStringUTFChars(rv, 0);
 }
 
 
@@ -220,7 +285,9 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
-  pushToWebViewQueue(NULL);
+  //pushToWebViewQueue(NULL);
+  pushMessageToWebView("javascript:(function() { var p = new Element('p').update('fuck you'); document.body.appendChild(p); })()");
+  LOGV("message from javascript: %s\n", popMessageFromWebView());
 	game->Hit(x, y, (int)hitState);
 }
 

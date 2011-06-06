@@ -304,7 +304,7 @@ public class DemoActivity extends Activity {
     // Popped messages are JSON structures that indicate status of operations, etc
     String messagePopBridge = "javascript:(function() { javascriptBridge.pushToJava('some message from queue.pop'); })()";
     // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
-    mWebView.loadUrl(message);
+    mWebView.loadUrl(messagePopBridge);
     return mLastMessagePopped;
   }
 
