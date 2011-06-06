@@ -44,10 +44,11 @@ static Engine *game;
 static int  sWindowWidth  = 0;
 static int  sWindowHeight = 0;
 static int gameState;
+static jobject activity;
 
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
-  JNIEnv * env, jclass envClass,
+  JNIEnv * env, jobject thiz,
   int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
   int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
   int sounds_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
@@ -98,7 +99,6 @@ void *pump_audio(void *) {
 }
 
 void *pushToWebViewQueue(void *) {
-LOGV("11111111111111\n");
   jclass cls;
   jmethodID mid;
   jstring js;
@@ -106,7 +106,6 @@ LOGV("11111111111111\n");
   if (g_Env == NULL) {
     g_Vm->AttachCurrentThread(&g_Env, NULL);
   }
-LOGV("222222222222222\n");
 
   cls = g_Env->FindClass("com/example/SanAngeles/DemoActivity");
 
@@ -115,8 +114,6 @@ LOGV("222222222222222\n");
     return NULL;
   }
 
-LOGV("333333333333333333333\n");
-
   mid = g_Env->GetMethodID(cls, "pushToWebViewQueue", "(Ljava/lang/String;)V");
 
   if (mid == 0) {
@@ -124,14 +121,10 @@ LOGV("333333333333333333333\n");
     return NULL;
   }
 
-LOGV("444444444444444444\n");
-
-  js = g_Env->NewStringUTF("javascript:(function() { alert('wang'); })()");
-
-LOGV("555555555555555555555\n");
+  js = g_Env->NewStringUTF("javascript:(function() { javascriptBridge.pump('foobarbaz'); })()");
 
   //g_Env->CallVoidMethod(&g_Env, thiz, mid, js); 
-  g_Env->CallVoidMethod(cls, mid, js); 
+  g_Env->CallVoidMethod(activity, mid, js); 
 
   return NULL;
 }
@@ -159,11 +152,12 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
 
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
-  JNIEnv * env, jclass envClass,
+  JNIEnv * env, jobject thiz,
   int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
   int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
 ) {
+activity = thiz;
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 

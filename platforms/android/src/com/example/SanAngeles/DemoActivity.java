@@ -44,69 +44,82 @@ import java.io.UnsupportedEncodingException;
 
 
 class DemoGLSurfaceView extends GLSurfaceView {
+
+  private DemoRenderer mRenderer;
+
   public DemoGLSurfaceView(Context context) {
     super(context);
     mRenderer = new DemoRenderer(context);
     setRenderer(mRenderer);
   }
 
-@Override
+  @Override
   public boolean onTouchEvent(final MotionEvent event) {
-//    queueEvent(new Runnable() {
-//      public void run() {
-//        for (int i=0; i<event.getPointerCount(); i++) {
-//          float x = event.getX(i);
-//          float y = event.getY(i);
-          float x = event.getX();
-          float y = event.getY();
-          if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            nativeTouch(x, y, 0);
-          }
-          if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            nativeTouch(x, y, 1);
-          }
-          if (event.getAction() == MotionEvent.ACTION_UP) {
-            nativeTouch(x, y, 2);
-          }
-//        }
-//      }
-//    });
+    queueEvent(new Runnable() {
+      public void run() {
+        float x = event.getX();
+        float y = event.getY();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+          nativeTouch(x, y, 0);
+        }
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+          nativeTouch(x, y, 1);
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+          nativeTouch(x, y, 2);
+        }
+      }
+    });
     return true;
   }
 
-@Override
+  @Override
   public void onPause() {
     super.onPause();
     nativePause();
   }
 
-  DemoRenderer mRenderer;
-
   private static native void nativePause();
   private static native void nativeTouch(float x, float y, int hitState);
 }
 
+
+class JavascriptBridge {
+  private DemoActivity mActivity;
+  public JavascriptBridge(DemoActivity theActivity) {
+    mActivity = theActivity;
+  }
+
+  public void pushToJava(String messageFromJavascript) {
+    mActivity.mLastMessagePopped = messageFromJavascript;
+  }
+}
+
+
 public class DemoActivity extends Activity {
 
   protected static AudioTrack at1;
+	private GLSurfaceView mGLView;
+  private WebView mWebView;
+  private JavascriptBridge mJavascriptBridge;
+  public String mLastMessagePopped;
 
   public static void writeAudio(short[] bytes, int offset, int size) {
     int written = at1.write(bytes, offset, size);
   }
 
-public static InputStream getInputStreamFromUrl(String url) {
+  public InputStream getInputStreamFromUrl(String url) {
     InputStream content = null;
     try {
       HttpGet httpGet = new HttpGet(url);
       HttpClient httpclient = new DefaultHttpClient();
-      // Execute HTTP Get Request
       HttpResponse response = httpclient.execute(httpGet);
       content = response.getEntity().getContent();
-                } catch (Exception e) {
-      //handle the exception !
+    } catch (Exception e) {
+      Log.v(this.toString(), e.toString());
     }
     return content;
-}
+  }
 
   public String getStringContent(String uri) throws Exception {
     try {
@@ -133,9 +146,6 @@ public static InputStream getInputStreamFromUrl(String url) {
     }
   } 
 
-	private GLSurfaceView mGLView;
-  private WebView mWebView;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -146,32 +156,23 @@ public static InputStream getInputStreamFromUrl(String url) {
 		setContentView(mGLView);
 
     mWebView = new WebView(this);
-    //mWebView.setVisibility(View.VISIBLE);
+    mJavascriptBridge = new JavascriptBridge(this);
+    mWebView.addJavascriptInterface(mJavascriptBridge, "javascriptBridge");
     mWebView.setBackgroundColor(Color.argb(0,0,0,0));
 
-    final Context myApp = this; 
+    final Context myApp = this;
+
     mWebView.setWebChromeClient(new WebChromeClient() {  
-         @Override  
-         public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result)  
-         {  
-             new AlertDialog.Builder(myApp)  
-                 .setTitle("javaScript dialog")  
-                 .setMessage(message)  
-                 .setPositiveButton(android.R.string.ok,  
-                         new AlertDialog.OnClickListener()  
-                         {  
-                             public void onClick(DialogInterface dialog, int which)  
-                             {  
-                                 result.confirm();  
-                             }  
-                         })  
-                 .setCancelable(false)  
-                 .create()  
-                 .show();  
-       
-             return true;  
-         };  
-    });  
+      @Override  
+      public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result) {
+        new AlertDialog.Builder(myApp).setTitle("javaScript dialog").setMessage(message).setPositiveButton(android.R.string.ok, new AlertDialog.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+            result.confirm();
+          }
+        }).setCancelable(false).create().show();
+        return true;
+      };
+    });
 
     mWebView.setWebViewClient(new WebViewClient() {
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
@@ -188,16 +189,17 @@ public static InputStream getInputStreamFromUrl(String url) {
     webSettings.setBuiltInZoomControls(false);
 
     try {
-      BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl("http://192.168.1.144:3000/OFConnectJavascript/index.html")), 4096);
-      //BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl("http://www.quirksmode.org/m/tests/scrollayer.html")), 4096);
+      String url = "http://192.168.1.144:3000/OFConnectJavascript/index.html";
+      String base_url = "https://api.openfeint.com/";
+      BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl(url)), 4096);
       String line;
       StringBuilder sb =  new StringBuilder();
       while ((line = rd.readLine()) != null) {
-          sb.append(line);
+        sb.append(line);
       }
       rd.close();
       String contentOfMyInputStream = sb.toString();
-      mWebView.loadDataWithBaseURL("https://api.openfeint.com/", contentOfMyInputStream, "text/html", "utf-8", "about:blank");
+      mWebView.loadDataWithBaseURL(base_url, contentOfMyInputStream, "text/html", "utf-8", "about:blank");
     } catch (java.lang.Exception e) {
       Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       Log.v(this.toString(), e.toString());
@@ -288,31 +290,29 @@ public static InputStream getInputStreamFromUrl(String url) {
 
       int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
-      /*
-      new Thread(new Runnable() {
-        public void run() {
-          mWebView.loadUrl("javascript:(function() { alert('wang'); })()");  
-        }
-      }).start();
-      */
-
-
     } catch (java.io.IOException e) {
       Log.v(this.toString(), e.toString());
     }
 	}
 
-  public void pushToWebViewQueue(String message) {
-    //mWebView.loadUrl("javascript:(function() { alert('wang'); })()");  
-    //mWebView.loadUrl(message);  
-    Log.v(this.toString(), "wWTF" + message);
+  public void pushMessageToWebView(String messageToPush) {
+    // pushed messages are direct JS that is eval'ed in the context of the webview
+    mWebView.loadUrl(messageToPush);
+  }
+
+  public String popMessageFromWebView() {
+    // Popped messages are JSON structures that indicate status of operations, etc
+    String messagePopBridge = "javascript:(function() { javascriptBridge.pushToJava('some message from queue.pop'); })()";
+    // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
+    mWebView.loadUrl(message);
+    return mLastMessagePopped;
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
   }
 
-	private static native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
+	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
   private static native void setMinBuffer(int size);
 
 @Override
