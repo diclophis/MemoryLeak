@@ -96,7 +96,8 @@ const char *popMessageFromWebView() {
 
 -(void)build:(UIWebView *)theWebView {
 
-  webView = theWebView;
+	webView = theWebView;
+	[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
 
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
@@ -140,7 +141,7 @@ const char *popMessageFromWebView() {
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 1;
+	animationFrameInterval = 2;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -586,19 +587,23 @@ static OSStatus playbackCallback(void *inRefCon,
 			mLastMessagePoppedCstring = [mLastMessagePopped cStringUsingEncoding:NSUTF8StringEncoding];
 			mLastMessageReady = YES;
 			if (strcmp("openfeint://show", mLastMessagePoppedCstring) == 0) {
-				[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
-				[UIView beginAnimations:@"toggleWebView" context:nil];
-				[UIView setAnimationDuration:0.33];
+				[UIView setAnimationBeginsFromCurrentState:YES];
+				//[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
+				[UIView beginAnimations:@"showWebView" context:nil];
+				[UIView setAnimationDuration:0.1];
 				[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height * 0.3)];
 				[UIView commitAnimations];
 			} else if (strcmp("openfeint://hide", mLastMessagePoppedCstring) == 0) {
-				[UIView beginAnimations:@"toggleWebView" context:nil];
-				[UIView setAnimationDuration:0.33];
+				[UIView setAnimationBeginsFromCurrentState:YES];
+				//[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
+				[UIView beginAnimations:@"hideWebView" context:nil];
+				[UIView setAnimationDuration:0.1];
 				[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
 				[UIView commitAnimations];
 			} else if (strcmp("openfeint://fullscreen", mLastMessagePoppedCstring) == 0) {
-				[UIView beginAnimations:@"toggleWebView" context:nil];
-				[UIView setAnimationDuration:0.33];
+				[UIView setAnimationBeginsFromCurrentState:YES];
+				[UIView beginAnimations:@"fullscreenWebView" context:nil];
+				[UIView setAnimationDuration:0.1];
 				[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 				[UIView commitAnimations];
 			}

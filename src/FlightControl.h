@@ -29,4 +29,6 @@ public:
   float m_CameraZ;
   float m_CameraR;
 
+  float m_OpenFeintTimeout;
+
 };

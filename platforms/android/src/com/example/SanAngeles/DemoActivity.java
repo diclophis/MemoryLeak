@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.view.View;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,6 +19,11 @@ import android.webkit.WebView;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 import android.util.Log;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
 import android.content.res.AssetManager;
@@ -41,59 +47,13 @@ import java.io.BufferedReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 
-
-class DemoGLSurfaceView extends GLSurfaceView {
-
-  private DemoRenderer mRenderer;
-
-  public DemoGLSurfaceView(Context context) {
-    super(context);
-    mRenderer = new DemoRenderer(context);
-    setRenderer(mRenderer);
-  }
-
-  @Override
-  public boolean onTouchEvent(final MotionEvent event) {
-    queueEvent(new Runnable() {
-      public void run() {
-        float x = event.getX();
-        float y = event.getY();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-          nativeTouch(x, y, 0);
-        }
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-          nativeTouch(x, y, 1);
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-          nativeTouch(x, y, 2);
-        }
-      }
-    });
-    return true;
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    nativePause();
-  }
-
-  private static native void nativePause();
-  private static native void nativeTouch(float x, float y, int hitState);
-}
-
-
-class JavascriptBridge {
-  private DemoActivity mActivity;
-  public JavascriptBridge(DemoActivity theActivity) {
-    mActivity = theActivity;
-  }
-
-  public void pushToJava(String messageFromJavascript) {
-    mActivity.mLastMessagePopped = messageFromJavascript;
-  }
-}
 
 
 public class DemoActivity extends Activity {
@@ -102,7 +62,8 @@ public class DemoActivity extends Activity {
 	private GLSurfaceView mGLView;
   private WebView mWebView;
   private JavascriptBridge mJavascriptBridge;
-  public String mLastMessagePopped;
+
+  public static BlockingQueue<String> mWebViewMessages;
 
   public static void writeAudio(short[] bytes, int offset, int size) {
     int written = at1.write(bytes, offset, size);
@@ -121,34 +82,11 @@ public class DemoActivity extends Activity {
     return content;
   }
 
-  public String getStringContent(String uri) throws Exception {
-    try {
-      HttpClient client = new DefaultHttpClient();
-      HttpGet request = new HttpGet();
-      request.setURI(new URI(uri));
-      HttpResponse response = client.execute(request);
-      InputStream ips  = response.getEntity().getContent();
-      BufferedReader buf = new BufferedReader(new InputStreamReader(ips,"UTF-8"));
-      StringBuilder sb = new StringBuilder();
-      String s;
-      while(true) {
-        s = buf.readLine();
-        if(s==null || s.length()==0)
-          break;
-        sb.append(s);
-      }
-      buf.close();
-      ips.close();
-      Log.v(this.toString(), sb.toString());
-      Log.v(this.toString(), "foo " + sb.length());
-      return sb.toString();
-    } finally {
-    }
-  } 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+    DemoActivity.mWebViewMessages = new LinkedBlockingQueue<String>();
 
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
 
@@ -189,7 +127,8 @@ public class DemoActivity extends Activity {
     webSettings.setBuiltInZoomControls(false);
 
     try {
-      String url = "http://192.168.1.144:3000/OFConnectJavascript/index.html";
+      //String url = "http://radiant-fire-861.heroku.com/";
+      String url = "http://192.168.1.144:9292/";
       String base_url = "https://api.openfeint.com/";
       BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl(url)), 4096);
       String line;
@@ -199,13 +138,14 @@ public class DemoActivity extends Activity {
       }
       rd.close();
       String contentOfMyInputStream = sb.toString();
+      //Log.v(this.toString(), contentOfMyInputStream);
       mWebView.loadDataWithBaseURL(base_url, contentOfMyInputStream, "text/html", "utf-8", "about:blank");
     } catch (java.lang.Exception e) {
       Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       Log.v(this.toString(), e.toString());
     }
  
-    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 144));
+    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 50));
 
     AssetManager am = getAssets();
     String path;
@@ -296,16 +236,61 @@ public class DemoActivity extends Activity {
 	}
 
   public void pushMessageToWebView(String messageToPush) {
+    Log.v(this.toString(), "pushMessage" + messageToPush);
     // pushed messages are direct JS that is eval'ed in the context of the webview
-    mWebView.loadUrl(messageToPush);
+    if (mWebView.getProgress() == 100) {
+      mWebView.loadUrl(messageToPush);
+    }
   }
 
   public String popMessageFromWebView() {
+    Log.v(this.toString(), "popMessage");
     // Popped messages are JSON structures that indicate status of operations, etc
-    String messagePopBridge = "javascript:(function() { javascriptBridge.pushToJava('some message from queue.pop'); })()";
-    // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
-    mWebView.loadUrl(messagePopBridge);
-    return mLastMessagePopped;
+    String messagePopBridge = "javascript:(function() { window.javascriptBridge.pushToJava(dequeue()); })()";
+    if (mWebView.getProgress() == 100) {
+      // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
+      mWebView.loadUrl(messagePopBridge);
+
+
+    Log.v(this.toString(), "wangpopMessage");
+
+if (DemoActivity.mWebViewMessages != null) {
+String mLastMessagePopped = new String();
+    try {
+    if (DemoActivity.mWebViewMessages.isEmpty()) {
+      mLastMessagePopped = "empty";
+    } else {
+    mLastMessagePopped = DemoActivity.mWebViewMessages.take();
+    }
+    } catch (java.lang.InterruptedException wtf) {
+      Log.v(this.toString(), wtf.toString());
+    }
+    Log.v(this.toString(), mLastMessagePopped);
+
+    if (mLastMessagePopped != null) {
+      if ("openfeint://show".equals(mLastMessagePopped)) {
+        runOnUiThread(new Runnable() {
+          public void run() {
+            mWebView.setVisibility(View.VISIBLE);
+          }
+        });
+      } else if ("openfeint://hide".equals(mLastMessagePopped)) {
+        runOnUiThread(new Runnable() {
+          public void run() {
+            mWebView.setVisibility(View.INVISIBLE);
+          }
+        });
+      }
+      return mLastMessagePopped;
+    } else {
+      return "wtf";
+    }
+    } else {
+      return "wtf2";
+    }
+  }else {
+  return "wtf3";
+}
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
@@ -384,4 +369,57 @@ class DemoRenderer implements GLSurfaceView.Renderer {
     private native void nativeOnSurfaceCreated(int count, int[] textures);
     private static native void nativeResize(int w, int h);
     private static native void nativeRender();
+}
+class DemoGLSurfaceView extends GLSurfaceView {
+
+  private DemoRenderer mRenderer;
+
+  public DemoGLSurfaceView(Context context) {
+    super(context);
+    mRenderer = new DemoRenderer(context);
+    setRenderer(mRenderer);
+  }
+
+  @Override
+  public boolean onTouchEvent(final MotionEvent event) {
+    queueEvent(new Runnable() {
+      public void run() {
+        float x = event.getX();
+        float y = event.getY();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+          nativeTouch(x, y, 0);
+        }
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+          nativeTouch(x, y, 1);
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+          nativeTouch(x, y, 2);
+        }
+      }
+    });
+    return true;
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    nativePause();
+  }
+
+  private static native void nativePause();
+  private static native void nativeTouch(float x, float y, int hitState);
+}
+
+
+class JavascriptBridge {
+  private DemoActivity mActivity;
+  public JavascriptBridge(DemoActivity theActivity) {
+    mActivity = theActivity;
+  }
+
+  public void pushToJava(String messageFromJavascript) {
+    Log.v(this.toString(), "-- got -- " + messageFromJavascript);
+    DemoActivity.mWebViewMessages.offer(messageFromJavascript);
+    Log.v(this.toString(), "-- set -- " + messageFromJavascript);
+  }
 }

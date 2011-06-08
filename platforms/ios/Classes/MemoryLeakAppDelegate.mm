@@ -24,6 +24,9 @@
     return YES;
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return YES;
+}
 
 -(void)applicationWillResignActive:(UIApplication *)application {
     [glView stopAnimation];
@@ -35,7 +38,9 @@
 	[[webView.subviews objectAtIndex:0] setBounces:NO]; //to stop bouncing
 	[webView setScalesPageToFit:NO];
 	[webView setBackgroundColor:[UIColor clearColor]];
-	[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://192.168.1.144:3000/OFConnectJavascript/index.html"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/"]];
+	[webView setAllowsInlineMediaPlayback:YES];
+	[webView setMediaPlaybackRequiresUserAction:NO];
+	[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://192.168.1.144:9292/"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/"]];
   [glView build:webView];
 	[glView startAnimation];
 }

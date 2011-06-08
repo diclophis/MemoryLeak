@@ -35,6 +35,8 @@ enum colliders {
 
 FlightControl::FlightControl(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
+  m_OpenFeintTimeout = 0.0;
+
   m_LastTouchX = 0.0;
 	m_LastTouchY = 0.0;
 
@@ -61,17 +63,18 @@ FlightControl::FlightControl(int w, int h, std::vector<GLuint> &t, std::vector<f
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();	
 
-	snprintf(path, sizeof(s), "%d", 1);
+	snprintf(path, sizeof(s), "%d", 2);
 	m_Importer.ReadFile(path, m_PostProcessFlags);
 	LOGV("%s\n", m_Importer.GetErrorString());
-	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
+	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 8));
 	m_Importer.FreeScene();	
 
 	m_Models.push_back(new Model(m_FooFoos.at(1)));
-	m_Models[0]->SetTexture(m_Textures->at(1));
+	m_Models[0]->SetTexture(m_Textures->at(3));
 	m_Models[0]->SetFrame(0);
 	m_Models[0]->SetPosition(0.0, 0.0, 0.0);
-	m_Models[0]->SetScale(1.0, 1.0, 1.0);
+	m_Models[0]->SetScale(0.01, 0.01, 0.01);
+  m_Models[0]->m_IsAlive = true;
 
 /*
 	m_Models.push_back(new Model(m_FooFoos.at(0)));
@@ -101,7 +104,7 @@ void FlightControl::Hit(float x, float y, int hitState) {
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
   //LOGV("hit %f %f %f %f\n", x, y, xx, yy);
-  if (yy < 0) {
+  if (yy > 1) {
     if (hitState == 0) {
       PushMessageToWebView(CreateWebViewFunction("show()"));
     } else if (hitState == 2) {
@@ -134,7 +137,14 @@ void FlightControl::Build() {
 
 int FlightControl::Simulate() {
 
-  const char *foo = PopMessageFromWebView();
+  m_OpenFeintTimeout += m_DeltaTime;
+
+  if (m_OpenFeintTimeout > 0.1) {
+    m_OpenFeintTimeout = 0.0;
+    const char *foo = PopMessageFromWebView();
+  }
+
+  m_Models[0]->Simulate(m_DeltaTime);
 
   //bool was_falling_before = ((m_LastCollideIndex < 0) || (m_CollideTimeout < 0.1));
 	//float collide_x = ((m_AtlasSprites[0]->m_Position[0]) + (SUBDIVIDE * 0.5));

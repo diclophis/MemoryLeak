@@ -31,6 +31,8 @@ extern "C" {
 
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
+static JNIEnv *g_Env2;
+static JNIEnv *g_Env3;
 static jshortArray ab = NULL;
 static jclass player;
 jmethodID android_dumpAudio;
@@ -45,6 +47,9 @@ static int  sWindowWidth  = 0;
 static int  sWindowHeight = 0;
 static int gameState;
 static jobject activity;
+jmethodID android_push_webview;
+jmethodID android_pop_webview;
+
 
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
@@ -131,67 +136,99 @@ void *pushToWebViewQueue(void *) {
 }
 */
 
-void *pushMessageToWebView(const char *messageToPush) {
+void pushMessageToWebView(const char *messageToPush) {
   jclass cls;
-  jmethodID mid;
+  //jmethodID mid;
   jstring js;
 
-  if (g_Env == NULL) {
-    g_Vm->AttachCurrentThread(&g_Env, NULL);
+  if (g_Env2 == NULL) {
+    g_Vm->AttachCurrentThread(&g_Env2, NULL);
   }
 
-  cls = g_Env->FindClass("com/example/SanAngeles/DemoActivity");
-
-  if (cls == 0) {
-    LOGV("failed to find class\n");
-    return NULL;
+  if (g_Env2 == NULL || g_Env2 == 0) {
+    return;
   }
 
-  mid = g_Env->GetMethodID(cls, "pushMessageToWebView", "(Ljava/lang/String;)V");
+  if (android_push_webview == NULL) {
 
-  if (mid == 0) {
-    LOGV("failed to find method\n");
-    return NULL;
+
+    //cls = g_Env2->FindClass("com/example/SanAngeles/DemoActivity");
+
+    //if (cls == 0) {
+    //  LOGV("failed to find class\n");
+    //  return;
+    //}
+
+    android_push_webview = g_Env2->GetMethodID(player, "pushMessageToWebView", "(Ljava/lang/String;)V");
+
+    if (android_push_webview == 0) {
+      LOGV("failed to find method\n");
+      return;
+    }
   }
+
 
   //javascript:(function() { javascriptBridge.pump('foobarbaz'); })()
-  js = g_Env->NewStringUTF(messageToPush);
+  js = g_Env2->NewStringUTF(messageToPush);
 
-  g_Env->CallVoidMethod(activity, mid, js); 
+  g_Env2->CallVoidMethod(activity, android_push_webview, js); 
 
-  return NULL;
+  return;
 }
 
 
 const char *popMessageFromWebView() {
   jclass cls;
-  jmethodID mid;
+  //jmethodID mid;
   jstring rv;
 
-  if (g_Env == NULL) {
-    g_Vm->AttachCurrentThread(&g_Env, NULL);
+
+  if (activity == NULL) {
+    return "broke";
   }
 
-  cls = g_Env->FindClass("com/example/SanAngeles/DemoActivity");
-
-  if (cls == 0) {
-    LOGV("failed to find class\n");
-    return NULL;
+  if (g_Vm == NULL || g_Vm == 0) {
+    LOGV("NOOOOOOOOOOOOOOOOOOOOO1\n");
+    return "broke";
   }
 
-  mid = g_Env->GetMethodID(cls, "popMessageFromWebView", "()Ljava/lang/String;");
-
-  if (mid == 0) {
-    LOGV("failed to find method\n");
-    return NULL;
+  if (g_Env3 == NULL) {
+    g_Vm->AttachCurrentThread(&g_Env3, NULL);
   }
 
-  //javascript:(function() { javascriptBridge.pump('foobarbaz'); })()
-  //js = g_Env->NewStringUTF(messageToPush);
-  //g_Env->CallVoidMethod(activity, mid, js); 
-  rv = (jstring) g_Env->CallObjectMethod(activity, mid, 0); 
-  //const char *strReturn = env->GetStringUTFChars(env, rv, 0);
-  return g_Env->GetStringUTFChars(rv, 0);
+  if (g_Env3 == NULL || g_Env3 == 0) {
+    LOGV("NOOOOOOOOOOOOOOOOOOOOO1\n");
+    return "broke";
+  }
+
+
+  if (android_pop_webview == NULL) {
+
+    //cls = g_Env3->FindClass("com/example/SanAngeles/DemoActivity");
+
+    //if (cls == 0) {
+    //  LOGV("failed to find class2\n");
+    //  return "broke";
+    //}
+
+
+    android_pop_webview = g_Env3->GetMethodID(player, "popMessageFromWebView", "()Ljava/lang/String;");
+
+    if (android_pop_webview == 0) {
+      LOGV("failed to find method\n");
+      return "broke";
+    }
+  } else {
+
+    LOGV("wtf\n");
+
+    //javascript:(function() { javascriptBridge.pump('foobarbaz'); })()
+    //js = g_Env->NewStringUTF(messageToPush);
+    //g_Env->CallVoidMethod(activity, mid, js); 
+    rv = (jstring) g_Env3->CallObjectMethod(activity, android_pop_webview, 0); 
+    //const char *strReturn = env->GetStringUTFChars(env, rv, 0);
+    return g_Env3->GetStringUTFChars(rv, 0);
+  }
 }
 
 
@@ -266,6 +303,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	}
 
   game = new FlightControl(sWindowWidth, sWindowHeight, textures, models, levels, sounds);
+  game->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
   game->CreateThread();
 	pthread_create(&audio_thread, 0, pump_audio, NULL);
   
@@ -285,9 +323,6 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
-  //pushToWebViewQueue(NULL);
-  pushMessageToWebView("javascript:(function() { var p = new Element('p').update('fuck you'); document.body.appendChild(p); document.body.appendChild(p); Effect.ScrollTo(p); })()");
-  LOGV("message from javascript: %s\n", popMessageFromWebView());
 	game->Hit(x, y, (int)hitState);
 }
 

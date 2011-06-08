@@ -64,7 +64,7 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 	m_IsFalling = false;
 
 	m_Life = 0.0;
-	m_Fps = 1.0;
+	m_Fps = 60.0;
 	m_Theta = 0.0;
 	m_IsAlive = false;
 	
@@ -83,7 +83,7 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	
 	foofoo *ff = new foofoo;
-	int interp = 2;
+	int interp = 10;
 
 	if (a->mRootNode->mNumMeshes > 1) {
 		ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);

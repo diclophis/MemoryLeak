@@ -36,7 +36,7 @@ public:
   void RunScriptThread();
   void (*m_WebViewMessagePusher)(const char *);
   const char *(*m_WebViewMessagePopper)();
-  void SetWebViewPushAndPop(void (*sr)(const char *), const char *(*sr)());
+  void SetWebViewPushAndPop(void (*)(const char *), const char *(*)());
   char m_WebViewFunctionBuffer[1024];
   char m_WebViewFunctionBufferTwo[1024];
   char *CreateWebViewFunction(const char *fmt, ...);
