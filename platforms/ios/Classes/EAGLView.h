@@ -15,7 +15,7 @@ void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferR
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState );
 void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inPropertyID, UInt32 inPropertyValueSize, const void *inPropertyValue);
 GLuint loadTexture(UIImage *image);
-void pushMessageToWebView(const char *);
+bool pushMessageToWebView(const char *);
 const char *popMessageFromWebView();
 struct Engine;
 typedef struct Engine Engine;
@@ -51,13 +51,14 @@ typedef struct Engine Engine;
 	AudioQueueRef mAudioQueue;
 	AudioQueueBufferRef *mBuffers;
   UIWebView *webView;
-	NSString *mLastMessagePopped;
+	NSMutableArray *mPoppedMessages;
 	BOOL mLastMessageReady;
 }
 
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
+@property (retain) NSMutableArray *mPoppedMessages;
 
 
 -(void)build:(UIWebView *)theWebView;
@@ -65,8 +66,11 @@ typedef struct Engine Engine;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
 -(void)startGame;
--(void)pushMessageToWebView:(const char *)theMessage;
+-(BOOL)pushMessageToWebView:(const char *)theMessage;
 -(const char *)popMessageFromWebView;
 -(void)startMemoryLeak;
+-(BOOL)wasActive;
+-(void)initAudio2;
+
 
 @end

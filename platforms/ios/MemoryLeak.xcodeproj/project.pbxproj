@@ -81,6 +81,7 @@
 		FC5EC4D713807C7100C31CC0 /* ObjFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D413807C7100C31CC0 /* ObjFileParser.cpp */; };
 		FC6D4CA113A459D000DE1200 /* RadiantFireEightSixOne.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6D4C9D13A459D000DE1200 /* RadiantFireEightSixOne.cpp */; };
 		FC6D4CA213A459D000DE1200 /* SuperStarShooter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6D4C9F13A459D000DE1200 /* SuperStarShooter.cpp */; };
+		FC6D4D6A13A46D1B00DE1200 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6D4D6813A46D1B00DE1200 /* MainMenu.cpp */; };
 		FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */; };
 		FC99BDDA131A42F600566984 /* axtls.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD1B131A42F600566984 /* axtls.c */; };
 		FC99BDDB131A42F600566984 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = FC99BD1D131A42F600566984 /* base64.c */; };
@@ -625,6 +626,10 @@
 		FC6D4C9E13A459D000DE1200 /* RadiantFireEightSixOne.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadiantFireEightSixOne.h; sourceTree = "<group>"; };
 		FC6D4C9F13A459D000DE1200 /* SuperStarShooter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SuperStarShooter.cpp; sourceTree = "<group>"; };
 		FC6D4CA013A459D000DE1200 /* SuperStarShooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuperStarShooter.h; sourceTree = "<group>"; };
+		FC6D4D6613A46D1B00DE1200 /* FooIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooIO.h; sourceTree = "<group>"; };
+		FC6D4D6713A46D1B00DE1200 /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
+		FC6D4D6813A46D1B00DE1200 /* MainMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainMenu.cpp; sourceTree = "<group>"; };
+		FC6D4D6913A46D1B00DE1200 /* MainMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenu.h; sourceTree = "<group>"; };
 		FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteGun.cpp; sourceTree = "<group>"; };
 		FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteGun.h; sourceTree = "<group>"; };
 		FC99BD1A131A42F600566984 /* arpa_telnet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = arpa_telnet.h; sourceTree = "<group>"; };
@@ -1087,6 +1092,10 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FC6D4D6613A46D1B00DE1200 /* FooIO.h */,
+				FC6D4D6713A46D1B00DE1200 /* Game.h */,
+				FC6D4D6813A46D1B00DE1200 /* MainMenu.cpp */,
+				FC6D4D6913A46D1B00DE1200 /* MainMenu.h */,
 				FC6D4C9D13A459D000DE1200 /* RadiantFireEightSixOne.cpp */,
 				FC6D4C9E13A459D000DE1200 /* RadiantFireEightSixOne.h */,
 				FC6D4C9F13A459D000DE1200 /* SuperStarShooter.cpp */,
@@ -2291,6 +2300,7 @@
 				FC5EC4D713807C7100C31CC0 /* ObjFileParser.cpp in Sources */,
 				FC6D4CA113A459D000DE1200 /* RadiantFireEightSixOne.cpp in Sources */,
 				FC6D4CA213A459D000DE1200 /* SuperStarShooter.cpp in Sources */,
+				FC6D4D6A13A46D1B00DE1200 /* MainMenu.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,6 +1,7 @@
 //JonBardin GPL 2011
 
 #include "MemoryLeak.h"
+#include "MainMenu.h"
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
 
@@ -39,6 +40,7 @@ EXPORT_OOLUA_NO_FUNCTIONS(Wang)
 #include <string.h>
 
 
+static std::vector<Game *> games;
 static Engine *m_CurrentGame;
 
 
@@ -262,6 +264,12 @@ static void new_conn(char *url, GlobalInfo *g, CURLSH *share, ConnInfo *conn)
 
 
 Engine::~Engine() {
+  if (m_AudioBufferSize > 0) {
+    delete m_AudioMixBuffer;
+  }
+	
+  delete m_Importer;
+
   LOGV("dealloc mofo\n");
 }
 
@@ -280,7 +288,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_GameState = -1;
   m_Zoom = 1.0;
 	
-	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
+	m_Importer = new Assimp::Importer();
+	
+	m_Importer->SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
@@ -297,15 +307,10 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	//glShadeModel( GL_SMOOTH );
 	glLoadIdentity();
 
+  /*
 	for (unsigned int i=0; i<2; i++) {
-		void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(i)->len);
-		fseek(m_SoundFoos->at(i)->fp, m_SoundFoos->at(i)->off, SEEK_SET);
-		size_t r = fread(buffer, 1, m_SoundFoos->at(i)->len, m_SoundFoos->at(i)->fp);
-		if (r > 0) { 
-			m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
-		}
-    free(buffer);
 	}
+  */
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -335,13 +340,6 @@ void *Engine::EnterScriptThread(void *obj) {
 }
 
 
-void Engine::PauseThread() {
-	pthread_mutex_lock(&m_Mutex);
-	m_GameState = 0;
-	pthread_mutex_unlock(&m_Mutex);
-}
-
-
 void Engine::WaitVsync() {
   pthread_mutex_lock(&m_Mutex);
   pthread_cond_wait(&m_VsyncCond, &m_Mutex);
@@ -368,102 +366,76 @@ void Engine::PingServer () {
 }
 
 int Engine::RunThread() {
-
-  /*
-  m_PingConn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
-  memset(m_PingConn, 0, sizeof(ConnInfo));
-  m_PingConn->error[0]='\0';
-	
-	curl_version_info_data*info=curl_version_info(CURLVERSION_NOW);
-	if (info->features&CURL_VERSION_ASYNCHDNS) {
-		printf( "ares enabled\n");
-	} else {
-		printf( "ares NOT enabled\n");
-	}
-	
-	memset(&g, 0, sizeof(GlobalInfo));
-	
-	curl_global_init(CURL_GLOBAL_ALL);
-
-	share = curl_share_init();
-	curl_share_setopt(share, CURLSHOPT_SHARE, CURL_LOCK_DATA_DNS); 
-	
-	g.multi = curl_multi_init();
-	
-	curl_multi_setopt(g.multi, CURLMOPT_SOCKETFUNCTION, sock_cb);
-	curl_multi_setopt(g.multi, CURLMOPT_SOCKETDATA, &g);
-	curl_multi_setopt(g.multi, CURLMOPT_TIMERFUNCTION, multi_timer_cb);
-	curl_multi_setopt(g.multi, CURLMOPT_TIMERDATA, &g);
-	curl_multi_setopt(g.multi, CURLMOPT_PIPELINING , 1L);
-
-	ConnInfo *conn;
-    conn = (ConnInfo *)calloc(1, sizeof(ConnInfo));
-    memset(conn, 0, sizeof(ConnInfo));
-    conn->error[0]='\0';
-	
-	char s[1024];
-	//GlobalInfo *g = (GlobalInfo *)w->data;
-	sprintf(s, "http://192.168.1.144:10101/");
-	//sprintf(s, "http://www.google.com/ig");
-	//new_conn(s, &g, &share, conn);
-
-
-	rc = curl_multi_socket_action(g.multi, CURL_SOCKET_TIMEOUT, 0, &g.still_running);
-  */
-
 	Build();
-	
 	m_IsSceneBuilt = true;
-
 	double t1, t2, averageWait;
 	timeval tim;
 	gettimeofday(&tim, NULL);
-
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-	
-	double interp = 10.0;
-
-  //CreateScriptThread();
-
-	while (m_GameState != 0) {
-		
-    /*
-		do_this_in_tick(&g, 0);
-		
-		if (g.still_running < 1 && m_PingServerTimeout > 0.5) {
-      PingServer();
-      m_PingServerTimeout = 0.0;
-		}
-    */
-
-		gettimeofday(&tim, NULL);
-		t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-		averageWait = t2 - t1;
-		gettimeofday(&tim, NULL);
-		t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-		
-		for (unsigned int i=0; i<interp; i++) {
-			m_DeltaTime = (averageWait / interp);
-			m_PingServerTimeout += (m_DeltaTime);
-			m_SimulationTime += (m_DeltaTime);
-      if (m_AudioTimeout >= 0.0) {
-        m_AudioTimeout += (m_DeltaTime);
+	double interp = 1.0;
+  LOGV("starting thread\n");
+	while (m_GameState > 0) {
+    gettimeofday(&tim, NULL);
+    t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+    averageWait = t2 - t1;
+    gettimeofday(&tim, NULL);
+    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    if (m_GameState > 1) {
+      // PAUSE
+      LOGV("paused\n");
+    } else {
+      for (unsigned int i=0; i<interp; i++) {
+        m_DeltaTime = (averageWait / interp);
+        m_PingServerTimeout += (m_DeltaTime);
+        m_SimulationTime += (m_DeltaTime);
+        if (m_AudioTimeout >= 0.0) {
+          m_AudioTimeout += (m_DeltaTime);
+        }
+        m_GameState = Simulate();
       }
-			m_GameState = Simulate();
-
-      bool result = false;
-      //result = m_Script->call("mainLoop");
-      //result = m_Script->run_chunk("mainLoop()");
-      //if (!result) {
-      //  LOGV("%s", OOLUA::get_last_error(m_Script->get_ptr()).c_str());
-      //  exit(1);
-      //}
-		}
-
-		WaitVsync();
-	}	
+    }
+    PopMessageFromWebView();
+    WaitVsync();
+	}
+  LOGV("stopping simulation\n");
+  bool pushedToStop = false;
+  while (m_GameState == 0) {
+    if (pushedToStop) {
+      LOGV("waiting\n");
+      PopMessageFromWebView();
+      WaitVsync();
+    } else {
+      LOGV("trying to stop\n");
+      if (PushMessageToWebView(CreateWebViewFunction("gameDidFinishSimulating(\"%s\")", "Super Star Shooter"))) {
+        pushedToStop = true;
+      }
+    }
+  }
+  LOGV("exiting trhread!!!!!!!\n");
+  pthread_exit(NULL);
 	return m_GameState;
+}
+
+
+void Engine::PauseSimulation() {
+	pthread_mutex_lock(&m_Mutex);
+	m_GameState = -1;
+	pthread_mutex_unlock(&m_Mutex);
+}
+
+
+void Engine::StopSimulation() {
+	pthread_mutex_lock(&m_Mutex);
+	m_GameState = -1;
+	pthread_mutex_unlock(&m_Mutex);
+}
+
+
+void Engine::StartSimulation() {
+	pthread_mutex_lock(&m_Mutex);
+	m_GameState = 1;
+	pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -491,7 +463,7 @@ void Engine::DoAudio(short buffer[], int size) {
     }
 
 
-    ModPlug_Read(m_Sounds[1], buffer, size * sizeof(short));
+    ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
 
     //for (int i=0; i<size; i++) {
     //  buffer[i] = (buffer[i] + m_AudioMixBuffer[i]);
@@ -715,7 +687,7 @@ LOGV("wtf\n");
 }
 
 
-void Engine::SetWebViewPushAndPop(void (*thePusher)(const char *), const char *(*thePopper)()) {
+void Engine::SetWebViewPushAndPop(bool (thePusher)(const char *), const char *(*thePopper)()) {
   m_WebViewMessagePusher = thePusher;
   m_WebViewMessagePopper = thePopper;
 }
@@ -731,14 +703,15 @@ char *Engine::CreateWebViewFunction(const char *fmt, ...) {
 
 
 const char *Engine::PopMessageFromWebView() {
-  return m_WebViewMessagePopper();
+  const char *s = m_WebViewMessagePopper();
+  return s;
 }
 
 
-void Engine::PushMessageToWebView(char *messageToPush) {
+bool Engine::PushMessageToWebView(char *messageToPush) {
   sprintf(m_WebViewFunctionBufferTwo, "javascript:(function() { %s })()", messageToPush);
-  LOGV("pushing: %s\n", m_WebViewFunctionBufferTwo);
-  m_WebViewMessagePusher(m_WebViewFunctionBufferTwo);
+  //LOGV("pushing: %s\n", m_WebViewFunctionBufferTwo);
+  return m_WebViewMessagePusher(m_WebViewFunctionBufferTwo);
 }
 
 
@@ -747,23 +720,31 @@ Engine* Engine::CurrentGame() {
 }
 
 
+void Engine::Init() {
+	games.push_back(new GameImpl<MainMenu>);
+	games.push_back(new GameImpl<SuperStarShooter>);
+	games.push_back(new GameImpl<RadiantFireEightSixOne>);
+}
+
+
+void Engine::Destroy() {
+  delete m_CurrentGame;
+  m_CurrentGame = NULL;
+}
+
+
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
-  Game *games[2];
-  games[0] = new GameImpl<SuperStarShooter>;
-  games[1] = new GameImpl<RadiantFireEightSixOne>;
+  m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
+}
 
-  m_CurrentGame = (Engine *)games[i]->allocate(w, h, t, m, l, s);
 
-/*
-game = new FlightControl(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
-mLastMessageReady = NO;
-game->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-game->CreateThread();
-*/
+void Engine::Begin() {
+  m_CurrentGame->StartSimulation();
 }
 
 
 void Engine::Stop() {
+  LOGV("told to stop\n");
   m_CurrentGame->StopSimulation();
 }
 
@@ -774,5 +755,24 @@ void Engine::Pause() {
 
 
 bool Engine::Active() {
-  return true;
+  return (m_GameState != 0);
+}
+
+
+bool Engine::GameActive() {
+  if (m_CurrentGame != NULL) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void Engine::LoadSound(int i) {
+  void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(i)->len);
+  fseek(m_SoundFoos->at(i)->fp, m_SoundFoos->at(i)->off, SEEK_SET);
+  size_t r = fread(buffer, 1, m_SoundFoos->at(i)->len, m_SoundFoos->at(i)->fp);
+  if (r > 0) { 
+    m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
+  }
+  free(buffer);
 }

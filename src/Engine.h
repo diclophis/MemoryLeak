@@ -16,7 +16,6 @@ public:
   void ResizeScreen(int width, int height);
   void DrawScreen(float rotation);
   int RunThread();
-  void PauseThread();
   void CreateThread();
   static void *EnterThread(void *);
   virtual void Build() = 0;
@@ -34,22 +33,27 @@ public:
   static void *EnterScriptThread(void *);
   void CreateScriptThread();
   void RunScriptThread();
-  void (*m_WebViewMessagePusher)(const char *);
+  bool (*m_WebViewMessagePusher)(const char *);
   const char *(*m_WebViewMessagePopper)();
-  void SetWebViewPushAndPop(void (*)(const char *), const char *(*)());
+  void SetWebViewPushAndPop(bool (const char *), const char *(*)());
   char m_WebViewFunctionBuffer[1024];
   char m_WebViewFunctionBufferTwo[1024];
   char *CreateWebViewFunction(const char *fmt, ...);
   const char *PopMessageFromWebView();
-  void PushMessageToWebView(char *messageToPush);
+  bool PushMessageToWebView(char *messageToPush);
   static Engine *CurrentGame();
   bool Active();
+  static bool GameActive();
   void StopSimulation();
   void StartSimulation();
   void PauseSimulation();
   static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+  static void Begin();
   static void Stop();
   static void Pause();
+  static void Init();
+  static void Destroy();
+  void LoadSound(int i);
 
 
   bool m_IsSceneBuilt;
@@ -72,7 +76,7 @@ public:
   std::vector<foo *> *m_ModelFoos;
   std::vector<foo *> *m_LevelFoos;
   std::vector<foo *> *m_SoundFoos;
-  Assimp::Importer m_Importer;
+  Assimp::Importer *m_Importer;
   std::vector<Model *> m_Models;
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;

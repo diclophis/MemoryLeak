@@ -36,16 +36,21 @@
 
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
-	[[webView.subviews objectAtIndex:0] setScrollEnabled:NO];  //to stop scrolling completely
-	[[webView.subviews objectAtIndex:0] setBounces:NO]; //to stop bouncing
-	[webView setScalesPageToFit:NO];
-	[webView setBackgroundColor:[UIColor clearColor]];
-	[webView setAllowsInlineMediaPlayback:YES];
-	[webView setMediaPlaybackRequiresUserAction:NO];
-	[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://localhost:9292/"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
-	[glView build:webView];
-	[glView startMemoryLeak];
-	//[glView startAnimation];
+	if ([glView wasActive]) {
+		[glView startAnimation];
+	} else {
+		[[webView.subviews objectAtIndex:0] setScrollEnabled:NO];  //to stop scrolling completely
+		[[webView.subviews objectAtIndex:0] setBounces:NO]; //to stop bouncing
+		[webView setScalesPageToFit:NO];
+		[webView setBackgroundColor:[UIColor clearColor]];
+		[webView setAllowsInlineMediaPlayback:YES];
+		[webView setMediaPlaybackRequiresUserAction:NO];
+		//http://localhost:9292/index.html
+		[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://radiant-fire-861.heroku.com/index.html"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
+		[glView build:webView];
+		[glView startMemoryLeak];
+		[glView startAnimation];
+	}
 }
 
 
