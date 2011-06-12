@@ -285,7 +285,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	pthread_mutex_init(&m_Mutex, NULL);
 
 	m_SimulationTime = 0.0;		
-	m_GameState = -1;
+	m_GameState = 2;
   m_Zoom = 1.0;
 	
 	m_Importer = new Assimp::Importer();
@@ -315,6 +315,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
   m_AudioTimeout = -1.0;
+  m_WebViewTimeout = 0.0;
 }
 
 
@@ -340,10 +341,11 @@ void *Engine::EnterScriptThread(void *obj) {
 }
 
 
-void Engine::WaitVsync() {
+bool Engine::WaitVsync() {
   pthread_mutex_lock(&m_Mutex);
   pthread_cond_wait(&m_VsyncCond, &m_Mutex);
   pthread_mutex_unlock(&m_Mutex);
+  return true;
 }
 
 void Engine::WaitAudioSync() {
@@ -375,7 +377,8 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	double interp = 1.0;
   LOGV("starting thread\n");
-	while (m_GameState > 0) {
+	while (m_GameState > 0 && WaitVsync()) {
+    //pthread_mutex_lock(&m_Mutex);
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
     averageWait = t2 - t1;
@@ -395,24 +398,25 @@ int Engine::RunThread() {
         m_GameState = Simulate();
       }
     }
-    PopMessageFromWebView();
-    WaitVsync();
-	}
-  LOGV("stopping simulation\n");
-  bool pushedToStop = false;
-  while (m_GameState == 0) {
-    if (pushedToStop) {
-      LOGV("waiting\n");
+    if ((m_WebViewTimeout += m_DeltaTime) > 0.5) {
+      m_WebViewTimeout = 0.0;
       PopMessageFromWebView();
-      WaitVsync();
-    } else {
-      LOGV("trying to stop\n");
-      if (PushMessageToWebView(CreateWebViewFunction("gameDidFinishSimulating(\"%s\")", "Super Star Shooter"))) {
-        pushedToStop = true;
-      }
     }
+	}
+
+  if (m_GameState == 0) {
+    LOGV("need to go somewhre\n");
+    PushMessageToWebView("queue.push('memoryleak://localhost/start?0')");
+    while (m_GameState == 0) {
+      LOGV("waiting stop\n");
+      PopMessageFromWebView();
+      //WaitVsync();
+    }
+  } else {
+    LOGV("told to exit with known dest\n");
   }
-  LOGV("exiting trhread!!!!!!!\n");
+
+  LOGV("exiting thread!!!!!!!\n");
   pthread_exit(NULL);
 	return m_GameState;
 }
@@ -420,13 +424,22 @@ int Engine::RunThread() {
 
 void Engine::PauseSimulation() {
 	pthread_mutex_lock(&m_Mutex);
-	m_GameState = -1;
+	m_GameState = 2;
 	pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StopSimulation() {
 	pthread_mutex_lock(&m_Mutex);
+  LOGV("stopping simulation\n");
+	m_GameState = -1;
+	pthread_mutex_unlock(&m_Mutex);
+}
+
+
+void Engine::ExitSimulation() {
+	pthread_mutex_lock(&m_Mutex);
+  LOGV("exit simulation\n");
 	m_GameState = -1;
 	pthread_mutex_unlock(&m_Mutex);
 }
@@ -434,6 +447,7 @@ void Engine::StopSimulation() {
 
 void Engine::StartSimulation() {
 	pthread_mutex_lock(&m_Mutex);
+  LOGV("start simulation\n");
 	m_GameState = 1;
 	pthread_mutex_unlock(&m_Mutex);
 }
@@ -704,6 +718,7 @@ char *Engine::CreateWebViewFunction(const char *fmt, ...) {
 
 const char *Engine::PopMessageFromWebView() {
   const char *s = m_WebViewMessagePopper();
+  //LOGV("in engine: %s\n", s);
   return s;
 }
 
@@ -754,8 +769,18 @@ void Engine::Pause() {
 }
 
 
+void Engine::Exit() {
+  m_CurrentGame->ExitSimulation();
+}
+
+
 bool Engine::Active() {
-  return (m_GameState != 0);
+  return (m_GameState > 0);
+}
+
+
+bool Engine::Stopping() {
+  return (m_GameState == 0);
 }
 
 

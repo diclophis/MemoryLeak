@@ -367,7 +367,8 @@ static OSStatus playbackCallback(void *inRefCon,
 	//	f->DoAudio((short int *)ioData->mData, inNumberFrames);
 	//}
 	
-	if (Engine::GameActive()) {
+	if (Engine::GameActive() && Engine::CurrentGame()->Active()) {
+        //LOGV("audio\n");
 		memset(ioData->mData, 0, ioData->mDataByteSize);
 		Engine::CurrentGame()->DoAudio((short int *)ioData->mData, inNumberFrames);
 	}
@@ -575,19 +576,25 @@ static OSStatus playbackCallback(void *inRefCon,
 			NSString *scheme = [action scheme];
 			NSString *path = [action path];
 			NSString *query = [action query];
+
+      NSLog(@"popped: %@ %@", mLastMessagePopped, action);
 			
 			if ([@"memoryleak" isEqualToString:scheme]) {
 				if ([@"/start" isEqualToString:path]) {
+          LOGV("start\n");
 					NSInteger i = [query intValue];
 					Engine::Stop();
+          while (Engine::CurrentGame()->Stopping()) {
+            LOGV("foooo\n");
+          }
 					Engine::Destroy();
 					Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
 					Engine::CurrentGame()->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
 					Engine::CurrentGame()->CreateThread();
 					Engine::Begin();
-				}
-			} else if ([@"openfeint" isEqualToString:scheme]) {
-				if ([@"/show" isEqualToString:path]) {
+        } else if ([@"/exit" isEqualToString:path]) {
+          LOGV("exit\n");
+				} else if ([@"/show" isEqualToString:path]) {
 					[UIView setAnimationBeginsFromCurrentState:YES];
 					[UIView beginAnimations:@"showWebView" context:nil];
 					[UIView setAnimationDuration:0.5];
@@ -607,6 +614,8 @@ static OSStatus playbackCallback(void *inRefCon,
 					[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 					[UIView commitAnimations];
 				}
+			} else if ([@"openfeint" isEqualToString:scheme]) {
+				
 			}
 				
 		} else {

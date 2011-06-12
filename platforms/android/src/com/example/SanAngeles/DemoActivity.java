@@ -37,7 +37,6 @@ import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -45,6 +44,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 import android.view.animation.ScaleAnimation;
@@ -55,19 +55,20 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 
 
-
 public class DemoActivity extends Activity {
+
 
   protected static AudioTrack at1;
 	private GLSurfaceView mGLView;
   private WebView mWebView;
   private JavascriptBridge mJavascriptBridge;
-
   public static BlockingQueue<String> mWebViewMessages;
+
 
   public static void writeAudio(short[] bytes, int offset, int size) {
     int written = at1.write(bytes, offset, size);
   }
+
 
   public InputStream getInputStreamFromUrl(String url) {
     InputStream content = null;
@@ -127,9 +128,8 @@ public class DemoActivity extends Activity {
     webSettings.setBuiltInZoomControls(false);
 
     try {
-      //String url = "http://radiant-fire-861.heroku.com/";
-      String url = "http://192.168.1.144:9292/";
-      String base_url = "https://api.openfeint.com/";
+      String url = "http://radiant-fire-861.heroku.com/index.html";
+      String base_url = "https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ";
       BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl(url)), 4096);
       String line;
       StringBuilder sb =  new StringBuilder();
@@ -138,14 +138,13 @@ public class DemoActivity extends Activity {
       }
       rd.close();
       String contentOfMyInputStream = sb.toString();
-      //Log.v(this.toString(), contentOfMyInputStream);
       mWebView.loadDataWithBaseURL(base_url, contentOfMyInputStream, "text/html", "utf-8", "about:blank");
     } catch (java.lang.Exception e) {
       Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       Log.v(this.toString(), e.toString());
     }
  
-    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 50));
+    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 200));
 
     AssetManager am = getAssets();
     String path;
@@ -235,62 +234,82 @@ public class DemoActivity extends Activity {
     }
 	}
 
-  public void pushMessageToWebView(String messageToPush) {
-    Log.v(this.toString(), "pushMessage" + messageToPush);
+  public boolean pushMessageToWebView(final String messageToPush) {
+    //Log.v(this.toString(), "pushMessage" + messageToPush);
     // pushed messages are direct JS that is eval'ed in the context of the webview
     if (mWebView.getProgress() == 100) {
-      mWebView.loadUrl(messageToPush);
+      Log.v(this.toString(), "trying to push!!!!!!!!!!!!!!!!: " + messageToPush);
+      //mWebView.loadUrl(messageToPush);
+      runOnUiThread(new Runnable() {
+        public void run() {
+          mWebView.loadUrl(messageToPush);
+        }
+      });
+      return true;
+    } else {
+      Log.v(this.toString(), "cant push not 100");
+      return false;
     }
   }
 
   public String popMessageFromWebView() {
-    Log.v(this.toString(), "popMessage");
     // Popped messages are JSON structures that indicate status of operations, etc
-    String messagePopBridge = "javascript:(function() { window.javascriptBridge.pushToJava(dequeue()); })()";
     if (mWebView.getProgress() == 100) {
       // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
-      mWebView.loadUrl(messagePopBridge);
-
-
-    Log.v(this.toString(), "wangpopMessage");
-
-if (DemoActivity.mWebViewMessages != null) {
-String mLastMessagePopped = new String();
-    try {
-    if (DemoActivity.mWebViewMessages.isEmpty()) {
-      mLastMessagePopped = "empty";
-    } else {
-    mLastMessagePopped = DemoActivity.mWebViewMessages.take();
-    }
-    } catch (java.lang.InterruptedException wtf) {
-      Log.v(this.toString(), wtf.toString());
-    }
-    Log.v(this.toString(), mLastMessagePopped);
-
-    if (mLastMessagePopped != null) {
-      if ("openfeint://show".equals(mLastMessagePopped)) {
-        runOnUiThread(new Runnable() {
-          public void run() {
-            mWebView.setVisibility(View.VISIBLE);
+      runOnUiThread(new Runnable() {
+        public void run() {
+          final String messagePopBridge = "javascript:(function() { window.javascriptBridge.pushToJava(dequeue()); })()";
+          mWebView.loadUrl(messagePopBridge);
+        }
+      });
+      if (DemoActivity.mWebViewMessages != null) {
+        String mLastMessagePopped = new String();
+        try {
+          if (DemoActivity.mWebViewMessages.isEmpty()) {
+            mLastMessagePopped = "empty";
+          } else {
+            mLastMessagePopped = DemoActivity.mWebViewMessages.take();
           }
-        });
-      } else if ("openfeint://hide".equals(mLastMessagePopped)) {
-        runOnUiThread(new Runnable() {
-          public void run() {
-            mWebView.setVisibility(View.INVISIBLE);
+        } catch (java.lang.InterruptedException wtf) {
+          Log.v(this.toString(), wtf.toString());
+        }
+        if (mLastMessagePopped != null) {
+          //Log.v(this.toString(), "got: " + mLastMessagePopped);
+          try {
+            URI action = new URI(mLastMessagePopped);
+            String scheme = action.getScheme();
+            String path = action.getPath();
+            String query = action.getQuery();
+            if ("memoryleak".equals(scheme)) {
+              if ("/start".equals(path)) {
+                nativeStartGame(Integer.parseInt(query));
+              } else if ("/show".equals(path)) {
+                //runOnUiThread(new Runnable() {
+                //  public void run() {
+                //    mWebView.setVisibility(View.VISIBLE);
+                //  }
+                //});
+              } else if ("/hide".equals(path)) {
+                //runOnUiThread(new Runnable() {
+                //  public void run() {
+                //    mWebView.setVisibility(View.INVISIBLE);
+                //  }
+                //});
+              }
+            }
+          } catch(java.net.URISyntaxException wtf) {
+            Log.v(this.toString(), wtf.toString());
           }
-        });
+          return mLastMessagePopped;
+        } else {
+          return "wtf1";
+        }
+      } else {
+        return "wtf2";
       }
-      return mLastMessagePopped;
     } else {
-      return "wtf";
+      return "wtf3";
     }
-    } else {
-      return "wtf2";
-    }
-  }else {
-  return "wtf3";
-}
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
@@ -299,6 +318,7 @@ String mLastMessagePopped = new String();
 
 	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
   private static native void setMinBuffer(int size);
+  private static native void nativeStartGame(int i);
 
 @Override
   protected void onPause() {
@@ -418,8 +438,6 @@ class JavascriptBridge {
   }
 
   public void pushToJava(String messageFromJavascript) {
-    Log.v(this.toString(), "-- got -- " + messageFromJavascript);
     DemoActivity.mWebViewMessages.offer(messageFromJavascript);
-    Log.v(this.toString(), "-- set -- " + messageFromJavascript);
   }
 }

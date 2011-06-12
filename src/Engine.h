@@ -23,7 +23,7 @@ public:
   virtual void Hit(float x, float y, int hitState) = 0;
   virtual void RenderModelPhase() = 0;
   virtual void RenderSpritePhase() = 0;
-  void WaitVsync();
+  bool WaitVsync();
   void WaitAudioSync();
   void DoAudio(short buffer[], int bytes);
   void RenderModelRange(unsigned int s, unsigned int e);
@@ -45,15 +45,18 @@ public:
   bool Active();
   static bool GameActive();
   void StopSimulation();
+  void ExitSimulation();
   void StartSimulation();
   void PauseSimulation();
   static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   static void Begin();
   static void Stop();
+  static void Exit();
   static void Pause();
   static void Init();
   static void Destroy();
   void LoadSound(int i);
+  bool Stopping();
 
 
   bool m_IsSceneBuilt;
@@ -92,6 +95,7 @@ public:
   float m_Balance;
   void PingServer();
   float m_PingServerTimeout;
+  float m_WebViewTimeout;
   ConnInfo *m_PingConn;
   float m_AudioTimeout;
   OOLUA::Script *m_Script;
