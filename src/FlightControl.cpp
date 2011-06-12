@@ -63,18 +63,18 @@ FlightControl::FlightControl(int w, int h, std::vector<GLuint> &t, std::vector<f
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 1));
 	m_Importer.FreeScene();	
 
-	snprintf(path, sizeof(s), "%d", 2);
+	snprintf(path, sizeof(s), "%d", 3);
 	m_Importer.ReadFile(path, m_PostProcessFlags);
 	LOGV("%s\n", m_Importer.GetErrorString());
-	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 8));
+	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), 0, 4));
 	m_Importer.FreeScene();	
 
 	m_Models.push_back(new Model(m_FooFoos.at(1)));
 	m_Models[0]->SetTexture(m_Textures->at(3));
 	m_Models[0]->SetFrame(0);
 	m_Models[0]->SetPosition(0.0, 0.0, 0.0);
-	m_Models[0]->SetScale(0.01, 0.01, 0.01);
-  m_Models[0]->m_IsAlive = true;
+	m_Models[0]->SetScale(0.1, 0.1, 0.1);
+  m_Models[0]->m_IsAlive = false;
 
 /*
 	m_Models.push_back(new Model(m_FooFoos.at(0)));

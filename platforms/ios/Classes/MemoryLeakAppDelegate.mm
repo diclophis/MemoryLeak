@@ -40,7 +40,7 @@
 	[webView setBackgroundColor:[UIColor clearColor]];
 	[webView setAllowsInlineMediaPlayback:YES];
 	[webView setMediaPlaybackRequiresUserAction:NO];
-	[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://192.168.1.144:9292/"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/"]];
+	[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://localhost:9292/"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
   [glView build:webView];
 	[glView startAnimation];
 }
