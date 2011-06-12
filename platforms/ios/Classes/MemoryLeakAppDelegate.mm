@@ -24,9 +24,11 @@
     return YES;
 }
 
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
+
 
 -(void)applicationWillResignActive:(UIApplication *)application {
     [glView stopAnimation];
@@ -34,15 +36,16 @@
 
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
-	//[[webView.subviews objectAtIndex:0] setScrollEnabled:NO];  //to stop scrolling completely
+	[[webView.subviews objectAtIndex:0] setScrollEnabled:NO];  //to stop scrolling completely
 	[[webView.subviews objectAtIndex:0] setBounces:NO]; //to stop bouncing
 	[webView setScalesPageToFit:NO];
 	[webView setBackgroundColor:[UIColor clearColor]];
 	[webView setAllowsInlineMediaPlayback:YES];
 	[webView setMediaPlaybackRequiresUserAction:NO];
 	[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://localhost:9292/"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
-  [glView build:webView];
-	[glView startAnimation];
+	[glView build:webView];
+	[glView startMemoryLeak];
+	//[glView startAnimation];
 }
 
 

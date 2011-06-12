@@ -45,8 +45,7 @@ typedef struct Engine Engine;
   GLint backingHeight;
   // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
   GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
-	Engine *game;
-	int gameState;
+
 	OSStatus status;
 	AudioComponentInstance audioUnit;
 	AudioQueueRef mAudioQueue;
@@ -61,7 +60,6 @@ typedef struct Engine Engine;
 @property (nonatomic) NSInteger animationFrameInterval;
 
 
--(Engine *)game;
 -(void)build:(UIWebView *)theWebView;
 -(void)startAnimation;
 -(void)stopAnimation;
@@ -69,6 +67,6 @@ typedef struct Engine Engine;
 -(void)startGame;
 -(void)pushMessageToWebView:(const char *)theMessage;
 -(const char *)popMessageFromWebView;
-
+-(void)startMemoryLeak;
 
 @end

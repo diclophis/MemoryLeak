@@ -1,5 +1,8 @@
 // Jon Bardin GPL
 
+
+#include "MemoryLeak.h"
+/*
 #include "micropather.h"
 #include <ctype.h>
 #include <stdio.h>
@@ -8,8 +11,6 @@
 
 #include <vector>
 #include <iostream>
-
-#include "MemoryLeak.h"
 
 #include "FooIO.h"
 
@@ -21,6 +22,7 @@
 #include "octree.h"
 
 #include "ModelOctree.h"
+*/
 
 namespace micropather {
 

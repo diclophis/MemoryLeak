@@ -42,6 +42,14 @@ public:
   char *CreateWebViewFunction(const char *fmt, ...);
   const char *PopMessageFromWebView();
   void PushMessageToWebView(char *messageToPush);
+  static Engine *CurrentGame();
+  bool Active();
+  void StopSimulation();
+  void StartSimulation();
+  void PauseSimulation();
+  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+  static void Stop();
+  static void Pause();
 
 
   bool m_IsSceneBuilt;

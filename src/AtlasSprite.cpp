@@ -1,9 +1,8 @@
+// Jon Bardin GPL
+
 
 #include "MemoryLeak.h"
 
-#include "AtlasSprite.h"
-
-#define GL_PIXEL_UNPACK_BUFFER_ARB 0x88EC
 
 static GLuint g_lastTexture = -1;
 static float g_lastRotation = 0.0;

@@ -1,44 +1,28 @@
-//
-//  EAGLView.m
-//  WangCrapTemplate
-//
-//  Created by Jon Bardin on 7/12/10.
-//  GPL
-//
+//  Jon Bardin on 7/12/10 GPL
 
 #import "MemoryLeakAppDelegate.h"
+
+
 #include "MemoryLeak.h"
-#include "Model.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
-#include "Engine.h"
-#include "octree.h"
-#include "micropather.h"
-#include "ModelOctree.h"
-#include "stdarg.h"
-#include "FlightControl.h"
+#include "SuperStarShooter.h"
+#include "RadiantFireEightSixOne.h"
 
 
 #import "EAGLView.h"
 
-//const char bufferFoo[1024];
+
 const char *mLastMessagePoppedCstring;
 
+
 EAGLView *g_View;
-pthread_mutex_t m_Mutex;
-pthread_cond_t m_AudioSyncCond;
-bool m_SyncAudio;
-pthread_mutex_t play_mutex;
+
+
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
-static volatile int buffer_ana_gen_ofs,buffer_ana_play_ofs;
 
 
-#define PLAYBACK_FREQ 44100
-
- 
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
 	LOGV("interupption\n");
 	if (interruptionState == kAudioSessionBeginInterruption) {
@@ -137,7 +121,7 @@ const char *popMessageFromWebView() {
 		return;
 	}
 	
-	[self startGame];
+	//[self startGame];
 	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
@@ -156,7 +140,7 @@ const char *popMessageFromWebView() {
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (animating) {
+	if (Engine::CurrentGame()->Active()) {
 		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
@@ -165,14 +149,14 @@ const char *popMessageFromWebView() {
 			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
-			game->Hit(location.x, location.y, 0);
+			Engine::CurrentGame()->Hit(location.x, location.y, 0);
 		}
 	}
 }
 
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (animating) {
+	if (Engine::CurrentGame()->Active()) {
 		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
@@ -181,14 +165,14 @@ const char *popMessageFromWebView() {
 			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
-			game->Hit(location.x, location.y, 1);
+			Engine::CurrentGame()->Hit(location.x, location.y, 1);
 		}
 	}
 }
 
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (animating) {
+	if (Engine::CurrentGame()->Active()) {
 		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
@@ -197,14 +181,14 @@ const char *popMessageFromWebView() {
 			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
-			game->Hit(location.x, location.y, 2);
+			Engine::CurrentGame()->Hit(location.x, location.y, 2);
 		}
 	}
 }
 
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-	if (animating) {
+	if (Engine::CurrentGame()->Active()) {
 		NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		UITouch* touch;
@@ -213,17 +197,16 @@ const char *popMessageFromWebView() {
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = location.y;
-		game->Hit(location.x, location.y, -1);
+		Engine::CurrentGame()->Hit(location.x, location.y, -1);
 	}
 }
 
 
 -(void)drawView:(id)sender {
-	if (animating) {
-		m_SyncAudio = true;
+	if (Engine::CurrentGame()->Active()) {
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-		game->DrawScreen(0);
+		Engine::CurrentGame()->DrawScreen(0);
 		glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
 	}
@@ -302,11 +285,11 @@ static OSStatus playbackCallback(void *inRefCon,
 	//LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
 	
 	//Signal to get audio
-	Engine *f = [g_View game];
-	if (f) {
-		memset(ioData->mData, 0, ioData->mDataByteSize);
-		f->DoAudio((short int *)ioData->mData, inNumberFrames);
-	}
+	//Engine *f = [g_View game];
+	//if (f) {
+	//	memset(ioData->mData, 0, ioData->mDataByteSize);
+	//	f->DoAudio((short int *)ioData->mData, inNumberFrames);
+	//}
 		
     return noErr;
 }
@@ -350,7 +333,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	AudioStreamBasicDescription audioFormat = {0};
 
 	
-	audioFormat.mSampleRate			= PLAYBACK_FREQ;
+	audioFormat.mSampleRate			= 44100;
 	audioFormat.mFormatID			= kAudioFormatLinearPCM;
 	audioFormat.mFormatFlags		= kAudioFormatFlagsCanonical;
 	audioFormat.mFramesPerPacket	= 1;
@@ -411,99 +394,23 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(void)startGame {
+	/*
 	if (game != NULL) {
 		models.clear();
 		textures.clear();
 		levels.clear();
 		delete game;
 	}
+	*/
 	
-	{
-		NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
-		for (NSString *path in model_names) {
-			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-			fseek(fd, 0, SEEK_END);
-			unsigned int len = ftell(fd);
-			rewind(fd);
-			foo *firstModel = new foo;
-			firstModel->fp = fd;
-			firstModel->off = 0;
-			firstModel->len = len;
-			models.push_back(firstModel);
-		}
-		
-		NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
-		for (NSString *path in level_names) {
-			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-			fseek(fd, 0, SEEK_END);
-			unsigned int len = ftell(fd);
-			rewind(fd);
-			foo *firstLevel = new foo;
-			firstLevel->fp = fd;
-			firstLevel->off = 0;
-			firstLevel->len = len;
-			levels.push_back(firstLevel);
-		}
 
-		NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
-		for (NSString *path in texture_names) {
-			NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-			UIImage *image = [[UIImage alloc] initWithData:texData];		
 
-			if (image == nil) {
-				throw 1;
-			}
-
-			textures.push_back(loadTexture(image));
-			[image release];
-			[texData release];
-		}
-		
-		
-		NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
-		for (NSString *path in sound_names) {
-			FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-			fseek(fd, 0, SEEK_END);
-			unsigned int len = ftell(fd);
-			rewind(fd);
-			foo *firstSound = new foo;
-			firstSound->fp = fd;
-			firstSound->off = 0;
-			firstSound->len = len;
-			sounds.push_back(firstSound);
-		}
-		
-		
-		pthread_cond_init(&m_AudioSyncCond, NULL);
-		pthread_mutex_init(&m_Mutex, NULL);
-		m_SyncAudio = false;
-		
-		[self initAudio2];
-		status = AudioOutputUnitStart(audioUnit);
-		checkStatus(status);
-		
-		g_View = self;
-
-		game = new FlightControl(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
-		mLastMessageReady = NO;
-    game->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-		game->CreateThread();
-		
-		gameState = 1;
-	}
-}
-
--(Engine *)game {
-	return game;
-}
-
--(void)reset {
-	[self stopAnimation];	
 }
 
 
--(void)parse:(const char*)json withLength:(size_t)length {
-}
+//-(Engine *)game {
+//	return game;
+//}
 
 
 -(NSInteger)animationFrameInterval {
@@ -545,8 +452,8 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(void)stopAnimation {
-    if (animating) {
-		//game->PauseThread();
+    if (Engine::CurrentGame()->Active()) {
+		    Engine::CurrentGame()->PauseThread();
         if (displayLinkSupported) {
             [displayLink invalidate];
             displayLink = nil;
@@ -610,6 +517,72 @@ static OSStatus playbackCallback(void *inRefCon,
 		}
 		[pool release];
 	}
+}
+
+
+-(void)startMemoryLeak {
+	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
+	for (NSString *path in model_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+		foo *firstModel = new foo;
+		firstModel->fp = fd;
+		firstModel->off = 0;
+		firstModel->len = len;
+		models.push_back(firstModel);
+	}
+	
+	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
+	for (NSString *path in level_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+		foo *firstLevel = new foo;
+		firstLevel->fp = fd;
+		firstLevel->off = 0;
+		firstLevel->len = len;
+		levels.push_back(firstLevel);
+	}
+	
+	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
+	for (NSString *path in texture_names) {
+		NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+		UIImage *image = [[UIImage alloc] initWithData:texData];		
+		
+		if (image == nil) {
+			throw 1;
+		}
+		
+		textures.push_back(loadTexture(image));
+		[image release];
+		[texData release];
+	}
+	
+	
+	NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
+	for (NSString *path in sound_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+		foo *firstSound = new foo;
+		firstSound->fp = fd;
+		firstSound->off = 0;
+		firstSound->len = len;
+		sounds.push_back(firstSound);
+	}
+	
+	
+	[self initAudio2];
+	status = AudioOutputUnitStart(audioUnit);
+	checkStatus(status);
+	
+	g_View = self;	
+	
+	Engine::Start(0, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
 }
 
 

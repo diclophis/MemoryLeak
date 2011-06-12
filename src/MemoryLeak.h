@@ -121,4 +121,15 @@ extern "C" {
 
 #include "oolua.h"
 
+#include "aiScene.h"
+
+#include "stdarg.h"
+#include "octree.h"
+#include "micropather.h"
+#include "AtlasSprite.h"
+#include "SpriteGun.h"
+#include "Model.h"
+#include "ModelOctree.h"
+#include "Game.h"
+#include "Engine.h"
 

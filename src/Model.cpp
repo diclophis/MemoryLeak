@@ -9,14 +9,6 @@
 
 
 #include "MemoryLeak.h"
-#include "aiScene.h"
-#include "micropather.h"
-#include "octree.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
-#include "Model.h"
-#include "ModelOctree.h"
-#include "Engine.h"
 
 
 static GLuint g_lastTexture = 0;

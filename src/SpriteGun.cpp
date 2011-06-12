@@ -1,11 +1,7 @@
-// Machine Gun Fountain
+// Jon Bardin GPL
 
 
 #include "MemoryLeak.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
-#include "Model.h"
-#include "Engine.h"
 
 
 SpriteGun::SpriteGun(GLuint t, int spr, int rows, int s, int e, float m, const std::string &str2, int s2, int e2, float m2, float w, float h) : AtlasSprite(t, spr, rows, s, e, m, w, h) {

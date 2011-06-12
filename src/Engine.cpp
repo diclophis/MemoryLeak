@@ -1,6 +1,8 @@
 //JonBardin GPL 2011
 
 #include "MemoryLeak.h"
+#include "SuperStarShooter.h"
+#include "RadiantFireEightSixOne.h"
 
 #ifdef DESKTOP
   #define GLU_PERSPECTIVE gluPerspective
@@ -37,11 +39,8 @@ EXPORT_OOLUA_NO_FUNCTIONS(Wang)
 #include <string.h>
 
 
-#include "Model.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
+static Engine *m_CurrentGame;
 
-#include "Engine.h"
 
 static void do_this_in_tick(GlobalInfo *g, int revents);
 
@@ -740,4 +739,40 @@ void Engine::PushMessageToWebView(char *messageToPush) {
   sprintf(m_WebViewFunctionBufferTwo, "javascript:(function() { %s })()", messageToPush);
   LOGV("pushing: %s\n", m_WebViewFunctionBufferTwo);
   m_WebViewMessagePusher(m_WebViewFunctionBufferTwo);
+}
+
+
+Engine* Engine::CurrentGame() {
+  return m_CurrentGame;
+}
+
+
+void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
+  Game *games[2];
+  games[0] = new GameImpl<SuperStarShooter>;
+  games[1] = new GameImpl<RadiantFireEightSixOne>;
+
+  m_CurrentGame = (Engine *)games[i]->allocate(w, h, t, m, l, s);
+
+/*
+game = new FlightControl(self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
+mLastMessageReady = NO;
+game->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
+game->CreateThread();
+*/
+}
+
+
+void Engine::Stop() {
+  m_CurrentGame->StopSimulation();
+}
+
+
+void Engine::Pause() {
+  m_CurrentGame->PauseSimulation();
+}
+
+
+bool Engine::Active() {
+  return true;
 }
