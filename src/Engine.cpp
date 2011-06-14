@@ -282,8 +282,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	pthread_cond_init(&m_VsyncCond, NULL);
 	pthread_cond_init(&m_AudioSyncCond, NULL);
-	pthread_mutex_init(&m_Mutex, NULL);
-
+    pthread_mutex_init(&m_Mutex, NULL);
+    
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
@@ -319,8 +319,15 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 }
 
 
-void Engine::CreateThread() {
-	pthread_create(&m_Thread, 0, Engine::EnterThread, this);
+void Engine::CreateThread(void (theCleanup)()) {
+  m_SimulationThreadCleanup = theCleanup;
+    
+    pthread_attr_t attr; // thread attribute    
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    
+    // create the thread     
+	pthread_create(&m_Thread, &attr, Engine::EnterThread, this);
 }
 
 
@@ -343,15 +350,18 @@ void *Engine::EnterScriptThread(void *obj) {
 
 bool Engine::WaitVsync() {
   pthread_mutex_lock(&m_Mutex);
-  pthread_cond_wait(&m_VsyncCond, &m_Mutex);
+  if (Active()) {
+      pthread_cond_wait(&m_VsyncCond, &m_Mutex);
+  }
   pthread_mutex_unlock(&m_Mutex);
   return true;
 }
 
 void Engine::WaitAudioSync() {
-  pthread_mutex_lock(&m_Mutex);
-  pthread_cond_wait(&m_AudioSyncCond, &m_Mutex);
-  pthread_mutex_unlock(&m_Mutex);
+    LOGV("wtf audio lock\n");
+ // pthread_mutex_lock(&m_Mutex);
+  //pthread_cond_wait(&m_AudioSyncCond, &m_Mutex);
+  //pthread_mutex_unlock(&m_Mutex);
 }
 
 void Engine::PingServer () {
@@ -376,9 +386,10 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	double interp = 1.0;
-  LOGV("starting thread\n");
-	while (m_GameState > 0 && WaitVsync()) {
-    //pthread_mutex_lock(&m_Mutex);
+
+	while (WaitVsync() && m_GameState > 0) {
+        //LOGV("sim\n");
+
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
     averageWait = t2 - t1;
@@ -395,61 +406,78 @@ int Engine::RunThread() {
         if (m_AudioTimeout >= 0.0) {
           m_AudioTimeout += (m_DeltaTime);
         }
-        m_GameState = Simulate();
+        
+        pthread_mutex_lock(&m_Mutex);
+          if (Active()) {
+              m_GameState = Simulate();
+          }
+        pthread_mutex_unlock(&m_Mutex);
+
       }
     }
-    if ((m_WebViewTimeout += m_DeltaTime) > 0.5) {
+    if ((m_WebViewTimeout += m_DeltaTime) > 0.125) {
       m_WebViewTimeout = 0.0;
       PopMessageFromWebView();
     }
 	}
 
   if (m_GameState == 0) {
-    LOGV("need to go somewhre\n");
-    PushMessageToWebView("queue.push('memoryleak://localhost/start?0')");
+    //LOGV("need to go somewhre\n");
+    PushMessageToWebView(CreateWebViewFunction("queue.push('memoryleak://localhost/start?0')"));
+
     while (m_GameState == 0) {
       LOGV("waiting stop\n");
       PopMessageFromWebView();
-      //WaitVsync();
+    //  //WaitVsync();
     }
+    //while (Stopping()) {
+    //  LOGV("waiting 222\n");
+    //  PopMessageFromWebView();
+    //  pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
+    //}
   } else {
-    LOGV("told to exit with known dest\n");
+    //LOGV("told to exit with known dest\n");
   }
 
-  LOGV("exiting thread!!!!!!!\n");
+  m_SimulationThreadCleanup();
+  m_GameState = -3;
+  LOGV("!!!!!!!!!!@#!@#!@#!@# wtf EXXIIIIIIIIIIIIIIIT: %d\n", m_GameState);
   pthread_exit(NULL);
 	return m_GameState;
 }
 
 
 void Engine::PauseSimulation() {
-	pthread_mutex_lock(&m_Mutex);
+	//pthread_mutex_lock(&m_Mutex);
 	m_GameState = 2;
-	pthread_mutex_unlock(&m_Mutex);
+	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StopSimulation() {
-	pthread_mutex_lock(&m_Mutex);
+  pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
+  pthread_mutex_lock(&m_Mutex);
   LOGV("stopping simulation\n");
-	m_GameState = -1;
-	pthread_mutex_unlock(&m_Mutex);
+  m_GameState = -1;
+  //pthread_cond_signal(&m_VsyncCond);
+  pthread_mutex_unlock(&m_Mutex);
+  LOGV("done stopping simulation\n");
 }
 
 
 void Engine::ExitSimulation() {
-	pthread_mutex_lock(&m_Mutex);
-  LOGV("exit simulation\n");
+	//pthread_mutex_lock(&m_Mutex);
+  //LOGV("exit simulation\n");
 	m_GameState = -1;
-	pthread_mutex_unlock(&m_Mutex);
+	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
-	pthread_mutex_lock(&m_Mutex);
-  LOGV("start simulation\n");
+	//pthread_mutex_lock(&m_Mutex);
+  //LOGV("start simulation\n");
 	m_GameState = 1;
-	pthread_mutex_unlock(&m_Mutex);
+	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -460,7 +488,7 @@ void Engine::DoAudio(short buffer[], int size) {
   if (m_IsPushingAudio) {
     if (m_AudioBufferSize == 0) {
       m_AudioBufferSize = size;
-      LOGV("make audio buffer %d\n", size);
+      //LOGV("make audio buffer %d\n", size);
       m_AudioMixBuffer = new short[size];
       memset(m_AudioMixBuffer, 0, size * sizeof(short));
     }
@@ -501,7 +529,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
-	pthread_cond_signal(&m_AudioSyncCond);
+	//pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		//glDisable(GL_BLEND);
@@ -682,7 +710,6 @@ void Engine::gluePerspective(float fovy, float aspect,
 
 
 void Engine::RunScriptThread() {
-LOGV("wtf\n");  
   m_Script = new OOLUA::Script;
   
   m_Script->register_class<Wang>();
@@ -748,8 +775,18 @@ void Engine::Destroy() {
 }
 
 
-void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
+void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
+  if (m_CurrentGame) {
+    m_CurrentGame->StopSimulation();
+    LOGV("gonna joinb\n");
+    pthread_join(m_CurrentGame->m_Thread, NULL);
+    delete m_CurrentGame;
+  }
+
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
+  m_CurrentGame->SetWebViewPushAndPop(thePusher, thePopper);
+  m_CurrentGame->CreateThread(theCleanup);
+  m_CurrentGame->StartSimulation();
 }
 
 
@@ -759,8 +796,26 @@ void Engine::Begin() {
 
 
 void Engine::Stop() {
-  LOGV("told to stop\n");
-  m_CurrentGame->StopSimulation();
+  if (GameActive() && m_CurrentGame->Active()) {
+    LOGV("going to stop sumulation\n");
+    m_CurrentGame->StopSimulation();
+  }
+
+  /*
+  while (m_CurrentGame->Stopping()) {
+    sched_yield();
+    LOGV("waiting %d\n", m_CurrentGame->m_GameState);
+    pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
+  }
+  */
+
+  /*
+  LOGV("waiting stoppped!@#!#!@#!@# %d\n", m_CurrentGame->m_GameState);
+  pthread_join(m_CurrentGame->m_Thread, NULL);
+  */
+  
+  //pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
+ 
 }
 
 
@@ -780,7 +835,7 @@ bool Engine::Active() {
 
 
 bool Engine::Stopping() {
-  return (m_GameState == 0);
+  return (m_GameState > -3);
 }
 
 

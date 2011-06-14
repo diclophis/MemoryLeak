@@ -67,7 +67,7 @@ typedef struct Engine Engine;
 -(void)drawView:(id)sender;
 -(BOOL)pushMessageToWebView:(const char *)theMessage;
 -(const char *)popMessageFromWebView;
--(void)startMemoryLeak;
+-(void)startGame:(int)i;
 -(BOOL)wasActive;
 -(void)initAudio2;
 

@@ -39,6 +39,8 @@ static jobject activity;
 jmethodID android_push_webview;
 jmethodID android_pop_webview;
 
+bool playing_audio = false;
+
 
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
@@ -60,6 +62,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobj
 
 
 void *pump_audio(void *) {
+  playing_audio = true;
   if (g_Env == NULL) {
     g_Vm->AttachCurrentThread(&g_Env, NULL);
   }
@@ -80,7 +83,7 @@ void *pump_audio(void *) {
   b = new short[min_buffer];
   memset(b, 0, min_buffer * sizeof(short));
 
-  while (Engine::GameActive() && Engine::CurrentGame()->Active()) {
+  while (playing_audio) {
     Engine::CurrentGame()->DoAudio(b, min_buffer / sizeof(short));
     g_Env->SetShortArrayRegion(ab, 0, min_buffer / sizeof(short), b);
     g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / sizeof(short));
@@ -88,6 +91,19 @@ void *pump_audio(void *) {
   LOGV("exiting AUDIO THREAD!!!!!!!\n");
   g_Vm->DetachCurrentThread();
   pthread_exit(NULL);
+}
+
+
+void SimulationThreadCleanup() {
+  LOGV("\n\nCLEANUPPPP\n\n");
+  g_Env = NULL;
+  g_Env2 = NULL;
+  g_Env3 = NULL;
+  android_push_webview = NULL;
+  android_pop_webview = NULL;
+  android_dumpAudio = NULL;
+  ab = NULL;
+  g_Vm->DetachCurrentThread();
 }
 
 
@@ -179,17 +195,22 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
   min_buffer = size;
 }
 
-
-void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-  Engine::Stop();
-  Engine::Destroy();
-  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds);
-  Engine::CurrentGame()->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-  //Engine::CurrentGame()->CreateThread();
-  //Engine::Begin();
-	//pthread_create(&audio_thread, 0, pump_audio, NULL);
+void *start_game( void *ptr ) {
+  int g = (int)ptr;  
+  LOGV("start game: %d\n", g);
+  playing_audio = false;
+  pthread_join(audio_thread, NULL);
+  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  pthread_create(&audio_thread, 0, pump_audio, NULL);
+  g_Vm->DetachCurrentThread();
+  pthread_exit(NULL);
 }
 
+void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
+  LOGV("in native start! 1\n");
+  pthread_t thread1;
+  int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
+}
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
   JNIEnv * env, jobject thiz,
@@ -197,7 +218,8 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
   int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
 ) {
-activity = thiz;
+  activity = (jobject)env->NewGlobalRef(thiz);
+//activity = thiz;
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
@@ -240,18 +262,9 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 
-  //game = new FlightControl(sWindowWidth, sWindowHeight, textures, models, levels, sounds);
-  //game->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-  //game->CreateThread();
-
   Engine::Init();
-  Engine::Start(0, sWindowWidth, sWindowHeight, textures, models, levels, sounds);
-  Engine::CurrentGame()->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-  Engine::CurrentGame()->CreateThread();
-  Engine::Begin();
-	pthread_create(&audio_thread, 0, pump_audio, NULL);
-  
-  //gameState = 1;
+  Engine::Start(0, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  pthread_create(&audio_thread, 0, pump_audio, NULL);
 }
 
 

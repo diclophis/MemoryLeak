@@ -16,7 +16,7 @@ public:
   void ResizeScreen(int width, int height);
   void DrawScreen(float rotation);
   int RunThread();
-  void CreateThread();
+  void CreateThread(void ());
   static void *EnterThread(void *);
   virtual void Build() = 0;
   virtual int Simulate() = 0;
@@ -33,6 +33,7 @@ public:
   static void *EnterScriptThread(void *);
   void CreateScriptThread();
   void RunScriptThread();
+  void (*m_SimulationThreadCleanup)();
   bool (*m_WebViewMessagePusher)(const char *);
   const char *(*m_WebViewMessagePopper)();
   void SetWebViewPushAndPop(bool (const char *), const char *(*)());
@@ -48,7 +49,7 @@ public:
   void ExitSimulation();
   void StartSimulation();
   void PauseSimulation();
-  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, bool (const char *), const char *(*)(), void ());
   static void Begin();
   static void Stop();
   static void Exit();

@@ -247,34 +247,40 @@ public class DemoActivity extends Activity {
       });
       return true;
     } else {
-      Log.v(this.toString(), "cant push not 100");
+      Log.v(this.toString(), "cant push not");
       return false;
     }
   }
 
   public String popMessageFromWebView() {
     // Popped messages are JSON structures that indicate status of operations, etc
-    if (mWebView.getProgress() == 100) {
-      // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
-      runOnUiThread(new Runnable() {
+    if (mWebView.getProgress() < 100) {
+      return "wtfc";
+    }
+
+    // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
+    runOnUiThread(new Runnable() {
+      public void run() {
+        final String messagePopBridge = "javascript:(function() { window.javascriptBridge.pushToJava(dequeue()); })()";
+        mWebView.loadUrl(messagePopBridge);
+      }
+    });
+
+    if (DemoActivity.mWebViewMessages == null) {
+      return "wtf3";
+    }
+
+
+    final String mLastMessagePopped;
+    try {
+      if (DemoActivity.mWebViewMessages.isEmpty()) {
+        mLastMessagePopped = "empty";
+      } else {
+        mLastMessagePopped = DemoActivity.mWebViewMessages.take();
+      }
+      //Log.v(this.toString(), "got: " + mLastMessagePopped);
+      new Thread(new Runnable() {
         public void run() {
-          final String messagePopBridge = "javascript:(function() { window.javascriptBridge.pushToJava(dequeue()); })()";
-          mWebView.loadUrl(messagePopBridge);
-        }
-      });
-      if (DemoActivity.mWebViewMessages != null) {
-        String mLastMessagePopped = new String();
-        try {
-          if (DemoActivity.mWebViewMessages.isEmpty()) {
-            mLastMessagePopped = "empty";
-          } else {
-            mLastMessagePopped = DemoActivity.mWebViewMessages.take();
-          }
-        } catch (java.lang.InterruptedException wtf) {
-          Log.v(this.toString(), wtf.toString());
-        }
-        if (mLastMessagePopped != null) {
-          //Log.v(this.toString(), "got: " + mLastMessagePopped);
           try {
             URI action = new URI(mLastMessagePopped);
             String scheme = action.getScheme();
@@ -283,6 +289,12 @@ public class DemoActivity extends Activity {
             if ("memoryleak".equals(scheme)) {
               if ("/start".equals(path)) {
                 nativeStartGame(Integer.parseInt(query));
+
+                //runOnUiThread(new Runnable() {
+                //  public void run() {
+                //    nativeStartGame(Integer.parseInt(query));
+                //  }
+                //});
               } else if ("/show".equals(path)) {
                 //runOnUiThread(new Runnable() {
                 //  public void run() {
@@ -300,15 +312,12 @@ public class DemoActivity extends Activity {
           } catch(java.net.URISyntaxException wtf) {
             Log.v(this.toString(), wtf.toString());
           }
-          return mLastMessagePopped;
-        } else {
-          return "wtf1";
         }
-      } else {
-        return "wtf2";
-      }
-    } else {
-      return "wtf3";
+      }).start();
+      return mLastMessagePopped;
+    } catch (java.lang.InterruptedException wtf) {
+      Log.v(this.toString(), wtf.toString());
+      return "wtfa";
     }
   }
 

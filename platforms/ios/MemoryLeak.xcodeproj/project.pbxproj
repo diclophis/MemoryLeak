@@ -2351,13 +2351,13 @@
 					"$(SRCROOT)/../../src/oolua",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUGBUILD";
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos4.3;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -2371,6 +2371,11 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_SETENV,
+					HAVE_SINF,
+				);
+				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_SHADOW = NO;
@@ -2386,11 +2391,11 @@
 					"$(SRCROOT)/../../src/oolua",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos4.3;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -2404,8 +2409,9 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos4.3;
 			};
 			name = Debug;
 		};
@@ -2417,8 +2423,9 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos4.3;
 			};
 			name = Release;
 		};

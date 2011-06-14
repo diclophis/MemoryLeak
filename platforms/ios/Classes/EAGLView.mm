@@ -13,6 +13,9 @@
 
 EAGLView *g_View;
 
+void nada () {
+    LOGV("nada\n");
+}
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -105,16 +108,19 @@ const char *popMessageFromWebView() {
 
 
 -(void)build:(UIWebView *)theWebView {
+
+	// Get the layer
+	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
+
 	[self setMPoppedMessages:[NSMutableArray arrayWithCapacity:10]];
 
+	g_View = self;
 	webView = theWebView;
 	[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
 
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
 	
-	// Get the layer
-	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 	
 	eaglLayer.opaque = TRUE;
 	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
@@ -148,11 +154,9 @@ const char *popMessageFromWebView() {
 		return;
 	}
 	
-	//[self startGame];
-	
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 2;
+	animationFrameInterval = 1;
 	displayLink = nil;
 	animationTimer = nil;
 	
@@ -223,19 +227,16 @@ const char *popMessageFromWebView() {
 	status = AudioOutputUnitStart(audioUnit);
 	checkStatus(status);
 	
-	g_View = self;
 	Engine::Init();
 }
 
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
 		bounds = [self bounds];
 		for (UITouch *touch in touches) {			
-			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
 			if (Engine::GameActive()) {
@@ -248,12 +249,10 @@ const char *popMessageFromWebView() {
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
 		bounds = [self bounds];
 		for (UITouch *touch in touches) {			
-			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
 			if (Engine::GameActive())  {
@@ -266,12 +265,10 @@ const char *popMessageFromWebView() {
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	if (animating) {
-		//NSSet *allTouches = [event allTouches];
 		CGRect bounds;
 		CGPoint location;
 		bounds = [self bounds];
 		for (UITouch *touch in touches) {			
-			//touch = [[allTouches allObjects] objectAtIndex:0];
 			location = [touch locationInView:self];
 			location.y = location.y;
 			if (Engine::GameActive()) {
@@ -348,9 +345,9 @@ static OSStatus playbackCallback(void *inRefCon,
 								 UInt32 inNumberFrames, 
 								 AudioBufferList *ioDataList) {
 
-	// Notes: ioData contains buffers (may be more than one!)
-    // Fill them up as much as you can. Remember to set the size value in each buffer to match how
-    // much data is in the buffer.
+  // Notes: ioData contains buffers (may be more than one!)
+  // Fill them up as much as you can. Remember to set the size value in each buffer to match how
+  // much data is in the buffer.
 	
 	if (ioDataList->mNumberBuffers != 1) {
 		LOGV("the fuck\n");
@@ -358,22 +355,12 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-	//LOGV("wants: %d %d %d\n", inNumberFrames, ioDataList->mNumberBuffers, ioData->mDataByteSize);
-	
-	//Signal to get audio
-	//Engine *f = [g_View game];
-	//if (f) {
-	//	memset(ioData->mData, 0, ioData->mDataByteSize);
-	//	f->DoAudio((short int *)ioData->mData, inNumberFrames);
-	//}
-	
 	if (Engine::GameActive() && Engine::CurrentGame()->Active()) {
-        //LOGV("audio\n");
 		memset(ioData->mData, 0, ioData->mDataByteSize);
 		Engine::CurrentGame()->DoAudio((short int *)ioData->mData, inNumberFrames);
 	}
 	
-    return noErr;
+  return noErr;
 }
 
 -(void)initAudio2 {
@@ -501,34 +488,34 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(void)startAnimation {
-    if (!animating) {
-		animating = TRUE;
-		if (Engine::GameActive()) {
-			Engine::Begin();
-		}
-        if (displayLinkSupported) {
-            displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];
-            [displayLink setFrameInterval:animationFrameInterval];
-            [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        }		
+  if (!animating) {
+    animating = TRUE;
+    if (Engine::GameActive()) {
+      Engine::Begin();
     }
+    if (displayLinkSupported) {
+      displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];
+      [displayLink setFrameInterval:animationFrameInterval];
+      [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    }		
+  }
 }
 
 
 -(void)stopAnimation {
-    if (animating) {
-		if (Engine::GameActive()) {
-			Engine::Pause();
-		}
-        if (displayLinkSupported) {
-            [displayLink invalidate];
-            displayLink = nil;
-        } else {
-            [animationTimer invalidate];
-            animationTimer = nil;
-        }
-        animating = FALSE;
+  if (animating) {
+    if (Engine::GameActive()) {
+      Engine::Pause();
     }
+    if (displayLinkSupported) {
+        [displayLink invalidate];
+        displayLink = nil;
+    } else {
+        [animationTimer invalidate];
+        animationTimer = nil;
+    }
+    animating = FALSE;
+  }
 }
 
 
@@ -539,7 +526,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	if (safeToPush) {
 		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		NSString *theMessageAsString = [NSString stringWithCString:theMessage encoding:NSUTF8StringEncoding];
-		[webView performSelectorOnMainThread:@selector(stringByEvaluatingJavaScriptFromString:) withObject:theMessageAsString waitUntilDone:YES];
+		[webView performSelectorOnMainThread:@selector(stringByEvaluatingJavaScriptFromString:) withObject:theMessageAsString waitUntilDone:NO];
 		[pool release];
 		return YES;
 	} else {
@@ -549,117 +536,71 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(const char *)popMessageFromWebView {
-	[self performSelectorOnMainThread:@selector(actuallyPopMessageFromWebView) withObject:nil waitUntilDone:YES];
-	@synchronized(mPoppedMessages) {
-		if ([mPoppedMessages count] > 0) {
-			NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-			NSString *mLastMessagePopped = (NSString *)[mPoppedMessages objectAtIndex:0];
-			const char *mLastMessagePoppedCstring = [mLastMessagePopped cStringUsingEncoding:NSUTF8StringEncoding];
-			[mPoppedMessages removeObjectAtIndex:0];
-			[pool release];
-			return mLastMessagePoppedCstring;
-		} else {
-		  return "unknown";
-		}
-	}
+	[self performSelectorOnMainThread:@selector(actuallyPopMessageFromWebView) withObject:nil waitUntilDone:NO];
+  if ([mPoppedMessages count] > 0) {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    NSString *mLastMessagePopped = (NSString *)[mPoppedMessages objectAtIndex:0];
+    const char *mLastMessagePoppedCstring = [mLastMessagePopped cStringUsingEncoding:NSUTF8StringEncoding];
+    [mPoppedMessages removeObjectAtIndex:0];
+    [pool release];
+    return mLastMessagePoppedCstring;
+  } else {
+    return "unknown";
+  }
 }
 
 
 -(void)actuallyPopMessageFromWebView {
-	@synchronized(mPoppedMessages) {
-		NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-		if ([webView request] && ![webView isLoading]) {
-			NSString *mLastMessagePopped = [webView stringByEvaluatingJavaScriptFromString:@"(typeof(dequeue) == 'function' ? dequeue() : 'nodequeue')"];
-			[mPoppedMessages addObject:mLastMessagePopped];
-			
-			NSURL *action = [NSURL URLWithString:mLastMessagePopped];
-			NSString *scheme = [action scheme];
-			NSString *path = [action path];
-			NSString *query = [action query];
+  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+  if ([webView request] && ![webView isLoading]) {
+    NSString *mLastMessagePopped = [webView stringByEvaluatingJavaScriptFromString:@"(typeof(dequeue) == 'function' ? dequeue() : 'nodequeue')"];
+    [mPoppedMessages addObject:mLastMessagePopped];
+    
+    NSURL *action = [NSURL URLWithString:mLastMessagePopped];
+    NSString *scheme = [action scheme];
+    NSString *path = [action path];
+    NSString *query = [action query];
 
-      NSLog(@"popped: %@ %@", mLastMessagePopped, action);
-			
-			if ([@"memoryleak" isEqualToString:scheme]) {
-				if ([@"/start" isEqualToString:path]) {
-          LOGV("start\n");
-					NSInteger i = [query intValue];
-					Engine::Stop();
-          while (Engine::CurrentGame()->Stopping()) {
-            LOGV("foooo\n");
-          }
-					Engine::Destroy();
-					Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
-					Engine::CurrentGame()->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-					Engine::CurrentGame()->CreateThread();
-					Engine::Begin();
-        } else if ([@"/exit" isEqualToString:path]) {
-          LOGV("exit\n");
-				} else if ([@"/show" isEqualToString:path]) {
-					[UIView setAnimationBeginsFromCurrentState:YES];
-					[UIView beginAnimations:@"showWebView" context:nil];
-					[UIView setAnimationDuration:0.5];
-					[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height * 0.3)];
-					[UIView commitAnimations];
-				} else if ([@"/hide" isEqualToString:path]) {
-					[UIView setAnimationBeginsFromCurrentState:YES];
-					//[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
-					[UIView beginAnimations:@"hideWebView" context:nil];
-					[UIView setAnimationDuration:0.5];
-					[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
-					[UIView commitAnimations];
-				} else if ([@"/fullscreen" isEqualToString:path]) {
-					[UIView setAnimationBeginsFromCurrentState:YES];
-					[UIView beginAnimations:@"fullscreenWebView" context:nil];
-					[UIView setAnimationDuration:0.5];
-					[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-					[UIView commitAnimations];
-				}
-			} else if ([@"openfeint" isEqualToString:scheme]) {
-				
-			}
-				
-		} else {
-			[mPoppedMessages insertObject:@"loading" atIndex:0];
-		}
+    if ([@"memoryleak" isEqualToString:scheme]) {
+      if ([@"/start" isEqualToString:path]) {
+        NSInteger i = [query intValue];
+        Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+      } else if ([@"/exit" isEqualToString:path]) {
+        LOGV("exit\n");
+      } else if ([@"/show" isEqualToString:path]) {
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView beginAnimations:@"showWebView" context:nil];
+        [UIView setAnimationDuration:0.5];
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height * 0.3)];
+        [UIView commitAnimations];
+      } else if ([@"/hide" isEqualToString:path]) {
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        //[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
+        [UIView beginAnimations:@"hideWebView" context:nil];
+        [UIView setAnimationDuration:0.5];
+        [webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
+        [UIView commitAnimations];
+      } else if ([@"/fullscreen" isEqualToString:path]) {
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView beginAnimations:@"fullscreenWebView" context:nil];
+        [UIView setAnimationDuration:0.5];
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+        [UIView commitAnimations];
+      }
+    } else if ([@"openfeint" isEqualToString:scheme]) {
+      
+    }
+      
+  } else {
+    [mPoppedMessages insertObject:@"loading" atIndex:0];
+  }
 
-		[pool release];
-
-      /*
-			if (strcmp("memoryleak://stop", mLastMessagePoppedCstring) == 0) {
-        Engine::Stop();
-			} else if (strcmp("openfeint://show", mLastMessagePoppedCstring) == 0) {
-				[UIView setAnimationBeginsFromCurrentState:YES];
-				//[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
-				[UIView beginAnimations:@"showWebView" context:nil];
-				[UIView setAnimationDuration:0.1];
-				[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height * 0.3)];
-				[UIView commitAnimations];
-			} else if (strcmp("openfeint://hide", mLastMessagePoppedCstring) == 0) {
-				[UIView setAnimationBeginsFromCurrentState:YES];
-				//[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
-				[UIView beginAnimations:@"hideWebView" context:nil];
-				[UIView setAnimationDuration:0.1];
-				[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
-				[UIView commitAnimations];
-			} else if (strcmp("openfeint://fullscreen", mLastMessagePoppedCstring) == 0) {
-				[UIView setAnimationBeginsFromCurrentState:YES];
-				[UIView beginAnimations:@"fullscreenWebView" context:nil];
-				[UIView setAnimationDuration:0.1];
-				[webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-				[UIView commitAnimations];
-			}
-      */
-		
-	}
+  [pool release];
 }
 
 
--(void)startMemoryLeak {
-	
-	Engine::Start(0, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds);
-	Engine::CurrentGame()->SetWebViewPushAndPop(pushMessageToWebView, popMessageFromWebView);
-	Engine::CurrentGame()->CreateThread();
-
+-(void)startGame:(int)i {
+  Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
 }
 
 
