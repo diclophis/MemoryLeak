@@ -87,9 +87,25 @@ public class DemoActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+
+
+
+
     DemoActivity.mWebViewMessages = new LinkedBlockingQueue<String>();
 
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
+    //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
+
+    final Context myApp = this;
+
+    // Adds Progrss bar Support
+    getWindow().requestFeature(Window.FEATURE_PROGRESS);
+       
+    // Makes Progress bar Visible
+    getWindow().setFeatureInt(Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+ 
+    // Sets the Chrome Client, and defines the onProgressChanged
+    // This makes the Progress bar be updated.
+    final Activity MyActivity = this;
 
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
@@ -99,7 +115,6 @@ public class DemoActivity extends Activity {
     mWebView.addJavascriptInterface(mJavascriptBridge, "javascriptBridge");
     mWebView.setBackgroundColor(Color.argb(0,0,0,0));
 
-    final Context myApp = this;
 
     mWebView.setWebChromeClient(new WebChromeClient() {  
       @Override  
@@ -111,6 +126,18 @@ public class DemoActivity extends Activity {
         }).setCancelable(false).create().show();
         return true;
       };
+      @Override
+      public void onProgressChanged(WebView view, int progress)  
+      {
+        Log.v(this.toString(), "cant push not" + String.format("prog: %d", progress));
+        //Make the bar disappear after URL is loaded, and changes string to Loading...
+        //MyActivity.setTitle("Loading...");
+        //MyActivity.setProgress(progress * 100); //Make the bar disappear after URL is loaded
+
+        // Return the app name after finish loading
+        //if(progress == 100)
+        //  MyActivity.setTitle(R.string.app_name);
+      };
     });
 
     mWebView.setWebViewClient(new WebViewClient() {
@@ -118,7 +145,8 @@ public class DemoActivity extends Activity {
         Log.v(this.toString(), "WTF!@#!@#" + description);
       }
     });
-    
+
+
     WebSettings webSettings = mWebView.getSettings();
     webSettings.setLoadsImagesAutomatically(true);
     webSettings.setJavaScriptEnabled(true);
@@ -234,22 +262,25 @@ public class DemoActivity extends Activity {
     }
 	}
 
-  public boolean pushMessageToWebView(final String messageToPush) {
-    //Log.v(this.toString(), "pushMessage" + messageToPush);
-    // pushed messages are direct JS that is eval'ed in the context of the webview
-    if (mWebView.getProgress() == 100) {
+  public boolean pushMessageToWebView(String messageToPush) {
+    boolean r = false;
+    Log.v(this.toString(), "IN PUSH " + messageToPush);
+    int p = mWebView.getProgress();
+    if (p == 100) {
       Log.v(this.toString(), "trying to push!!!!!!!!!!!!!!!!: " + messageToPush);
-      //mWebView.loadUrl(messageToPush);
+      final String f = new String(messageToPush);
       runOnUiThread(new Runnable() {
         public void run() {
-          mWebView.loadUrl(messageToPush);
+          mWebView.loadUrl(f);
         }
       });
-      return true;
+      r = true;
     } else {
-      Log.v(this.toString(), "cant push not");
-      return false;
+      Log.v(this.toString(), "WTFFDFDFDF " + messageToPush + String.format("%d", p));
     }
+
+    messageToPush = null;
+    return r;
   }
 
   public String popMessageFromWebView() {
@@ -435,7 +466,15 @@ class DemoGLSurfaceView extends GLSurfaceView {
     nativePause();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    Log.v(this.toString(), "RESUMe!!!!!!!!!!!!!!!!!!");
+    nativeResume();
+  }
+
   private static native void nativePause();
+  private static native void nativeResume();
   private static native void nativeTouch(float x, float y, int hitState);
 }
 

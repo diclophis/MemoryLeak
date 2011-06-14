@@ -131,5 +131,6 @@ extern "C" {
 #include "Model.h"
 #include "ModelOctree.h"
 #include "Game.h"
+#include "FooIO.h"
 #include "Engine.h"
 

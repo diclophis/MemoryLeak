@@ -37,6 +37,7 @@
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
 	if ([glView wasActive]) {
+        NSLog(@"starting animation again!!!");
 		[glView startAnimation];
 	} else {
 		[[webView.subviews objectAtIndex:0] setScrollEnabled:NO];  //to stop scrolling completely

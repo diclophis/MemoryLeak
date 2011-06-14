@@ -39,8 +39,20 @@ static jobject activity;
 jmethodID android_push_webview;
 jmethodID android_pop_webview;
 
+jstring messagePush = NULL;
+
 bool playing_audio = false;
 
+void *pump_audio(void *);
+void create_audio_thread();
+
+void create_audio_thread() {
+  playing_audio = false;
+  pthread_attr_t attr; 
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+  pthread_create(&audio_thread, 0, pump_audio, NULL);
+}
 
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
@@ -57,6 +69,7 @@ void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jcla
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr);
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv*  env);
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume(JNIEnv*  env);
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv* env);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState);
 
@@ -84,10 +97,11 @@ void *pump_audio(void *) {
   memset(b, 0, min_buffer * sizeof(short));
 
   while (playing_audio) {
-    Engine::CurrentGame()->DoAudio(b, min_buffer / sizeof(short));
+    Engine::CurrentGameDoAudio(b, min_buffer / sizeof(short));
     g_Env->SetShortArrayRegion(ab, 0, min_buffer / sizeof(short), b);
     g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / sizeof(short));
   }
+
   LOGV("exiting AUDIO THREAD!!!!!!!\n");
   g_Vm->DetachCurrentThread();
   pthread_exit(NULL);
@@ -95,7 +109,6 @@ void *pump_audio(void *) {
 
 
 void SimulationThreadCleanup() {
-  LOGV("\n\nCLEANUPPPP\n\n");
   g_Env = NULL;
   g_Env2 = NULL;
   g_Env3 = NULL;
@@ -108,7 +121,6 @@ void SimulationThreadCleanup() {
 
 
 bool pushMessageToWebView(const char *messageToPush) {
-
   if (g_Env2 == NULL) {
     g_Vm->AttachCurrentThread(&g_Env2, NULL);
   }
@@ -118,22 +130,18 @@ bool pushMessageToWebView(const char *messageToPush) {
   }
 
   if (android_push_webview == NULL) {
-
     android_push_webview = g_Env2->GetMethodID(player, "pushMessageToWebView", "(Ljava/lang/String;)Z");
-
     if (android_push_webview == 0) {
       LOGV("failed to find method\n");
       return false;
     }
   }
 
-  LOGV("trying to push2: %s\n", messageToPush);
+  jstring js = g_Env2->NewStringUTF(messageToPush);
 
-  jstring js;
-  js = g_Env2->NewStringUTF(messageToPush);
-  jboolean jbool = g_Env2->CallBooleanMethod(activity, android_push_webview, js); 
-  //bool f = jbool;
-  //g_Env2->DeleteLocalRef(jbool);
+  jboolean jbool = g_Env2->CallBooleanMethod(activity, android_push_webview, js);
+
+  g_Env2->DeleteLocalRef(js);
 
   return jbool;
 }
@@ -157,7 +165,6 @@ const char *popMessageFromWebView() {
     return "broke";
   }
 
-
   if (android_pop_webview == NULL) {
     android_pop_webview = g_Env3->GetMethodID(player, "popMessageFromWebView", "()Ljava/lang/String;");
     if (android_pop_webview == 0) {
@@ -168,7 +175,6 @@ const char *popMessageFromWebView() {
     jstring rv = (jstring) g_Env3->CallObjectMethod(activity, android_pop_webview, 0); 
     jboolean isCopy = false;
     const char *r = g_Env3->GetStringUTFChars(rv, &isCopy);
-    //g_Env3->ReleaseStringUTFChars(rv, r);
     g_Env3->DeleteLocalRef(rv);
     return r;
   }
@@ -196,18 +202,21 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
 }
 
 void *start_game( void *ptr ) {
+LOGV("1\n");
   int g = (int)ptr;  
-  LOGV("start game: %d\n", g);
   playing_audio = false;
+LOGV("2\n");
   pthread_join(audio_thread, NULL);
+LOGV("3\n");
   Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-  pthread_create(&audio_thread, 0, pump_audio, NULL);
-  g_Vm->DetachCurrentThread();
-  pthread_exit(NULL);
+LOGV("4\n");
+  create_audio_thread();
+LOGV("5\n");
+  //g_Vm->DetachCurrentThread();
+  //pthread_exit(NULL);
 }
 
 void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-  LOGV("in native start! 1\n");
   pthread_t thread1;
   int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
 }
@@ -219,7 +228,6 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
 ) {
   activity = (jobject)env->NewGlobalRef(thiz);
-//activity = thiz;
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
@@ -262,37 +270,37 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 
-  Engine::Init();
-  Engine::Start(0, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-  pthread_create(&audio_thread, 0, pump_audio, NULL);
+  if (Engine::CurrentGame()) {
+    Engine::CurrentGameStart();
+  } else {
+    Engine::Start(0, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+    pthread_create(&audio_thread, 0, pump_audio, NULL);
+  }
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
-  if (Engine::GameActive()) {
-    Engine::CurrentGame()->ResizeScreen(width, height);
-  }
+  Engine::CurrentGameResizeScreen(width, height);
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-  //game->PauseThread();
-  //gameState = 0;
-  Engine::Pause();
+  LOGV("PAUSE@!#$@#$@#$@#$@#$@#");
+  Engine::CurrentGamePause();
+}
+
+
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume( JNIEnv*  env ) {
 }
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobject thiz, jfloat x, jfloat y, jint hitState) {
-  if (Engine::GameActive()) {
-    Engine::CurrentGame()->Hit(x, y, (int)hitState);
-  }
+  Engine::CurrentGameHit(x, y, (int)hitState);
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
-  if (Engine::GameActive()) {
-    Engine::CurrentGame()->DrawScreen(0);
-  } 
+  Engine::CurrentGameDrawScreen(0);
 }
 
 #ifdef __cplusplus

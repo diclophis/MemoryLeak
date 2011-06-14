@@ -116,7 +116,7 @@ const char *popMessageFromWebView() {
 
 	g_View = self;
 	webView = theWebView;
-	[webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
+	[webView setFrame:CGRectMake(0.0, -self.frame.size.height, self.frame.size.width, self.frame.size.height)];
 
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
@@ -225,9 +225,7 @@ const char *popMessageFromWebView() {
 	
 	[self initAudio2];
 	status = AudioOutputUnitStart(audioUnit);
-	checkStatus(status);
-	
-	Engine::Init();
+	checkStatus(status);	
 }
 
 
@@ -239,9 +237,9 @@ const char *popMessageFromWebView() {
 		for (UITouch *touch in touches) {			
 			location = [touch locationInView:self];
 			location.y = location.y;
-			if (Engine::GameActive()) {
-				Engine::CurrentGame()->Hit(location.x, location.y, 0);
-			}
+
+            Engine::CurrentGameHit(location.x, location.y, 0);
+			
 		}
 	}
 }
@@ -255,9 +253,9 @@ const char *popMessageFromWebView() {
 		for (UITouch *touch in touches) {			
 			location = [touch locationInView:self];
 			location.y = location.y;
-			if (Engine::GameActive())  {
-				Engine::CurrentGame()->Hit(location.x, location.y, 1);
-			}
+
+            Engine::CurrentGameHit(location.x, location.y, 1);
+			
 		}
 	}
 }
@@ -271,9 +269,7 @@ const char *popMessageFromWebView() {
 		for (UITouch *touch in touches) {			
 			location = [touch locationInView:self];
 			location.y = location.y;
-			if (Engine::GameActive()) {
-				Engine::CurrentGame()->Hit(location.x, location.y, 2);
-			}
+            Engine::CurrentGameHit(location.x, location.y, 2);
 		}
 	}
 }
@@ -289,9 +285,7 @@ const char *popMessageFromWebView() {
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = location.y;
-		if (Engine::GameActive()) {
-			Engine::CurrentGame()->Hit(location.x, location.y, -1);
-		}
+        Engine::CurrentGameHit(location.x, location.y, -1);
 	}
 }
 
@@ -300,9 +294,7 @@ const char *popMessageFromWebView() {
 	if (animating) {
 		[EAGLContext setCurrentContext:context];
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-		if (Engine::GameActive()) {
-			Engine::CurrentGame()->DrawScreen(0);
-		}
+        Engine::CurrentGameDrawScreen(0);		
 		glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
 	}
@@ -355,10 +347,8 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-	if (Engine::GameActive() && Engine::CurrentGame()->Active()) {
-		memset(ioData->mData, 0, ioData->mDataByteSize);
-		Engine::CurrentGame()->DoAudio((short int *)ioData->mData, inNumberFrames);
-	}
+    memset(ioData->mData, 0, ioData->mDataByteSize);
+    Engine::CurrentGameDoAudio((short int *)ioData->mData, inNumberFrames);
 	
   return noErr;
 }
@@ -490,9 +480,6 @@ static OSStatus playbackCallback(void *inRefCon,
 -(void)startAnimation {
   if (!animating) {
     animating = TRUE;
-    if (Engine::GameActive()) {
-      Engine::Begin();
-    }
     if (displayLinkSupported) {
       displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];
       [displayLink setFrameInterval:animationFrameInterval];
@@ -504,9 +491,7 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)stopAnimation {
   if (animating) {
-    if (Engine::GameActive()) {
-      Engine::Pause();
-    }
+    Engine::CurrentGamePause();
     if (displayLinkSupported) {
         [displayLink invalidate];
         displayLink = nil;
@@ -571,14 +556,14 @@ static OSStatus playbackCallback(void *inRefCon,
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"showWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height * 0.3)];
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width,  webView.frame.size.height)];
         [UIView commitAnimations];
       } else if ([@"/hide" isEqualToString:path]) {
         [UIView setAnimationBeginsFromCurrentState:YES];
         //[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
         [UIView beginAnimations:@"hideWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, -self.frame.size.height * 0.3, self.frame.size.width, self.frame.size.height * 0.3)];
+        [webView setFrame:CGRectMake(0.0, -webView.frame.size.height, self.frame.size.width,  webView.frame.size.height)];
         [UIView commitAnimations];
       } else if ([@"/fullscreen" isEqualToString:path]) {
         [UIView setAnimationBeginsFromCurrentState:YES];
@@ -635,7 +620,12 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(BOOL)wasActive {
-	return Engine::GameActive();
+	if (Engine::CurrentGame()) {
+        Engine::CurrentGameStart();
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 
