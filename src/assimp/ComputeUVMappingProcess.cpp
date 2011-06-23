@@ -103,7 +103,7 @@ inline unsigned int FindEmptyUVChannel (aiMesh* mesh)
 
 // ------------------------------------------------------------------------------------------------
 // Try to remove UV seams
-void RemoveUVSeams (aiMesh* mesh, aiVector3D* out)
+inline void RemoveUVSeams (aiMesh* mesh, aiVector3D* out)
 {
 	// TODO: just a very rough algorithm. I think it could be done
 	// much easier, but I don't know how and am currently too tired to 

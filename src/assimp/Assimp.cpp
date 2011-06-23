@@ -42,6 +42,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  @brief Implementation of the Plain-C API
  */
 
+#include "../contrib/ConvertUTF/ConvertUTF.h"
+
 #include "AssimpPCH.h"
 #include "../include/assimp.h"
 #include "../include/aiFileIO.h"
@@ -54,6 +56,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #	include <boost/thread/mutex.hpp>
 #endif
 // ------------------------------------------------------------------------------------------------
+
+void ReportSceneNotFoundError();
+void CallbackToLogRedirector (const char* msg, char* dt);
+
 using namespace Assimp;
 
 namespace Assimp

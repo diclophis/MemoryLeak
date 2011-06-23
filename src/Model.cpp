@@ -34,7 +34,19 @@ void Model::ReleaseBuffers() {
 	
 }
 
-Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
+
+Model::~Model() {
+  LOGV("dealloc model\n");
+  free(m_Scale);
+  free(m_Position);
+  free(m_Rotation);
+  free(m_Velocity);
+  delete m_Steps;
+}
+
+
+Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
+  m_Frame = 0;
 	m_IsPlayer = false;
 	m_IsEnemy = false;
 	m_IsBomb = false;
@@ -59,7 +71,8 @@ Model::Model(const foofoo *a, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
 	m_Fps = 60.0;
 	m_Theta = 0.0;
 	m_IsAlive = false;
-	
+
+  SetTexture(t);
 	SetScale(1.0, 1.0, 1.0);
 	SetPosition(0.0, 0.0, 0.0);
 	SetRotation(0.0, 0.0, 0.0);
@@ -123,13 +136,17 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 				indices[j+1] = a->mMeshes[mm]->mFaces[i].mIndices[1];
 				indices[j+2] = a->mMeshes[mm]->mFaces[i].mIndices[2];
 			}
-			
-			if (iiii == 0 || (mm + 1) == a->mRootNode->mNumMeshes) {
+		
+      
+			if (iiii == 0) {
 				for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
 					vertices[jk] = a->mMeshes[mm]->mVertices[ik][0];
 					vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1];
 					vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2];
 				}
+      }
+
+      /*
 				
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[used_buffer]);
 				glBufferData(GL_ELEMENT_ARRAY_BUFFER, a->mMeshes[mm]->mNumFaces * 3 * sizeof(short), indices, GL_STATIC_DRAW);
@@ -141,6 +158,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 				glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
 				used_buffer++;
 			} else {
+      */
 				//if (mm < (a->mRootNode->mNumMeshes - 1)) {
 					float percent_of_way = (float)iiii / (float)interp;
 
@@ -160,7 +178,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 					glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
 					used_buffer++;
 				//}
-			}
+			//}
 			
 			delete vertices;
 			delete indices;

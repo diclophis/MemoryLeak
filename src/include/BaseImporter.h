@@ -49,6 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include "./../include/aiTypes.h"
 
+
 struct aiScene;
 
 namespace Assimp	{
@@ -247,6 +248,7 @@ public:
 		);
 
 protected:
+    static void ReportResult(ConversionResult res);
 
 	// -------------------------------------------------------------------
 	/** Called by Importer::GetExtensionList() for each loaded importer.
@@ -495,5 +497,7 @@ private:
 };
 
 } // end of namespace Assimp
+
+
 
 #endif // AI_BASEIMPORTER_H_INC

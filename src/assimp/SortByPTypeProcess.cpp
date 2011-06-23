@@ -80,7 +80,7 @@ void SortByPTypeProcess::SetupProperties(const Importer* pImp)
 
 // ------------------------------------------------------------------------------------------------
 // Update changed meshes in all nodes
-void UpdateNodes(const std::vector<unsigned int>& replaceMeshIndex, aiNode* node)
+inline void UpdateNodes(const std::vector<unsigned int>& replaceMeshIndex, aiNode* node)
 {
 //	std::vector<unsigned int>::const_iterator it;
 

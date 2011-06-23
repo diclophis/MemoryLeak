@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** @file Implementation of BaseProcess */
 
+#include "../contrib/ConvertUTF/ConvertUTF.h"
+
 #include "AssimpPCH.h"
 #include "BaseImporter.h"
 #include "BaseProcess.h"

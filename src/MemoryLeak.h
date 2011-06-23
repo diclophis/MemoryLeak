@@ -111,6 +111,7 @@ typedef struct _SockInfo
 	GlobalInfo *global;
 } SockInfo;
 
+/*
 extern "C" {
   #define loslib_c
   #define LUA_LIB
@@ -119,7 +120,10 @@ extern "C" {
   #include "lualib.h"
 }
 
-#include "oolua.h"
+ #include "oolua.h"
+
+*/
+
 
 #include "aiScene.h"
 

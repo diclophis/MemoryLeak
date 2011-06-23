@@ -89,7 +89,7 @@ namespace Assimp	{
 
 // ------------------------------------------------------------------------------------------------
 // Fast subdivision for a mesh whose verts have a magnitude of 1
-void Subdivide(std::vector<aiVector3D>& positions)
+inline void Subdivide(std::vector<aiVector3D>& positions)
 {
 	// assume this to be constant - (fixme: must be 1.0? I think so)
 	const float fl1 = positions[0].Length();

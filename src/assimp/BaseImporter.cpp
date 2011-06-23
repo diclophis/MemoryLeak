@@ -43,9 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  @brief Implementation of BaseImporter 
  */
 
+#include "../contrib/ConvertUTF/ConvertUTF.h"
+
 #include "AssimpPCH.h"
 #include "BaseImporter.h"
 #include "FileSystemFilter.h"
+
+
 
 using namespace Assimp;
 
@@ -253,10 +257,9 @@ void BaseImporter::SetupProperties(const Importer* pImp)
 	return false;
 }
 
-#include "../contrib/ConvertUTF/ConvertUTF.h"
 
 // ------------------------------------------------------------------------------------------------
-void ReportResult(ConversionResult res)
+void BaseImporter::ReportResult(ConversionResult res)
 {
 	if(res == sourceExhausted) {
 		DefaultLogger::get()->error("Source ends with incomplete character sequence, transformation to UTF-8 fails");

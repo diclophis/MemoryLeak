@@ -83,7 +83,7 @@ void FindInvalidDataProcess::SetupProperties(const Importer* pImp)
 
 // ------------------------------------------------------------------------------------------------
 // Update mesh references in the node graph
-void UpdateMeshReferences(aiNode* node, const std::vector<unsigned int>& meshMapping)
+inline void UpdateMeshReferences(aiNode* node, const std::vector<unsigned int>& meshMapping)
 {
 	if (node->mNumMeshes)	{
 		unsigned int out = 0;

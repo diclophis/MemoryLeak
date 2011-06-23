@@ -1,6 +1,8 @@
 
 // Actually just a dummy, used by the compiler to build the precompiled header.
 
+#include "../contrib/ConvertUTF/ConvertUTF.h"
+
 #include "AssimpPCH.h"
 #include "./../include/aiVersion.h"
 

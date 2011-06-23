@@ -13,6 +13,9 @@
 
 EAGLView *g_View;
 
+void nada();
+void checkStatus(OSStatus s);
+
 void nada () {
     LOGV("nada\n");
 }
@@ -121,9 +124,10 @@ const char *popMessageFromWebView() {
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
 	
-	
+	//GL_RGBA4
+    //kEAGLColorFormatRGBA8
 	eaglLayer.opaque = TRUE;
-	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
+	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
 	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
 	
 	if (!context || ![EAGLContext setCurrentContext:context]) {

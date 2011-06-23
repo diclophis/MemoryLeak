@@ -47,7 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Vertex.h"
 
 using namespace Assimp;
-void mydummy() {}
+inline void mydummy() {}
 
 // ------------------------------------------------------------------------------------------------
 /** Subdivider stub class to implement the Catmull-Clarke subdivision algorithm. The 

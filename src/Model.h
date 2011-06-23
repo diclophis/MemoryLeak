@@ -15,7 +15,8 @@ public:
 	static foofoo *GetFoo(const aiScene *a, int s, int e);
 	
 	
-	Model(const foofoo *a, bool usesStaticBuffer = false);
+	Model(const foofoo *a, int t, bool usesStaticBuffer = false);
+  ~Model();
 	void Render();
 	float Simulate(float dt, bool pushing = false);
 	void Die(float dt);

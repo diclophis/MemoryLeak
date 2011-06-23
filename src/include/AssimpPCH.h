@@ -43,6 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  PCH master include. Every unit in Assimp has to include it.
  */
 
+#include "../contrib/ConvertUTF/ConvertUTF.h"
+
 #ifndef ASSIMP_PCH_INCLUDED
 #define ASSIMP_PCH_INCLUDED
 #define ASSIMP_INTERNAL_BUILD

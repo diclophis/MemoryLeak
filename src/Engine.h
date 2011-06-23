@@ -43,6 +43,7 @@ public:
   void StartSimulation();
   void PauseSimulation();
   void LoadSound(int i);
+  void LoadModel(int i, int s, int e);
 
   static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, bool (const char *), const char *(*)(), void ());
   static void CurrentGamePause();
@@ -68,12 +69,13 @@ public:
   pthread_cond_t m_VsyncCond;
   pthread_cond_t m_AudioSyncCond;
   pthread_mutex_t m_Mutex;
+  pthread_mutex_t m_Mutex2;
   pthread_t m_Thread;
   std::vector<GLuint> *m_Textures;
   std::vector<foo *> *m_ModelFoos;
   std::vector<foo *> *m_LevelFoos;
   std::vector<foo *> *m_SoundFoos;
-  Assimp::Importer *m_Importer;
+  Assimp::Importer m_Importer;
   std::vector<Model *> m_Models;
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;
@@ -89,8 +91,11 @@ public:
   float m_Balance;
   float m_WebViewTimeout;
   float m_AudioTimeout;
-  OOLUA::Script *m_Script;
+  //OOLUA::Script *m_Script;
   pthread_mutex_t m_ScriptMutex;
   pthread_t m_ScriptThread;
   int m_SpriteCount;
+  int m_ModelCount;
+
+
 };

@@ -87,22 +87,12 @@ public class DemoActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
-
-
-
     DemoActivity.mWebViewMessages = new LinkedBlockingQueue<String>();
 
-    //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
 
     final Context myApp = this;
 
-    // Adds Progrss bar Support
-    getWindow().requestFeature(Window.FEATURE_PROGRESS);
-       
-    // Makes Progress bar Visible
-    getWindow().setFeatureInt(Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
- 
     // Sets the Chrome Client, and defines the onProgressChanged
     // This makes the Progress bar be updated.
     final Activity MyActivity = this;
@@ -125,18 +115,6 @@ public class DemoActivity extends Activity {
           }
         }).setCancelable(false).create().show();
         return true;
-      };
-      @Override
-      public void onProgressChanged(WebView view, int progress)  
-      {
-        Log.v(this.toString(), "cant push not" + String.format("prog: %d", progress));
-        //Make the bar disappear after URL is loaded, and changes string to Loading...
-        //MyActivity.setTitle("Loading...");
-        //MyActivity.setProgress(progress * 100); //Make the bar disappear after URL is loaded
-
-        // Return the app name after finish loading
-        //if(progress == 100)
-        //  MyActivity.setTitle(R.string.app_name);
       };
     });
 
@@ -264,19 +242,18 @@ public class DemoActivity extends Activity {
 
   public boolean pushMessageToWebView(String messageToPush) {
     boolean r = false;
-    Log.v(this.toString(), "IN PUSH " + messageToPush);
     int p = mWebView.getProgress();
+    Log.v(this.toString(), "WTFFDFDFDF " + messageToPush + String.format("%d", p));
     if (p == 100) {
-      Log.v(this.toString(), "trying to push!!!!!!!!!!!!!!!!: " + messageToPush);
       final String f = new String(messageToPush);
       runOnUiThread(new Runnable() {
+      //new Thread(new Runnable() {
         public void run() {
+          Log.v(this.toString(), "GONNAA " + f.toString());
           mWebView.loadUrl(f);
         }
       });
       r = true;
-    } else {
-      Log.v(this.toString(), "WTFFDFDFDF " + messageToPush + String.format("%d", p));
     }
 
     messageToPush = null;
@@ -289,13 +266,6 @@ public class DemoActivity extends Activity {
       return "wtfc";
     }
 
-    // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
-    runOnUiThread(new Runnable() {
-      public void run() {
-        final String messagePopBridge = "javascript:(function() { window.javascriptBridge.pushToJava(dequeue()); })()";
-        mWebView.loadUrl(messagePopBridge);
-      }
-    });
 
     if (DemoActivity.mWebViewMessages == null) {
       return "wtf3";
@@ -305,47 +275,58 @@ public class DemoActivity extends Activity {
     final String mLastMessagePopped;
     try {
       if (DemoActivity.mWebViewMessages.isEmpty()) {
-        mLastMessagePopped = "empty";
+        // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
+        runOnUiThread(new Runnable() {
+        //new Thread(new Runnable() {
+          public void run() {
+            final String messagePopBridge = "javascript:(function() { var foo = dequeue(); if (foo) { window.javascriptBridge.pushToJava(foo); } })()";
+            Log.v(this.toString(), messagePopBridge.toString());
+            mWebView.loadUrl(messagePopBridge);
+          }
+        });
+        return "empty_in_java";
       } else {
         mLastMessagePopped = DemoActivity.mWebViewMessages.take();
-      }
-      //Log.v(this.toString(), "got: " + mLastMessagePopped);
-      new Thread(new Runnable() {
-        public void run() {
-          try {
-            URI action = new URI(mLastMessagePopped);
-            String scheme = action.getScheme();
-            String path = action.getPath();
-            String query = action.getQuery();
-            if ("memoryleak".equals(scheme)) {
-              if ("/start".equals(path)) {
-                nativeStartGame(Integer.parseInt(query));
+        //Log.v(this.toString(), mLastMessagePopped.toString());
+        Log.v(this.toString(), "got: " + mLastMessagePopped);
+        new Thread(new Runnable() {
+          public void run() {
+            try {
+              URI action = new URI(mLastMessagePopped);
+              //Log.v(this.toString(), action.toString());
+              String scheme = action.getScheme();
+              String path = action.getPath();
+              String query = action.getQuery();
+              if ("memoryleak".equals(scheme)) {
+                if ("/start".equals(path)) {
+                  nativeStartGame(Integer.parseInt(query));
 
-                //runOnUiThread(new Runnable() {
-                //  public void run() {
-                //    nativeStartGame(Integer.parseInt(query));
-                //  }
-                //});
-              } else if ("/show".equals(path)) {
-                //runOnUiThread(new Runnable() {
-                //  public void run() {
-                //    mWebView.setVisibility(View.VISIBLE);
-                //  }
-                //});
-              } else if ("/hide".equals(path)) {
-                //runOnUiThread(new Runnable() {
-                //  public void run() {
-                //    mWebView.setVisibility(View.INVISIBLE);
-                //  }
-                //});
+                  //runOnUiThread(new Runnable() {
+                  //  public void run() {
+                  //    nativeStartGame(Integer.parseInt(query));
+                  //  }
+                  //});
+                } else if ("/show".equals(path)) {
+                  //runOnUiThread(new Runnable() {
+                  //  public void run() {
+                  //    mWebView.setVisibility(View.VISIBLE);
+                  //  }
+                  //});
+                } else if ("/hide".equals(path)) {
+                  //runOnUiThread(new Runnable() {
+                  //  public void run() {
+                  //    mWebView.setVisibility(View.INVISIBLE);
+                  //  }
+                  //});
+                }
               }
+            } catch(java.net.URISyntaxException wtf) {
+              Log.v(this.toString(), wtf.toString());
             }
-          } catch(java.net.URISyntaxException wtf) {
-            Log.v(this.toString(), wtf.toString());
           }
-        }
-      }).start();
-      return mLastMessagePopped;
+        }).start();
+        return mLastMessagePopped;
+      }
     } catch (java.lang.InterruptedException wtf) {
       Log.v(this.toString(), wtf.toString());
       return "wtfa";
@@ -469,7 +450,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
   @Override
   public void onResume() {
     super.onResume();
-    Log.v(this.toString(), "RESUMe!!!!!!!!!!!!!!!!!!");
+    //Log.v(this.toString(), "RESUMe!!!!!!!!!!!!!!!!!!");
     nativeResume();
   }
 

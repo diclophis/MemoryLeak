@@ -78,7 +78,7 @@ void FindInstancesProcess::SetupProperties(const Importer* pImp)
 
 // ------------------------------------------------------------------------------------------------
 // Compare the bones of two meshes
-bool CompareBones(const aiMesh* orig, const aiMesh* inst)
+inline bool CompareBones(const aiMesh* orig, const aiMesh* inst)
 {
 	for (unsigned int i = 0; i < orig->mNumBones;++i) {
 		aiBone* aha = orig->mBones[i];
@@ -103,7 +103,7 @@ bool CompareBones(const aiMesh* orig, const aiMesh* inst)
 
 // ------------------------------------------------------------------------------------------------
 // Update mesh indices in the node graph
-void UpdateMeshIndices(aiNode* node, unsigned int* lookup)
+inline void UpdateMeshIndices(aiNode* node, unsigned int* lookup)
 {
 	for (unsigned int n = 0; n < node->mNumMeshes;++n)
 		node->mMeshes[n] = lookup[node->mMeshes[n]];

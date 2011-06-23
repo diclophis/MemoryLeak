@@ -26,8 +26,19 @@ Engine::~Engine() {
   if (m_AudioBufferSize > 0) {
     delete m_AudioMixBuffer;
   }
+
+
+  for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
+    delete *i;
+  }
+  m_FooFoos.clear();
+
+  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
+    delete *i;
+  }
+  m_Models.clear();
 	
-  delete m_Importer;
+  //delete m_Importer;
 
   LOGV("dealloc mofo\n");
 }
@@ -36,20 +47,22 @@ Engine::~Engine() {
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
 
   m_SpriteCount = 0;
+  m_ModelCount = 1;
 
 	m_IsSceneBuilt = false;
 	
 	pthread_cond_init(&m_VsyncCond, NULL);
 	pthread_cond_init(&m_AudioSyncCond, NULL);
   pthread_mutex_init(&m_Mutex, NULL);
+  pthread_mutex_init(&m_Mutex2, NULL);
     
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
 	
-	m_Importer = new Assimp::Importer();
+	//m_Importer = new Assimp::Importer();
 	
-	m_Importer->SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
+	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 	
@@ -89,17 +102,19 @@ void *Engine::EnterThread(void *obj) {
 
 
 bool Engine::WaitVsync() {
-  pthread_mutex_lock(&m_Mutex);
-  if (Active()) {
-    pthread_cond_wait(&m_VsyncCond, &m_Mutex);
-  }
-  pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_lock(&m_Mutex);
+  //if (Active()) {
+    pthread_cond_wait(&m_VsyncCond, &m_Mutex2);
+  //}
+
   return true;
+
+  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
 int Engine::RunThread() {
-	Build();
+	//Build();
 	m_IsSceneBuilt = true;
 	double t1, t2, averageWait;
 	timeval tim;
@@ -108,7 +123,10 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	double interp = 1.0;
 
+  StartSimulation();
+
 	while (WaitVsync() && m_GameState > 0) {
+  //LOGV("aaa");
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
     averageWait = t2 - t1;
@@ -117,6 +135,7 @@ int Engine::RunThread() {
     if (m_GameState > 1) {
       LOGV("paused\n");
     } else {
+  //LOGV("bbb");
       for (unsigned int i=0; i<interp; i++) {
         m_DeltaTime = (averageWait / interp);
         m_SimulationTime += (m_DeltaTime);
@@ -126,6 +145,7 @@ int Engine::RunThread() {
         
         pthread_mutex_lock(&m_Mutex);
           if (Active()) {
+  //LOGV("cc");
               m_GameState = Simulate();
           }
         pthread_mutex_unlock(&m_Mutex);
@@ -134,9 +154,11 @@ int Engine::RunThread() {
     }
     if ((m_WebViewTimeout += m_DeltaTime) > 0.25) {
       m_WebViewTimeout = 0.0;
+  //LOGV("ee");
       PopMessageFromWebView();
     }
 	}
+  //LOGV("ff");
 
   bool pushed = false;
   if (m_GameState == 0) {
@@ -168,20 +190,24 @@ void Engine::PauseSimulation() {
 
 
 void Engine::StopSimulation() {
-  pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
-  pthread_mutex_lock(&m_Mutex);
+  //pthread_mutex_lock(&m_Mutex);
   LOGV("stopping simulation\n");
   m_GameState = -1;
-  pthread_mutex_unlock(&m_Mutex);
+    while (m_GameState != -3) {
+        pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
+    }
+  pthread_join(m_CurrentGame->m_Thread, NULL);
+  //pthread_mutex_unlock(&m_Mutex);
   LOGV("done stopping simulation\n");
 }
 
 
 void Engine::StartSimulation() {
-	//pthread_mutex_lock(&m_Mutex);
-  //LOGV("start simulation\n");
+	pthread_mutex_lock(&m_Mutex);
+  LOGV("start simulation\n");
 	m_GameState = 1;
-	//pthread_mutex_unlock(&m_Mutex);
+	pthread_mutex_unlock(&m_Mutex);
+  LOGV("done start simulation\n");
 }
 
 
@@ -237,7 +263,7 @@ void Engine::DrawScreen(float rotation) {
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		//glDisable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_CULL_FACE);
 		//glEnable(GL_LIGHTING);
 		//glDepthFunc(GL_LESS); //redund here
@@ -247,7 +273,7 @@ void Engine::DrawScreen(float rotation) {
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
 			//gluePerspective(30, (float)m_ScreenWidth / (float)m_ScreenHeight, -1.0, 100.0);
-			GLU_PERSPECTIVE(40.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 10000.0);
+			GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 100.0);
       //glOrthof(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 100.0f);
 
 			glMatrixMode(GL_MODELVIEW);
@@ -257,12 +283,12 @@ void Engine::DrawScreen(float rotation) {
 				//gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				RenderModelPhase();
-				Model::ReleaseBuffers();
+				//Model::ReleaseBuffers();
 			}
 			glPopMatrix();
 		//}
 		//glPopMatrix();
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
 		//glDisable(GL_LIGHTING);
 		//glDisable(GL_CULL_FACE);
 		//glEnable(GL_BLEND);
@@ -278,7 +304,7 @@ void Engine::DrawScreen(float rotation) {
 			{
 				glLoadIdentity();
 				RenderSpritePhase();
-				AtlasSprite::ReleaseBuffers();
+				//AtlasSprite::ReleaseBuffers();
 			}
 			glPopMatrix();
 		}
@@ -452,14 +478,13 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   if (m_CurrentGame) {
     m_CurrentGame->StopSimulation();
     LOGV("gonna joinb\n");
-    pthread_join(m_CurrentGame->m_Thread, NULL);
     delete m_CurrentGame;
   }
 
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
   m_CurrentGame->SetWebViewPushAndPop(thePusher, thePopper);
   m_CurrentGame->CreateThread(theCleanup);
-  m_CurrentGame->StartSimulation();
+  //m_CurrentGame->StartSimulation();
 }
 
 
@@ -518,4 +543,15 @@ void Engine::LoadSound(int i) {
     m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
   }
   free(buffer);
+}
+
+
+void Engine::LoadModel(int i, int s, int e) {
+	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality;
+	char path[128];
+	snprintf(path, sizeof(s), "%d", i);
+	m_Importer.ReadFile(path, m_PostProcessFlags);
+	LOGV("%s\n", m_Importer.GetErrorString());
+	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), s, e));
+	m_Importer.FreeScene();	
 }

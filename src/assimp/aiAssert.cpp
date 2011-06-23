@@ -37,6 +37,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------
 */
+
+#include "../contrib/ConvertUTF/ConvertUTF.h"
+
 #include "AssimpPCH.h"
 #include "../include/aiAssert.h"
 #ifdef _WIN32

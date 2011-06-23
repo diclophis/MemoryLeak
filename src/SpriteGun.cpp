@@ -70,8 +70,8 @@ void SpriteGun::Fire() {
 
 void SpriteGun::Simulate(float deltaTime) {	
   m_TimeSinceLastShot += deltaTime;
-  int shot_this_tick = 0;
-  int not_shot_this_tick = 0;
+  //int shot_this_tick = 0;
+  //int not_shot_this_tick = 0;
   for (unsigned int i=0; i<m_NumParticles; i++) {
     m_AtlasSprites[i]->m_Rotation = m_Rotation;
     if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {

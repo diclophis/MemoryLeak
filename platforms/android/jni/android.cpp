@@ -202,16 +202,11 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
 }
 
 void *start_game( void *ptr ) {
-LOGV("1\n");
   int g = (int)ptr;  
   playing_audio = false;
-LOGV("2\n");
   pthread_join(audio_thread, NULL);
-LOGV("3\n");
   Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-LOGV("4\n");
   create_audio_thread();
-LOGV("5\n");
   //g_Vm->DetachCurrentThread();
   //pthread_exit(NULL);
 }
@@ -285,7 +280,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject 
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
-  LOGV("PAUSE@!#$@#$@#$@#$@#$@#");
   Engine::CurrentGamePause();
 }
 
