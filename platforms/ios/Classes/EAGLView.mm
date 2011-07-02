@@ -241,9 +241,7 @@ const char *popMessageFromWebView() {
 		for (UITouch *touch in touches) {			
 			location = [touch locationInView:self];
 			location.y = location.y;
-
-            Engine::CurrentGameHit(location.x, location.y, 0);
-			
+      Engine::CurrentGameHit(location.x, location.y, 0);
 		}
 	}
 }
@@ -560,7 +558,7 @@ static OSStatus playbackCallback(void *inRefCon,
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"showWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width,  webView.frame.size.height)];
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 70.0)]; //webView.frame.size.height
         [UIView commitAnimations];
       } else if ([@"/hide" isEqualToString:path]) {
         [UIView setAnimationBeginsFromCurrentState:YES];
@@ -573,7 +571,7 @@ static OSStatus playbackCallback(void *inRefCon,
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"fullscreenWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 70.0)]; //self.frame.size.height
         [UIView commitAnimations];
       }
     } else if ([@"openfeint" isEqualToString:scheme]) {

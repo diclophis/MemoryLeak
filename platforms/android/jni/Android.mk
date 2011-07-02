@@ -18,10 +18,6 @@ LOCAL_CFLAGS := -DDEBUGBUILD -I../../src -I../../src/include -I../../src/include
 CG_SUBDIRS := \
 . \
 ../../../src \
-../../../src/lua \
-../../../src/oolua \
-../../../src/curl \
-../../../src/ares \
 ../../../src/libmodplug \
 ../../../src/octree \
 ../../../src/assimp \
@@ -30,6 +26,10 @@ CG_SUBDIRS := \
 ../../../src/contrib/unzip \
 ../../../src/contrib/zlib
 
+#../../../src/lua \
+#../../../src/oolua \
+#../../../src/curl \
+#../../../src/ares \
 
 LOCAL_SRC_FILES := $(foreach F, $(CG_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.cpp))))
 LOCAL_SRC_FILES += $(foreach F, $(CG_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))

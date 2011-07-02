@@ -259,6 +259,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
+  //pthread_mutex_lock(&m_Mutex);
 	//pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -273,7 +274,7 @@ void Engine::DrawScreen(float rotation) {
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
 			//gluePerspective(30, (float)m_ScreenWidth / (float)m_ScreenHeight, -1.0, 100.0);
-			GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 100.0);
+			GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 200.0);
       //glOrthof(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 100.0f);
 
 			glMatrixMode(GL_MODELVIEW);
@@ -283,7 +284,7 @@ void Engine::DrawScreen(float rotation) {
 				//gluLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				RenderModelPhase();
-				//Model::ReleaseBuffers();
+				Model::ReleaseBuffers();
 			}
 			glPopMatrix();
 		//}
@@ -304,13 +305,14 @@ void Engine::DrawScreen(float rotation) {
 			{
 				glLoadIdentity();
 				RenderSpritePhase();
-				//AtlasSprite::ReleaseBuffers();
+				AtlasSprite::ReleaseBuffers();
 			}
 			glPopMatrix();
 		}
 		glPopMatrix();
-		pthread_cond_signal(&m_VsyncCond);
+    pthread_cond_signal(&m_VsyncCond);
 	}
+  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
