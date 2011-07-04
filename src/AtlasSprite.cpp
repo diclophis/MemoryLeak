@@ -83,8 +83,15 @@ void AtlasSprite::Render() {
 		return;
 	}
   
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  
+  glEnable(GL_TEXTURE_2D);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
 
+
+  
 	//if (m_Texture != g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		g_lastTexture = m_Texture;
@@ -135,16 +142,17 @@ void AtlasSprite::Render() {
     //if (rebound_texture) {
     //}
     
-		const GLubyte indices [] = {1, 2, 0, 3};
-		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
+		const GLushort indices [] = {1, 2, 0, 3};
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
 
-    glDisable(GL_TEXTURE_2D);
-    glLineWidth(2.0);
-    glColor4f(1.0, 0.0, 0.0, 1.0);
-    glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    glEnable(GL_TEXTURE_2D);
-
+    if (false) {
+      glDisable(GL_TEXTURE_2D);
+      glLineWidth(2.0);
+      glColor4f(1.0, 0.0, 0.0, 1.0);
+      glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
+      glColor4f(1.0, 1.0, 1.0, 1.0);
+      glEnable(GL_TEXTURE_2D);
+    }
 		//ax += m_Sprites[i].dx;
 		//ax += m_Sprites[i].dy;
 		//ay += w;
@@ -152,6 +160,9 @@ void AtlasSprite::Render() {
 	glPopMatrix();
   
   glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_BLEND);
 
 }
 

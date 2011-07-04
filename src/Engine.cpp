@@ -76,7 +76,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
   
-	glLoadIdentity();
+	//glLoadIdentity();
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -253,7 +253,7 @@ void Engine::DrawScreen(float rotation) {
 				glLoadIdentity();
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				RenderModelPhase();
-				Model::ReleaseBuffers();
+				//Model::ReleaseBuffers();
 			}
 			glPopMatrix();
 		}
@@ -267,7 +267,7 @@ void Engine::DrawScreen(float rotation) {
 			{
 				glLoadIdentity();
 				RenderSpritePhase();
-				AtlasSprite::ReleaseBuffers();
+				//AtlasSprite::ReleaseBuffers();
 			}
 			glPopMatrix();
 		}
@@ -283,6 +283,7 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
 

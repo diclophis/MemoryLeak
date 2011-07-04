@@ -92,6 +92,7 @@ int MainMenu::Simulate() {
     m_Models[i]->Simulate(m_DeltaTime);
   }
 
+  /*
   float vf = -fastSinf(m_SimulationTime) * 0.75;
   float vu = 0.0;
   float vs = 0.0;
@@ -102,7 +103,6 @@ int MainMenu::Simulate() {
   float txx = -sin(DEGREES_TO_RADIANS(m_CameraR + 90.0));
   float tzz = cos(DEGREES_TO_RADIANS(m_CameraR + 90.0));
 
-  /*
   m_CameraX += (tx * vf * m_DeltaTime) + (txx * vs * m_DeltaTime);
   m_CameraY += (vu * m_DeltaTime);
   m_CameraZ += (tz * vf * m_DeltaTime) + (tzz * vs * m_DeltaTime);

@@ -20,6 +20,10 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   //terrain = new Terrain(world, m_Textures->at(0));
   //terrain->SetOffsetX(0.0);
 
+  //if (terrain == NULL) {
+    terrain = new Terrain(world, m_Textures->at(0));
+  //}
+  
   hero = new Hero(world, m_Textures->at(1));
 
   //hero->sprite->m_Texture += 2;
@@ -85,17 +89,14 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
-
-  if (terrain == NULL) {
-    terrain = new Terrain(world, m_Textures->at(0));
-  }
-  
   glPushMatrix();
   {
+    glTranslatef(terrain->position.x, 0.0, 0.0);
+
     AtlasSprite::Scrub();
     terrain->Render();
     
-    hero->sprite->m_Texture = terrain->genTexture;
+    //hero->sprite->m_Texture = terrain->genTexture;
     
     AtlasSprite::Scrub();
     hero->Render();
