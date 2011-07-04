@@ -472,9 +472,9 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
   if (games.size() == 0) {
+    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
-    games.push_back(new GameImpl<RadiantFireEightSixOne>);
   }
 
   if (m_CurrentGame) {

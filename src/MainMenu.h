@@ -7,7 +7,6 @@ public:
 	MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
 	~MainMenu();
 	void Hit(float x, float y, int hitState);
-	void Build();
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();

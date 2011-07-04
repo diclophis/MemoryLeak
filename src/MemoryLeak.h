@@ -1,5 +1,7 @@
 // MemoryLeak Engine
 
+#define PTM_RATIO 32 // pixels to metre ratio
+
 #ifdef ANDROID_NDK
 #include <android/log.h>
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "libnav", __VA_ARGS__)
@@ -55,7 +57,11 @@
 
 #ifdef ANDROID_NDK
   #include <GLES/gl.h>
+  #include <GLES/glext.h>
   #define glFrustum glFrustumf
+  //#include <GLES2/gl2.h>
+  //#include <GLES2/gl2ext.h>
+
 #endif
 
 
@@ -125,6 +131,8 @@ extern "C" {
 */
 
 
+#include "Box2D.h"
+
 #include "aiScene.h"
 
 #include "stdarg.h"
@@ -136,5 +144,11 @@ extern "C" {
 #include "ModelOctree.h"
 #include "Game.h"
 #include "FooIO.h"
+#include "RenderTexture.h"
 #include "Engine.h"
+
+#include "MLPoint.h"
+#include "Sky.h"
+#include "Terrain.h"
+#include "Hero.h"
 

@@ -79,18 +79,13 @@ void MainMenu::Hit(float x, float y, int hitState) {
 }
 
 
-void MainMenu::Build() {
-  LOGV("main menu build\n");
-}
-
-
 int MainMenu::Simulate() {
   if (m_RequestedFullscreen) {
     // do nothing really
   } else {
-    //if (PushMessageToWebView(CreateWebViewFunction("fullscreen()"))) {
+    if (PushMessageToWebView(CreateWebViewFunction("fullscreen()"))) {
       m_RequestedFullscreen = true;
-    //}
+    }
   }
 
   for (unsigned int i=0; i<m_ModelCount; i++) {
