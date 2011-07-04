@@ -263,14 +263,15 @@ void Engine::DrawScreen(float rotation) {
 	//pthread_cond_signal(&m_AudioSyncCond);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		//glDisable(GL_BLEND);
+		
+    //glDisable(GL_BLEND);
 		//glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_CULL_FACE);
 		//glEnable(GL_LIGHTING);
 		//glDepthFunc(GL_LESS); //redund here
 		glMatrixMode(GL_PROJECTION);
-		//glPushMatrix();
-		//{
+		glPushMatrix();
+		{
 			glLoadIdentity();
 			//gluPerspective(40.0 + fastAbs(fastSinf(m_SimulationTime * 0.01) * 20.0), (float)m_ScreenWidth / (float)m_ScreenHeight, 0.1, 500.0);		
 			//gluePerspective(30, (float)m_ScreenWidth / (float)m_ScreenHeight, -1.0, 100.0);
@@ -287,7 +288,7 @@ void Engine::DrawScreen(float rotation) {
 				Model::ReleaseBuffers();
 			}
 			glPopMatrix();
-		//}
+		}
 		//glPopMatrix();
 		//glDisable(GL_DEPTH_TEST);
 		//glDisable(GL_LIGHTING);

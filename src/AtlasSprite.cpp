@@ -83,10 +83,10 @@ void AtlasSprite::Render() {
 		return;
 	}
 
-	if (m_Texture != g_lastTexture) {
+	//if (m_Texture != g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		g_lastTexture = m_Texture;
-	}
+	//}
 	
 	//float ax = m_Position[0];
 	//float ay = m_Position[1];
@@ -135,6 +135,13 @@ void AtlasSprite::Render() {
     
 		const GLubyte indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
+
+    glDisable(GL_TEXTURE_2D);
+    glLineWidth(2.0);
+    glColor4f(1.0, 0.0, 0.0, 1.0);
+    glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
 
 		//ax += m_Sprites[i].dx;
 		//ax += m_Sprites[i].dy;
