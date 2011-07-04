@@ -82,6 +82,8 @@ void AtlasSprite::Render() {
 		LOGV("Fail, animation is at least 1 frame\n");
 		return;
 	}
+  
+  glEnableClientState(GL_VERTEX_ARRAY);
 
 	//if (m_Texture != g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
@@ -148,6 +150,9 @@ void AtlasSprite::Render() {
 		//ay += w;
 	}
 	glPopMatrix();
+  
+  glDisableClientState(GL_VERTEX_ARRAY);
+
 }
 
 	void AtlasSprite::SetScale(float x, float y) {
