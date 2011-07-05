@@ -479,4 +479,3 @@ ccColor4F Terrain::GenerateColor() {
   }
   return ccc4FFromccc3B(ccc3(r, g, b));
 }
-

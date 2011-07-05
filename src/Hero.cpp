@@ -36,7 +36,7 @@ void Hero::Sleep() {
 void Hero::Wake() {
   awake = true;
   body->SetActive(true);
-  body->ApplyLinearImpulse(b2Vec2(1,2), body->GetPosition());
+  body->ApplyLinearImpulse(b2Vec2(3, 3), body->GetPosition());
 }
 
 
