@@ -13,21 +13,11 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
 
   m_Touched = false;
 
-
-
-  CreateBox2DWorld();
-
-  //terrain = new Terrain(world, m_Textures->at(0));
-  //terrain->SetOffsetX(0.0);
-
-  //if (terrain == NULL) {
-    terrain = new Terrain(world, m_Textures->at(0));
-  //}
   
+  CreateBox2DWorld();
+  terrain = new Terrain(world, m_Textures->at(0));  
   hero = new Hero(world, m_Textures->at(1));
-
-  //hero->sprite->m_Texture += 2;
-    
+  
 }
 
 
@@ -96,7 +86,7 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     AtlasSprite::Scrub();
     terrain->Render();
     
-    //hero->sprite->m_Texture = terrain->genTexture;
+    hero->sprite->m_Texture = terrain->genTexture;
     
     AtlasSprite::Scrub();
     hero->Render();

@@ -83,8 +83,8 @@ void AtlasSprite::Render() {
 		return;
 	}
   
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  //glEnable(GL_BLEND);
+  //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   
   glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -97,6 +97,11 @@ void AtlasSprite::Render() {
 		g_lastTexture = m_Texture;
 	//}
 	
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  
 	//float ax = m_Position[0];
 	//float ay = m_Position[1];
 
@@ -162,7 +167,7 @@ void AtlasSprite::Render() {
   glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
-  glDisable(GL_BLEND);
+  //glDisable(GL_BLEND);
 
 }
 
