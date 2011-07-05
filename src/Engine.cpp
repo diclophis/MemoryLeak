@@ -59,24 +59,10 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
-	
-	//m_Importer = new Assimp::Importer();
-	
+
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
-
-  /*
-  glMatrixMode(GL_MODELVIEW);
-  glEnable(GL_TEXTURE_2D);
-	glEnable(GL_NORMALIZE);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  */
-  
-	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-  
-	//glLoadIdentity();
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -240,7 +226,9 @@ void Engine::DrawScreen(float rotation) {
 		glPushMatrix();
 		{
 			glLoadIdentity();
-			GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 200.0);
+			//GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 200.0);
+      GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 100.0);
+
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			{
@@ -277,7 +265,7 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
 	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
 

@@ -68,7 +68,7 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u
 	m_IsFalling = false;
 
 	m_Life = 0.0;
-	m_Fps = 30.0;
+	m_Fps = 24.0;
 	m_Theta = 0.0;
 	m_IsAlive = false;
 
@@ -86,9 +86,13 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u
 //foofoos must contain #of frame info, look into replace interp
 //implement addverticestofoofoobuffersatposition,rotation,scale,frame
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
-	
+  glEnable(GL_DEPTH_TEST);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  
 	foofoo *ff = new foofoo;
-	int interp = 6;
+	int interp = 5;
 
 	if (a->mRootNode->mNumMeshes > 1) {
 		//ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);
@@ -188,17 +192,28 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
+  
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+	glDisable(GL_DEPTH_TEST);
+  
 	return ff;
 }
 
 
 void Model::Render() {
-  glEnable(GL_TEXTURE_2D);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
+  
+  //NOTE: this checks the depth buffer
+  //GLint f;
+  //glGetIntegerv(GL_DEPTH_BITS, &f);
+  
   glEnableClientState(GL_VERTEX_ARRAY);
-  glEnable(GL_NORMALIZE);  
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnable(GL_NORMALIZE);
+  
 	glPushMatrix();
 	{
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
@@ -235,11 +250,14 @@ void Model::Render() {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
 		}
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glDrawElements(GL_LINES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
 	}
 	glPopMatrix();
+  
   glDisable(GL_TEXTURE_2D);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_NORMALIZE);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
 }

@@ -149,7 +149,7 @@ const char *popMessageFromWebView() {
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
 	
 	glGenRenderbuffersOES(1, &depthRenderbuffer);
-	//glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
 	glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer);
 	
@@ -296,10 +296,10 @@ const char *popMessageFromWebView() {
   if (animating) {
     [EAGLContext setCurrentContext:context];
     
-    //glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
     Engine::CurrentGameDrawScreen(0);		
 		
-    //glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
     
     //glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0);

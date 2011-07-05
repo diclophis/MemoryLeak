@@ -41,7 +41,7 @@ void Hero::Wake() {
 
 
 void Hero::Dive() {
-  body->ApplyForce(b2Vec2(0,-40),body->GetPosition());
+  body->ApplyForce(b2Vec2(0.5, -40),body->GetPosition());
 }
 
 
