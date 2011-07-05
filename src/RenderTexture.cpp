@@ -13,7 +13,10 @@ RenderTexture::RenderTexture(int width, int height) {
   glEnable(GL_TEXTURE_2D);
   
   glGenTextures(1, &name);
-  assert(name);
+  if (name == 0) {
+    LOGV("WTF!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#\n");
+    assert(name);
+  }
   glBindTexture(GL_TEXTURE_2D, name);
   
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -33,8 +36,6 @@ RenderTexture::RenderTexture(int width, int height) {
   //glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
   //glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, width, height);
   //glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer);
-  
-  
   //glBindRenderbufferOES(GL_RENDERBUFFER_OES, 0);
   
   // associate texture with FBO
@@ -46,10 +47,7 @@ RenderTexture::RenderTexture(int width, int height) {
     LOGV("wtf!@#!@#!@#!@#\n");
   }
 
-  
-
   glDisable(GL_TEXTURE_2D);
-
 
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindFramebufferOES(GL_RENDERBUFFER_OES, oldRBO);

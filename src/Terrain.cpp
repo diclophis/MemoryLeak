@@ -8,6 +8,8 @@
 Terrain::Terrain(b2World *w, GLuint t) {
   LOGV("terrain alloc\n");
 
+  firstTime = false;
+  
   world = w;
 
   screenW = 320;
@@ -27,6 +29,8 @@ Terrain::Terrain(b2World *w, GLuint t) {
   GenerateHillKeyPoints();
   GenerateBorderVertices();
   CreateBox2DBody();
+  
+  SetOffsetX(0.0);
 }
 
 
@@ -127,7 +131,7 @@ void Terrain::CreateBox2DBody() {
 }
 
 void Terrain::SetOffsetX(float x) {
-  static bool firstTime = true;
+  firstTime = true;
   if (offsetX != x || firstTime) {
     offsetX = x;
     firstTime = false;
@@ -166,6 +170,7 @@ void Terrain::ResetHillVertices() {
     //LOGV("building hillVertices array for the visible area\n");
     // vertices for visible area
 
+    LOGV("reset????\n");
     nHillVertices = 0;
     MLPoint p0, p1, pt0, pt1;
     p0 = hillKeyPoints[fromKeyPointI];

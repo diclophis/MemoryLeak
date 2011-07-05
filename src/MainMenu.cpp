@@ -68,10 +68,6 @@ MainMenu::~MainMenu() {
 
 void MainMenu::Hit(float x, float y, int hitState) {
   LOGV("main menu hit\n");
-}
-
-
-int MainMenu::Simulate() {
   if (m_RequestedFullscreen) {
     // do nothing really
   } else {
@@ -79,7 +75,11 @@ int MainMenu::Simulate() {
       m_RequestedFullscreen = true;
     }
   }
+}
 
+
+int MainMenu::Simulate() {
+  
   for (unsigned int i=0; i<m_ModelCount; i++) {
     m_Models[i]->Simulate(m_DeltaTime);
   }

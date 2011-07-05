@@ -20,6 +20,7 @@
 
 static std::vector<Game *> games;
 static Engine *m_CurrentGame;
+static pthread_mutex_t m_GameSwitchLock;
 
 
 Engine::~Engine() {
@@ -93,7 +94,6 @@ bool Engine::WaitVsync() {
 
 
 int Engine::RunThread() {
-	m_IsSceneBuilt = true;
 	double t1, t2, averageWait;
 	timeval tim;
 	gettimeofday(&tim, NULL);
@@ -102,6 +102,8 @@ int Engine::RunThread() {
 	double interp = 1.0;
 
   StartSimulation();
+
+  m_IsSceneBuilt = true;
 
 	while (WaitVsync() && m_GameState > 0) {
     gettimeofday(&tim, NULL);
@@ -220,6 +222,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
+  pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
@@ -256,6 +259,7 @@ void Engine::DrawScreen(float rotation) {
 		glPopMatrix();
     pthread_cond_signal(&m_VsyncCond);
 	}
+  pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -396,12 +400,16 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
+
+
   if (games.size() == 0) {
     games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SuperStarShooter>);
+    pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
 
+  pthread_mutex_lock(&m_GameSwitchLock);
   if (m_CurrentGame) {
     m_CurrentGame->StopSimulation();
     LOGV("gonna joinb\n");
@@ -411,6 +419,8 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
   m_CurrentGame->SetWebViewPushAndPop(thePusher, thePopper);
   m_CurrentGame->CreateThread(theCleanup);
+  pthread_mutex_unlock(&m_GameSwitchLock);
+
 }
 
 

@@ -50,6 +50,7 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
 
 
 int RadiantFireEightSixOne::Simulate() {
+  /*
   if (m_RequestedFullscreen) {
     // do nothing really
   } else {
@@ -57,6 +58,7 @@ int RadiantFireEightSixOne::Simulate() {
       m_RequestedFullscreen = true;
     }
   }
+  */
   
   if (!hero->awake) {
     hero->Wake();
