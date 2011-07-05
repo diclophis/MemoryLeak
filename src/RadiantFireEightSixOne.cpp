@@ -11,6 +11,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   m_IsPushingAudio = true;
   m_Zoom = 1.0;
 
+  m_RequestedFullscreen = false;
   m_Touched = false;
 
   
@@ -49,14 +50,20 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
 
 
 int RadiantFireEightSixOne::Simulate() {
-
-  if (m_Touched) {
-    if (!hero->awake) {
-      hero->Wake();
-      m_Touched = false;
-    } else {
-      hero->Dive();
+  if (m_RequestedFullscreen) {
+    // do nothing really
+  } else {
+    if (PushMessageToWebView(CreateWebViewFunction("fullscreen()"))) {
+      m_RequestedFullscreen = true;
     }
+  }
+  
+  if (!hero->awake) {
+    hero->Wake();
+  }
+  
+  if (m_Touched) {
+    hero->Dive();
   }
 
   hero->LimitVelocity();

@@ -101,14 +101,8 @@ void *Engine::EnterThread(void *obj) {
 
 
 bool Engine::WaitVsync() {
-  //pthread_mutex_lock(&m_Mutex);
-  //if (Active()) {
-    pthread_cond_wait(&m_VsyncCond, &m_Mutex2);
-  //}
-
+  pthread_cond_wait(&m_VsyncCond, &m_Mutex2);
   return true;
-
-  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -253,7 +247,7 @@ void Engine::DrawScreen(float rotation) {
 				glLoadIdentity();
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
 				RenderModelPhase();
-				//Model::ReleaseBuffers();
+				Model::ReleaseBuffers();
 			}
 			glPopMatrix();
 		}
@@ -415,8 +409,8 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
   if (games.size() == 0) {
-    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<MainMenu>);
+    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SuperStarShooter>);
   }
 

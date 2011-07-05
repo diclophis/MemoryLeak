@@ -21,5 +21,6 @@ public:
   void CreateBox2DWorld();
 
   bool m_Touched;
+  bool m_RequestedFullscreen;
 
 };
