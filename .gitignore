@@ -8,5 +8,7 @@ assets/models/.DS_Store
 assets/textures/.DS_Store
 platforms/ios/MemoryLeak.xcodeproj/*.pbxuser
 platforms/ios/MemoryLeak.xcodeproj/*.perspectivev3
+platforms/ios/MemoryLeak.xcodeproj/project.xcworkspace
+platforms/ios/MemoryLeak.xcodeproj/xcuserdata
 private
 local.properties
