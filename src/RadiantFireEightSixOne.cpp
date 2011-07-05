@@ -53,7 +53,6 @@ int RadiantFireEightSixOne::Simulate() {
   if (m_Touched) {
     if (!hero->awake) {
       hero->Wake();
-      terrain->GenerateStripesTexture();
       m_Touched = false;
     } else {
       hero->Dive();
@@ -94,5 +93,7 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
   }
   glPopMatrix();
   
-  //terrain->GenerateStripesTexture();
+  if (m_Touched) {
+    terrain->GenerateStripesTexture();
+  }
 }
