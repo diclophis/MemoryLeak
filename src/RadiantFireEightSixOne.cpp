@@ -53,6 +53,7 @@ int RadiantFireEightSixOne::Simulate() {
   if (m_Touched) {
     if (!hero->awake) {
       hero->Wake();
+      terrain->GenerateStripesTexture();
       m_Touched = false;
     } else {
       hero->Dive();
