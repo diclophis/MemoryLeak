@@ -81,19 +81,17 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 void RadiantFireEightSixOne::RenderSpritePhase() {
   glPushMatrix();
   {
-    glTranslatef(terrain->position.x, 0.0, 0.0);
+    glTranslatef(terrain->position.x, -64.0, 0.0);
 
     AtlasSprite::Scrub();
     terrain->Render();
     
-    hero->sprite->m_Texture = terrain->genTexture;
-    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     AtlasSprite::Scrub();
     hero->Render();
+    glDisable(GL_BLEND);
   }
   glPopMatrix();
   
-  if (m_Touched) {
-    terrain->GenerateStripesTexture();
-  }
 }

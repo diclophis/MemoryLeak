@@ -83,15 +83,10 @@ void AtlasSprite::Render() {
 		return;
 	}
   
-  //glEnable(GL_BLEND);
-  //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  
   glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
 
-
-  
 	//if (m_Texture != g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		g_lastTexture = m_Texture;
@@ -101,19 +96,12 @@ void AtlasSprite::Render() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  
-	//float ax = m_Position[0];
-	//float ay = m_Position[1];
 
 	glPushMatrix();
 	{
 		glTranslatef(m_Position[0], m_Position[1], 0.0);
-    //f (m_Rotation != g_lastRotation) {
-      glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-      g_lastRotation = m_Rotation;
-    //}
-		//glScalef(m_Scale[0], m_Scale[1], 1.0);
-		//int i = m_Frames[m_Frame % m_AnimationLength];
+    glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+    g_lastRotation = m_Rotation;
 		int i = (m_Frame % m_AnimationLength);
     GLshort w = m_Sprites[i].dx;
     GLshort h = m_Sprites[i].dy;
@@ -121,9 +109,7 @@ void AtlasSprite::Render() {
     GLfloat ty = m_Sprites[i].ty1;
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
     GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
-
     if (i != g_lastFrame) {
-
       GLshort vertices[8] = {
         (-w / 2.0), (-h / 2.0),
         (w / 2.0), (-h / 2.0),
@@ -143,9 +129,6 @@ void AtlasSprite::Render() {
 
       g_lastFrame = i;
     }
-
-    //if (rebound_texture) {
-    //}
     
 		const GLushort indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
@@ -158,17 +141,12 @@ void AtlasSprite::Render() {
       glColor4f(1.0, 1.0, 1.0, 1.0);
       glEnable(GL_TEXTURE_2D);
     }
-		//ax += m_Sprites[i].dx;
-		//ax += m_Sprites[i].dy;
-		//ay += w;
 	}
 	glPopMatrix();
   
   glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
-  //glDisable(GL_BLEND);
-
 }
 
 	void AtlasSprite::SetScale(float x, float y) {
