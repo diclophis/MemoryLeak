@@ -25,8 +25,7 @@ enum colliders {
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LOGV("super star shooter alloc\n");
 
-  //float x = 0.0;
-  //float y = 0.0;
+
   int xx = 0;
   int yy = 0;
 
@@ -46,6 +45,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridPositions = new int[m_GridCount * 2];
   m_GridStartIndex = m_SpriteCount;
 
+  LOGV("super star shooter alloc 123\n");
+
   for (unsigned int i=0; i<m_GridCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->Build(0);
@@ -59,6 +60,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_SpriteCount++;
   }
   m_GridStopIndex = m_SpriteCount;
+
+  LOGV("super star shooter alloc 456\n");
 
 }
 
@@ -93,10 +96,13 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
 
 void SuperStarShooter::RenderModelPhase() {
+  LOGV("super star shooter render model\n");
 }
 
 
 void SuperStarShooter::RenderSpritePhase() {
+  LOGV("super star shooter render sprite\n");
+
   glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
   
   AtlasSprite::Scrub();
@@ -109,9 +115,13 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
+  LOGV("super star shooter sim 123\n");
+
   //PushMessageToWebView(CreateWebViewFunction("hide()"));
 
   for (unsigned int i=0; i<m_SpriteCount; i++) {
+    LOGV("super star shooter sim 456\n");
+
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
       int annotate_index = 0;
@@ -129,6 +139,8 @@ int SuperStarShooter::Simulate() {
       m_AtlasSprites[i]->m_Frame = -annotate_index;
     }
   }
+
+  LOGV("super star shooter sim 789\n");
 
   return 1;
 }

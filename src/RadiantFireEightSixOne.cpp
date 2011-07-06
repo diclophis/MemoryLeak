@@ -9,7 +9,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   LOGV("alloc RadiantFire\n");
   LoadSound(2);
   m_IsPushingAudio = true;
-  m_Zoom = 1.0;
+  m_Zoom = 2.0;
 
   m_RequestedFullscreen = false;
   m_Touched = false;

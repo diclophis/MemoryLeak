@@ -12,7 +12,7 @@ TARGET_ARCH_ABI=arm
 LOCAL_ARM_MODE=arm
 
 
-LOCAL_CFLAGS := -DDEBUGBUILD -I../../src -I../../src/include -I../../src/Box2D -I../../src/include/curl -I../../src/include/ares -I../../src/assimp/BoostWorkaround -DANDROID -DANDROID_NDK -DEV_STANDALONE=1 -DEV_USE_SELECT=1 -DEV_SELECT_USE_FD_SET -D_iPhoneVersion=1 -I../../src/octree -I../../src/include/libmodplug -DSMALLER_READS -DHAVE_SETENV -DMODPLUG_TRACKER -fexceptions -I../../src/lua -I../../src/oolua
+LOCAL_CFLAGS := -DDEBUGBUILD -I../../src -I../../src/include -I../../src/Box2D -I../../src/assimp/BoostWorkaround -DANDROID -DANDROID_NDK -DEV_STANDALONE=1 -DEV_USE_SELECT=1 -DEV_SELECT_USE_FD_SET -D_iPhoneVersion=1 -I../../src/octree -I../../src/include/libmodplug -DSMALLER_READS -DHAVE_SETENV -DMODPLUG_TRACKER -fexceptions
 
 
 CG_SUBDIRS := \

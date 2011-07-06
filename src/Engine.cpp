@@ -222,7 +222,8 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
-  pthread_mutex_lock(&m_Mutex);
+LOGV("draw\n");
+  //pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
@@ -259,7 +260,7 @@ void Engine::DrawScreen(float rotation) {
 		glPopMatrix();
     pthread_cond_signal(&m_VsyncCond);
 	}
-  pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -403,8 +404,8 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
 
 
   if (games.size() == 0) {
-    games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
+    games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
@@ -416,31 +417,52 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
     delete m_CurrentGame;
   }
 
+  LOGV("Create AA\n");
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
+  LOGV("Create BB\n");
   m_CurrentGame->SetWebViewPushAndPop(thePusher, thePopper);
+  LOGV("Create CC\n");
   m_CurrentGame->CreateThread(theCleanup);
+  LOGV("Create DD\n");
+  
   pthread_mutex_unlock(&m_GameSwitchLock);
 
 }
 
 
 void Engine::CurrentGamePause() {
-  m_CurrentGame->PauseSimulation();
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->PauseSimulation();
+  } else {
+    LOGV("wtsdfasdasdasdasdasdasd\n\n");
+  }
 }
 
 
 void Engine::CurrentGameHit(float x, float y, int hitState) {
-  m_CurrentGame->Hit(x, y, hitState);
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->Hit(x, y, hitState);
+  } else {
+    LOGV("\n\nFOOOOOOOOOOOOOOOOO\n\n\n");
+  }
 }
 
 
 void Engine::CurrentGameResizeScreen(int width, int height) {
-  m_CurrentGame->ResizeScreen(width, height);
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->ResizeScreen(width, height);
+  } else {
+    LOGV("\n really??\n");
+  }
 }
 
 
 void Engine::CurrentGameDrawScreen(float rotation) {
-  m_CurrentGame->DrawScreen(rotation);
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->DrawScreen(rotation);
+  } else {
+    LOGV("foooo man chuuu\n");
+  }
 }
 
 
@@ -461,7 +483,11 @@ bool Engine::CurrentGame() {
 
 
 void Engine::CurrentGameStart() {
-  m_CurrentGame->StartSimulation();
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->StartSimulation();
+  } else {
+    LOGV("WTF!!!!!!!\n");
+  }
 }
 
 

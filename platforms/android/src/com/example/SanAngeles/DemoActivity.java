@@ -54,12 +54,126 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 
+class DemoRenderer implements GLSurfaceView.Renderer {
+
+  Context mContext;
+
+  public DemoRenderer(Context context) {
+    mContext = context;
+  }
+
+  public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    try {
+      AssetManager am = mContext.getAssets();
+      String path = "textures";
+      String[] texture_file_names = am.list(path);
+      int[] textures = new int[texture_file_names.length];
+      int[] tmp_tex = new int[texture_file_names.length];
+      gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
+      int glError;
+      if ((glError = gl.glGetError()) != 0) {
+        Log.v(this.toString(), "unable to glGenTextures");
+      }
+      textures = tmp_tex; 
+      for (int i=0; i<texture_file_names.length; i++) {
+        InputStream stream = am.open(path + "/" + texture_file_names[i]);
+        Bitmap bitmap = BitmapFactory.decodeStream(stream);
+        int t = textures[i];
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, t);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+        if ((glError = gl.glGetError()) != 0) {
+          Log.v(this.toString(), "unable to GLUtils.texImage2D");
+        }
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
+      }
+      nativeOnSurfaceCreated(texture_file_names.length, textures);
+      } catch(IOException e) {
+        Log.v(this.toString(), e.toString());
+      }
+    }
+
+    public void onSurfaceChanged(GL10 gl, int w, int h) {
+        nativeResize(w, h);
+    }
+
+    public void onDrawFrame(GL10 gl) {
+        nativeRender();
+    }
+
+
+    private native void nativeOnSurfaceCreated(int count, int[] textures);
+    private static native void nativeResize(int w, int h);
+    private static native void nativeRender();
+}
+
+class DemoGLSurfaceView extends GLSurfaceView {
+
+  private DemoRenderer mRenderer;
+
+  public DemoGLSurfaceView(Context context) {
+    super(context);
+    mRenderer = new DemoRenderer(context);
+    setRenderer(mRenderer);
+  }
+
+  @Override
+  public boolean onTouchEvent(final MotionEvent event) {
+    queueEvent(new Runnable() {
+      public void run() {
+        float x = event.getX();
+        float y = event.getY();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+          nativeTouch(x, y, 0);
+        }
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+          nativeTouch(x, y, 1);
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+          nativeTouch(x, y, 2);
+        }
+      }
+    });
+    return true;
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    nativePause();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    //Log.v(this.toString(), "RESUMe!!!!!!!!!!!!!!!!!!");
+    nativeResume();
+  }
+
+    public void onFoo(int i) {
+        nativeStartGame(i);
+    }
+
+
+  private static native void nativePause();
+  private static native void nativeResume();
+  private static native void nativeTouch(float x, float y, int hitState);
+  private static native void nativeStartGame(int i);
+}
+
+
+class Global {
+  public static DemoGLSurfaceView mFooWtf;
+}
+
 
 public class DemoActivity extends Activity {
 
 
   protected static AudioTrack at1;
-	private GLSurfaceView mGLView;
+	//private GLSurfaceView mGLView;
+	private DemoGLSurfaceView mGLView;
   private WebView mWebView;
   private JavascriptBridge mJavascriptBridge;
   public static BlockingQueue<String> mWebViewMessages;
@@ -98,6 +212,7 @@ public class DemoActivity extends Activity {
     final Activity MyActivity = this;
 
 		mGLView = new DemoGLSurfaceView(this);
+    Global.mFooWtf = mGLView;
 		setContentView(mGLView);
 
     mWebView = new WebView(this);
@@ -243,13 +358,13 @@ public class DemoActivity extends Activity {
   public boolean pushMessageToWebView(String messageToPush) {
     boolean r = false;
     int p = mWebView.getProgress();
-    Log.v(this.toString(), "WTFFDFDFDF " + messageToPush + String.format("%d", p));
+    //Log.v(this.toString(), "WTFFDFDFDF " + messageToPush + String.format("%d", p));
     if (p == 100) {
       final String f = new String(messageToPush);
       runOnUiThread(new Runnable() {
       //new Thread(new Runnable() {
         public void run() {
-          Log.v(this.toString(), "GONNAA " + f.toString());
+          //Log.v(this.toString(), "GONNAA " + f.toString());
           mWebView.loadUrl(f);
         }
       });
@@ -280,7 +395,7 @@ public class DemoActivity extends Activity {
         //new Thread(new Runnable() {
           public void run() {
             final String messagePopBridge = "javascript:(function() { var foo = dequeue(); if (foo) { window.javascriptBridge.pushToJava(foo); } })()";
-            Log.v(this.toString(), messagePopBridge.toString());
+            //Log.v(this.toString(), messagePopBridge.toString());
             mWebView.loadUrl(messagePopBridge);
           }
         });
@@ -288,7 +403,7 @@ public class DemoActivity extends Activity {
       } else {
         mLastMessagePopped = DemoActivity.mWebViewMessages.take();
         //Log.v(this.toString(), mLastMessagePopped.toString());
-        Log.v(this.toString(), "got: " + mLastMessagePopped);
+        //Log.v(this.toString(), "got: " + mLastMessagePopped);
         new Thread(new Runnable() {
           public void run() {
             try {
@@ -299,7 +414,8 @@ public class DemoActivity extends Activity {
               String query = action.getQuery();
               if ("memoryleak".equals(scheme)) {
                 if ("/start".equals(path)) {
-                  nativeStartGame(Integer.parseInt(query));
+                  //nativeStartGame(Integer.parseInt(query));
+                  Global.mFooWtf.onFoo(Integer.parseInt(query));
 
                   //runOnUiThread(new Runnable() {
                   //  public void run() {
@@ -339,7 +455,7 @@ public class DemoActivity extends Activity {
 
 	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
   private static native void setMinBuffer(int size);
-  private static native void nativeStartGame(int i);
+  //private static native void nativeStartGame(int i);
 
 @Override
   protected void onPause() {
@@ -359,105 +475,6 @@ public class DemoActivity extends Activity {
 }
 
 
-class DemoRenderer implements GLSurfaceView.Renderer {
-
-  Context mContext;
-
-  public DemoRenderer(Context context) {
-    mContext = context;
-  }
-
-  public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-    try {
-      AssetManager am = mContext.getAssets();
-      String path = "textures";
-      String[] texture_file_names = am.list(path);
-      int[] textures = new int[texture_file_names.length];
-      int[] tmp_tex = new int[texture_file_names.length];
-      gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
-      int glError;
-      if ((glError = gl.glGetError()) != 0) {
-        Log.v(this.toString(), "unable to glGenTextures");
-      }
-      textures = tmp_tex; 
-      for (int i=0; i<texture_file_names.length; i++) {
-        InputStream stream = am.open(path + "/" + texture_file_names[i]);
-        Bitmap bitmap = BitmapFactory.decodeStream(stream);
-        int t = textures[i];
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, t);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-        if ((glError = gl.glGetError()) != 0) {
-          Log.v(this.toString(), "unable to GLUtils.texImage2D");
-        }
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
-      }
-      nativeOnSurfaceCreated(texture_file_names.length, textures);
-      } catch(IOException e) {
-        Log.v(this.toString(), e.toString());
-      }
-    }
-
-    public void onSurfaceChanged(GL10 gl, int w, int h) {
-        nativeResize(w, h);
-    }
-
-    public void onDrawFrame(GL10 gl) {
-        nativeRender();
-    }
-
-    private native void nativeOnSurfaceCreated(int count, int[] textures);
-    private static native void nativeResize(int w, int h);
-    private static native void nativeRender();
-}
-class DemoGLSurfaceView extends GLSurfaceView {
-
-  private DemoRenderer mRenderer;
-
-  public DemoGLSurfaceView(Context context) {
-    super(context);
-    mRenderer = new DemoRenderer(context);
-    setRenderer(mRenderer);
-  }
-
-  @Override
-  public boolean onTouchEvent(final MotionEvent event) {
-    queueEvent(new Runnable() {
-      public void run() {
-        float x = event.getX();
-        float y = event.getY();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-          nativeTouch(x, y, 0);
-        }
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-          nativeTouch(x, y, 1);
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-          nativeTouch(x, y, 2);
-        }
-      }
-    });
-    return true;
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    nativePause();
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    //Log.v(this.toString(), "RESUMe!!!!!!!!!!!!!!!!!!");
-    nativeResume();
-  }
-
-  private static native void nativePause();
-  private static native void nativeResume();
-  private static native void nativeTouch(float x, float y, int hitState);
-}
 
 
 class JavascriptBridge {

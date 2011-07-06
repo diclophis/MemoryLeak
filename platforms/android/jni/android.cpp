@@ -64,7 +64,9 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 
 
 void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(JNIEnv * env, jclass envClass, int size);
-void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g);
+
+//void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g);
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g);
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr);
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
@@ -102,7 +104,7 @@ void *pump_audio(void *) {
     g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / sizeof(short));
   }
 
-  LOGV("exiting AUDIO THREAD!!!!!!!\n");
+  //LOGV("exiting AUDIO THREAD!!!!!!!\n");
   g_Vm->DetachCurrentThread();
   pthread_exit(NULL);
 }
@@ -211,7 +213,8 @@ void *start_game( void *ptr ) {
   //pthread_exit(NULL);
 }
 
-void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
+//void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
+void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
   pthread_t thread1;
   int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
 }

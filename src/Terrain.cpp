@@ -145,8 +145,8 @@ void Terrain::ResetHillVertices() {
   static int prevToKeyPointI = -1;
 
   // key points interval for drawing
-  float leftSideX = offsetX - screenW; // / 8 / 1; //scale;
-  float rightSideX = offsetX + screenW; // * 7 / 8 / 1; //scale;
+  float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
+  float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
 
   //LOGV("building %f %f\n", leftSideX, rightSideX);
 
@@ -169,8 +169,8 @@ void Terrain::ResetHillVertices() {
   if (prevFromKeyPointI != fromKeyPointI || prevToKeyPointI != toKeyPointI) {
     //LOGV("building hillVertices array for the visible area\n");
     // vertices for visible area
+    //LOGV("reset????\n");
 
-    LOGV("reset????\n");
     nHillVertices = 0;
     MLPoint p0, p1, pt0, pt1;
     p0 = hillKeyPoints[fromKeyPointI];
