@@ -404,8 +404,8 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
 
 
   if (games.size() == 0) {
-    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<MainMenu>);
+    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SuperStarShooter>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
