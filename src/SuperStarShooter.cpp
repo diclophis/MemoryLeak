@@ -115,12 +115,12 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
-  LOGV("super star shooter sim 123\n");
+  //LOGV("super star shooter sim 123\n");
 
   //PushMessageToWebView(CreateWebViewFunction("hide()"));
 
   for (unsigned int i=0; i<m_SpriteCount; i++) {
-    LOGV("super star shooter sim 456\n");
+    //LOGV("super star shooter sim 456\n");
 
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
@@ -140,7 +140,7 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  LOGV("super star shooter sim 789\n");
+  //LOGV("super star shooter sim 789\n");
 
   return 1;
 }

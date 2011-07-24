@@ -64,10 +64,7 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 
 
 void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(JNIEnv * env, jclass envClass, int size);
-
-//void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g);
-
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr);
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv*  env);
@@ -104,9 +101,8 @@ void *pump_audio(void *) {
     g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / sizeof(short));
   }
 
-  //LOGV("exiting AUDIO THREAD!!!!!!!\n");
   g_Vm->DetachCurrentThread();
-  pthread_exit(NULL);
+//  pthread_exit(NULL);
 }
 
 
@@ -203,21 +199,22 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
   min_buffer = size;
 }
 
+
 void *start_game( void *ptr ) {
   int g = (int)ptr;  
   playing_audio = false;
-  pthread_join(audio_thread, NULL);
+//  pthread_join(audio_thread, NULL);
   Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-  create_audio_thread();
-  //g_Vm->DetachCurrentThread();
-  //pthread_exit(NULL);
+//  create_audio_thread();
 }
 
-//void Java_com_example_SanAngeles_DemoActivity_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
+
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-  pthread_t thread1;
-  int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
+  //pthread_t thread1;
+  //int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
+  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 }
+
 
 int Java_com_example_SanAngeles_DemoActivity_initNative(
   JNIEnv * env, jobject thiz,
@@ -271,8 +268,9 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   if (Engine::CurrentGame()) {
     Engine::CurrentGameStart();
   } else {
+    LOGV("\n\nNOT SUPPORTED!!!!!!!!!!!!!!!!!!!!\n\n");
     Engine::Start(0, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-    pthread_create(&audio_thread, 0, pump_audio, NULL);
+    //pthread_create(&audio_thread, 0, pump_audio, NULL);
   }
 }
 

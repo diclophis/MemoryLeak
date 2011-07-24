@@ -556,6 +556,7 @@ static OSStatus playbackCallback(void *inRefCon,
     if ([@"memoryleak" isEqualToString:scheme]) {
       if ([@"/start" isEqualToString:path]) {
         NSInteger i = [query intValue];
+        //GL CONTEXT VALID!!!!
         Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
       } else if ([@"/exit" isEqualToString:path]) {
         LOGV("exit\n");

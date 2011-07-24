@@ -48,6 +48,7 @@
 		[webView setMediaPlaybackRequiresUserAction:NO];
 		[webView loadHTMLString:[NSString stringWithContentsOfURL:[NSURL URLWithString:@"http://radiant-fire-861.heroku.com/index.html"] encoding:NSUTF8StringEncoding error:nil] baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
 		[glView build:webView];
+    //GL CONTEXT VALID!!
 		[glView startGame:0];
 		[glView startAnimation];
 	}

@@ -2,6 +2,7 @@
 
 package com.example.SanAngeles;
 
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.app.Activity;
@@ -54,6 +55,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 
+
 class DemoRenderer implements GLSurfaceView.Renderer {
 
   Context mContext;
@@ -74,6 +76,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
       if ((glError = gl.glGetError()) != 0) {
         Log.v(this.toString(), "unable to glGenTextures");
       }
+
       textures = tmp_tex; 
       for (int i=0; i<texture_file_names.length; i++) {
         InputStream stream = am.open(path + "/" + texture_file_names[i]);
@@ -89,28 +92,29 @@ class DemoRenderer implements GLSurfaceView.Renderer {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
       }
       nativeOnSurfaceCreated(texture_file_names.length, textures);
-      } catch(IOException e) {
-        Log.v(this.toString(), e.toString());
-      }
+    } catch(IOException e) {
+      Log.v(this.toString(), e.toString());
     }
+  }
 
-    public void onSurfaceChanged(GL10 gl, int w, int h) {
-        nativeResize(w, h);
-    }
+  public void onSurfaceChanged(GL10 gl, int w, int h) {
+    nativeResize(w, h);
+  }
 
-    public void onDrawFrame(GL10 gl) {
-        nativeRender();
-    }
+  public void onDrawFrame(GL10 gl) {
+    nativeRender();
+  }
 
-
-    private native void nativeOnSurfaceCreated(int count, int[] textures);
-    private static native void nativeResize(int w, int h);
-    private static native void nativeRender();
+  private native void nativeOnSurfaceCreated(int count, int[] textures);
+  private static native void nativeResize(int w, int h);
+  private static native void nativeRender();
 }
 
 class DemoGLSurfaceView extends GLSurfaceView {
 
+
   private DemoRenderer mRenderer;
+
 
   public DemoGLSurfaceView(Context context) {
     super(context);
@@ -118,10 +122,11 @@ class DemoGLSurfaceView extends GLSurfaceView {
     setRenderer(mRenderer);
   }
 
+
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    queueEvent(new Runnable() {
-      public void run() {
+//    queueEvent(new Runnable() {
+//      public void run() {
         float x = event.getX();
         float y = event.getY();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -133,10 +138,11 @@ class DemoGLSurfaceView extends GLSurfaceView {
         if (event.getAction() == MotionEvent.ACTION_UP) {
           nativeTouch(x, y, 2);
         }
-      }
-    });
+//      }
+//    });
     return true;
   }
+
 
   @Override
   public void onPause() {
@@ -144,16 +150,17 @@ class DemoGLSurfaceView extends GLSurfaceView {
     nativePause();
   }
 
+
   @Override
   public void onResume() {
     super.onResume();
-    //Log.v(this.toString(), "RESUMe!!!!!!!!!!!!!!!!!!");
     nativeResume();
   }
 
-    public void onFoo(int i) {
-        nativeStartGame(i);
-    }
+
+  public void onFoo(int i) {
+    nativeStartGame(i);
+  }
 
 
   private static native void nativePause();
@@ -172,7 +179,6 @@ public class DemoActivity extends Activity {
 
 
   protected static AudioTrack at1;
-	//private GLSurfaceView mGLView;
 	private DemoGLSurfaceView mGLView;
   private WebView mWebView;
   private JavascriptBridge mJavascriptBridge;
@@ -197,6 +203,7 @@ public class DemoActivity extends Activity {
     return content;
   }
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -207,8 +214,6 @@ public class DemoActivity extends Activity {
 
     final Context myApp = this;
 
-    // Sets the Chrome Client, and defines the onProgressChanged
-    // This makes the Progress bar be updated.
     final Activity MyActivity = this;
 
 		mGLView = new DemoGLSurfaceView(this);
@@ -219,7 +224,6 @@ public class DemoActivity extends Activity {
     mJavascriptBridge = new JavascriptBridge(this);
     mWebView.addJavascriptInterface(mJavascriptBridge, "javascriptBridge");
     mWebView.setBackgroundColor(Color.argb(0,0,0,0));
-
 
     mWebView.setWebChromeClient(new WebChromeClient() {  
       @Override  
@@ -238,7 +242,6 @@ public class DemoActivity extends Activity {
         Log.v(this.toString(), "WTF!@#!@#" + description);
       }
     });
-
 
     WebSettings webSettings = mWebView.getSettings();
     webSettings.setLoadsImagesAutomatically(true);
@@ -355,19 +358,17 @@ public class DemoActivity extends Activity {
     }
 	}
 
+
   public boolean pushMessageToWebView(String messageToPush) {
     boolean r = false;
     int p = mWebView.getProgress();
-    //Log.v(this.toString(), "WTFFDFDFDF " + messageToPush + String.format("%d", p));
     if (p == 100) {
       final String f = new String(messageToPush);
-      runOnUiThread(new Runnable() {
-      //new Thread(new Runnable() {
-        public void run() {
-          //Log.v(this.toString(), "GONNAA " + f.toString());
+//      runOnUiThread(new Runnable() {
+//        public void run() {
           mWebView.loadUrl(f);
-        }
-      });
+//        }
+//      });
       r = true;
     }
 
@@ -375,37 +376,32 @@ public class DemoActivity extends Activity {
     return r;
   }
 
+
   public String popMessageFromWebView() {
     // Popped messages are JSON structures that indicate status of operations, etc
     if (mWebView.getProgress() < 100) {
       return "wtfc";
     }
 
-
     if (DemoActivity.mWebViewMessages == null) {
       return "wtf3";
     }
 
-
     final String mLastMessagePopped;
+
     try {
       if (DemoActivity.mWebViewMessages.isEmpty()) {
-        // After invoking this, mLastMessagePumped, should contain 'some message from queue.pop'
-        runOnUiThread(new Runnable() {
-        //new Thread(new Runnable() {
-          public void run() {
+//        runOnUiThread(new Runnable() {
+//          public void run() {
             final String messagePopBridge = "javascript:(function() { var foo = dequeue(); if (foo) { window.javascriptBridge.pushToJava(foo); } })()";
-            //Log.v(this.toString(), messagePopBridge.toString());
             mWebView.loadUrl(messagePopBridge);
-          }
-        });
+//          }
+//        });
         return "empty_in_java";
       } else {
         mLastMessagePopped = DemoActivity.mWebViewMessages.take();
-        //Log.v(this.toString(), mLastMessagePopped.toString());
-        //Log.v(this.toString(), "got: " + mLastMessagePopped);
-        new Thread(new Runnable() {
-          public void run() {
+//        new Thread(new Runnable() {
+//          public void run() {
             try {
               URI action = new URI(mLastMessagePopped);
               //Log.v(this.toString(), action.toString());
@@ -414,33 +410,16 @@ public class DemoActivity extends Activity {
               String query = action.getQuery();
               if ("memoryleak".equals(scheme)) {
                 if ("/start".equals(path)) {
-                  //nativeStartGame(Integer.parseInt(query));
                   Global.mFooWtf.onFoo(Integer.parseInt(query));
-
-                  //runOnUiThread(new Runnable() {
-                  //  public void run() {
-                  //    nativeStartGame(Integer.parseInt(query));
-                  //  }
-                  //});
                 } else if ("/show".equals(path)) {
-                  //runOnUiThread(new Runnable() {
-                  //  public void run() {
-                  //    mWebView.setVisibility(View.VISIBLE);
-                  //  }
-                  //});
                 } else if ("/hide".equals(path)) {
-                  //runOnUiThread(new Runnable() {
-                  //  public void run() {
-                  //    mWebView.setVisibility(View.INVISIBLE);
-                  //  }
-                  //});
                 }
               }
             } catch(java.net.URISyntaxException wtf) {
               Log.v(this.toString(), wtf.toString());
             }
-          }
-        }).start();
+//          }
+//        }).start();
         return mLastMessagePopped;
       }
     } catch (java.lang.InterruptedException wtf) {
@@ -449,32 +428,35 @@ public class DemoActivity extends Activity {
     }
   }
 
+
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
   }
 
-	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
-  private static native void setMinBuffer(int size);
-  //private static native void nativeStartGame(int i);
 
-@Override
+
+  @Override
   protected void onPause() {
     super.onPause();
     mGLView.onPause();
   }
 
-@Override
+
+  @Override
   protected void onResume() {
     super.onResume();
     mGLView.onResume();
   }
 
+
+	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
+  private static native void setMinBuffer(int size);
+
+
   static {
     System.loadLibrary("sanangeles");
   }
 }
-
-
 
 
 class JavascriptBridge {

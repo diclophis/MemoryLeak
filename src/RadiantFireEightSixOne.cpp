@@ -69,8 +69,8 @@ int RadiantFireEightSixOne::Simulate() {
   }
 
   hero->LimitVelocity();
-  int32 velocityIterations = 4; //8;
-  int32 positionIterations = 2; //3;
+  int32 velocityIterations = 1; //4; //8;
+  int32 positionIterations = 1; //2; //3;
   float dt = m_DeltaTime;
   
   world->Step(dt, velocityIterations, positionIterations);

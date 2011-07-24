@@ -103,37 +103,45 @@ int Engine::RunThread() {
 
   StartSimulation();
 
-  m_IsSceneBuilt = true;
 
-	while (WaitVsync() && m_GameState > 0) {
-    gettimeofday(&tim, NULL);
-    t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-    averageWait = t2 - t1;
-    gettimeofday(&tim, NULL);
-    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-    if (m_GameState > 1) {
-      LOGV("paused\n");
-    } else {
-      for (unsigned int i=0; i<interp; i++) {
-        m_DeltaTime = (averageWait / interp);
-        m_SimulationTime += (m_DeltaTime);
-        if (m_AudioTimeout >= 0.0) {
-          m_AudioTimeout += (m_DeltaTime);
-        }
-        
-        pthread_mutex_lock(&m_Mutex);
-        if (Active()) {
-          m_GameState = Simulate();
+  //
+	while (m_GameState > 0) {
+    WaitVsync();
+    //pthread_mutex_lock(&m_Mutex);
+    if (pthread_mutex_trylock(&m_Mutex) == 0) {
+      gettimeofday(&tim, NULL);
+      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+      averageWait = t2 - t1;
+      gettimeofday(&tim, NULL);
+      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+      if (m_GameState > 1) {
+        LOGV("paused\n");
+      } else {
+        for (unsigned int i=0; i<interp; i++) {
+          m_DeltaTime = (averageWait / interp);
+          m_SimulationTime += (m_DeltaTime);
+          if (m_AudioTimeout >= 0.0) {
+            m_AudioTimeout += (m_DeltaTime);
+          }
+          
+          
+          if (Active()) {
+            m_GameState = Simulate();
+          }
         }
         pthread_mutex_unlock(&m_Mutex);
+        sched_yield();
       }
     }
+    
     if ((m_WebViewTimeout += m_DeltaTime) > 0.25) {
       m_WebViewTimeout = 0.0;
       PopMessageFromWebView();
     }
+    m_IsSceneBuilt = true;
 	}
 
+  LOGV("WTF!\n");
   bool pushed = false;
   if (m_GameState == 0) {
     while (m_GameState == 0) {
@@ -160,11 +168,22 @@ void Engine::PauseSimulation() {
 
 
 void Engine::StopSimulation() {
+  pthread_mutex_lock(&m_Mutex);
+
   m_GameState = -1;
+  LOGV("stop A\n");
   while (m_GameState != -3) {
+    LOGV("stop B\n");
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
+  LOGV("stop C\n");
   pthread_join(m_CurrentGame->m_Thread, NULL);
+  LOGV("stop D\n");
+  
+  pthread_mutex_unlock(&m_Mutex);
+  
+  LOGV("stop E\n");
+
 }
 
 
@@ -222,8 +241,8 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
-LOGV("draw\n");
-  //pthread_mutex_lock(&m_Mutex);
+//LOGV("draw\n");
+  pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
@@ -258,9 +277,10 @@ LOGV("draw\n");
 			glPopMatrix();
 		}
 		glPopMatrix();
-    pthread_cond_signal(&m_VsyncCond);
 	}
-  //pthread_mutex_unlock(&m_Mutex);
+  pthread_mutex_unlock(&m_Mutex);
+  pthread_cond_signal(&m_VsyncCond);
+
 }
 
 
@@ -402,6 +422,7 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
 
+  LOGV("Start 12\n");
 
   if (games.size() == 0) {
     games.push_back(new GameImpl<MainMenu>);
@@ -410,10 +431,16 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
 
+  LOGV("Start 34\n");
+
   pthread_mutex_lock(&m_GameSwitchLock);
+
+  LOGV("Start 56\n");
+
   if (m_CurrentGame) {
+    LOGV("Start 78\n");
     m_CurrentGame->StopSimulation();
-    LOGV("gonna joinb\n");
+    LOGV("Start 90\n");
     delete m_CurrentGame;
   }
 
@@ -426,6 +453,8 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   LOGV("Create DD\n");
   
   pthread_mutex_unlock(&m_GameSwitchLock);
+
+  LOGV("Create EE\n");
 
 }
 

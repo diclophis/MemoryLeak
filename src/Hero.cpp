@@ -6,7 +6,7 @@
 
 Hero::Hero(b2World *w, GLuint t) {
 
-  sprite = new SpriteGun(t, 8, 8, 59, 60, 1.0, "", 8, 11, 1.0, 75.0, 75.0);
+  sprite = new SpriteGun(t, 8, 8, 59, 60, 1.0, "", 8, 11, 1.0, 100.0, 100.0);
   sprite->m_IsAlive = false;
   sprite->Build(0);
         
@@ -72,7 +72,8 @@ void Hero::UpdateNodePosition() {
 //    body->SetTransform(body->GetPosition(), angle);
 //#else
     
-  rotation = -1 * RadiansToDegrees(angle);
+  rotation = 1 * RadiansToDegrees(angle);
+  sprite->m_Rotation = rotation;
 
   if (y < -radius && awake) {
     Sleep();
@@ -101,7 +102,7 @@ void Hero::CreateBox2DBody() {
   shape.m_radius = radius / PTM_RATIO;
   b2FixtureDef fd;
   fd.shape = &shape;
-  fd.density = 1.0f;
+  fd.density = 2.0f;
   fd.restitution = 0.0; //bounce
   fd.friction = 0.0;
   body->CreateFixture(&fd);
