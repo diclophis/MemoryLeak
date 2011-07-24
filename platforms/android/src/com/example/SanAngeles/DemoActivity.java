@@ -102,7 +102,13 @@ class DemoRenderer implements GLSurfaceView.Renderer {
   }
 
   public void onDrawFrame(GL10 gl) {
-    nativeRender();
+    if (Global.wtf == -1) {
+      nativeRender();
+    } else {
+      Global.mFooWtf.onFoo(Global.wtf);
+      Global.wtf = -1;
+      //Integer.parseInt(queryfalse
+    }
   }
 
   private native void nativeOnSurfaceCreated(int count, int[] textures);
@@ -160,9 +166,9 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   public void onFoo(int i) {
     final int ii = i;
-    queueEvent(new Runnable() { public void run() {
+    //queueEvent(new Runnable() { public void run() {
       nativeStartGame(ii);
-    }});
+    //}});
   }
 
 
@@ -175,6 +181,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
 class Global {
   public static DemoGLSurfaceView mFooWtf;
+  public static int wtf = -1;
 }
 
 
@@ -415,7 +422,8 @@ public class DemoActivity extends Activity {
               String query = action.getQuery();
               if ("memoryleak".equals(scheme)) {
                 if ("/start".equals(path)) {
-                  Global.mFooWtf.onFoo(Integer.parseInt(query));
+                  //Global.mFooWtf.onFoo(Integer.parseInt(query));
+                  Global.wtf = Integer.parseInt(query);
                 } else if ("/show".equals(path)) {
                 } else if ("/hide".equals(path)) {
                 }

@@ -51,7 +51,7 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
   }
   
   if (hitState == 1) {
-    PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
+    //PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
   }
 
   //terrain->Reset();

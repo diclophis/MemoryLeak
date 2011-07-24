@@ -144,7 +144,7 @@ bool pushMessageToWebView(const char *messageToPush) {
 
   jboolean jbool = g_Env2->CallBooleanMethod(activity, android_push_webview, js);
 
-  LOGV("bbb\n");
+  //LOGV("bbb\n");
   g_Env2->DeleteLocalRef(js);
 
   return jbool;
@@ -184,7 +184,7 @@ const char *popMessageFromWebView() {
     jstring rv = (jstring) g_Env3->CallObjectMethod(activity, android_pop_webview, 0); 
     jboolean isCopy = false;
     const char *r = g_Env3->GetStringUTFChars(rv, &isCopy);
-    LOGV("CCC\n");
+    //LOGV("CCC\n");
     //g_Env3->DeleteLocalRef(rv);
     return r;
   }
@@ -223,9 +223,9 @@ void *start_game( void *ptr ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-  pthread_t thread1;
-  int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
-  //Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  //pthread_t thread1;
+  //int iret1 = pthread_create(&thread1, NULL, start_game, (void*)g);
+  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 }
 
 

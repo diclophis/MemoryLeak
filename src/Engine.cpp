@@ -148,7 +148,7 @@ int Engine::RunThread() {
       }
     //}
     
-    if ((m_WebViewTimeout += m_DeltaTime) > 0.25) {
+    if ((m_WebViewTimeout += m_DeltaTime) > 0.125) {
       m_WebViewTimeout = 0.0;
       PopMessageFromWebView();
     }
@@ -454,8 +454,8 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   LOGV("Start 12\n");
 
   if (games.size() == 0) {
-    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<MainMenu>);
+    games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SuperStarShooter>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
