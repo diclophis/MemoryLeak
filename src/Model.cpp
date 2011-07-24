@@ -86,7 +86,7 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u
 //foofoos must contain #of frame info, look into replace interp
 //implement addverticestofoofoobuffersatposition,rotation,scale,frame
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
-  glEnable(GL_DEPTH_TEST);
+  //glEnable(GL_DEPTH_TEST);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -113,6 +113,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	ff->m_AnimationEnd = e;
 	
 	glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
+  Engine::CheckGL();
 	glGenBuffers(ff->m_numBuffers, ff->m_NormalBuffers);
 	glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
 
@@ -196,7 +197,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
   
 	return ff;
 }
@@ -209,6 +210,8 @@ void Model::Render() {
   //glGetIntegerv(GL_DEPTH_BITS, &f);
   
   glEnableClientState(GL_VERTEX_ARRAY);
+  Engine::CheckGL();
+
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -230,24 +233,38 @@ void Model::Render() {
 		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
 			g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
+      Engine::CheckGL();
+      
 			glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+      Engine::CheckGL();
+
 		}
 
 		if (m_FooFoo->m_NormalBuffers[m_Frame] != g_lastNormalBuffer) {
 			g_lastNormalBuffer = m_FooFoo->m_NormalBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastNormalBuffer);
+      Engine::CheckGL();
+
 			glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
+      Engine::CheckGL();
+
 		}
 
 		if (m_FooFoo->m_TextureBuffer[0] != g_lastTexcoordBuffer) {
 			g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[0];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
+      Engine::CheckGL();
+
 			glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+      Engine::CheckGL();
+
 		}
 
 		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
 			g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+      Engine::CheckGL();
+
 		}
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     //glDrawElements(GL_LINES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));

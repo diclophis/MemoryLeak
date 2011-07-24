@@ -46,7 +46,7 @@ Engine::~Engine() {
 
 
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
-
+LOGV("alloc engine start\n");
   m_SpriteCount = 0;
   m_ModelCount = 1;
 
@@ -58,6 +58,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   pthread_mutex_init(&m_Mutex2, NULL);
     
 	m_SimulationTime = 0.0;		
+  LOGV("setting gamestate = 2\n");
 	m_GameState = 2;
   m_Zoom = 1.0;
 
@@ -69,6 +70,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_IsPushingAudio = false;
   m_AudioTimeout = -1.0;
   m_WebViewTimeout = 0.0;
+LOGV("alloc engine stop\n");
 }
 
 
@@ -82,6 +84,8 @@ void Engine::CreateThread(void (theCleanup)()) {
 
 
 void *Engine::EnterThread(void *obj) {
+  //prctl(PR_SET_NAME,"<null> terminated string",0,0,0);
+  //pthread_setname_np("My thread name");
   reinterpret_cast<Engine *>(obj)->RunThread();
   return NULL;
 }
@@ -103,12 +107,9 @@ int Engine::RunThread() {
 
   StartSimulation();
 
-
-  //
 	while (m_GameState > 0) {
     WaitVsync();
-    //pthread_mutex_lock(&m_Mutex);
-    if (pthread_mutex_trylock(&m_Mutex) == 0) {
+    //if (pthread_mutex_trylock(&m_Mutex) == 0) {
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
       averageWait = t2 - t1;
@@ -126,13 +127,15 @@ int Engine::RunThread() {
           
           
           if (Active()) {
-            m_GameState = Simulate();
+            //LOGV("s");
+            //m_GameState = Simulate();
+            Simulate();
           }
         }
-        pthread_mutex_unlock(&m_Mutex);
-        sched_yield();
+        //pthread_mutex_unlock(&m_Mutex);
+        //sched_yield();
       }
-    }
+    //}
     
     if ((m_WebViewTimeout += m_DeltaTime) > 0.25) {
       m_WebViewTimeout = 0.0;
@@ -141,6 +144,7 @@ int Engine::RunThread() {
     m_IsSceneBuilt = true;
 	}
 
+  /*
   LOGV("WTF!\n");
   bool pushed = false;
   if (m_GameState == 0) {
@@ -152,35 +156,42 @@ int Engine::RunThread() {
       }
     }
   }
+  */
 
   m_SimulationThreadCleanup();
+  LOGV("setting gamestate = 3\n");
   m_GameState = -3;
-  pthread_exit(NULL);
+  //pthread_exit(NULL);
+  LOGV("sleeping\n");
+  sleep(1);
 	return m_GameState;
 }
 
 
 void Engine::PauseSimulation() {
-	pthread_mutex_lock(&m_Mutex);
+	//pthread_mutex_lock(&m_Mutex);
+  LOGV("setting gamestate = 2b\n");
 	m_GameState = 2;
-	pthread_mutex_unlock(&m_Mutex);
+	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StopSimulation() {
-  pthread_mutex_lock(&m_Mutex);
-
+  //pthread_mutex_lock(&m_Mutex);
+  m_IsSceneBuilt = false;
+  
+  LOGV("stop A1 %d\n", m_GameState);
   m_GameState = -1;
-  LOGV("stop A\n");
+  LOGV("stop A2 %d\n", m_GameState);
   while (m_GameState != -3) {
-    LOGV("stop B\n");
+    LOGV("stop B %d\n", m_GameState);
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
   LOGV("stop C\n");
   pthread_join(m_CurrentGame->m_Thread, NULL);
   LOGV("stop D\n");
   
-  pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_unlock(&m_Mutex);
   
   LOGV("stop E\n");
 
@@ -188,9 +199,10 @@ void Engine::StopSimulation() {
 
 
 void Engine::StartSimulation() {
-	pthread_mutex_lock(&m_Mutex);
+	//pthread_mutex_lock(&m_Mutex);
+  LOGV("setting gamestate = 1\n");
 	m_GameState = 1;
-	pthread_mutex_unlock(&m_Mutex);
+	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -241,46 +253,51 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
-//LOGV("draw\n");
-  pthread_mutex_lock(&m_Mutex);
-	if (m_IsSceneBuilt) {
+  //pthread_mutex_lock(&m_GameSwitchLock);
+	if (m_IsSceneBuilt && m_SimulationTime > 0.1) {
+    glClearColor(0.5, 0.2, 0.1, 1.0);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		{
+		//glPushMatrix();
+		//{
 			glLoadIdentity();
 			//GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 200.0);
       GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 100.0);
 
 			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-			{
+			//glPushMatrix();
+			//{
 				glLoadIdentity();
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-				RenderModelPhase();
+        Engine::CheckGL();
+        RenderModelPhase();
 				Model::ReleaseBuffers();
-			}
-			glPopMatrix();
-		}
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		{
+			//}
+			//glPopMatrix();
+		//}
+		
+    glMatrixMode(GL_PROJECTION);
+		//glPushMatrix();
+		//{
 			glLoadIdentity();
 			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
 			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-			{
+			//glPushMatrix();
+			//{
 				glLoadIdentity();
+        Engine::CheckGL();
 				RenderSpritePhase();
 				//AtlasSprite::ReleaseBuffers();
-			}
-			glPopMatrix();
-		}
-		glPopMatrix();
-	}
-  pthread_mutex_unlock(&m_Mutex);
+			//}
+			//glPopMatrix();
+		//}
+		//glPopMatrix();
+	} else {
+    //LOGV("no fucking scene?\n");
+  }
+  //pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_unlock(&m_GameSwitchLock);
   pthread_cond_signal(&m_VsyncCond);
-
 }
 
 
@@ -422,6 +439,9 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
 
+  //pthread_t thread1;
+  //int iret1 = pthread_create(&thread1, NULL, START, (void*)g);
+
   LOGV("Start 12\n");
 
   if (games.size() == 0) {
@@ -487,10 +507,15 @@ void Engine::CurrentGameResizeScreen(int width, int height) {
 
 
 void Engine::CurrentGameDrawScreen(float rotation) {
-  if (m_CurrentGame != NULL) {
-    m_CurrentGame->DrawScreen(rotation);
+  if (pthread_mutex_trylock(&m_GameSwitchLock) == 0) {
+    if (m_CurrentGame != NULL) {
+      m_CurrentGame->DrawScreen(rotation);
+    } else {
+      LOGV("foooo man chuuu\n");
+    }
+    pthread_mutex_unlock(&m_GameSwitchLock);
   } else {
-    LOGV("foooo man chuuu\n");
+    LOGV("NO LOCKKKKKKKKKKKK\n");
   }
 }
 
@@ -544,4 +569,21 @@ void Engine::LoadModel(int i, int s, int e) {
 	//LOGV("%s\n", m_Importer.GetErrorString());
 	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), s, e));
 	m_Importer.FreeScene();	
+}
+
+
+void Engine::CheckGL() {
+  // normally (when no error) just return
+  const int lastGlError = glGetError();
+  if (lastGlError == GL_NO_ERROR) return;
+
+  switch (lastGlError)
+  {
+    case GL_INVALID_ENUM:      LOGV("\n\nGL_INVALID_ENUM\n\n");      break;
+    case GL_INVALID_VALUE:     LOGV("\n\nGL_INVALID_VALUE\n\n");     break;
+    case GL_INVALID_OPERATION: LOGV("\n\nGL_INVALID_OPERATION\n\n"); break;
+    case GL_STACK_OVERFLOW:    LOGV("\n\nGL_STACK_OVERFLOW\n\n");    break;
+    case GL_STACK_UNDERFLOW:   LOGV("\n\nGL_STACK_UNDERFLOW\n\n");   break;
+    case GL_OUT_OF_MEMORY:     LOGV("\n\nGL_OUT_OF_MEMORY\n\n");     break;
+  }
 }

@@ -159,7 +159,10 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
 
   public void onFoo(int i) {
-    nativeStartGame(i);
+    final int ii = i;
+    queueEvent(new Runnable() { public void run() {
+      nativeStartGame(ii);
+    }});
   }
 
 
@@ -402,6 +405,8 @@ public class DemoActivity extends Activity {
         mLastMessagePopped = DemoActivity.mWebViewMessages.take();
 //        new Thread(new Runnable() {
 //          public void run() {
+        //runOnUiThread(new Runnable() {
+        //  public void run() {
             try {
               URI action = new URI(mLastMessagePopped);
               //Log.v(this.toString(), action.toString());
@@ -418,8 +423,8 @@ public class DemoActivity extends Activity {
             } catch(java.net.URISyntaxException wtf) {
               Log.v(this.toString(), wtf.toString());
             }
-//          }
-//        }).start();
+        //  }
+        //});
         return mLastMessagePopped;
       }
     } catch (java.lang.InterruptedException wtf) {

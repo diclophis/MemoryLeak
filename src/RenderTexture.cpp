@@ -14,7 +14,7 @@ RenderTexture::RenderTexture(int width, int height) {
   
   glGenTextures(1, &name);
   if (name == 0) {
-    LOGV("WTF!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#\n");
+    LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);
   }
   glBindTexture(GL_TEXTURE_2D, name);
@@ -44,7 +44,7 @@ RenderTexture::RenderTexture(int width, int height) {
   // check if it worked (probably worth doing :) )
   GLuint status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
   if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
-    LOGV("wtf!@#!@#!@#!@#\n");
+    LOGV("INVALID GL CONTEXT CANT MAKE BUFFER\n");
   }
 
   glDisable(GL_TEXTURE_2D);

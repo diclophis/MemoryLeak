@@ -13,6 +13,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   LoadModel(0, 0, 9);
   Model *f = new Model(m_FooFoos.at(0), m_Textures->at(2));
 	m_Models.push_back(f);
+  LOGV("main menu alloc B\n");
 
   float r = 0;
   float d = 40.0;
@@ -32,6 +33,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
     m_Models[i + 1]->SetScale(1.0, 10.0, 1.0);
     //m_Models[i + 1]->m_Frame = (i % (9 * 30));
   }
+  LOGV("main menu alloc C\n");
 
   float r2 = 0;
   float d2 = 80.0;
@@ -51,6 +53,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
     m_Models[i + 1 + c]->SetScale(1.0, 100.0, 1.0);
     //m_Models[i + 1 + c]->m_Frame = (i % (9 * 30));
   }
+  LOGV("main menu alloc D\n");
 
   m_CameraX = 0.0;
   m_CameraY = 0.0;
@@ -130,7 +133,7 @@ int MainMenu::Simulate() {
 void MainMenu::RenderModelPhase() {
   
   float FogCol[3] = {0.8f,0.8f,0.8f}; // Define a nice light grey
-  glClearColor(FogCol[0], FogCol[1], FogCol[2], 1.0);
+  //glClearColor(FogCol[0], FogCol[1], FogCol[2], 1.0);
   
   static const GLfloat globalAmbient[4]      = { 0.5, 0.5, 0.5, 1.0 };
   static const GLfloat lightDiffuseLamp[4]   = { 10.0, 10.0, 10.0, 1.0 };

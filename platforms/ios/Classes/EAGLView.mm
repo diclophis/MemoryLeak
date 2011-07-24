@@ -134,6 +134,14 @@ const char *popMessageFromWebView() {
 		[self release];
 		return;
 	}
+  
+  
+  EAGLSharegroup* group = context.sharegroup;
+  if (!group)
+  {
+    NSLog(@"Could not get sharegroup from the main context");
+  }
+  //WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:group];
 	
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
 	glGenFramebuffersOES(1, &defaultFramebuffer);
@@ -557,7 +565,9 @@ static OSStatus playbackCallback(void *inRefCon,
       if ([@"/start" isEqualToString:path]) {
         NSInteger i = [query intValue];
         //GL CONTEXT VALID!!!!
-        Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+        [self performSelectorInBackground:@selector(startGame:) withObject:[NSNumber numberWithInt:i]];
+        //[self performSelectorOnMainThread:@selector(startGame:) withObject:[NSNumber numberWithInt:i] waitUntilDone:NO];
+        //Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
       } else if ([@"/exit" isEqualToString:path]) {
         LOGV("exit\n");
       } else if ([@"/show" isEqualToString:path]) {
@@ -592,8 +602,35 @@ static OSStatus playbackCallback(void *inRefCon,
 }
 
 
--(void)startGame:(int)i {
-  Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+-(void)startGame:(id)i {
+  //[EAGLContext 
+  //[EAGLContext setCurrentContext:context];
+
+
+
+  
+  //if (!WorkingContext || ![EAGLContext setCurrentContext:WorkingContext]) {
+  //  NSLog(@"Could not create WorkingContext");
+  //}
+  
+  if ([[NSThread currentThread] isEqual:[NSThread mainThread]]) {
+    Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+
+  } else {
+  
+    NSLog(@"%@ %@", [NSThread currentThread], [NSThread mainThread]);
+  
+    EAGLSharegroup *sharegroup = [context sharegroup];
+    EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
+    [EAGLContext setCurrentContext:k_context];
+
+  
+  
+    Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+  
+    [EAGLContext setCurrentContext:nil];
+  }
+
 }
 
 

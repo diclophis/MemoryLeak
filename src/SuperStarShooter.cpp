@@ -115,7 +115,7 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
-  //LOGV("super star shooter sim 123\n");
+  LOGV("super star shooter sim 123\n");
 
   //PushMessageToWebView(CreateWebViewFunction("hide()"));
 

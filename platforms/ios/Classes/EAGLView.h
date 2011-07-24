@@ -40,6 +40,8 @@ typedef struct Engine Engine;
   id displayLink;
   NSTimer *animationTimer;
 	EAGLContext *context;
+  EAGLContext *WorkingContext;
+  
   // The pixel dimensions of the CAEAGLLayer
   GLint backingWidth;
   GLint backingHeight;
@@ -67,7 +69,7 @@ typedef struct Engine Engine;
 -(void)drawView:(id)sender;
 -(BOOL)pushMessageToWebView:(const char *)theMessage;
 -(const char *)popMessageFromWebView;
--(void)startGame:(int)i;
+-(void)startGame:(id)i;
 -(BOOL)wasActive;
 -(void)initAudio2;
 

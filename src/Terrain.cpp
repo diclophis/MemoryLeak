@@ -260,6 +260,7 @@ GLuint Terrain::GenerateStripesTexture() {
   
   RenderTexture *rt = new RenderTexture(textureSize, textureSize);
   glMatrixMode(GL_PROJECTION);
+  Engine::CheckGL();
   glLoadIdentity();
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
   glMatrixMode(GL_MODELVIEW);
