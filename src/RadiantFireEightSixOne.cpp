@@ -31,6 +31,12 @@ void RadiantFireEightSixOne::CreateBox2DWorld() {
 
 RadiantFireEightSixOne::~RadiantFireEightSixOne() {
   LOGV("dealloc RadiantFire\n");
+  
+  GLuint iii[1];
+  iii[0] = terrain->m_Textures.at(0);
+  LOGV("destroy in other?: %d\n", iii[0]);
+  glDeleteTextures(1, iii);
+  
   delete terrain;
   delete hero;
   delete world;
@@ -42,6 +48,10 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
     m_Touched = true;
   } else if (hitState == 2) {
     m_Touched = false;
+  }
+  
+  if (hitState == 1) {
+    PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
   }
 
   //terrain->Reset();

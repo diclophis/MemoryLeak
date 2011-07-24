@@ -39,6 +39,17 @@ Engine::~Engine() {
   }
   m_Models.clear();
 	
+  //for (std::vector<GLuint>::iterator i = m_Textures->begin(); i != m_Textures->end(); ++i) {
+  for (unsigned int f = 0; f<m_Textures->size(); f++) {
+    GLuint ii[1];
+    ii[0] = m_Textures->at(f);
+    LOGV("KEEP! in other?: %d\n", ii[0]);
+    //glDeleteTextures(1, ii);
+  }
+  
+  
+
+  
   //delete m_Importer;
 
   LOGV("dealloc mofo\n");
@@ -162,8 +173,6 @@ int Engine::RunThread() {
   LOGV("setting gamestate = 3\n");
   m_GameState = -3;
   //pthread_exit(NULL);
-  LOGV("sleeping\n");
-  sleep(1);
 	return m_GameState;
 }
 
@@ -184,7 +193,7 @@ void Engine::StopSimulation() {
   m_GameState = -1;
   LOGV("stop A2 %d\n", m_GameState);
   while (m_GameState != -3) {
-    LOGV("stop B %d\n", m_GameState);
+    //LOGV("stop B %d\n", m_GameState);
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
   LOGV("stop C\n");
@@ -269,7 +278,7 @@ void Engine::DrawScreen(float rotation) {
 			//{
 				glLoadIdentity();
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-        Engine::CheckGL();
+        //Engine::CheckGL();
         RenderModelPhase();
 				Model::ReleaseBuffers();
 			//}
@@ -285,7 +294,7 @@ void Engine::DrawScreen(float rotation) {
 			//glPushMatrix();
 			//{
 				glLoadIdentity();
-        Engine::CheckGL();
+        //Engine::CheckGL();
 				RenderSpritePhase();
 				//AtlasSprite::ReleaseBuffers();
 			//}
@@ -445,8 +454,8 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   LOGV("Start 12\n");
 
   if (games.size() == 0) {
-    games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
+    games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
@@ -515,7 +524,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
     }
     pthread_mutex_unlock(&m_GameSwitchLock);
   } else {
-    LOGV("NO LOCKKKKKKKKKKKK\n");
+    //LOGV("NO LOCKKKKKKKKKKKK\n");
   }
 }
 

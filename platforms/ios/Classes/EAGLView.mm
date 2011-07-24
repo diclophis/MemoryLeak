@@ -124,24 +124,30 @@ const char *popMessageFromWebView() {
 	[self setClearsContextBeforeDrawing:NO];
 	[self setBackgroundColor:[UIColor blackColor]];
 	
+  //EAGLSharegroup *sharegroup = [context sharegroup];
+  //EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
+  //[EAGLContext setCurrentContext:k_context];
+  
+  //Share = [[EAGLSharegroup alloc] init];
+
 	//GL_RGBA4
     //kEAGLColorFormatRGBA8
 	eaglLayer.opaque = TRUE;
 	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
-	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
+	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
 	
 	if (!context || ![EAGLContext setCurrentContext:context]) {
 		[self release];
 		return;
 	}
   
-  
-  EAGLSharegroup* group = context.sharegroup;
-  if (!group)
+  Share = context.sharegroup;
+  //EAGLSharegroup* group = context.sharegroup;
+  if (!Share)
   {
     NSLog(@"Could not get sharegroup from the main context");
   }
-  //WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:group];
+  WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
 	
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
 	glGenFramebuffersOES(1, &defaultFramebuffer);
@@ -322,6 +328,7 @@ GLuint loadTexture(UIImage *image) {
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 	glGenTextures(1, &text);
 	glBindTexture(GL_TEXTURE_2D, text);
+  NSLog(@"made %d", text);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
@@ -620,9 +627,9 @@ static OSStatus playbackCallback(void *inRefCon,
   
     NSLog(@"%@ %@", [NSThread currentThread], [NSThread mainThread]);
   
-    EAGLSharegroup *sharegroup = [context sharegroup];
-    EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
-    [EAGLContext setCurrentContext:k_context];
+    //EAGLSharegroup *sharegroup = [context sharegroup];
+    //EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
+    [EAGLContext setCurrentContext:WorkingContext];
 
   
   

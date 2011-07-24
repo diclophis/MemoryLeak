@@ -6,13 +6,15 @@
 
 
 RenderTexture::RenderTexture(int width, int height) {
-
+  name = 0;
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
 
   glEnable(GL_TEXTURE_2D);
   
   glGenTextures(1, &name);
+  LOGV("made in other: %d\n", name);
+  Engine::CheckGL();
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);
@@ -56,6 +58,7 @@ RenderTexture::RenderTexture(int width, int height) {
 
 
 RenderTexture::~RenderTexture() {
+  LOGV("dealloc render texture\n!!!!!!!!!!!!!!!!!!!!!\n");
 }
 
 
@@ -72,4 +75,5 @@ void RenderTexture::Begin() {
 void RenderTexture::End() {
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glClearColor(0.0, 0.0, 0.0, 1.0);
+  glFlush();
 }

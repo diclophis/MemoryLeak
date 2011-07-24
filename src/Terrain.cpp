@@ -259,14 +259,16 @@ GLuint Terrain::GenerateStripesTexture() {
   ccColor4F c;
   
   RenderTexture *rt = new RenderTexture(textureSize, textureSize);
-  glMatrixMode(GL_PROJECTION);
-  Engine::CheckGL();
-  glLoadIdentity();
-  glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
-  glMatrixMode(GL_MODELVIEW);
+
   
   glPushMatrix();
   {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
+    //Engine::CheckGL();
+
+    glMatrixMode(GL_MODELVIEW);
     
     glViewport(0, 0, texSize.x, texSize.y);
 

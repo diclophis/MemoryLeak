@@ -40,6 +40,7 @@ typedef struct Engine Engine;
   id displayLink;
   NSTimer *animationTimer;
 	EAGLContext *context;
+  EAGLSharegroup *Share;
   EAGLContext *WorkingContext;
   
   // The pixel dimensions of the CAEAGLLayer
