@@ -72,8 +72,6 @@ SuperStarShooter::~SuperStarShooter() {
 
 
 void SuperStarShooter::Hit(float x, float y, int hitState) {
-  LOGV("super star shooter hit\n");
-
 	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);

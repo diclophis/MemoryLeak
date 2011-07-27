@@ -68,6 +68,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 
+
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
   m_AudioTimeout = -1.0;
@@ -254,6 +255,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 void Engine::DrawScreen(float rotation) {
   //pthread_mutex_lock(&m_GameSwitchLock);
 	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
+	  glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
     glClearColor(0.5, 0.2, 0.1, 1.0);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
@@ -301,12 +303,10 @@ void Engine::DrawScreen(float rotation) {
 
 
 void Engine::ResizeScreen(int width, int height) {
-	m_ScreenWidth = width;
-	m_ScreenHeight = height;
+  m_ScreenWidth = width;
+  m_ScreenHeight = height;
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
-	glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
 
