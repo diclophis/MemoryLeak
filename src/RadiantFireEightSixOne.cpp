@@ -16,6 +16,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
 
   
   CreateBox2DWorld();
+  sleep(5);
   terrain = new Terrain(world, m_Textures->at(0));  
   hero = new Hero(world, m_Textures->at(1));
   
@@ -98,17 +99,19 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
-  glPushMatrix();
-  {
     glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
 
     terrain->Render();
-    
+    //LOGV("1");
+    //Engine::CheckGL();
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
     AtlasSprite::Scrub();
     hero->Render();
+    //LOGV("2");
+    Engine::CheckGL();
+
     glDisable(GL_BLEND);
-  }
-  glPopMatrix();
 }

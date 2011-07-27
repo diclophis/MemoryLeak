@@ -7,6 +7,8 @@
 
 RenderTexture::RenderTexture(int width, int height) {
   name = 0;
+  glFlush();
+  
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
 
