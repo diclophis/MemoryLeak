@@ -52,7 +52,7 @@ public:
   static void CurrentGameDoAudio(short buffer[], int bytes);
   static bool CurrentGame();
   static void CurrentGameStart();
-  static void CheckGL();
+  static void CheckGL(const char *s);
 
   bool m_IsSceneBuilt;
   bool m_IsViewportSet;

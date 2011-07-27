@@ -113,7 +113,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	ff->m_AnimationEnd = e;
 	
 	glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
-  Engine::CheckGL();
 	glGenBuffers(ff->m_numBuffers, ff->m_NormalBuffers);
 	glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
 
@@ -210,7 +209,6 @@ void Model::Render() {
   //glGetIntegerv(GL_DEPTH_BITS, &f);
   
   glEnableClientState(GL_VERTEX_ARRAY);
-  Engine::CheckGL();
 
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_NORMAL_ARRAY);
@@ -233,37 +231,30 @@ void Model::Render() {
 		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
 			g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
-      Engine::CheckGL();
       
 			glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-      Engine::CheckGL();
 
 		}
 
 		if (m_FooFoo->m_NormalBuffers[m_Frame] != g_lastNormalBuffer) {
 			g_lastNormalBuffer = m_FooFoo->m_NormalBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastNormalBuffer);
-      Engine::CheckGL();
 
 			glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
-      Engine::CheckGL();
 
 		}
 
 		if (m_FooFoo->m_TextureBuffer[0] != g_lastTexcoordBuffer) {
 			g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[0];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
-      Engine::CheckGL();
 
 			glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-      Engine::CheckGL();
 
 		}
 
 		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
 			g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-      Engine::CheckGL();
 
 		}
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));

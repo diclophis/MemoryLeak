@@ -25,7 +25,6 @@ enum colliders {
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LOGV("super star shooter alloc\n");
 
-
   int xx = 0;
   int yy = 0;
 
@@ -90,6 +89,10 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   m_CameraOffsetX = -xx;
   m_CameraOffsetY = -yy;
 
+  if (hitState == 1) {
+    PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
+  }
+
 }
 
 
@@ -99,6 +102,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
+  Engine::CheckGL("glTranslate in SSS");
   AtlasSprite::Scrub();
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
   AtlasSprite::Scrub();

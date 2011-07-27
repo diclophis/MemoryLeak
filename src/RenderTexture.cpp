@@ -16,7 +16,6 @@ RenderTexture::RenderTexture(int width, int height) {
   
   glGenTextures(1, &name);
   LOGV("made in other: %d\n", name);
-  Engine::CheckGL();
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);

@@ -180,27 +180,18 @@ void Engine::StopSimulation() {
   //pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
   
-  LOGV("stop A1 %d\n", m_GameState);
   m_GameState = -1;
-  LOGV("stop A2 %d\n", m_GameState);
   while (m_GameState != -3) {
-    //LOGV("stop B %d\n", m_GameState);
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
-  LOGV("stop C\n");
   pthread_join(m_CurrentGame->m_Thread, NULL);
-  LOGV("stop D\n");
-  
-  //pthread_mutex_unlock(&m_Mutex);
-  
-  LOGV("stop E\n");
 
+  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
 	//pthread_mutex_lock(&m_Mutex);
-  LOGV("setting gamestate = 1\n");
 	m_GameState = 1;
 	//pthread_mutex_unlock(&m_Mutex);
 }
@@ -256,20 +247,29 @@ void Engine::DrawScreen(float rotation) {
   //pthread_mutex_lock(&m_GameSwitchLock);
 	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
 	  glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
+    Engine::CheckGL("glViewport in E");
     glClearColor(0.5, 0.2, 0.1, 1.0);
+    Engine::CheckGL("glClearColor in E");
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    Engine::CheckGL("glClear in E");
 		glMatrixMode(GL_PROJECTION);
+    Engine::CheckGL("glMatrixMode in E");
 		//glPushMatrix();
 		//{
 			glLoadIdentity();
+      Engine::CheckGL("glLoadIdentity in E");
 			//GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 200.0);
+      LOGV("wtf sw %f, sh: %f\n");
       GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 100.0);
 
 			glMatrixMode(GL_MODELVIEW);
+      Engine::CheckGL("glMatrixMode in E");
 			//glPushMatrix();
 			//{
 				glLoadIdentity();
+        Engine::CheckGL("glLoadIdentiryt213 in E");
 			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+        Engine::CheckGL("gluLookAt in E");
         //Engine::CheckGL();
         RenderModelPhase();
 				Model::ReleaseBuffers();
@@ -278,14 +278,19 @@ void Engine::DrawScreen(float rotation) {
 		//}
 		
     glMatrixMode(GL_PROJECTION);
+    Engine::CheckGL("glMatrixMode2 in E");
 		//glPushMatrix();
 		//{
 			glLoadIdentity();
+      Engine::CheckGL("glMatrixMode3 in E");
 			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+      Engine::CheckGL("glOrtherof in E");
 			glMatrixMode(GL_MODELVIEW);
+      Engine::CheckGL("glMtrixdff in E");
 			//glPushMatrix();
 			//{
 				glLoadIdentity();
+        Engine::CheckGL("glLoadIdentidfdf3434 in E");
         //Engine::CheckGL();
 				RenderSpritePhase();
 				//AtlasSprite::ReleaseBuffers();
@@ -387,8 +392,12 @@ void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat center
 #undef M
 	glMultMatrixf(m);
 	
+  Engine::CheckGL("glMultiMatrix in E");
+
 	/* Translate Eye to Origin */
 	glTranslatef(-eyex, -eyey, -eyez);
+
+  Engine::CheckGL("glTranslatemulfidfd in E");
 	
 }
 
@@ -403,9 +412,15 @@ void Engine::gluePerspective(float fovy, float aspect,
     xmin = ymin * aspect;
     xmax = ymax * aspect;
 
+//GL_INVALID_VALUE is generated if nearVal or farVal is not positive, or if left = right, or bottom = top, or near = far.
+    LOGV("\n aspect: %f, zNear: %f, zFar: %f, l: %f r %f b %f t %f\n", aspect, zNear, zFar, xmin, xmax, ymin, ymax);
+                                
+
     glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
                (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
                (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
+
+  Engine::CheckGL("glFrustrum in E");
 }
 
 
@@ -438,9 +453,9 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
   if (games.size() == 0) {
+    games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<MainMenu>);
-    games.push_back(new GameImpl<SuperStarShooter>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
 
@@ -553,18 +568,19 @@ void Engine::LoadModel(int i, int s, int e) {
 }
 
 
-void Engine::CheckGL() {
+void Engine::CheckGL(const char *s) {
   // normally (when no error) just return
   const int lastGlError = glGetError();
   if (lastGlError == GL_NO_ERROR) return;
-
+  
+  LOGV("\n%s caused\n", s);
   switch (lastGlError)
   {
-    case GL_INVALID_ENUM:      LOGV("\n\nGL_INVALID_ENUM\n\n");      break;
-    case GL_INVALID_VALUE:     LOGV("\n\nGL_INVALID_VALUE\n\n");     break;
-    case GL_INVALID_OPERATION: LOGV("\n\nGL_INVALID_OPERATION\n\n"); break;
-    case GL_STACK_OVERFLOW:    LOGV("\n\nGL_STACK_OVERFLOW\n\n");    break;
-    case GL_STACK_UNDERFLOW:   LOGV("\n\nGL_STACK_UNDERFLOW\n\n");   break;
-    case GL_OUT_OF_MEMORY:     LOGV("\n\nGL_OUT_OF_MEMORY\n\n");     break;
+    case GL_INVALID_ENUM:      LOGV("GL_INVALID_ENUM\n\n");      break;
+    case GL_INVALID_VALUE:     LOGV("GL_INVALID_VALUE\n\n");     break;
+    case GL_INVALID_OPERATION: LOGV("GL_INVALID_OPERATION\n\n"); break;
+    case GL_STACK_OVERFLOW:    LOGV("GL_STACK_OVERFLOW\n\n");    break;
+    case GL_STACK_UNDERFLOW:   LOGV("GL_STACK_UNDERFLOW\n\n");   break;
+    case GL_OUT_OF_MEMORY:     LOGV("GL_OUT_OF_MEMORY\n\n");     break;
   }
 }

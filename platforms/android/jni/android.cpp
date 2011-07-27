@@ -289,6 +289,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
+  sWindowWidth = width;
+  sWindowHeight = height;
   Engine::CurrentGameResizeScreen(width, height);
 }
 
