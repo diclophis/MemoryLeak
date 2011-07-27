@@ -88,7 +88,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     collide_index_set = true;
     collide_index = m_Space->at(cx, cy, 0);
   }
-  //if (hitState == 0 && collide_index >= 0 && collide_index != m_CurrentBarrelIndex) {
+
   m_CameraOffsetX = -xx;
   m_CameraOffsetY = -yy;
 
@@ -96,32 +96,20 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
 
 void SuperStarShooter::RenderModelPhase() {
-  LOGV("super star shooter render model\n");
 }
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  LOGV("super star shooter render sprite\n");
-
   glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
-  
   AtlasSprite::Scrub();
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
-  
   AtlasSprite::Scrub();
   RenderSpriteRange(0, m_GridStartIndex);
-
 }
 
 
 int SuperStarShooter::Simulate() {
-  LOGV("super star shooter sim 123\n");
-
-  //PushMessageToWebView(CreateWebViewFunction("hide()"));
-
   for (unsigned int i=0; i<m_SpriteCount; i++) {
-    //LOGV("super star shooter sim 456\n");
-
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
       int annotate_index = 0;
@@ -139,8 +127,6 @@ int SuperStarShooter::Simulate() {
       m_AtlasSprites[i]->m_Frame = -annotate_index;
     }
   }
-
-  //LOGV("super star shooter sim 789\n");
 
   return 1;
 }

@@ -16,7 +16,6 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
 
   
   CreateBox2DWorld();
-  sleep(5);
   terrain = new Terrain(world, m_Textures->at(0));  
   hero = new Hero(world, m_Textures->at(1));
   
@@ -52,7 +51,7 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
   }
   
   if (hitState == 1) {
-    //PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
+    PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
   }
 
   //terrain->Reset();
@@ -111,7 +110,7 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     AtlasSprite::Scrub();
     hero->Render();
     //LOGV("2");
-    Engine::CheckGL();
+    //Engine::CheckGL();
 
     glDisable(GL_BLEND);
 }
