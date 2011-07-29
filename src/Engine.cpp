@@ -110,7 +110,11 @@ int Engine::RunThread() {
   StartSimulation();
 
 	while (m_GameState > 0) {
-    WaitVsync();
+
+//if (pthread_mutex_trylock(&m_GameSwitchLock) == 0) {
+
+pthread_mutex_lock(&m_Mutex);
+
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
     averageWait = t2 - t1;
@@ -138,6 +142,13 @@ int Engine::RunThread() {
       PopMessageFromWebView();
     }
     m_IsSceneBuilt = true;
+
+//  pthread_mutex_unlock(&m_GameSwitchLock);
+//}
+pthread_mutex_unlock(&m_Mutex);
+
+    WaitVsync();
+
 	}
 
   m_SimulationThreadCleanup();
@@ -214,6 +225,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
+  pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
 	  glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
     Engine::CheckGL("glViewport in E");
@@ -250,6 +262,7 @@ void Engine::DrawScreen(float rotation) {
     Engine::CheckGL("glLoadIdentidfdf3434 in E");
     RenderSpritePhase();
 	}
+  pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
 }
 

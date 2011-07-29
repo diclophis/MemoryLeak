@@ -28,13 +28,15 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   int xx = 0;
   int yy = 0;
 
+  m_PercentThere = 0.0;
+
   m_Zoom = 1.0;
 
   LoadSound(1);
   m_IsPushingAudio = true;
 
-	m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
-	m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
+	m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
+	m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
   m_Space = new Octree<int>(16 * 16, -64);
 
@@ -92,6 +94,10 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     m_CameraStopOffsetY = (yy + m_CameraOffsetY);
   }
 
+  //if (hitState == 2) {
+  //  m_PercentThere = 0.0;
+  //}
+
   m_CameraOffsetX = m_CameraStopOffsetX - xx;
   m_CameraOffsetY = m_CameraStopOffsetY -yy;
 
@@ -104,7 +110,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 void SuperStarShooter::RenderSpritePhase() {
   glClearColor(0.0, 0.0, 0.0, 1.0);
-  glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
+  glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
   Engine::CheckGL("glTranslate in SSS");
   AtlasSprite::Scrub();
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
@@ -121,8 +127,8 @@ int SuperStarShooter::Simulate() {
       int ox = -1;
       int oy = -1;
       IndexToXY(i - m_GridStartIndex, &ox, &oy);
-      float ax = (ox * SUBDIVIDE) + (m_CameraOffsetX + 0.5) - (((GRID_X - 1) / 2) * SUBDIVIDE);
-      float ay = (oy * SUBDIVIDE) + (m_CameraOffsetY + 0.5) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
+      float ax = (ox * SUBDIVIDE) + (m_CameraActualOffsetX + 0.5) - (((GRID_X - 1) / 2) * SUBDIVIDE);
+      float ay = (oy * SUBDIVIDE) + (m_CameraActualOffsetY + 0.5) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
       float wtfx = ((int)((ax) / SUBDIVIDE) * SUBDIVIDE);
       float wtfy = ((int)((ay) / SUBDIVIDE) * SUBDIVIDE);
 
@@ -138,6 +144,9 @@ int SuperStarShooter::Simulate() {
 
     }
   }
+
+  m_CameraActualOffsetX += -(0.1 * (m_CameraActualOffsetX - m_CameraOffsetX));
+  m_CameraActualOffsetY += -(0.1 * (m_CameraActualOffsetY - m_CameraOffsetY));
 
   return 1;
 }
