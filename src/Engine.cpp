@@ -111,33 +111,27 @@ int Engine::RunThread() {
 
 	while (m_GameState > 0) {
     WaitVsync();
-    //if (pthread_mutex_trylock(&m_Mutex) == 0) {
-      gettimeofday(&tim, NULL);
-      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-      averageWait = t2 - t1;
-      gettimeofday(&tim, NULL);
-      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_GameState > 1) {
-        LOGV("paused\n");
-      } else {
-        for (unsigned int i=0; i<interp; i++) {
-          m_DeltaTime = (averageWait / interp);
-          m_SimulationTime += (m_DeltaTime);
-          if (m_AudioTimeout >= 0.0) {
-            m_AudioTimeout += (m_DeltaTime);
-          }
-          
-          
-          if (Active()) {
-            //LOGV("s");
-            //m_GameState = Simulate();
-            Simulate();
-          }
+    gettimeofday(&tim, NULL);
+    t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+    averageWait = t2 - t1;
+    gettimeofday(&tim, NULL);
+    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    if (m_GameState > 1) {
+      LOGV("paused\n");
+    } else {
+      for (unsigned int i=0; i<interp; i++) {
+        m_DeltaTime = (averageWait / interp);
+        m_SimulationTime += (m_DeltaTime);
+        if (m_AudioTimeout >= 0.0) {
+          m_AudioTimeout += (m_DeltaTime);
         }
-        //pthread_mutex_unlock(&m_Mutex);
-        //sched_yield();
+        
+        
+        if (Active()) {
+          Simulate();
+        }
       }
-    //}
+    }
     
     if ((m_WebViewTimeout += m_DeltaTime) > 0.125) {
       m_WebViewTimeout = 0.0;
@@ -146,54 +140,30 @@ int Engine::RunThread() {
     m_IsSceneBuilt = true;
 	}
 
-  /*
-  LOGV("WTF!\n");
-  bool pushed = false;
-  if (m_GameState == 0) {
-    while (m_GameState == 0) {
-      if (pushed) {
-        PopMessageFromWebView();
-      } else {
-        pushed = PushMessageToWebView(CreateWebViewFunction("queue.push('memoryleak://localhost/start?0')"));
-      }
-    }
-  }
-  */
-
   m_SimulationThreadCleanup();
-  LOGV("setting gamestate = 3\n");
   m_GameState = -3;
-  //pthread_exit(NULL);
+
 	return m_GameState;
 }
 
 
 void Engine::PauseSimulation() {
-	//pthread_mutex_lock(&m_Mutex);
-  LOGV("setting gamestate = 2b\n");
 	m_GameState = 2;
-	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StopSimulation() {
-  //pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
-  
   m_GameState = -1;
   while (m_GameState != -3) {
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
   pthread_join(m_CurrentGame->m_Thread, NULL);
-
-  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
-	//pthread_mutex_lock(&m_Mutex);
 	m_GameState = 1;
-	//pthread_mutex_unlock(&m_Mutex);
 }
 
 
@@ -244,7 +214,6 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 
 void Engine::DrawScreen(float rotation) {
-  //pthread_mutex_lock(&m_GameSwitchLock);
 	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
 	  glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
     Engine::CheckGL("glViewport in E");
@@ -252,57 +221,35 @@ void Engine::DrawScreen(float rotation) {
     Engine::CheckGL("glClearColor in E");
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
+
 		glMatrixMode(GL_PROJECTION);
     Engine::CheckGL("glMatrixMode in E");
-		//glPushMatrix();
-		//{
-			glLoadIdentity();
-      Engine::CheckGL("glLoadIdentity in E");
-			//GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 0.05, 200.0);
-      LOGV("wtf sw %f, sh: %f\n");
-      GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 100.0);
+    glLoadIdentity();
+    Engine::CheckGL("glLoadIdentity in E");
+    GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 100.0);
 
-			glMatrixMode(GL_MODELVIEW);
-      Engine::CheckGL("glMatrixMode in E");
-			//glPushMatrix();
-			//{
-				glLoadIdentity();
-        Engine::CheckGL("glLoadIdentiryt213 in E");
-			  glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-        Engine::CheckGL("gluLookAt in E");
-        //Engine::CheckGL();
-        RenderModelPhase();
-				Model::ReleaseBuffers();
-			//}
-			//glPopMatrix();
-		//}
-		
+    glMatrixMode(GL_MODELVIEW);
+    Engine::CheckGL("glMatrixMode in E");
+    glLoadIdentity();
+    Engine::CheckGL("glLoadIdentiryt213 in E");
+    glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+    Engine::CheckGL("gluLookAt in E");
+    RenderModelPhase();
+    Model::ReleaseBuffers();
+
     glMatrixMode(GL_PROJECTION);
     Engine::CheckGL("glMatrixMode2 in E");
-		//glPushMatrix();
-		//{
-			glLoadIdentity();
-      Engine::CheckGL("glMatrixMode3 in E");
-			glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-      Engine::CheckGL("glOrtherof in E");
-			glMatrixMode(GL_MODELVIEW);
-      Engine::CheckGL("glMtrixdff in E");
-			//glPushMatrix();
-			//{
-				glLoadIdentity();
-        Engine::CheckGL("glLoadIdentidfdf3434 in E");
-        //Engine::CheckGL();
-				RenderSpritePhase();
-				//AtlasSprite::ReleaseBuffers();
-			//}
-			//glPopMatrix();
-		//}
-		//glPopMatrix();
-	} else {
-    //LOGV("no fucking scene?\n");
-  }
-  //pthread_mutex_unlock(&m_Mutex);
-  //pthread_mutex_unlock(&m_GameSwitchLock);
+    glLoadIdentity();
+    Engine::CheckGL("glMatrixMode3 in E");
+    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+    Engine::CheckGL("glOrtherof in E");
+
+    glMatrixMode(GL_MODELVIEW);
+    Engine::CheckGL("glMtrixdff in E");
+    glLoadIdentity();
+    Engine::CheckGL("glLoadIdentidfdf3434 in E");
+    RenderSpritePhase();
+	}
   pthread_cond_signal(&m_VsyncCond);
 }
 
@@ -405,20 +352,16 @@ void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat center
 void Engine::gluePerspective(float fovy, float aspect,
                            float zNear, float zFar)
 {
-    GLfloat xmin, xmax, ymin, ymax;
+  GLfloat xmin, xmax, ymin, ymax;
 
-    ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-    ymin = -ymax;
-    xmin = ymin * aspect;
-    xmax = ymax * aspect;
+  ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
+  ymin = -ymax;
+  xmin = ymin * aspect;
+  xmax = ymax * aspect;
 
-//GL_INVALID_VALUE is generated if nearVal or farVal is not positive, or if left = right, or bottom = top, or near = far.
-    LOGV("\n aspect: %f, zNear: %f, zFar: %f, l: %f r %f b %f t %f\n", aspect, zNear, zFar, xmin, xmax, ymin, ymax);
-                                
-
-    glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-               (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-               (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
+  glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
+             (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
+             (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
 
   Engine::CheckGL("glFrustrum in E");
 }
@@ -510,8 +453,6 @@ void Engine::CurrentGameDrawScreen(float rotation) {
       LOGV("foooo man chuuu\n");
     }
     pthread_mutex_unlock(&m_GameSwitchLock);
-  } else {
-    //LOGV("NO LOCKKKKKKKKKKKK\n");
   }
 }
 

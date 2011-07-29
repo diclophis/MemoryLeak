@@ -9,7 +9,8 @@
                   android:clearTaskOnLaunch="true"
                   android:configChanges="orientation"
                   android:screenOrientation="portrait"
-                  android:launchMode="singleTask">
+                  android:launchMode="singleTask"
+                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

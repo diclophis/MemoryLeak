@@ -253,6 +253,10 @@ public class DemoActivity extends Activity {
       }
     });
 
+    AssetManager am = getAssets();
+    String path;
+    String[] files;
+
     WebSettings webSettings = mWebView.getSettings();
     webSettings.setLoadsImagesAutomatically(true);
     webSettings.setJavaScriptEnabled(true);
@@ -261,13 +265,28 @@ public class DemoActivity extends Activity {
     webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
     webSettings.setBuiltInZoomControls(false);
 
+/*
+mWebView.setOnTouchListener(new View.OnTouchListener() {
+    public boolean onTouch(View v, MotionEvent event) {
+      return (event.getAction() == MotionEvent.ACTION_MOVE);
+    }
+  });
+*/
+
     try {
-      String url = "http://radiant-fire-861.heroku.com/index.html";
+      //String url = "http://radiant-fire-861.heroku.com/index.html";
+      //String url = "file:///android_asset/offline/index.html";
+      //getInputStreamFromUrl(url)
+
       String base_url = "https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ";
-      BufferedReader rd = new BufferedReader(new InputStreamReader(getInputStreamFromUrl(url)), 4096);
+
+      InputStream inputStream = am.open("offline/index.html");
+
+      BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream), 4096);
       String line;
       StringBuilder sb =  new StringBuilder();
       while ((line = rd.readLine()) != null) {
+        Log.v(this.toString(), line);
         sb.append(line);
       }
       rd.close();
@@ -280,9 +299,6 @@ public class DemoActivity extends Activity {
  
     addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 200));
 
-    AssetManager am = getAssets();
-    String path;
-    String[] files;
 
     int model_count;
     java.io.FileDescriptor[] fd1;

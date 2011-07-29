@@ -25,4 +25,7 @@ public:
   float m_CameraOffsetX;
   float m_CameraOffsetY;
 
+  float m_CameraStopOffsetX;
+  float m_CameraStopOffsetY;
+
 };

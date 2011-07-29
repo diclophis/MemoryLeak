@@ -71,6 +71,7 @@ MainMenu::~MainMenu() {
 
 void MainMenu::Hit(float x, float y, int hitState) {
   LOGV("main menu hit\n");
+  /*
   if (m_RequestedFullscreen) {
     // do nothing really
   } else {
@@ -78,6 +79,7 @@ void MainMenu::Hit(float x, float y, int hitState) {
       m_RequestedFullscreen = true;
     }
   }
+  */
 }
 
 

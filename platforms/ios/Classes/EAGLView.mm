@@ -561,6 +561,7 @@ static OSStatus playbackCallback(void *inRefCon,
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   if ([webView request] && ![webView isLoading]) {
     NSString *mLastMessagePopped = [webView stringByEvaluatingJavaScriptFromString:@"(typeof(dequeue) == 'function' ? dequeue() : 'nodequeue')"];
+    //NSLog(@"wtf: %@", mLastMessagePopped);
     [mPoppedMessages addObject:mLastMessagePopped];
     
     NSURL *action = [NSURL URLWithString:mLastMessagePopped];

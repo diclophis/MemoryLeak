@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 13 
-#define GRID_Y 13 
+#define GRID_X 11
+#define GRID_Y 13
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -33,12 +33,12 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   LoadSound(1);
   m_IsPushingAudio = true;
 
-	m_CameraOffsetX = 0.0;
-	m_CameraOffsetY = 0.0;
+	m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
+	m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
-  m_Space = new Octree<int>(16 * 16, -63);
+  m_Space = new Octree<int>(16 * 16, -64);
 
-  CreateCollider(SUBDIVIDE * 2, SUBDIVIDE * 2, 0.0, STAR);
+  //CreateCollider(SUBDIVIDE * 2, SUBDIVIDE * 2, 0.0, STAR);
   
   m_GridCount = GRID_X * GRID_Y;
   m_GridPositions = new int[m_GridCount * 2];
@@ -71,8 +71,8 @@ SuperStarShooter::~SuperStarShooter() {
 
 
 void SuperStarShooter::Hit(float x, float y, int hitState) {
-	float xx = (x - (0.5 * (m_ScreenWidth))) * m_Zoom;
-	float yy = (0.5 * (m_ScreenHeight) - y) * m_Zoom;
+	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
+	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);
   float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE * 0.5);
 	float collide_x = (dx);
@@ -86,12 +86,14 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     collide_index = m_Space->at(cx, cy, 0);
   }
 
-  m_CameraOffsetX = -xx;
-  m_CameraOffsetY = -yy;
-
-  if (hitState == 1) {
-    PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
+ 
+  if (hitState == 0) {
+    m_CameraStopOffsetX = (xx + m_CameraOffsetX);
+    m_CameraStopOffsetY = (yy + m_CameraOffsetY);
   }
+
+  m_CameraOffsetX = m_CameraStopOffsetX - xx;
+  m_CameraOffsetY = m_CameraStopOffsetY -yy;
 
 }
 
@@ -101,6 +103,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
+  glClearColor(0.0, 0.0, 0.0, 1.0);
   glTranslatef(-m_CameraOffsetX, -m_CameraOffsetY, 0.0);
   Engine::CheckGL("glTranslate in SSS");
   AtlasSprite::Scrub();
@@ -114,19 +117,25 @@ int SuperStarShooter::Simulate() {
   for (unsigned int i=0; i<m_SpriteCount; i++) {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
-      int annotate_index = 0;
+      int annotate_index = -12;
       int ox = -1;
       int oy = -1;
       IndexToXY(i - m_GridStartIndex, &ox, &oy);
-      float ax = (ox * SUBDIVIDE) + (m_CameraOffsetX) - (((GRID_X - 1) / 2) * SUBDIVIDE);
-      float ay = (oy * SUBDIVIDE) + (m_CameraOffsetY) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
-      float wtfx = (int)((ax) / SUBDIVIDE) * SUBDIVIDE;
-      float wtfy = (int)((ay) / SUBDIVIDE) * SUBDIVIDE;
+      float ax = (ox * SUBDIVIDE) + (m_CameraOffsetX + 0.5) - (((GRID_X - 1) / 2) * SUBDIVIDE);
+      float ay = (oy * SUBDIVIDE) + (m_CameraOffsetY + 0.5) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
+      float wtfx = ((int)((ax) / SUBDIVIDE) * SUBDIVIDE);
+      float wtfy = ((int)((ay) / SUBDIVIDE) * SUBDIVIDE);
+
       m_AtlasSprites[i]->SetPosition(wtfx, wtfy);
-      if (ax > 0 & ay > 0) {
-        annotate_index = m_Space->at((ax / SUBDIVIDE), (ay / SUBDIVIDE), 0);
-      }
+      
+      //if (ox > 1 && oy > 1) { 
+        if (ax > 0 & ay > 0) {
+          annotate_index = m_Space->at((ax / SUBDIVIDE), (ay / SUBDIVIDE), 0);
+        }
+      //}
+      
       m_AtlasSprites[i]->m_Frame = -annotate_index;
+
     }
   }
 
