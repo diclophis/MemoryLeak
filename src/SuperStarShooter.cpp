@@ -12,12 +12,12 @@ enum colliders {
 };
 
 
-#define SUBDIVIDE 50.0
+#define SUBDIVIDE 75.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 11
-#define GRID_Y 13
+#define GRID_X 8
+#define GRID_Y 10
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -64,6 +64,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   LOGV("super star shooter alloc 456\n");
 
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  Engine::CheckGL("glClearColor in E");
+
 }
 
 
@@ -109,7 +112,6 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glClearColor(0.0, 0.0, 0.0, 1.0);
   glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
   Engine::CheckGL("glTranslate in SSS");
   AtlasSprite::Scrub();
@@ -134,19 +136,17 @@ int SuperStarShooter::Simulate() {
 
       m_AtlasSprites[i]->SetPosition(wtfx, wtfy);
       
-      //if (ox > 1 && oy > 1) { 
-        if (ax > 0 & ay > 0) {
-          annotate_index = m_Space->at((ax / SUBDIVIDE), (ay / SUBDIVIDE), 0);
-        }
-      //}
+      if (ax > 0 & ay > 0) {
+        annotate_index = m_Space->at((ax / SUBDIVIDE), (ay / SUBDIVIDE), 0);
+      }
       
       m_AtlasSprites[i]->m_Frame = -annotate_index;
 
     }
   }
 
-  m_CameraActualOffsetX += -(0.1 * (m_CameraActualOffsetX - m_CameraOffsetX));
-  m_CameraActualOffsetY += -(0.1 * (m_CameraActualOffsetY - m_CameraOffsetY));
+  m_CameraActualOffsetX += -(4.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
+  m_CameraActualOffsetY += -(4.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
 
   return 1;
 }

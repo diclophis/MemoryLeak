@@ -28,6 +28,7 @@ Engine::~Engine() {
     delete m_AudioMixBuffer;
   }
 
+  AtlasSprite::ReleaseBuffers();
 
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
     delete *i;
@@ -68,6 +69,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 
+  glClearColor(0.5, 0.2, 0.1, 1.0);
+  Engine::CheckGL("glClearColor in E");
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -227,10 +230,6 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
-	  glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-    Engine::CheckGL("glViewport in E");
-    glClearColor(0.5, 0.2, 0.1, 1.0);
-    Engine::CheckGL("glClearColor in E");
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
 
@@ -272,6 +271,10 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenHeight = height;
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
+  glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
+  Engine::CheckGL("glViewport in E");
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  Engine::CheckGL("glClear in E2");
 }
 
 

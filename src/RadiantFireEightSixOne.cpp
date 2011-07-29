@@ -108,6 +108,8 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     AtlasSprite::Scrub();
+    AtlasSprite::ReleaseBuffers();
+
     hero->Render();
     //LOGV("2");
     //Engine::CheckGL();
