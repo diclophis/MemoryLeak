@@ -315,9 +315,6 @@ const char *popMessageFromWebView() {
 		
     glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
-    
-    //glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0);
-		//glBindRenderbufferOES(GL_RENDERBUFFER_OES, 0);
   }
 }
 

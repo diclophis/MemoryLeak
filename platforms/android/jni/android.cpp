@@ -185,7 +185,7 @@ const char *popMessageFromWebView() {
     jboolean isCopy = false;
     const char *r = g_Env3->GetStringUTFChars(rv, &isCopy);
     //LOGV("CCC\n");
-    //g_Env3->DeleteLocalRef(rv);
+    g_Env3->DeleteLocalRef(rv);
     return r;
   }
 }
