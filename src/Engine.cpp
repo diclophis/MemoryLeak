@@ -40,13 +40,7 @@ Engine::~Engine() {
   }
   m_Models.clear();
 	
-  for (unsigned int f = 0; f<m_Textures->size(); f++) {
-    GLuint ii[1];
-    ii[0] = m_Textures->at(f);
-    LOGV("KEEP! in other?: %d\n", ii[0]);
-  }
-  
-  LOGV("dealloc mofo\n");
+  LOGV("dealloc Engine\n");
 }
 
 
@@ -69,7 +63,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); 
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   Engine::CheckGL("glHint in E1");
 
   glClearColor(0.5, 0.2, 0.1, 1.0);
@@ -92,8 +86,7 @@ void Engine::CreateThread(void (theCleanup)()) {
 
 
 void *Engine::EnterThread(void *obj) {
-  //prctl(PR_SET_NAME,"<null> terminated string",0,0,0);
-  //pthread_setname_np("My thread name");
+  //TODO: figure out how to fucking name a thread
   reinterpret_cast<Engine *>(obj)->RunThread();
   return NULL;
 }
@@ -143,10 +136,11 @@ pthread_mutex_lock(&m_Mutex);
       }
     }
     
-    if ((m_WebViewTimeout += m_DeltaTime) > 0.125) {
+    if ((m_WebViewTimeout += m_DeltaTime) > 0.075) {
       m_WebViewTimeout = 0.0;
       PopMessageFromWebView();
     }
+
     m_IsSceneBuilt = true;
 
 //  pthread_mutex_unlock(&m_GameSwitchLock);

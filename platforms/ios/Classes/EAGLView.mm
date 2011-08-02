@@ -325,7 +325,6 @@ GLuint loadTexture(UIImage *image) {
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 	glGenTextures(1, &text);
 	glBindTexture(GL_TEXTURE_2D, text);
-  NSLog(@"made %d", text);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
@@ -558,7 +557,6 @@ static OSStatus playbackCallback(void *inRefCon,
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   if ([webView request] && ![webView isLoading]) {
     NSString *mLastMessagePopped = [webView stringByEvaluatingJavaScriptFromString:@"(typeof(dequeue) == 'function' ? dequeue() : 'nodequeue')"];
-    //NSLog(@"wtf: %@", mLastMessagePopped);
     [mPoppedMessages addObject:mLastMessagePopped];
     
     NSURL *action = [NSURL URLWithString:mLastMessagePopped];
@@ -608,34 +606,16 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(void)startGame:(id)i {
-  //[EAGLContext 
-  //[EAGLContext setCurrentContext:context];
-
-
-
-  
-  //if (!WorkingContext || ![EAGLContext setCurrentContext:WorkingContext]) {
-  //  NSLog(@"Could not create WorkingContext");
-  //}
-  
   if ([[NSThread currentThread] isEqual:[NSThread mainThread]]) {
     Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
 
   } else {
-  
-    NSLog(@"%@ %@", [NSThread currentThread], [NSThread mainThread]);
-  
-    //EAGLSharegroup *sharegroup = [context sharegroup];
-    //EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
     [EAGLContext setCurrentContext:WorkingContext];
 
-  
-  
     Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
   
     [EAGLContext setCurrentContext:nil];
   }
-
 }
 
 

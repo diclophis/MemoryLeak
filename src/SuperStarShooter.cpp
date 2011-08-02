@@ -40,13 +40,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_Space = new Octree<int>(16 * 16, -64);
 
-  //CreateCollider(SUBDIVIDE * 2, SUBDIVIDE * 2, 0.0, STAR);
+  CreateCollider(SUBDIVIDE * 2, SUBDIVIDE * 2, 0.0, STAR);
   
   m_GridCount = GRID_X * GRID_Y;
   m_GridPositions = new int[m_GridCount * 2];
   m_GridStartIndex = m_SpriteCount;
-
-  LOGV("super star shooter alloc 123\n");
 
   for (unsigned int i=0; i<m_GridCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
@@ -61,8 +59,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_SpriteCount++;
   }
   m_GridStopIndex = m_SpriteCount;
-
-  LOGV("super star shooter alloc 456\n");
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
   Engine::CheckGL("glClearColor in E");
@@ -97,13 +93,8 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     m_CameraStopOffsetY = (yy + m_CameraOffsetY);
   }
 
-  //if (hitState == 2) {
-  //  m_PercentThere = 0.0;
-  //}
-
   m_CameraOffsetX = m_CameraStopOffsetX - xx;
   m_CameraOffsetY = m_CameraStopOffsetY -yy;
-
 }
 
 
