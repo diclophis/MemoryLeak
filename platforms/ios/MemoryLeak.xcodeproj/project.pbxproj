@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
 		FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A320129E3EB70056E630 /* ModelOctree.cpp */; };
 		FC14176B1285413100166578 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417631285413100166578 /* EAGLView.mm */; };
@@ -175,12 +176,14 @@
 		FCDE095312D92F17004CE9B7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE095212D92F17004CE9B7 /* AVFoundation.framework */; };
 		FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */; };
 		FCE2EE1312913F2D00A82A88 /* libpthread.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCE2EE1212913F2D00A82A88 /* libpthread.dylib */; };
+		FCF8913313E8AA3900AFEB8E /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = FCF8913213E8AA3900AFEB8E /* Entitlements.plist */; };
 		FCFECB6411EC0D2000BBBE2A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */; };
 		FCFECB6C11EC0D5200BBBE2A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFECB6B11EC0D5200BBBE2A /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FC10A31E129E3EB70056E630 /* micropather.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = micropather.cpp; sourceTree = "<group>"; };
 		FC10A31F129E3EB70056E630 /* micropather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = micropather.h; sourceTree = "<group>"; };
 		FC10A320129E3EB70056E630 /* ModelOctree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelOctree.cpp; sourceTree = "<group>"; };
@@ -651,6 +654,7 @@
 		FCDFB0E012B1A7B400A0B4E1 /* AtlasSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtlasSprite.h; sourceTree = "<group>"; };
 		FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AtlasSprite.cpp; sourceTree = "<group>"; };
 		FCE2EE1212913F2D00A82A88 /* libpthread.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpthread.dylib; path = usr/lib/libpthread.dylib; sourceTree = SDKROOT; };
+		FCF8913213E8AA3900AFEB8E /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		FCFE11DC12D4F94100FC246E /* curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
 		FCFE11DD12D4F94100FC246E /* curlbuild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlbuild.h; sourceTree = "<group>"; };
 		FCFE11E012D4F94100FC246E /* curlrules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlrules.h; sourceTree = "<group>"; };
@@ -670,6 +674,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */,
 				FCFECB6411EC0D2000BBBE2A /* OpenGLES.framework in Frameworks */,
 				FCFECB6C11EC0D5200BBBE2A /* QuartzCore.framework in Frameworks */,
 				FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */,
@@ -704,6 +709,7 @@
 				FC1417681285413100166578 /* MainWindow.xib */,
 				FC1417691285413100166578 /* MemoryLeak_Prefix.pch */,
 				FC14176A1285413100166578 /* MemoryLeak-Info.plist */,
+				FCF8913213E8AA3900AFEB8E /* Entitlements.plist */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -713,6 +719,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */,
 				FCFECB6311EC0D2000BBBE2A /* OpenGLES.framework */,
 				FCFECB6B11EC0D5200BBBE2A /* QuartzCore.framework */,
 				FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */,
@@ -1445,6 +1452,7 @@
 				FC14176D1285413100166578 /* Default.png in Resources */,
 				FC14176F1285413100166578 /* MainWindow.xib in Resources */,
 				FC141C571285429700166578 /* assets in Resources */,
+				FCF8913313E8AA3900AFEB8E /* Entitlements.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1679,13 +1687,13 @@
 					"$(SRCROOT)/../../src/oolua",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUGBUILD";
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = iphoneos4.3;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1719,11 +1727,11 @@
 					"$(SRCROOT)/../../src/oolua",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = iphoneos4.3;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -1757,6 +1765,59 @@
 			};
 			name = Release;
 		};
+		FCF8913413E8AA7B00AFEB8E /* Ad Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				PREBINDING = NO;
+				SDKROOT = iphoneos4.3;
+			};
+			name = "Ad Hoc";
+		};
+		FCF8913513E8AA7B00AFEB8E /* Ad Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COMPRESS_PNG_FILES = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_SETENV,
+					HAVE_SINF,
+				);
+				GCC_THUMB_SUPPORT = NO;
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_SHADOW = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../src/",
+					"$(SRCROOT)/../../src/assimp/BoostWorkaround/",
+					"$(SRCROOT)/../../src/yajl",
+					"$(SRCROOT)/../../src/yajl/api",
+					"$(SRCROOT)/../../src/octree",
+					"$(SRCROOT)/../../src/include/libmodplug",
+					"$(SRCROOT)/../../src/include/ares",
+					"$(SRCROOT)/../../src/include",
+					"$(SRCROOT)/../../src/oolua",
+				);
+				INFOPLIST_FILE = "MemoryLeak-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				PRODUCT_NAME = RaptorIsland;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				RUN_CLANG_STATIC_ANALYZER = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = "Ad Hoc";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1765,6 +1826,7 @@
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
+				FCF8913513E8AA7B00AFEB8E /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1774,6 +1836,7 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
+				FCF8913413E8AA7B00AFEB8E /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

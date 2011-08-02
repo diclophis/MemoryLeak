@@ -62,6 +62,11 @@
 }
 
 
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+  NSLog(@"FAIL!!!!!! %@", error);
+}
+
+
 -(void)applicationWillTerminate:(UIApplication *)application {
 	[glView stopAnimation];
 }

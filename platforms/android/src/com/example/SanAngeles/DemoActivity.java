@@ -245,6 +245,32 @@ public class DemoActivity extends Activity {
         }).setCancelable(false).create().show();
         return true;
       };
+      /*
+      @Override
+      public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
+        Log.v(this.toString(), "holy shit");
+        super.onShowCustomView(view, callback);
+        if (view instanceof FrameLayout){
+          FrameLayout frame = (FrameLayout) view;
+          if (frame.getFocusedChild() instanceof VideoView){
+            VideoView video = (VideoView) frame.getFocusedChild();
+            frame.removeView(video);
+            a.setContentView(video);
+            video.setOnCompletionListener(this);
+            video.setOnErrorListener(this);
+            video.start();
+          }
+        }
+      }
+      */
+/*
+      public void onCompletion(MediaPlayer mp) {
+        Log.d(TAG, "Video completo");
+        a.setContentView(R.layout.main);
+        WebView wb = (WebView) a.findViewById(R.id.webview);
+        a.initWebView();
+      }
+*/
     });
 
     mWebView.setWebViewClient(new WebViewClient() {
