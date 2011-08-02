@@ -577,7 +577,7 @@ static OSStatus playbackCallback(void *inRefCon,
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"showWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 70.0)]; //webView.frame.size.height
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 120.0)]; //webView.frame.size.height
         [UIView commitAnimations];
       } else if ([@"/hide" isEqualToString:path]) {
         [UIView setAnimationBeginsFromCurrentState:YES];
@@ -590,7 +590,7 @@ static OSStatus playbackCallback(void *inRefCon,
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"fullscreenWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 70.0)]; //self.frame.size.height
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 120.0)]; //self.frame.size.height
         [UIView commitAnimations];
       }
     } else if ([@"openfeint" isEqualToString:scheme]) {

@@ -264,6 +264,8 @@ public class DemoActivity extends Activity {
     webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
     webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
     webSettings.setBuiltInZoomControls(false);
+    webSettings.setPluginsEnabled(true);
+
 
 /*
 mWebView.setOnTouchListener(new View.OnTouchListener() {

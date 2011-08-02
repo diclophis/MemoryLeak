@@ -136,8 +136,8 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  m_CameraActualOffsetX += -(4.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
-  m_CameraActualOffsetY += -(4.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
+  m_CameraActualOffsetX += -(10.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
+  m_CameraActualOffsetY += -(10.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
 
   return 1;
 }

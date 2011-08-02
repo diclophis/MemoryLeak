@@ -46,13 +46,10 @@
 		[webView setBackgroundColor:[UIColor clearColor]];
 		[webView setAllowsInlineMediaPlayback:YES];
 		[webView setMediaPlaybackRequiresUserAction:NO];
-    //NSString *urlS = @"http://radiant-fire-861.heroku.com/index.html";
-    //NSURL *url = [NSURL URLWithString:urlS];
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"html" subdirectory:@"assets/offline"];
     NSString *guts = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
 		[webView loadHTMLString:guts baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
 		[glView build:webView];
-    //GL CONTEXT VALID!!
 		[glView startGame:[NSNumber numberWithInt:0]];
 		[glView startAnimation];
 	}
@@ -60,6 +57,7 @@
 
 
 -(BOOL)webView:(UIWebView *)theWebView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+  NSLog(@"wtf load? %@", [request URL]);
 	return YES;
 }
 
