@@ -57,6 +57,14 @@ using namespace Assimp::MD2;
 #	define ARRAYSIZE(_array) (int(sizeof(_array) / sizeof(_array[0])))
 #endif 
 
+//class MD2Importer {
+
+//public:
+
+aiMesh *pcMesh;
+
+//};
+
 // ------------------------------------------------------------------------------------------------
 // Helper function to lookup a normal in Quake 2's precalculated table
 void MD2::LookupNormalIndex(uint8_t iNormalIndex,aiVector3D& vOut)
@@ -78,7 +86,9 @@ MD2Importer::MD2Importer()
 // ------------------------------------------------------------------------------------------------
 // Destructor, private as well 
 MD2Importer::~MD2Importer()
-{}
+{
+  delete pcMesh;
+}
 
 // ------------------------------------------------------------------------------------------------
 // Returns whether the class can handle the format of the given file. 
@@ -166,6 +176,7 @@ void MD2Importer::ValidateHeader( )
 		throw DeadlyImportError("The requested frame is not existing the file");
 }
 
+
 // ------------------------------------------------------------------------------------------------
 // Imports the given file into the given scene structure. 
 void MD2Importer::InternReadFile( const std::string& pFile, 
@@ -231,7 +242,7 @@ void MD2Importer::InternReadFile( const std::string& pFile,
 
 	for (unsigned int iii=0; iii<pScene->mRootNode->mNumMeshes; iii++) {
 		
-		aiMesh* pcMesh = pScene->mMeshes[iii] = new aiMesh();
+		pcMesh = pScene->mMeshes[iii] = new aiMesh();
 		//pScene->mMeshes.push_back(new aiMesh());
 		
 		pcMesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;

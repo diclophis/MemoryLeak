@@ -60,14 +60,17 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   }
   m_GridStopIndex = m_SpriteCount;
 
-  glClearColor(0.0, 0.0, 0.0, 1.0);
-  Engine::CheckGL("glClearColor in E");
+  //glClearColor(0.0, 0.0, 0.0, 1.0);
+  //Engine::CheckGL("glClearColor in E");
 
 }
 
 
 SuperStarShooter::~SuperStarShooter() {
   LOGV("super star shooter dealloc\n");
+  
+  delete m_Space;
+  delete m_GridPositions;
 }
 
 

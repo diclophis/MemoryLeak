@@ -35,11 +35,15 @@ Engine::~Engine() {
   }
   m_FooFoos.clear();
 
+  for (std::vector<SpriteGun *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
+    delete *i;
+  }
+
   for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
     delete *i;
   }
   m_Models.clear();
-	
+
   LOGV("dealloc Engine\n");
 }
 
@@ -61,13 +65,13 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
-	ResizeScreen(m_ScreenWidth, m_ScreenHeight);
+	//ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  Engine::CheckGL("glHint in E1");
+  //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+  //Engine::CheckGL("glHint in E1");
 
-  glClearColor(0.5, 0.2, 0.1, 1.0);
-  Engine::CheckGL("glClearColor in E");
+  //glClearColor(0.5, 0.2, 0.1, 1.0);
+  //Engine::CheckGL("glClearColor in E");
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -257,9 +261,13 @@ void Engine::DrawScreen(float rotation) {
     glLoadIdentity();
     Engine::CheckGL("glLoadIdentidfdf3434 in E");
     RenderSpritePhase();
-	}
+	} else {
+    ResizeScreen(m_ScreenWidth, m_ScreenHeight);
+  }
   pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
+  
+  Engine::CheckGL("END OF DRAW");
 }
 
 

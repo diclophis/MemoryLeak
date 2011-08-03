@@ -35,6 +35,9 @@ Terrain::Terrain(b2World *w, GLuint t) {
 
 
 Terrain::~Terrain() {
+  LOGV("terrain::delloc\n");
+  delete stripes;
+  delete rt;
 }
 
 
@@ -258,7 +261,7 @@ GLuint Terrain::GenerateStripesTexture() {
   float x1, x2, y1, y2, dx, dy;
   ccColor4F c;
   
-  RenderTexture *rt = new RenderTexture(textureSize, textureSize);
+  rt = new RenderTexture(textureSize, textureSize);
 
   
   glPushMatrix();
@@ -388,7 +391,6 @@ GLuint Terrain::GenerateStripesTexture() {
       // layer: highlight
 
       float highlightAlpha = 0.5f;
-      float highlightWidth = textureSize;
       nVertices = 0;
       vertices[nVertices] = MLPointMake(0.0, 512.0);
       colors[nVertices++] = (ccColor4F){1, 1, 0.5f, highlightAlpha}; // yellow

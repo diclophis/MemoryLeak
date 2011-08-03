@@ -24,6 +24,8 @@ Hero::Hero(b2World *w, GLuint t) {
 
 
 Hero::~Hero() {
+  LOGV("dealloc hero\n");
+  delete sprite;
 }
 
 

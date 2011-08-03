@@ -17,6 +17,15 @@ void AtlasSprite::Scrub() {
   g_lastRotation = -999.0;
 }
 
+AtlasSprite::~AtlasSprite() {
+  LOGV("AtlasSprite::Dealloc\n");
+  delete m_Position;
+  delete m_Velocity;
+  delete m_Scale;
+  delete m_Frames;
+  delete m_Sprites;
+}
+
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, float vdx, float vdy) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
   m_Fps = 0;
 	m_Rotation = 0.0;

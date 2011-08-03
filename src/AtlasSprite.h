@@ -39,6 +39,7 @@ public:
 		m_Frame = f;
 	};
 	
+  ~AtlasSprite();
 	AtlasSprite(GLuint t, int spr, int rows, int s = 0, int e = 0, float m = 1.0, float w = 50.0, float h = 50.0);
 	void Render();
 	

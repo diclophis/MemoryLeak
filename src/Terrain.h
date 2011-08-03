@@ -49,4 +49,6 @@ public:
   std::vector<GLuint> m_Textures;
   
   bool firstTime;
+
+  RenderTexture *rt;
 };
