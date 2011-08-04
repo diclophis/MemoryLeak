@@ -417,9 +417,9 @@ bool Engine::PushMessageToWebView(char *messageToPush) {
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
   if (games.size() == 0) {
+    games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
-    games.push_back(new GameImpl<MainMenu>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
 
@@ -525,7 +525,9 @@ void Engine::LoadModel(int i, int s, int e) {
 	snprintf(path, sizeof(s), "%d", i);
 	m_Importer.ReadFile(path, m_PostProcessFlags);
 	//LOGV("%s\n", m_Importer.GetErrorString());
-	m_FooFoos.push_back(Model::GetFoo(m_Importer.GetScene(), s, e));
+  const aiScene *scene = m_Importer.GetScene();
+	m_FooFoos.push_back(Model::GetFoo(scene, s, e));
+  //delete scene;
 	m_Importer.FreeScene();	
 }
 
