@@ -14,7 +14,36 @@ struct foo {
 	unsigned int len;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct foofoo {
+
+#ifdef __cplusplus
+
+	//! Default constructor
+	foofoo()
+	{
+    printf("alloc foofoo\n");
+	}
+
+	//! Default destructor. Delete the index array
+	~foofoo()
+	{
+    glDeleteBuffers(m_numFrames, m_VerticeBuffers);
+    glDeleteBuffers(m_numFrames, m_NormalBuffers);
+    glDeleteBuffers(m_numFrames, m_IndexBuffers);
+    glDeleteBuffers(1, m_TextureBuffer);
+    free(m_VerticeBuffers);
+    free(m_NormalBuffers);
+    free(m_IndexBuffers);
+    free(m_TextureBuffer);
+    printf("dealloc foofoo\n");
+	}
+
+#endif
+
 	int m_numBuffers;
 	GLuint *m_VerticeBuffers;
 	GLuint *m_NormalBuffers;
@@ -26,4 +55,6 @@ struct foofoo {
 	int m_AnimationEnd;
 };
 
-
+#ifdef __cplusplus
+}
+#endif

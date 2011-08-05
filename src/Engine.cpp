@@ -31,6 +31,10 @@ Engine::~Engine() {
   AtlasSprite::ReleaseBuffers();
 
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
+    //delete *i.m_VerticeBuffers;
+    //delete *i->m_NormalBuffers;
+    //delete *i->m_IndexBuffers;
+    //delete *i->m_TextureBuffer;
     delete *i;
   }
   m_FooFoos.clear();
