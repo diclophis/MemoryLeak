@@ -520,7 +520,8 @@ void Engine::LoadSound(int i) {
 
 
 void Engine::LoadModel(int i, int s, int e) {
-	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_ImproveCacheLocality;
+  //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
+	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
 	char path[128];
 	snprintf(path, sizeof(s), "%d", i);
 	m_Importer.ReadFile(path, m_PostProcessFlags);

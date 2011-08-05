@@ -94,12 +94,12 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	foofoo *ff = new foofoo;
 	int interp = 6;
 
-	if (a->mRootNode->mNumMeshes > 1) {
+	if (a->mNumMeshes > 1) {
 		//ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);
     ff->m_numFrames = (e - s) * interp;
 	} else {
 		interp = 1;
-		ff->m_numFrames = a->mRootNode->mNumMeshes;
+		ff->m_numFrames = a->mNumMeshes;
 	}
 	
 	ff->m_numFaces = a->mMeshes[0]->mNumFaces;
