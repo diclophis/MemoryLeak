@@ -18,7 +18,6 @@ void AtlasSprite::Scrub() {
 }
 
 AtlasSprite::~AtlasSprite() {
-  LOGV("AtlasSprite::Dealloc\n");
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;

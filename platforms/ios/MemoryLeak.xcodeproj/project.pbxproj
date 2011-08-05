@@ -77,7 +77,6 @@
 		FC141C361285415900166578 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC141A881285415900166578 /* Model.cpp */; };
 		FC141C571285429700166578 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = FC141C4A1285429700166578 /* assets */; };
 		FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC1C46D3129CD4B0004E3CE6 /* MD2Loader.cpp */; };
-		FC2C4ACE13C16EF000FECDEA /* Sky.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4ACC13C16EF000FECDEA /* Sky.cpp */; };
 		FC2C4B3213C16F3300FECDEA /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4AD213C16F3300FECDEA /* b2BroadPhase.cpp */; };
 		FC2C4B3313C16F3300FECDEA /* b2CollideCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4AD413C16F3300FECDEA /* b2CollideCircle.cpp */; };
 		FC2C4B3413C16F3300FECDEA /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4AD513C16F3300FECDEA /* b2CollideEdge.cpp */; };
@@ -487,8 +486,6 @@
 		FC1CDCAB129A330500CAFC54 /* static_assert.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = static_assert.hpp; sourceTree = "<group>"; };
 		FC1CDCAC129A330500CAFC54 /* timer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = timer.hpp; sourceTree = "<group>"; };
 		FC1CDCAE129A330500CAFC54 /* tuple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tuple.hpp; sourceTree = "<group>"; };
-		FC2C4ACC13C16EF000FECDEA /* Sky.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sky.cpp; sourceTree = "<group>"; };
-		FC2C4ACD13C16EF000FECDEA /* Sky.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sky.h; sourceTree = "<group>"; };
 		FC2C4AD013C16F3300FECDEA /* Box2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box2D.h; sourceTree = "<group>"; };
 		FC2C4AD213C16F3300FECDEA /* b2BroadPhase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2BroadPhase.cpp; sourceTree = "<group>"; };
 		FC2C4AD313C16F3300FECDEA /* b2BroadPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2BroadPhase.h; sourceTree = "<group>"; };
@@ -756,8 +753,6 @@
 				FC2C4B5F13C1771000FECDEA /* Hero.cpp */,
 				FC2C4B6013C1771000FECDEA /* Hero.h */,
 				FC2C4ACF13C16F3300FECDEA /* Box2D */,
-				FC2C4ACC13C16EF000FECDEA /* Sky.cpp */,
-				FC2C4ACD13C16EF000FECDEA /* Sky.h */,
 				FC6D4D6613A46D1B00DE1200 /* FooIO.h */,
 				FC6D4D6713A46D1B00DE1200 /* Game.h */,
 				FC6D4D6813A46D1B00DE1200 /* MainMenu.cpp */,
@@ -1587,7 +1582,6 @@
 				FC6D4CA213A459D000DE1200 /* SuperStarShooter.cpp in Sources */,
 				FC6D4D6A13A46D1B00DE1200 /* MainMenu.cpp in Sources */,
 				FC8BE42013B12C5600EAA5EE /* fastmix.cpp in Sources */,
-				FC2C4ACE13C16EF000FECDEA /* Sky.cpp in Sources */,
 				FC2C4B3213C16F3300FECDEA /* b2BroadPhase.cpp in Sources */,
 				FC2C4B3313C16F3300FECDEA /* b2CollideCircle.cpp in Sources */,
 				FC2C4B3413C16F3300FECDEA /* b2CollideEdge.cpp in Sources */,

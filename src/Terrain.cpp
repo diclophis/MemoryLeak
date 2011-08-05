@@ -6,21 +6,15 @@
 
 
 Terrain::Terrain(b2World *w, GLuint t) {
-  LOGV("terrain alloc\n");
-
   firstTime = false;
-  
   world = w;
-
   screenW = 320;
   screenH = 480;
   offsetX = 0.0;
   textureSize = 512;
-
   stripes = new SpriteGun(t, 1, 1, 0, 1, 1.0, "", 8, 11, 1.0, textureSize, textureSize);
   stripes->m_IsAlive = false;
   stripes->Build(0);
-
   m_TextureIndex = 0;
   for (unsigned int i=0; i<1; i++) {
     m_Textures.push_back(GenerateStripesTexture());
@@ -29,13 +23,11 @@ Terrain::Terrain(b2World *w, GLuint t) {
   GenerateHillKeyPoints();
   GenerateBorderVertices();
   CreateBox2DBody();
-  
   SetOffsetX(0.0);
 }
 
 
 Terrain::~Terrain() {
-  LOGV("terrain::delloc\n");
   delete stripes;
   delete rt;
 }
@@ -151,8 +143,6 @@ void Terrain::ResetHillVertices() {
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
   float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
 
-  //LOGV("building %f %f\n", leftSideX, rightSideX);
-
   while (hillKeyPoints[fromKeyPointI+1].x < leftSideX) {
     fromKeyPointI++;
     if (fromKeyPointI > nHillKeyPoints-1) {
@@ -170,10 +160,7 @@ void Terrain::ResetHillVertices() {
   }
     
   if (prevFromKeyPointI != fromKeyPointI || prevToKeyPointI != toKeyPointI) {
-    //LOGV("building hillVertices array for the visible area\n");
     // vertices for visible area
-    //LOGV("reset????\n");
-
     nHillVertices = 0;
     MLPoint p0, p1, pt0, pt1;
     p0 = hillKeyPoints[fromKeyPointI];
@@ -252,8 +239,6 @@ GLuint Terrain::GenerateStripesTexture() {
     nStripes++;
   }
   
-  LOGV("nStripes = %d\n", nStripes);
-
   MLPoint vertices[maxStripes*6];
   ccColor4F colors[maxStripes*6];
   int nVertices = 0;

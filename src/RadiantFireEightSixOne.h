@@ -13,7 +13,6 @@ public:
 
 
   b2World *world;
-  Sky *sky;
   Terrain *terrain;
   Hero *hero;
   //GLESDebugDraw *render;

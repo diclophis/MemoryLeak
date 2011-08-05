@@ -23,7 +23,6 @@ enum colliders {
 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-  LOGV("super star shooter alloc\n");
 
   int xx = 0;
   int yy = 0;
@@ -69,8 +68,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
 
 SuperStarShooter::~SuperStarShooter() {
-  LOGV("super star shooter dealloc\n");
-  
   delete m_Space;
   delete m_GridPositions;
 }
@@ -168,7 +165,7 @@ void SuperStarShooter::CreateCollider(float x, float y, float r, int flag) {
   if (flag & BARREL) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 1, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & STAR) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 43, 44, l * 0.5, "", 8, 11, l, 100.0, 100.0));
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 63, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & MIRROR) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   }

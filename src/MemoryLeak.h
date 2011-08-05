@@ -148,7 +148,6 @@ extern "C" {
 #include "Engine.h"
 
 #include "MLPoint.h"
-#include "Sky.h"
 #include "Terrain.h"
 #include "Hero.h"
 

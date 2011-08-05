@@ -15,7 +15,6 @@ RenderTexture::RenderTexture(int width, int height) {
   glEnable(GL_TEXTURE_2D);
   
   glGenTextures(1, &name);
-  LOGV("made in other: %d\n", name);
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);
@@ -59,7 +58,8 @@ RenderTexture::RenderTexture(int width, int height) {
 
 
 RenderTexture::~RenderTexture() {
-  LOGV("dealloc render texture\n!!!!!!!!!!!!!!!!!!!!!\n");
+  glDeleteTextures(1, &name);
+  glDeleteBuffers(1, &fbo);
 }
 
 

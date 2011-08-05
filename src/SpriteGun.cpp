@@ -4,7 +4,6 @@
 #include "MemoryLeak.h"
 
 SpriteGun::~SpriteGun() {
-  LOGV("SpriteGun::dealloc\n");
   delete m_EmitVelocity;
   for (std::vector<AtlasSprite *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
     delete *i;

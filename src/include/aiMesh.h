@@ -388,7 +388,6 @@ struct aiAnimMesh
 	
 	~aiAnimMesh()
 	{
-printf("DELETE aiAnimMesh!!!!!!!!!!\n");
 		delete [] mVertices; 
 		delete [] mNormals;
 		delete [] mTangents;
@@ -625,7 +624,6 @@ struct aiMesh
 	//! Deletes all storage allocated for the mesh
 	~aiMesh()
 	{
-printf("DELETE aiMesh!!!!!!!!!!!!!!!!!!!!\n");
 		delete [] mVertices; 
 		delete [] mNormals;
 		delete [] mTangents;

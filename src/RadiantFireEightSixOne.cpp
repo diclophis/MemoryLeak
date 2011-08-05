@@ -6,7 +6,6 @@
 
 
 RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-  LOGV("alloc RadiantFire\n");
   LoadSound(2);
   m_IsPushingAudio = true;
   m_Zoom = 2.0;
@@ -30,11 +29,8 @@ void RadiantFireEightSixOne::CreateBox2DWorld() {
 
 
 RadiantFireEightSixOne::~RadiantFireEightSixOne() {
-  LOGV("dealloc RadiantFire\n");
-  
   GLuint iii[1];
   iii[0] = terrain->m_Textures.at(0);
-  LOGV("destroy in other?: %d\n", iii[0]);
   glDeleteTextures(1, iii);
   
   delete terrain;
@@ -101,8 +97,6 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
 
     terrain->Render();
-    //LOGV("1");
-    //Engine::CheckGL();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -111,8 +105,6 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     AtlasSprite::ReleaseBuffers();
 
     hero->Render();
-    //LOGV("2");
-    //Engine::CheckGL();
 
     glDisable(GL_BLEND);
 }

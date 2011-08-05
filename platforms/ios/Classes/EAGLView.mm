@@ -449,6 +449,7 @@ static OSStatus playbackCallback(void *inRefCon,
 
 	LOGV("current duration: %f\n", aBufferLength);
 	
+  /*
 	aBufferLength = 0.005;
 	
 	status = AudioSessionSetProperty(kAudioSessionProperty_PreferredHardwareIOBufferDuration, 
@@ -459,7 +460,7 @@ static OSStatus playbackCallback(void *inRefCon,
 							&size, &aBufferLength);
 	
 	LOGV("current duration: %f\n", aBufferLength);
-	
+	*/
 	
 	checkStatus(status);
 
