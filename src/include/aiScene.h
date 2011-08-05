@@ -125,6 +125,7 @@ struct aiNode
 	/** Destructor */
 	~aiNode()
 	{
+printf("delete aiNode!!!!!!\n");
 		// delete all children recursively
 		// to make sure we won't crash if the data is invalid ...
 		if (mChildren && mNumChildren)  
@@ -345,6 +346,7 @@ struct aiScene
 	//! Destructor
 	~aiScene()
 	{
+printf("delete aiScene!!!!!!!!!!!!!!!!!!\n");
 		// delete all sub-objects recursively
 		delete mRootNode;
 

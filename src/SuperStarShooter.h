@@ -33,4 +33,6 @@ public:
 
   float m_PercentThere;
 
+  float m_WarpTimeout;
+
 };

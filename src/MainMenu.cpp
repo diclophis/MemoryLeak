@@ -10,7 +10,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   LoadSound(0);
   m_IsPushingAudio = true;
   m_RequestedFullscreen = false;
-  LoadModel(0, 0, 9);
+  LoadModel(0, 0, 8);
   Model *f = new Model(m_FooFoos.at(0), m_Textures->at(2));
 	m_Models.push_back(f);
   LOGV("main menu alloc B\n");

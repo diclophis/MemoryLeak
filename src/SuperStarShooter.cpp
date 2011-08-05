@@ -60,6 +60,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   }
   m_GridStopIndex = m_SpriteCount;
 
+  m_WarpTimeout = 0.0;
+
   //glClearColor(0.0, 0.0, 0.0, 1.0);
   //Engine::CheckGL("glClearColor in E");
 
@@ -116,6 +118,15 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
+  /*
+  m_WarpTimeout += m_DeltaTime;
+  if (m_WarpTimeout > 10.0) {
+    m_CameraOffsetX = randf() * 1000.0;
+    m_CameraOffsetY = randf() * 1000.0;
+    m_WarpTimeout = 0.0;
+  }
+  */
+
   for (unsigned int i=0; i<m_SpriteCount; i++) {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
@@ -139,8 +150,11 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  m_CameraActualOffsetX += -(10.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
-  m_CameraActualOffsetY += -(10.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
+  m_CameraActualOffsetX += -(20.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
+  m_CameraActualOffsetY += -(20.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
+
+  //m_CameraActualOffsetX += -(1.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
+  //m_CameraActualOffsetY += -(1.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
 
   return 1;
 }

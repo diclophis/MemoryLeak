@@ -226,7 +226,7 @@ void MD2Importer::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
 
   pScene->mNumMaterials = 1;
   pScene->mRootNode = new aiNode();
-  pScene->mRootNode->mNumMeshes = m_pcHeader->numFrames;
+  pScene->mRootNode->mNumMeshes = m_pcHeader->numFrames - 1;
   pScene->mRootNode->mMeshes = new unsigned int[pScene->mRootNode->mNumMeshes];
 
   for (unsigned int i=0; i<pScene->mRootNode->mNumMeshes; i++) {
@@ -239,8 +239,10 @@ void MD2Importer::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
   pScene->mMeshes = new aiMesh*[pScene->mRootNode->mNumMeshes];
   pScene->mNumTexCoords = m_pcHeader->numTexCoords;
 
+  aiMesh *pcMesh;
+
   for (unsigned int iii=0; iii<pScene->mRootNode->mNumMeshes; iii++) {
-    aiMesh *pcMesh = pScene->mMeshes[iii] = new aiMesh();
+    pcMesh = pScene->mMeshes[iii] = new aiMesh();
     pcMesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
 
     // navigate to the begin of the frame data
