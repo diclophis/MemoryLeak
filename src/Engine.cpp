@@ -280,6 +280,8 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenHeight = height;
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
+  Engine::CheckGL("ERROR BEFORE!?@# in E");
+  LOGV("%d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   Engine::CheckGL("glViewport in E");
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

@@ -17,6 +17,27 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   CreateBox2DWorld();
   terrain = new Terrain(world, m_Textures->at(0));  
   hero = new Hero(world, m_Textures->at(1));
+
+
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 20, 21, 1.0, "", 8, 11, 1.0, 100.0, 100.0));
+  m_AtlasSprites[m_SpriteCount]->SetPosition(100.0, 100.0);
+  m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
+  m_AtlasSprites[m_SpriteCount]->Build(1);
+
+  b2BodyDef spriteBodyDef;
+  spriteBodyDef.type = b2_dynamicBody;
+  spriteBodyDef.position.Set(m_AtlasSprites[m_SpriteCount]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_SpriteCount]->m_Position[1] / PTM_RATIO);
+  spriteBodyDef.userData = m_AtlasSprites[m_SpriteCount];
+  b2Body *spriteBody = world->CreateBody(&spriteBodyDef);
+
+  b2PolygonShape spriteShape;
+  spriteShape.SetAsBox(100.0 / PTM_RATIO / 2, 100.0 / PTM_RATIO / 2);
+  b2FixtureDef spriteShapeDef;
+  spriteShapeDef.shape = &spriteShape;
+  spriteShapeDef.density = 10.0;
+  spriteShapeDef.isSensor = true;
+  spriteBody->CreateFixture(&spriteShapeDef);
+
   
 }
 
@@ -105,6 +126,9 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     AtlasSprite::ReleaseBuffers();
 
     hero->Render();
+
+    AtlasSprite::Scrub();
+    RenderSpriteRange(0, 1);
 
     glDisable(GL_BLEND);
 }

@@ -4,7 +4,6 @@
 #include "MemoryLeak.h"
 
 
-
 Terrain::Terrain(b2World *w, GLuint t) {
   firstTime = false;
   world = w;
