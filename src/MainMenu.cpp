@@ -10,11 +10,14 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   LoadSound(0);
   m_IsPushingAudio = true;
   m_RequestedFullscreen = false;
-  LoadModel(0, 0, 9);
-  Model *f = new Model(m_FooFoos.at(0), m_Textures->at(2));
+  LoadModel(1, 15, 58);
+  Model *f = new Model(m_FooFoos.at(0), m_Textures->at(3));
 	m_Models.push_back(f);
+  m_Models[0 + 0]->SetPosition(0, 0, 0);
+  m_Models[0 + 0]->SetScale(1.0, 1.0, 1.0);
   LOGV("main menu alloc B\n");
 
+  /*
   float r = 0;
   float d = 40.0;
   int c = 0;
@@ -54,13 +57,12 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
     //m_Models[i + 1 + c]->m_Frame = (i % (9 * 30));
   }
   LOGV("main menu alloc D\n");
+  */
 
   m_CameraX = 0.0;
   m_CameraY = 0.0;
   m_CameraZ = 0.0;
   m_CameraR = 0.0;
-
-  //delete f;
 }
 
 
@@ -119,13 +121,13 @@ int MainMenu::Simulate() {
   m_CameraTarget[0] = 0.0;
   m_CameraTarget[1] = 0.0;
   m_CameraTarget[2] = 0.0;
-  m_CameraPosition[0] = 9.5;
-  m_CameraPosition[1] = 2.0;
-  m_CameraPosition[2] = 9.5;
+  m_CameraPosition[0] = 50.0 + m_SimulationTime * 0.75;//219.5;
+  m_CameraPosition[1] = 50.0 + m_SimulationTime * 0.75;//300.0;
+  m_CameraPosition[2] = 50.0 + m_SimulationTime * 0.75;//219.5;
   
   
   for (unsigned int i=0; i<m_ModelCount; i++) {
-    m_Models[i]->m_Rotation[1] += m_DeltaTime * 5.0;
+    m_Models[i]->m_Rotation[1] += m_DeltaTime * 100.0;
   }
 
   return 1;
@@ -141,7 +143,8 @@ void MainMenu::RenderModelPhase() {
   static const GLfloat lightDiffuseLamp[4]   = { 10.0, 10.0, 10.0, 1.0 };
   static const GLfloat lightAmbientLamp[4]   = { 0.5, 0.5, 0.5, 1.0 };
   static const GLfloat lightPositionLamp[4]  = { 0.0, 0.0, 0.0, 0.0 };
-  
+ 
+/*
   glEnable(GL_FOG);
   glFogfv(GL_FOG_COLOR, FogCol);     // Set the fog color
   glFogx(GL_FOG_MODE, GL_EXP); // Note the 'i' after glFog - the GL_LINEAR constant is an integer.
@@ -157,7 +160,8 @@ void MainMenu::RenderModelPhase() {
   glLightfv(GL_LIGHT0, GL_SPECULAR, lightDiffuseLamp);
   glLightfv(GL_LIGHT0, GL_POSITION, lightPositionLamp);
   
-  
+*/
+
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   
@@ -165,8 +169,8 @@ void MainMenu::RenderModelPhase() {
 
   glDisable(GL_CULL_FACE);
   glDisable(GL_DEPTH_TEST);
-  glDisable(GL_LIGHTING);
-  glDisable(GL_FOG);
+  //glDisable(GL_LIGHTING);
+  //glDisable(GL_FOG);
 
 }
 

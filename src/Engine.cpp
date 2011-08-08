@@ -242,7 +242,7 @@ void Engine::DrawScreen(float rotation) {
     Engine::CheckGL("glMatrixMode in E");
     glLoadIdentity();
     Engine::CheckGL("glLoadIdentity in E");
-    GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 100.0);
+    GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
 
     glMatrixMode(GL_MODELVIEW);
     Engine::CheckGL("glMatrixMode in E");
