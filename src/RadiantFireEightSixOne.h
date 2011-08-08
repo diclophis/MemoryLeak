@@ -11,13 +11,11 @@ public:
 	void RenderModelPhase();
 	void RenderSpritePhase();
 
+  void CreateBox2DWorld();
 
   b2World *world;
   Terrain *terrain;
   Hero *hero;
-  //GLESDebugDraw *render;
-
-  void CreateBox2DWorld();
 
   bool m_Touched;
   bool m_RequestedFullscreen;

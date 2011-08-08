@@ -58,11 +58,14 @@ import android.view.animation.AnimationUtils;
 
 class DemoRenderer implements GLSurfaceView.Renderer {
 
+
   Context mContext;
+
 
   public DemoRenderer(Context context) {
     mContext = context;
   }
+
 
   public void onSurfaceCreated(GL10 gl, EGLConfig config) {
     try {
@@ -97,9 +100,11 @@ class DemoRenderer implements GLSurfaceView.Renderer {
     }
   }
 
+
   public void onSurfaceChanged(GL10 gl, int w, int h) {
     nativeResize(w, h);
   }
+
 
   public void onDrawFrame(GL10 gl) {
     if (Global.wtf == -1) {
@@ -107,14 +112,17 @@ class DemoRenderer implements GLSurfaceView.Renderer {
     } else {
       Global.mFooWtf.onFoo(Global.wtf);
       Global.wtf = -1;
-      //Integer.parseInt(queryfalse
     }
   }
+
 
   private native void nativeOnSurfaceCreated(int count, int[] textures);
   private static native void nativeResize(int w, int h);
   private static native void nativeRender();
+
+
 }
+
 
 class DemoGLSurfaceView extends GLSurfaceView {
 
@@ -131,21 +139,17 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-//    queueEvent(new Runnable() {
-//      public void run() {
-        float x = event.getX();
-        float y = event.getY();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-          nativeTouch(x, y, 0);
-        }
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-          nativeTouch(x, y, 1);
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-          nativeTouch(x, y, 2);
-        }
-//      }
-//    });
+    float x = event.getX();
+    float y = event.getY();
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      nativeTouch(x, y, 0);
+    }
+    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+      nativeTouch(x, y, 1);
+    }
+    if (event.getAction() == MotionEvent.ACTION_UP) {
+      nativeTouch(x, y, 2);
+    }
     return true;
   }
 
@@ -165,10 +169,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
 
   public void onFoo(int i) {
-    final int ii = i;
-    //queueEvent(new Runnable() { public void run() {
-      nativeStartGame(ii);
-    //}});
+    nativeStartGame(i);
   }
 
 
@@ -176,6 +177,8 @@ class DemoGLSurfaceView extends GLSurfaceView {
   private static native void nativeResume();
   private static native void nativeTouch(float x, float y, int hitState);
   private static native void nativeStartGame(int i);
+
+
 }
 
 
@@ -217,24 +220,17 @@ public class DemoActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
     DemoActivity.mWebViewMessages = new LinkedBlockingQueue<String>();
-
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
-
     final Context myApp = this;
-
     final Activity MyActivity = this;
-
 		mGLView = new DemoGLSurfaceView(this);
     Global.mFooWtf = mGLView;
 		setContentView(mGLView);
-
     mWebView = new WebView(this);
     mJavascriptBridge = new JavascriptBridge(this);
     mWebView.addJavascriptInterface(mJavascriptBridge, "javascriptBridge");
     mWebView.setBackgroundColor(Color.argb(0,0,0,0));
-
     mWebView.setWebChromeClient(new WebChromeClient() {  
       @Override  
       public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result) {
@@ -272,17 +268,14 @@ public class DemoActivity extends Activity {
       }
 */
     });
-
     mWebView.setWebViewClient(new WebViewClient() {
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         Log.v(this.toString(), "WTF!@#!@#" + description);
       }
     });
-
     AssetManager am = getAssets();
     String path;
     String[] files;
-
     WebSettings webSettings = mWebView.getSettings();
     webSettings.setLoadsImagesAutomatically(true);
     webSettings.setJavaScriptEnabled(true);
@@ -291,25 +284,9 @@ public class DemoActivity extends Activity {
     webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
     webSettings.setBuiltInZoomControls(false);
     webSettings.setPluginsEnabled(true);
-
-
-/*
-mWebView.setOnTouchListener(new View.OnTouchListener() {
-    public boolean onTouch(View v, MotionEvent event) {
-      return (event.getAction() == MotionEvent.ACTION_MOVE);
-    }
-  });
-*/
-
     try {
-      //String url = "http://radiant-fire-861.heroku.com/index.html";
-      //String url = "file:///android_asset/offline/index.html";
-      //getInputStreamFromUrl(url)
-
       String base_url = "https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ";
-
       InputStream inputStream = am.open("offline/index.html");
-
       BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream), 4096);
       String line;
       StringBuilder sb =  new StringBuilder();
@@ -324,9 +301,7 @@ mWebView.setOnTouchListener(new View.OnTouchListener() {
       Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       Log.v(this.toString(), e.toString());
     }
- 
-    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 200));
-
+    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 120));
 
     int model_count;
     java.io.FileDescriptor[] fd1;
@@ -418,11 +393,7 @@ mWebView.setOnTouchListener(new View.OnTouchListener() {
     int p = mWebView.getProgress();
     if (p == 100) {
       final String f = new String(messageToPush);
-//      runOnUiThread(new Runnable() {
-//        public void run() {
-          mWebView.loadUrl(f);
-//        }
-//      });
+      mWebView.loadUrl(f);
       r = true;
     }
 
@@ -445,38 +416,26 @@ mWebView.setOnTouchListener(new View.OnTouchListener() {
 
     try {
       if (DemoActivity.mWebViewMessages.isEmpty()) {
-//        runOnUiThread(new Runnable() {
-//          public void run() {
-            final String messagePopBridge = "javascript:(function() { var foo = dequeue(); if (foo) { window.javascriptBridge.pushToJava(foo); } })()";
-            mWebView.loadUrl(messagePopBridge);
-//          }
-//        });
+        final String messagePopBridge = "javascript:(function() { var foo = dequeue(); if (foo) { window.javascriptBridge.pushToJava(foo); } })()";
+        mWebView.loadUrl(messagePopBridge);
         return "empty_in_java";
       } else {
         mLastMessagePopped = DemoActivity.mWebViewMessages.take();
-//        new Thread(new Runnable() {
-//          public void run() {
-        //runOnUiThread(new Runnable() {
-        //  public void run() {
-            try {
-              URI action = new URI(mLastMessagePopped);
-              //Log.v(this.toString(), action.toString());
-              String scheme = action.getScheme();
-              String path = action.getPath();
-              String query = action.getQuery();
-              if ("memoryleak".equals(scheme)) {
-                if ("/start".equals(path)) {
-                  //Global.mFooWtf.onFoo(Integer.parseInt(query));
-                  Global.wtf = Integer.parseInt(query);
-                } else if ("/show".equals(path)) {
-                } else if ("/hide".equals(path)) {
-                }
-              }
-            } catch(java.net.URISyntaxException wtf) {
-              Log.v(this.toString(), wtf.toString());
+        try {
+          URI action = new URI(mLastMessagePopped);
+          String scheme = action.getScheme();
+          String path = action.getPath();
+          String query = action.getQuery();
+          if ("memoryleak".equals(scheme)) {
+            if ("/start".equals(path)) {
+              Global.wtf = Integer.parseInt(query);
+            } else if ("/show".equals(path)) {
+            } else if ("/hide".equals(path)) {
             }
-        //  }
-        //});
+          }
+        } catch(java.net.URISyntaxException wtf) {
+          Log.v(this.toString(), wtf.toString());
+        }
         return mLastMessagePopped;
       }
     } catch (java.lang.InterruptedException wtf) {
@@ -513,16 +472,25 @@ mWebView.setOnTouchListener(new View.OnTouchListener() {
   static {
     System.loadLibrary("sanangeles");
   }
+
+
 }
 
 
 class JavascriptBridge {
+
+
   private DemoActivity mActivity;
+
+
   public JavascriptBridge(DemoActivity theActivity) {
     mActivity = theActivity;
   }
 
+
   public void pushToJava(String messageFromJavascript) {
     DemoActivity.mWebViewMessages.offer(messageFromJavascript);
   }
+
+
 }
