@@ -1,27 +1,22 @@
 // Vanilla Linux OpenGL+GLUT+SOIL App
 
-#include <GL/gl.h>
+//#include <GL/gl.h>
+//#include <GL/gl_mangle.h>
+#include "MemoryLeak.h"
+
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 #include <GL/glut.h>
 #include <SOIL/SOIL.h>
 #include <dirent.h>
 #include <alsa/asoundlib.h>
 
-#include "MemoryLeak.h"
-#include "Model.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
-#include "Engine.h"
-#include "octree.h"
-#include "micropather.h"
-#include "ModelOctree.h"
-#include "FlightControl.h"
 
 #define kWindowWidth 320
 #define kWindowHeight 480
 
 static pthread_t audio_thread;
 
-static Engine *game;
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
@@ -53,7 +48,8 @@ void *pump_audio(void *) {
   memset(buffer, 0, min_buffer * sizeof(short));
 
   while (true) {
-    game->DoAudio(buffer, min_buffer);
+    //#TODO game->DoAudio(buffer, min_buffer);
+    Engine::CurrentGameDoAudio(buffer, min_buffer / sizeof(short));
     foo = snd_pcm_writei(pcm_handle, buffer, min_buffer);
     if (foo < 0) {
       LOGV("wtf: %s\n", snd_strerror(foo));
@@ -63,30 +59,30 @@ void *pump_audio(void *) {
 
 
 void draw(void) {
-  game->DrawScreen(0);
+  //#TODO game->DrawScreen(0);
   glutSwapBuffers();
 }
 
 
 void resize(int width, int height) {
-  game->ResizeScreen(width, height);
+  //#TODO game->ResizeScreen(width, height);
 }
 
 
 void processMouse(int button, int state, int x, int y) {
   switch (state) {
     case GLUT_DOWN:
-      game->Hit(x, y, 0);
+      //#TODO game->Hit(x, y, 0);
       break;
     case GLUT_UP:
-      game->Hit(x, y, 2);
+      //#TODO game->Hit(x, y, 2);
       break;
   }
 }
 
 
 void processMouseMotion(int x, int y) {
-  game->Hit(x, y, 1);
+  //#TODO game->Hit(x, y, 1);
 }
 
 
@@ -122,123 +118,125 @@ int main(int argc, char** argv) {
   glutInitWindowPosition(1000, 500);
   glutCreateWindow("main");
 
-struct dirent *dp;
+  struct dirent *dp;
 
-const char *dir_path="../../assets/textures/";
-DIR *dir = opendir(dir_path);
-while ((dp=readdir(dir)) != NULL) {
-char *tmp;
-tmp = path_cat(dir_path, dp->d_name);
-if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
-} else {
-printf("%s\n", tmp);
+  const char *dir_path="../../assets/textures/";
+  DIR *dir = opendir(dir_path);
+  while ((dp=readdir(dir)) != NULL) {
+    char *tmp;
+    tmp = path_cat(dir_path, dp->d_name);
+    if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+    } else {
+      printf("%s\n", tmp);
+      GLuint tex_2d = SOIL_load_OGL_texture(
+        tmp,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
+      );
+      
+      printf( "SOIL loading error: '%s'\n", SOIL_last_result());
+
+      textures.push_back(tex_2d);
+    }
+
+    free(tmp);
+    tmp=NULL;
+  }
+
+  closedir(dir);
+  printf("done with tex\n");
+
+  dir_path="../../assets/models/";
+  dir = opendir(dir_path);
+  if (dir) {
+    while ((dp=readdir(dir)) != NULL) {
+      char *tmp;
+      tmp = path_cat(dir_path, dp->d_name);
+      if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+      } else {
+        printf("%s\n", tmp);
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+
+        foo *firstModel = new foo;
+        firstModel->fp = fd;
+        firstModel->off = 0;
+        firstModel->len = len;
+
+        models.push_back(firstModel);
+      }
+
+      free(tmp);
+      tmp=NULL;
+    }
+    closedir(dir);
+  }
+  printf("wha!!!!!!!!!!!!!!!!!!!\n");
+
+  dir_path="../../assets/sounds/";
+  dir = opendir(dir_path);
+  if (dir) {
+    while ((dp=readdir(dir)) != NULL) {
+/*
+      char *tmp;
+      tmp = path_cat(dir_path, dp->d_name);
+      printf("%s\n", tmp);
+      if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+      } else {
+        printf("%s\n", tmp);
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+
+        foo *firstModel = new foo;
+        firstModel->fp = fd;
+        firstModel->off = 0;
+        firstModel->len = len;
+
+        sounds.push_back(firstModel);
+      }
+    
+      free(tmp);
+      tmp=NULL;
+*/
+    }
+    printf("wtf");
+    closedir(dir);
+    printf("wtf2");
+  }
 
 
-GLuint tex_2d = SOIL_load_OGL_texture
-(
-tmp,
-SOIL_LOAD_AUTO,
-SOIL_CREATE_NEW_ID,
-SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
-);
+  dir_path="../../assets/levels/";
+  dir = opendir(dir_path);
+  if (dir) {
+    while ((dp=readdir(dir)) != NULL) {
+      char *tmp;
+      tmp = path_cat(dir_path, dp->d_name);
+      if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+      } else {
+      printf("%s\n", tmp);
+      FILE *fd = fopen(tmp, "rb");
+      fseek(fd, 0, SEEK_END);
+      unsigned int len = ftell(fd);
+      rewind(fd);
 
-        printf( "SOIL loading error: '%s'\n", SOIL_last_result());
+      foo *firstModel = new foo;
+      firstModel->fp = fd;
+      firstModel->off = 0;
+      firstModel->len = len;
 
-textures.push_back(tex_2d);
-}
+      levels.push_back(firstModel);
+      }
 
-free(tmp);
-tmp=NULL;
-}
-closedir(dir);
-printf("done with tex\n");
-
-dir_path="../../assets/models/";
-printf("1\n");
-dir = opendir(dir_path);
-printf("1\n");
-if (dir) {
-while ((dp=readdir(dir)) != NULL) {
-printf("1\n");
-char *tmp;
-printf("1\n");
-tmp = path_cat(dir_path, dp->d_name);
-printf("1\n");
-if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
-printf("1\n");
-} else {
-printf("%s\n", tmp);
-FILE *fd = fopen(tmp, "rb");
-fseek(fd, 0, SEEK_END);
-unsigned int len = ftell(fd);
-rewind(fd);
-
-foo *firstModel = new foo;
-firstModel->fp = fd;
-firstModel->off = 0;
-firstModel->len = len;
-
-models.push_back(firstModel);
-}
-
-free(tmp);
-tmp=NULL;
-}
-closedir(dir);
-}
-printf("wha?\n");
-
-dir_path="../../assets/sounds/";
-dir = opendir(dir_path);
-while ((dp=readdir(dir)) != NULL) {
-char *tmp;
-tmp = path_cat(dir_path, dp->d_name);
-if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
-} else {
-printf("%s\n", tmp);
-FILE *fd = fopen(tmp, "rb");
-fseek(fd, 0, SEEK_END);
-unsigned int len = ftell(fd);
-rewind(fd);
-
-foo *firstModel = new foo;
-firstModel->fp = fd;
-firstModel->off = 0;
-firstModel->len = len;
-
-sounds.push_back(firstModel);
-}
-
-free(tmp);
-tmp=NULL;
-}
-closedir(dir);
-
-dir_path="../../assets/levels/";
-dir = opendir(dir_path);
-while ((dp=readdir(dir)) != NULL) {
-char *tmp;
-tmp = path_cat(dir_path, dp->d_name);
-if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
-} else {
-printf("%s\n", tmp);
-FILE *fd = fopen(tmp, "rb");
-fseek(fd, 0, SEEK_END);
-unsigned int len = ftell(fd);
-rewind(fd);
-
-foo *firstModel = new foo;
-firstModel->fp = fd;
-firstModel->off = 0;
-firstModel->len = len;
-
-levels.push_back(firstModel);
-}
-
-free(tmp);
-tmp=NULL;
-}
-closedir(dir);
+      free(tmp);
+      tmp=NULL;
+    }
+    closedir(dir);
+  }
 
 
 
@@ -246,7 +244,6 @@ closedir(dir);
     /* will make this configurable ;-)     */
     pcm_name = strdup("plughw:0,0");
   
-
     /* Allocate the snd_pcm_hw_params_t structure on the stack. */
     snd_pcm_hw_params_alloca(&hwparams);
   
@@ -332,10 +329,17 @@ closedir(dir);
       return(-1);
     }
 
+    printf("fooo\n");
+
+    //Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL, NULL, NULL);
+    //, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  
+  /*
   game = new FlightControl(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
   game->CreateThread();
+  */
 
-	pthread_create(&audio_thread, 0, pump_audio, NULL);
+	//pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);

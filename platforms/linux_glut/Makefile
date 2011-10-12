@@ -1,9 +1,9 @@
 # OSX Makefile, needs to know where the main src root is
 
 build=build
-CXXFLAGS=-Wall -g -pg -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api -I../../src/lua -I../../src/oolua
+CXXFLAGS=-Wno-unknown-pragmas -g -pg -DDESKTOP -DHAVE_SETENV -I/usr/include -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api -I../../src/lua -I../../src/oolua -I../../src/Box2D
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound
+LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lGLU -lGLESv1_CM -lSOIL -lasound
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
@@ -18,6 +18,13 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../.
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/zlib/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajil/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/libmodplug/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Collision/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Collision/Shapes/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Contacts/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
 
 raptor_island: $(build) $(objects)
 	$(CC) -o $(build)/raptor_island $(LDFLAGS) $(objects)
@@ -44,6 +51,14 @@ $(build):
 	mkdir -p $(build)/ares
 	mkdir -p $(build)/lua
 	mkdir -p $(build)/oolua
+	mkdir -p $(build)/Box2D
+	mkdir -p $(build)/Box2D/Collision
+	mkdir -p $(build)/Box2D/Collision/Shapes
+	mkdir -p $(build)/Box2D/Common
+	mkdir -p $(build)/Box2D/Dynamics
+	mkdir -p $(build)/Box2D/Dynamics/Contacts
+	mkdir -p $(build)/Box2D/Dynamics/Joints
+	mkdir -p $(build)/Box2D/Dynamics/Rope
 
 clean:
 	rm -Rf $(build)

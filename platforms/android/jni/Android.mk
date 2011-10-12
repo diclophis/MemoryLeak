@@ -40,7 +40,7 @@ CG_SUBDIRS := \
 ../../../src/Box2D/Dynamics \
 ../../../src/Box2D/Dynamics/Contacts \
 ../../../src/Box2D/Dynamics/Joints \
-../../../src/Box2D Rope
+../../../src/Box2D/Rope
 
 
 #../../../src/lua \

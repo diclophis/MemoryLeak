@@ -1,17 +1,11 @@
 //JonBardin GPL 2011
 
+
+
 #include "MemoryLeak.h"
 #include "MainMenu.h"
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
-
-#ifdef DESKTOP
-  #define GLU_PERSPECTIVE gluPerspective
-  #define GLfixed GLfloat
-  #define glFrustumx glFrustum
-#else
-  #define GLU_PERSPECTIVE gluePerspective
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
