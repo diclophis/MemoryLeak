@@ -12,3 +12,4 @@ platforms/ios/MemoryLeak.xcodeproj/project.xcworkspace
 platforms/ios/MemoryLeak.xcodeproj/xcuserdata
 private
 local.properties
+platforms/linux_glut/gmon.out
