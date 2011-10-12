@@ -10,3 +10,4 @@ platforms/ios/MemoryLeak.xcodeproj/*.pbxuser
 platforms/ios/MemoryLeak.xcodeproj/*.perspectivev3
 private
 local.properties
+platforms/linux_glut/gmon.out

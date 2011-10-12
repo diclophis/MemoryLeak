@@ -1,9 +1,9 @@
 # OSX Makefile, needs to know where the main src root is
 
 build=build
-CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api -I../../src/lua -I../../src/oolua
+CXXFLAGS=-Wall -g -pg -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include/curl -I../../src/include/ares -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api -I../../src/lua -I../../src/oolua
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-lpthread -lresolv -lGL -lglut -lSOIL -lasound
+LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
@@ -20,7 +20,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../.
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/libmodplug/*.cpp)))
 
 raptor_island: $(build) $(objects)
-	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
+	$(CC) -o $(build)/raptor_island $(LDFLAGS) $(objects)
 
 $(build)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
