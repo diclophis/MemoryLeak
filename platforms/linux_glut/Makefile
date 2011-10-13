@@ -2,7 +2,7 @@
 
 build=build
 CXXFLAGS=\
--Wno-unknown-pragmas -g -pg -DDESKTOP -DHAVE_SETENV \
+-g -pg -DDESKTOP -DHAVE_SETENV \
 -I/usr/include \
 -I../../src \
 -I../../src/include \
@@ -10,6 +10,8 @@ CXXFLAGS=\
 -I../../src/octree \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/Box2D
+
+#-Wno-unknown-pragmas \
 
 #-I../../src/include/curl \
 #-I../../src/include/ares \
@@ -24,10 +26,11 @@ CXXFLAGS=\
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajil/*.c)))
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound
+LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLESv1_CM
+#-lEGL -lX11 -lGLESv1_CM
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/assimp/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/contrib/irrXML/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/ConvertUTF/*.c)))

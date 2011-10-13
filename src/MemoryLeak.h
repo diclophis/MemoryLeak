@@ -34,9 +34,12 @@
 #include <math.h>
 
 #ifdef DESKTOP
-  #define GLU_PERSPECTIVE gluPerspective
+  #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
+  #define GLU_PERSPECTIVE gluePerspective
+  #define glOrthof glOrtho
   //#define GLfixed GLfloat
-  #define GLdouble GLfloat
+  //#define GLdouble GLfloat
+  //#define GLfloat GLdouble
   #define glFrustumx glFrustum
 #else
   #define GLU_PERSPECTIVE gluePerspective
@@ -58,7 +61,7 @@
   #endif
 #else
   #ifdef DESKTOP
-    #define GL_GLEXT_LEGACY
+    //#define GL_GLEXT_LEGACY
     //#define USE_MGL_NAMESPACE
     //#include <GL/gl.h>
     //#include <GL/glut.h>
@@ -67,9 +70,12 @@
     
     #include <GLES/gl.h>
     #include <GLES/glext.h>
-    #include <GL/glu.h>
-    #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
+    //#include <GL/glu.h>
     //#define glOrthof glOrtho
+
+    //#include <GL/gl.h>
+    //#include <GL/glext.h>
+    //#include <GL/glut.h>
   #endif
 #endif
 
