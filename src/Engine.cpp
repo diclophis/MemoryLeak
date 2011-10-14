@@ -66,10 +66,10 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	//ResizeScreen(m_ScreenWidth, m_ScreenHeight);
 
   //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  //Engine::CheckGL("glHint in E1");
+  Engine::CheckGL("glHint in E1");
 
   //glClearColor(0.5, 0.2, 0.1, 1.0);
-  //Engine::CheckGL("glClearColor in E");
+  Engine::CheckGL("glClearColor in E");
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -228,7 +228,8 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
-	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
+  LOGV("start\n");
+	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
 
@@ -251,8 +252,9 @@ void Engine::DrawScreen(float rotation) {
     Engine::CheckGL("glMatrixMode2 in E");
     glLoadIdentity();
     Engine::CheckGL("glMatrixMode3 in E");
-    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-    Engine::CheckGL("glOrtherof in E");
+    //glOrtho((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 0.01f, 1.0f);
+    //LOGV("%f %f %f %f %f %f\n", (-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 0.01f, 1.0f);
+    Engine::CheckGL("glOrthof in E");
 
     glMatrixMode(GL_MODELVIEW);
     Engine::CheckGL("glMtrixdff in E");
@@ -260,11 +262,13 @@ void Engine::DrawScreen(float rotation) {
     Engine::CheckGL("glLoadIdentidfdf3434 in E");
     RenderSpritePhase();
 	} else {
+    LOGV("wtf@#$!@#$@#$\n");
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
   pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
-  
+ 
+  LOGV("end\n");
   Engine::CheckGL("END OF DRAW");
 }
 
@@ -275,7 +279,7 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   Engine::CheckGL("ERROR BEFORE!?@# in E");
-  LOGV("%d %d\n", m_ScreenWidth, m_ScreenHeight);
+  LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   Engine::CheckGL("glViewport in E");
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

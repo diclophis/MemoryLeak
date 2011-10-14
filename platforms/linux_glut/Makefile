@@ -26,7 +26,7 @@ CXXFLAGS=\
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajil/*.c)))
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLESv1_CM
+LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLESv1_CM -lGLU
 #-lEGL -lX11 -lGLESv1_CM
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))

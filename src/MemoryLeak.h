@@ -35,10 +35,10 @@
 
 #ifdef DESKTOP
   #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
-  #define GLU_PERSPECTIVE gluePerspective
+  #define GLU_PERSPECTIVE gluPerspective
   #define glOrthof glOrtho
   //#define GLfixed GLfloat
-  //#define GLdouble GLfloat
+  #define GLdouble GLfloat
   //#define GLfloat GLdouble
   #define glFrustumx glFrustum
 #else
@@ -66,10 +66,10 @@
     //#include <GL/gl.h>
     //#include <GL/glut.h>
     //#include <GL/glext.h>
-    //#include <GL/glu.h>
     
     #include <GLES/gl.h>
     #include <GLES/glext.h>
+    #include <GL/glu.h>
     //#include <GL/glu.h>
     //#define glOrthof glOrtho
 
