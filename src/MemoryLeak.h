@@ -34,13 +34,19 @@
 #include <math.h>
 
 #ifdef DESKTOP
-  #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
-  #define GLU_PERSPECTIVE gluPerspective
-  #define glOrthof glOrtho
-  //#define GLfixed GLfloat
-  #define GLdouble GLfloat
-  //#define GLfloat GLdouble
-  #define glFrustumx glFrustum
+  #ifndef __APPLE__
+    #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
+    #define GLU_PERSPECTIVE gluPerspective
+    #define glOrthof glOrtho
+    //#define GLfixed GLfloat
+    #define GLdouble GLfloat
+    //#define GLfloat GLdouble
+    #define glFrustumx glFrustum
+  #else
+    #define GLfixed GLfloat
+    #define glFrustumx glFrustum
+    #define GLU_PERSPECTIVE gluPerspective
+  #endif
 #else
   #define GLU_PERSPECTIVE gluePerspective
 #endif
@@ -49,11 +55,28 @@
 
 #ifdef __APPLE__
   #ifdef DESKTOP
-	#include <OpenGL/gl.h>    // Header File For The OpenGL32 Library
-	#include <OpenGL/glu.h>   // Header File For The GLu32 Library
-	#include <OpenGL/glext.h>   // Header File For The GLu32 Library
+	  #include <OpenGL/gl.h>    // Header File For The OpenGL32 Library
+	  #include <OpenGL/glu.h>   // Header File For The GLu32 Library
+	  #include <OpenGL/glext.h>   // Header File For The GLu32 Library
+    //#include <OpenGLES/EAGL.h>
+    //#include <OpenGLES/EAGLDrawable.h>
+    //#include <OpenGLES/ES1/gl.h>
+    //#include <OpenGLES/ES1/glext.h>
     #include <GLUT/glut.h>    // Header File For The GLut Library
     #define glOrthof glOrtho
+
+
+    #define glGenFramebuffersOES glGenFramebuffersEXT
+    #define glBindFramebufferOES glBindFramebufferEXT
+    #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING_EXT
+    #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER_EXT
+    #define GL_RENDERBUFFER_OES GL_RENDERBUFFER_EXT
+    #define GL_COLOR_ATTACHMENT0_OES GL_COLOR_ATTACHMENT0_EXT
+    #define glCheckFramebufferStatusOES glCheckFramebufferStatusEXT
+    #define glFramebufferTexture2DOES glFramebufferTexture2DEXT
+    #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE_EXT
+    #define glDeleteFramebuffersOES glDeleteFramebuffersEXT
+
   #else
     #include <OpenGLES/ES1/gl.h>
     #include <OpenGLES/ES1/glext.h>

@@ -7,14 +7,6 @@
 
 
 #include "MemoryLeak.h"
-#include "Model.h"
-#include "AtlasSprite.h"
-#include "SpriteGun.h"
-#include "Engine.h"
-#include "octree.h"
-#include "micropather.h"
-#include "ModelOctree.h"
-#include "FlightControl.h"
 
 //#define kWindowWidth 480
 //#define kWindowHeight 320
@@ -25,7 +17,6 @@
 //#define kWindowWidth 480
 //#define kWindowHeight 640
 
-static Engine *game;
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
@@ -71,28 +62,28 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 }
 
 void draw(void) {
-  game->DrawScreen(0);
+  //game->DrawScreen(0);
   glutSwapBuffers();
 }
 
 void resize(int width, int height) {
-  game->ResizeScreen(width, height);
+  //game->ResizeScreen(width, height);
 }
 
 void processMouse(int button, int state, int x, int y) {
   switch (state) {
     case GLUT_DOWN:
-      game->Hit(x, y, 0);
+      //game->Hit(x, y, 0);
       break;
     case GLUT_UP:
-      game->Hit(x, y, 2);
+      //game->Hit(x, y, 2);
       break;
   }
 }
 
 
 void processMouseMotion(int x, int y) {
-  game->Hit(x, y, 1);
+  //game->Hit(x, y, 1);
 }
 
 
@@ -226,8 +217,8 @@ int main(int argc, char** argv) {
 		sounds.push_back(firstModel);
 	}
 
-  game = new FlightControl(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
-  game->CreateThread();
+  //game = new FlightControl(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
+  //game->CreateThread();
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);
