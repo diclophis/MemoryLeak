@@ -43,8 +43,8 @@
     //#define GLfloat GLdouble
     #define glFrustumx glFrustum
   #else
-    //#define GLfixed GLfloat
-    //#define glFrustumx glFrustum
+    #define GLfixed GLfloat
+    #define glFrustumx glFrustum
     #define GLU_PERSPECTIVE gluPerspective
   #endif
 #else
