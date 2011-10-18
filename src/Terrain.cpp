@@ -60,9 +60,9 @@ void Terrain::GenerateHillKeyPoints() {
   float maxHeight = screenH;
   float minHeight = 0;
   while (nHillKeyPoints < kMaxHillKeyPoints-1) {
-    dx = arc4random() % rangeDX + minDX;
+    dx = random() % rangeDX + minDX;
     x += dx;
-    dy = arc4random() % rangeDY + minDY;
+    dy = random() % rangeDY + minDY;
     ny = y + dy * sign;
     if(ny > maxHeight) ny = maxHeight;
     if(ny < minHeight) ny = minHeight;
@@ -233,7 +233,7 @@ GLuint Terrain::GenerateStripesTexture() {
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
-  int nStripes = arc4random() % (maxStripes - minStripes) + minStripes;
+  int nStripes = random() % (maxStripes - minStripes) + minStripes;
   if (nStripes % 2) {
     nStripes++;
   }
@@ -264,7 +264,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
     if (true) {      
       // layer 1: stripes
-      if (arc4random() % 2) {
+      if (random() % 2) {
       //if (true) {
         // diagonal stripes
         dx = (float)textureSize*2 / (float)nStripes;
@@ -462,9 +462,9 @@ ccColor4F Terrain::GenerateColor() {
   const int minDelta = 150;
   int r, g, b, min, max;
   while (true) {
-    r = arc4random()%256;
-    g = arc4random()%256;
-    b = arc4random()%256;
+    r = random()%256;
+    g = random()%256;
+    b = random()%256;
     min = MIN(MIN(r, g), b);
     max = MAX(MAX(r, g), b);
     if (max-min < minDelta) continue;

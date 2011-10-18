@@ -35,7 +35,7 @@
 
 #ifdef DESKTOP
   #ifndef __APPLE__
-    #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
+    //#define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
     #define GLU_PERSPECTIVE gluPerspective
     #define glOrthof glOrtho
     #define GLfixed GLfloat
