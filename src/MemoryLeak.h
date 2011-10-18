@@ -43,8 +43,8 @@
     //#define GLfloat GLdouble
     #define glFrustumx glFrustum
   #else
-    #define GLfixed GLfloat
-    #define glFrustumx glFrustum
+    //#define GLfixed GLfloat
+    //#define glFrustumx glFrustum
     #define GLU_PERSPECTIVE gluPerspective
   #endif
 #else
@@ -79,10 +79,10 @@
     #include <GL/gl.h>
     #include <GL/glut.h>
     #include <GL/glext.h>
+    #include <GL/glu.h>
     
     //#include <GLES/gl.h>
     //#include <GLES/glext.h>
-    #include <GL/glu.h>
     //#include <GL/glu.h>
     //#define glOrthof glOrtho
 

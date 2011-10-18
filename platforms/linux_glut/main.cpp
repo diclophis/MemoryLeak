@@ -90,17 +90,17 @@ void resize(int width, int height) {
 void processMouse(int button, int state, int x, int y) {
   switch (state) {
     case GLUT_DOWN:
-      //#TODO game->Hit(x, y, 0);
+      Engine::CurrentGameHit(x, y, 0);
       break;
     case GLUT_UP:
-      //#TODO game->Hit(x, y, 2);
+      Engine::CurrentGameHit(x, y, 2);
       break;
   }
 }
 
 
 void processMouseMotion(int x, int y) {
-  //#TODO game->Hit(x, y, 1);
+  Engine::CurrentGameHit(x, y, 1);
 }
 
 
@@ -138,29 +138,14 @@ char *path_cat (const char *str1, char *str2) {
 
 int main(int argc, char** argv) {
 
-/*
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-
-  glutInitWindowSize(kWindowWidth, kWindowHeight);
-  glutInitWindowPosition(1000, 500);
-  glutCreateWindow("main");
-
-  glutKeyboardFunc(processNormalKeys);
-  glutMouseFunc(processMouse);
-  glutMotionFunc(processMouseMotion);
-  glutDisplayFunc(draw);
-  glutIdleFunc(draw);
-  glutReshapeFunc(resize);
-  glutMainLoop();
-*/
-
   glutInit(&argc,argv);
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(320, 480);
   glutInitWindowPosition(0,0);
   glutCreateWindow("simple");
   glutKeyboardFunc(processNormalKeys);
+  glutMouseFunc(processMouse);
+  glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);
   glutIdleFunc(draw);
   glutReshapeFunc(resize);
@@ -282,101 +267,100 @@ int main(int argc, char** argv) {
     closedir(dir);
   }
 
-    /* Init pcm_name. Of course, later you */
-    /* will make this configurable ;-)     */
-    pcm_name = strdup("plughw:0,0");
-  
-    /* Allocate the snd_pcm_hw_params_t structure on the stack. */
-    snd_pcm_hw_params_alloca(&hwparams);
-  
-    /* Open PCM. The last parameter of this function is the mode. */
-    /* If this is set to 0, the standard mode is used. Possible   */
-    /* other values are SND_PCM_NONBLOCK and SND_PCM_ASYNC.       */ 
-    /* If SND_PCM_NONBLOCK is used, read / write access to the    */
-    /* PCM device will return immediately. If SND_PCM_ASYNC is    */
-    /* specified, SIGIO will be emitted whenever a period has     */
-    /* been completely processed by the soundcard.                */
-    if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
-      fprintf(stderr, "Error opening PCM device %s\n", pcm_name);
-      return(-1);
-    }
+  /* Init pcm_name. Of course, later you */
+  /* will make this configurable ;-)     */
+  pcm_name = strdup("plughw:0,0");
 
-    /* Init hwparams with full configuration space */
-    if (snd_pcm_hw_params_any(pcm_handle, hwparams) < 0) {
-      fprintf(stderr, "Can not configure this PCM device.\n");
-      return(-1);
-    }
+  /* Allocate the snd_pcm_hw_params_t structure on the stack. */
+  snd_pcm_hw_params_alloca(&hwparams);
 
-    unsigned int rate = 44100; /* Sample rate */
-    //min_buffer = 64;
-    min_buffer = 128 * 4;
+  /* Open PCM. The last parameter of this function is the mode. */
+  /* If this is set to 0, the standard mode is used. Possible   */
+  /* other values are SND_PCM_NONBLOCK and SND_PCM_ASYNC.       */ 
+  /* If SND_PCM_NONBLOCK is used, read / write access to the    */
+  /* PCM device will return immediately. If SND_PCM_ASYNC is    */
+  /* specified, SIGIO will be emitted whenever a period has     */
+  /* been completely processed by the soundcard.                */
+  if (snd_pcm_open(&pcm_handle, pcm_name, stream, 0) < 0) {
+    fprintf(stderr, "Error opening PCM device %s\n", pcm_name);
+    return(-1);
+  }
 
-    int periods = 2;       /* Number of periods */
-    snd_pcm_uframes_t periodsize = 512 * 4; /* Periodsize (bytes) */
+  /* Init hwparams with full configuration space */
+  if (snd_pcm_hw_params_any(pcm_handle, hwparams) < 0) {
+    fprintf(stderr, "Can not configure this PCM device.\n");
+    return(-1);
+  }
+
+  unsigned int rate = 44100; /* Sample rate */
+  //min_buffer = 64;
+  min_buffer = 128 * 4;
+
+  int periods = 2;       /* Number of periods */
+  snd_pcm_uframes_t periodsize = 512 * 4; /* Periodsize (bytes) */
 
 
-    /* Set access type. This can be either    */
-    /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
-    /* SND_PCM_ACCESS_RW_NONINTERLEAVED.      */
-    /* There are also access types for MMAPed */
-    /* access, but this is beyond the scope   */
-    /* of this introduction.                  */
-    if (snd_pcm_hw_params_set_access(pcm_handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
-      fprintf(stderr, "Error setting access.\n");
-      return(-1);
-    }
-  
-    /* Set sample format */
-    if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
-      fprintf(stderr, "Error setting format.\n");
-      return(-1);
-    }
+  /* Set access type. This can be either    */
+  /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
+  /* SND_PCM_ACCESS_RW_NONINTERLEAVED.      */
+  /* There are also access types for MMAPed */
+  /* access, but this is beyond the scope   */
+  /* of this introduction.                  */
+  if (snd_pcm_hw_params_set_access(pcm_handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED) < 0) {
+    fprintf(stderr, "Error setting access.\n");
+    return(-1);
+  }
 
-    /* Set sample rate. If the exact rate is not supported */
-    /* by the hardware, use nearest possible rate.         */ 
-    //exact_rate = rate;
-    if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &rate, 0) < 0) {
-      fprintf(stderr, "Error setting rate.\n");
-      return(-1);
-    }
+  /* Set sample format */
+  if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
+    fprintf(stderr, "Error setting format.\n");
+    return(-1);
+  }
 
-    /* Set number of channels */
-    if (snd_pcm_hw_params_set_channels(pcm_handle, hwparams, 1) < 0) {
-      fprintf(stderr, "Error setting channels.\n");
-      return(-1);
-    }
+  /* Set sample rate. If the exact rate is not supported */
+  /* by the hardware, use nearest possible rate.         */ 
+  //exact_rate = rate;
+  if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &rate, 0) < 0) {
+    fprintf(stderr, "Error setting rate.\n");
+    return(-1);
+  }
 
-    /* Set number of periods. Periods used to be called fragments. */ 
-    if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
-      fprintf(stderr, "Error setting periods.\n");
-      return(-1);
-    }
+  /* Set number of channels */
+  if (snd_pcm_hw_params_set_channels(pcm_handle, hwparams, 1) < 0) {
+    fprintf(stderr, "Error setting channels.\n");
+    return(-1);
+  }
 
-    /* Set buffer size (in frames). The resulting latency is given by */
-    /* latency = periodsize * periods / (rate * bytes_per_frame)     */
-    if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, (periodsize * periods)>>2) < 0) {
-      fprintf(stderr, "Error setting buffersize.\n");
-      return(-1);
-    }
-  
-    /* Apply HW parameter settings to */
-    /* PCM device and prepare device  */
-    if (snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
-      fprintf(stderr, "Error setting HW params.\n");
-      return(-1);
-    }
+  /* Set number of periods. Periods used to be called fragments. */ 
+  if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
+    fprintf(stderr, "Error setting periods.\n");
+    return(-1);
+  }
 
-    if (snd_pcm_prepare(pcm_handle) < 0) {
-      fprintf (stderr, "cannot prepare audio interface for use\n");
-      return(-1);
-    }
+  /* Set buffer size (in frames). The resulting latency is given by */
+  /* latency = periodsize * periods / (rate * bytes_per_frame)     */
+  if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, (periodsize * periods)>>2) < 0) {
+    fprintf(stderr, "Error setting buffersize.\n");
+    return(-1);
+  }
 
-    printf("fooo\n");
+  /* Apply HW parameter settings to */
+  /* PCM device and prepare device  */
+  if (snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
+    fprintf(stderr, "Error setting HW params.\n");
+    return(-1);
+  }
 
-    Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-    pthread_create(&audio_thread, 0, pump_audio, NULL);
+  if (snd_pcm_prepare(pcm_handle) < 0) {
+    fprintf (stderr, "cannot prepare audio interface for use\n");
+    return(-1);
+  }
 
-printf("run\n\n\n\n\n\n\n\n\n\n\n\n");
-glutMainLoop();
+  printf("fooo\n");
+
+  Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  pthread_create(&audio_thread, 0, pump_audio, NULL);
+
+  glutMainLoop();
   return 0;
 }

@@ -143,7 +143,7 @@ void AtlasSprite::Render() {
 		const GLushort indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
 
-    if (false) {
+    if (true) {
       glDisable(GL_TEXTURE_2D);
       glLineWidth(2.0);
       glColor4f(1.0, 0.0, 0.0, 1.0);
