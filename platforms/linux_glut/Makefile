@@ -11,6 +11,8 @@ CXXFLAGS=\
 -I../../src/assimp/BoostWorkaround \
 -I../../src/Box2D
 
+#CC=gcc
+
 #-Wno-unknown-pragmas \
 
 #-I../../src/include/curl \
@@ -26,7 +28,8 @@ CXXFLAGS=\
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajil/*.c)))
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLESv1_CM -lGLU
+LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLU -lm -lstdc++
+#LDFLAGS=-lm -lstdc++
 #-lEGL -lX11 -lGLESv1_CM
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))
@@ -46,7 +49,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
 
 raptor_island: $(build) $(objects)
-	$(CC) -o $(build)/raptor_island $(LDFLAGS) $(objects)
+	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
 
 $(build)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
