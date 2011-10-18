@@ -46,7 +46,6 @@ char *pcm_name;
 
 static int game_index = 0;
 
-  
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
 
@@ -55,11 +54,13 @@ void *pump_audio(void *) {
   memset(buffer, 0, min_buffer * sizeof(short));
 
   while (true) {
-    //#TODO game->DoAudio(buffer, min_buffer);
     Engine::CurrentGameDoAudio(buffer, min_buffer / sizeof(short));
+    //Engine::CurrentGameDoAudio(buffer, min_buffer);
     foo = snd_pcm_writei(pcm_handle, buffer, min_buffer);
     if (foo < 0) {
-      //LOGV("wtf: %s\n", snd_strerror(foo));
+      LOGV("wtf: %s\n", snd_strerror(foo));
+    } else if (foo > 0) {
+      //LOGV("wrote: %lu\n", foo);
     }
   }
 }
@@ -159,7 +160,6 @@ int main(int argc, char** argv) {
     tmp = path_cat(dir_path, dp->d_name);
     if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
     } else {
-      printf("%s\n", tmp);
       GLuint tex_2d = SOIL_load_OGL_texture(
         tmp,
         SOIL_LOAD_AUTO,
@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
       );
       
-      printf( "SOIL loading error: '%s'\n", SOIL_last_result());
+      //printf( "SOIL loading error: '%s'\n", SOIL_last_result());
 
       textures.push_back(tex_2d);
     }
@@ -177,7 +177,6 @@ int main(int argc, char** argv) {
   }
 
   closedir(dir);
-  printf("done with tex\n");
 
   dir_path="../../assets/models/";
   dir = opendir(dir_path);
@@ -187,7 +186,6 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-        printf("%s\n", tmp);
         FILE *fd = fopen(tmp, "rb");
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
@@ -206,7 +204,6 @@ int main(int argc, char** argv) {
     }
     closedir(dir);
   }
-  printf("wha!!!!!!!!!!!!!!!!!!!\n");
 
   dir_path="../../assets/sounds/";
   dir = opendir(dir_path);
@@ -214,10 +211,8 @@ int main(int argc, char** argv) {
     while ((dp=readdir(dir)) != NULL) {
       char *tmp;
       tmp = path_cat(dir_path, dp->d_name);
-      printf("%s\n", tmp);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-        printf("%s\n", tmp);
         FILE *fd = fopen(tmp, "rb");
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
@@ -234,9 +229,7 @@ int main(int argc, char** argv) {
       free(tmp);
       tmp=NULL;
     }
-    printf("wtf");
     closedir(dir);
-    printf("wtf2");
   }
 
   dir_path="../../assets/levels/";
@@ -247,7 +240,6 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-      printf("%s\n", tmp);
       FILE *fd = fopen(tmp, "rb");
       fseek(fd, 0, SEEK_END);
       unsigned int len = ftell(fd);
@@ -294,11 +286,10 @@ int main(int argc, char** argv) {
 
   unsigned int rate = 44100; /* Sample rate */
   //min_buffer = 64;
-  min_buffer = 128 * 4;
+  //min_buffer = 128 * 64;
 
-  int periods = 2;       /* Number of periods */
-  snd_pcm_uframes_t periodsize = 512 * 4; /* Periodsize (bytes) */
-
+  int periods = 4;       /* Number of periods */
+  snd_pcm_uframes_t periodsize = 1024; /* Periodsize (bytes) */
 
   /* Set access type. This can be either    */
   /* SND_PCM_ACCESS_RW_INTERLEAVED or       */
@@ -312,6 +303,8 @@ int main(int argc, char** argv) {
   }
 
   /* Set sample format */
+  //if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S32_LE) < 0) {
+  //if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_U16_LE) < 0) {
   if (snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0) {
     fprintf(stderr, "Error setting format.\n");
     return(-1);
@@ -356,7 +349,19 @@ int main(int argc, char** argv) {
     return(-1);
   }
 
-  printf("fooo\n");
+  //snd_pcm_uframes_t nframes;
+
+  snd_pcm_uframes_t buffersize2, periodsize2;
+  if (snd_pcm_get_params(pcm_handle, &buffersize2, &periodsize2) < 0) {
+  //if (snd_pcm_hw_params_get_buffer_size(hwparams, &nframes) < 0) {
+  //if (snd_pcm_hw_params_get_period_size_min(hwparams, &nframes, NULL) < 0) {
+    fprintf(stderr, "Error cant get num frames\n");
+    return(-1);
+  }
+
+  printf("fooo %lu %lu\n", buffersize2, periodsize2);
+
+  min_buffer = periodsize2 * 16;
 
   Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   pthread_create(&audio_thread, 0, pump_audio, NULL);
