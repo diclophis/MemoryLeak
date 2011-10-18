@@ -2,7 +2,7 @@
 
 build=build
 CXXFLAGS=\
--g -pg -DDESKTOP -DHAVE_SETENV \
+-m64 -g -pg -DDESKTOP -DHAVE_SETENV \
 -I/usr/include \
 -I../../src \
 -I../../src/include \
@@ -28,7 +28,9 @@ CXXFLAGS=\
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajil/*.c)))
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-g -pg -lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLU -lm -lstdc++
+
+LDFLAGS=-lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLU -lm -lstdc++
+
 #LDFLAGS=-lm -lstdc++
 #-lEGL -lX11 -lGLESv1_CM
 
@@ -49,7 +51,9 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
 
 raptor_island: $(build) $(objects)
-	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
+	$(CXX) -o $(build)/raptor_island $(objects) $(LDFLAGS)
+  
+# $(objects)
 
 $(build)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

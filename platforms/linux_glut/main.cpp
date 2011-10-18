@@ -44,6 +44,8 @@ snd_pcm_hw_params_t *hwparams;
 // the second number is the number of the device.
 char *pcm_name;
 
+static int game_index = 0;
+
   
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
@@ -54,12 +56,23 @@ void *pump_audio(void *) {
 
   while (true) {
     //#TODO game->DoAudio(buffer, min_buffer);
-    //Engine::CurrentGameDoAudio(buffer, min_buffer / sizeof(short));
+    Engine::CurrentGameDoAudio(buffer, min_buffer / sizeof(short));
     foo = snd_pcm_writei(pcm_handle, buffer, min_buffer);
     if (foo < 0) {
       //LOGV("wtf: %s\n", snd_strerror(foo));
     }
   }
+}
+
+bool pushMessageToWebView(const char *theMessage) {
+	return true;
+}
+
+const char *popMessageFromWebView() {
+  return "";
+}
+
+void SimulationThreadCleanup() {
 }
 
 
@@ -92,6 +105,14 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
+  printf("key: %d %c\n", key, key);
+
+  game_index += 1;
+  if (game_index > 2) {
+    game_index = 0;
+  }
+
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   switch (key) {
     case 27:
       int save_result = SOIL_save_screenshot("/tmp/awesomenessity.png", SOIL_SAVE_TYPE_BMP, 0, 0, 320, 480);
@@ -139,6 +160,7 @@ int main(int argc, char** argv) {
   glutInitWindowSize(320, 480);
   glutInitWindowPosition(0,0);
   glutCreateWindow("simple");
+  glutKeyboardFunc(processNormalKeys);
   glutDisplayFunc(draw);
   glutIdleFunc(draw);
   glutReshapeFunc(resize);
@@ -351,7 +373,8 @@ int main(int argc, char** argv) {
 
     printf("fooo\n");
 
-    Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL, NULL, NULL);
+    Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+    pthread_create(&audio_thread, 0, pump_audio, NULL);
 
 printf("run\n\n\n\n\n\n\n\n\n\n\n\n");
 glutMainLoop();

@@ -38,8 +38,8 @@
     #define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
     #define GLU_PERSPECTIVE gluPerspective
     #define glOrthof glOrtho
-    //#define GLfixed GLfloat
-    #define GLdouble GLfloat
+    #define GLfixed GLfloat
+    //#define GLdouble GLfloat
     //#define GLfloat GLdouble
     #define glFrustumx glFrustum
   #else
@@ -66,16 +66,6 @@
     #define glOrthof glOrtho
 
 
-    #define glGenFramebuffersOES glGenFramebuffersEXT
-    #define glBindFramebufferOES glBindFramebufferEXT
-    #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING_EXT
-    #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER_EXT
-    #define GL_RENDERBUFFER_OES GL_RENDERBUFFER_EXT
-    #define GL_COLOR_ATTACHMENT0_OES GL_COLOR_ATTACHMENT0_EXT
-    #define glCheckFramebufferStatusOES glCheckFramebufferStatusEXT
-    #define glFramebufferTexture2DOES glFramebufferTexture2DEXT
-    #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE_EXT
-    #define glDeleteFramebuffersOES glDeleteFramebuffersEXT
 
   #else
     #include <OpenGLES/ES1/gl.h>
@@ -86,12 +76,12 @@
   #ifdef DESKTOP
     //#define GL_GLEXT_LEGACY
     //#define USE_MGL_NAMESPACE
-    //#include <GL/gl.h>
-    //#include <GL/glut.h>
-    //#include <GL/glext.h>
+    #include <GL/gl.h>
+    #include <GL/glut.h>
+    #include <GL/glext.h>
     
-    #include <GLES/gl.h>
-    #include <GLES/glext.h>
+    //#include <GLES/gl.h>
+    //#include <GLES/glext.h>
     #include <GL/glu.h>
     //#include <GL/glu.h>
     //#define glOrthof glOrtho
@@ -110,6 +100,19 @@
   //#include <GLES2/gl2ext.h>
 
 #endif
+
+#ifdef DESKTOP
+    #define glGenFramebuffersOES glGenFramebuffersEXT
+    #define glBindFramebufferOES glBindFramebufferEXT
+    #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING_EXT
+    #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER_EXT
+    #define GL_RENDERBUFFER_OES GL_RENDERBUFFER_EXT
+    #define GL_COLOR_ATTACHMENT0_OES GL_COLOR_ATTACHMENT0_EXT
+    #define glCheckFramebufferStatusOES glCheckFramebufferStatusEXT
+    #define glFramebufferTexture2DOES glFramebufferTexture2DEXT
+    #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE_EXT
+    #define glDeleteFramebuffersOES glDeleteFramebuffersEXT
+ #endif
 
 
 #include "OpenGLCommon.h"
