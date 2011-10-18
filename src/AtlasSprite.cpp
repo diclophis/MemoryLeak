@@ -5,7 +5,7 @@
 
 
 static GLuint g_lastTexture = -1;
-static float g_lastRotation = 0.0;
+//static float g_lastRotation = 0.0;
 static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
@@ -14,7 +14,7 @@ void AtlasSprite::ReleaseBuffers() {
 
 void AtlasSprite::Scrub() {
   g_lastFrame = -1;
-  g_lastRotation = -999.0;
+  //g_lastRotation = -999.0;
 }
 
 AtlasSprite::~AtlasSprite() {
@@ -86,6 +86,9 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 
 
 void AtlasSprite::Render() {
+  GLshort *vertices = (GLshort *) malloc(8 * sizeof(GLshort));
+  GLfloat *texture = (GLfloat *)malloc(8 * sizeof(GLfloat));
+
 	if (m_AnimationLength == 0) {
 		LOGV("Fail, animation is at least 1 frame\n");
 		return;
@@ -94,7 +97,6 @@ void AtlasSprite::Render() {
   glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
-
 
 	if (m_Texture != g_lastTexture) {
 
@@ -111,7 +113,7 @@ void AtlasSprite::Render() {
 	{
 		glTranslatef(m_Position[0], m_Position[1], 0.0);
     glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-    g_lastRotation = m_Rotation;
+    //g_lastRotation = m_Rotation;
 		int i = (m_Frame % m_AnimationLength);
     GLshort w = m_Sprites[i].dx;
     GLshort h = m_Sprites[i].dy;
@@ -120,20 +122,43 @@ void AtlasSprite::Render() {
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
     GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
     if (i != g_lastFrame) {
+      /*
       GLshort vertices[8] = {
-        (-w / 2.0), (-h / 2.0),
-        (w / 2.0), (-h / 2.0),
-        (w / 2.0), (h / 2.0),
-        (-w / 2.0), (h / 2.0)
+        (-w / 2), (-h / 2),
+        (w / 2), (-h / 2),
+        (w / 2), (h / 2),
+        (-w / 2), (h / 2)
       };
+      */
+
+      vertices[0] =  (-w / 2);
+      vertices[1] = (-h / 2);
+      vertices[2] = (w / 2);
+      vertices[3] = (-h / 2);
+      vertices[4] = (w / 2);
+      vertices[5] = (h / 2);
+      vertices[6] = (-w / 2);
+      vertices[7] = (h / 2);
+
       glVertexPointer(2, GL_SHORT, 0, vertices);
 
+      /*
       GLfloat texture[8] = {
         tx, (ty + th),
         tx + tw, (ty + th),
         tx + tw, ty,
         tx, ty
       };
+      */
+
+      texture[0] = tx;
+      texture[1] = (ty + th);
+      texture[2] = tx + tw;
+      texture[3] = (ty + th);
+      texture[4] = tx + tw;
+      texture[5] = ty;
+      texture[6] = tx;
+      texture[7] = ty;
 
       glTexCoordPointer(2, GL_FLOAT, 0, texture);
 
@@ -143,7 +168,7 @@ void AtlasSprite::Render() {
 		const GLushort indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
 
-    if (true) {
+    if (false) {
       glDisable(GL_TEXTURE_2D);
       glLineWidth(2.0);
       glColor4f(1.0, 0.0, 0.0, 1.0);
