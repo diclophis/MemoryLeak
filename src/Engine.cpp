@@ -228,7 +228,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
-	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
+	if (m_IsSceneBuilt && m_SimulationTime > 2.0) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
 

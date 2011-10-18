@@ -18,6 +18,9 @@ void AtlasSprite::Scrub() {
 }
 
 AtlasSprite::~AtlasSprite() {
+  LOGV("AtlastSprite::dealloc\n");
+  free(vertices);
+  free(texture);
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
@@ -82,12 +85,12 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 			texture_y += tdy;
 		}
 	}
+  vertices = (GLshort *) malloc(8 * sizeof(GLshort));
+  texture = (GLfloat *)malloc(8 * sizeof(GLfloat));
 }
 
 
 void AtlasSprite::Render() {
-  GLshort *vertices = (GLshort *) malloc(8 * sizeof(GLshort));
-  GLfloat *texture = (GLfloat *)malloc(8 * sizeof(GLfloat));
 
 	if (m_AnimationLength == 0) {
 		LOGV("Fail, animation is at least 1 frame\n");
@@ -182,6 +185,7 @@ void AtlasSprite::Render() {
   glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
+
 }
 
 	void AtlasSprite::SetScale(float x, float y) {

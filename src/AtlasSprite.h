@@ -34,6 +34,8 @@ public:
 	float m_AnimationLife;
 	float m_MaxLife;
 	float m_Rotation;
+  GLshort *vertices;
+  GLfloat *texture;
 	
 	void SetFrame(int f) {
 		m_Frame = f;
