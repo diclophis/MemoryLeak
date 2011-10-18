@@ -16,6 +16,190 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
 static int game_index = 0;
+static bool not_printed = true;
+
+//typedef struct {
+  // the default device
+  // bufferSize returned by kAudioDevicePropertyBufferSize
+  // info about the default device
+  AudioDeviceID device;
+  UInt32 deviceBufferSize;
+  AudioStreamBasicDescription deviceFormat;
+//} sinewavedef;
+
+OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const AudioBufferList*   inInputData, 
+                             const AudioTimeStamp*  inInputTime, AudioBufferList*  outOutputData, const AudioTimeStamp* inOutputTime, 
+                             void* defptr)
+{    
+    //sinewavedef* def = defptr;
+
+/*
+    sinewavedef*	def = defptr; // get access to Sinewave's data
+    int i;
+    
+    // load instance vars into registers
+    double phase = def->phase;
+    double amp = def->amp;
+    double pan = def->pan;
+    double freq = def->freq;
+
+    double ampz = def->ampz;
+    double panz = def->panz;
+    double freqz = def->freqz;
+    
+    int numSamples = def->deviceBufferSize / def->deviceFormat.mBytesPerFrame;
+    
+    // assume floats for now....
+    float *out = outOutputData->mBuffers[0].mData;
+    
+    for (i=0; i<numSamples; ++i) {
+    
+        float wave = sin(phase) * ampz;		// generate sine wave
+        phase = phase + freqz;			// increment phase
+        
+        // write output
+        *out++ = wave * (1.0-panz);		// left channel
+        *out++ = wave * panz;			// right channel
+        
+        // de-zipper controls
+        panz  = 0.001 * pan  + 0.999 * panz;
+        ampz  = 0.001 * amp  + 0.999 * ampz;
+        freqz = 0.001 * freq + 0.999 * freqz;
+    }
+    
+    // save registers back to object
+    def->phase = phase;
+    def->freqz = freqz;
+    def->ampz = ampz;
+    def->panz = panz;
+*/
+
+  int numSamples = deviceBufferSize / deviceFormat.mBytesPerFrame;
+
+
+	if (outOutputData->mNumberBuffers != 1) {
+		LOGV("the fuck\n");
+	}
+	
+	AudioBuffer *ioData = &outOutputData->mBuffers[0];
+
+  //4096 8 512
+  if (not_printed) {
+    not_printed = false;
+    printf("%d %d %d %d\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize);
+  }
+
+
+/*
+deviceBufferSize = 4096
+mSampleRate = 44100
+mFormatFlags = 00000009
+mBytesPerPacket = 8
+mFramesPerPacket = 1
+mChannelsPerFrame = 2
+mBytesPerFrame = 8
+mBitsPerChannel = 32
+*/
+	
+  memset(ioData->mData, 0, ioData->mDataByteSize);
+  //Engine::CurrentGameDoAudio(ioData->mData, numSamples);
+  
+  return kAudioHardwareNoError;     
+}
+
+bool startAudio()
+{
+  OSStatus		err = kAudioHardwareNoError;
+  //sinewavedef *def;
+  void *def;
+
+  err = AudioDeviceAddIOProc(device, appIOProc, (void *) def);	// setup our device with an IO proc
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "AudioDeviceAddIOProc failed\n");
+    return false;
+  }
+
+  err = AudioDeviceStart(device, appIOProc);				// start playing sound through the device
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "AudioDeviceStart failed\n");
+    return false;
+  }
+
+  return true;
+
+}
+
+bool setupAudio() {
+  OSStatus				err = kAudioHardwareNoError;
+  UInt32				count;    
+  device = kAudioDeviceUnknown;
+
+  //initialized = NO;
+ 
+  // get the default output device for the HAL
+  count = sizeof(device);		// it is required to pass the size of the data to be returned
+  err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice,  &count, (void *) &device);
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "get kAudioHardwarePropertyDefaultOutputDevice error %ld\n", err);
+      return false;
+  }
+
+
+  
+  // get the buffersize that the default device uses for IO
+  count = sizeof(deviceBufferSize);	// it is required to pass the size of the data to be returned
+  err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyBufferSize, &count, &deviceBufferSize);
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "get kAudioDevicePropertyBufferSize error %ld\n", err);
+      return false;
+  }
+  fprintf(stderr, "deviceBufferSize = %ld\n", deviceBufferSize);
+ 
+  // get a description of the data format used by the default device
+  count = sizeof(deviceFormat);	// it is required to pass the size of the data to be returned
+  err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyStreamFormat, &count, &deviceFormat);
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "get kAudioDevicePropertyStreamFormat error %ld\n", err);
+      return false;
+  }
+  if (deviceFormat.mFormatID != kAudioFormatLinearPCM) {
+    fprintf(stderr, "mFormatID !=  kAudioFormatLinearPCM\n");
+      return false;
+  }
+  if (!(deviceFormat.mFormatFlags & kLinearPCMFormatFlagIsFloat)) {
+    fprintf(stderr, "Sorry, currently only works with float format....\n");
+      return false;
+  }
+
+  /*
+  UInt32 propsize = sizeof(AudioStreamBasicDescription);
+	size_t bytesPerSample = sizeof(short);
+	deviceFormat.mSampleRate = 44100;
+	deviceFormat.mFormatID = kAudioFormatLinearPCM;
+	deviceFormat.mFormatFlags = kLinearPCMFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+	deviceFormat.mFramesPerPacket = 1;
+	deviceFormat.mChannelsPerFrame = 1;
+	deviceFormat.mBitsPerChannel = 16;
+	deviceFormat.mBytesPerPacket = bytesPerSample;
+	deviceFormat.mBytesPerFrame	= bytesPerSample;
+
+  err = AudioDeviceSetProperty(device, NULL, 0, false, kAudioDevicePropertyStreamFormat, propsize, &deviceFormat);
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "cant set kAudioDevicePropertyStreamFormat error %ld\n", err);
+  }
+  */
+  
+  //initialized = YES;
+
+  fprintf(stderr, "mSampleRate = %g\n", deviceFormat.mSampleRate);
+  fprintf(stderr, "mFormatFlags = %08lX\n", deviceFormat.mFormatFlags);
+  fprintf(stderr, "mBytesPerPacket = %ld\n", deviceFormat.mBytesPerPacket);
+  fprintf(stderr, "mFramesPerPacket = %ld\n", deviceFormat.mFramesPerPacket);
+  fprintf(stderr, "mChannelsPerFrame = %ld\n", deviceFormat.mChannelsPerFrame);
+  fprintf(stderr, "mBytesPerFrame = %ld\n", deviceFormat.mBytesPerFrame);
+  fprintf(stderr, "mBitsPerChannel = %ld\n", deviceFormat.mBitsPerChannel);
+  return true;
+}
 
 bool pushMessageToWebView(const char *theMessage) {
 	return true;
@@ -215,6 +399,14 @@ int main(int argc, char** argv) {
 		
 		sounds.push_back(firstModel);
 	}
+
+  if (!setupAudio()) {
+    printf("cant setup Audio\n");
+  }
+
+  if (!startAudio()) {
+    printf("cant start Audio\n");
+  }
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 

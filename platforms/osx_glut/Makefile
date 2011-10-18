@@ -13,7 +13,7 @@ CXXFLAGS=\
 -I../../src/Box2D
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -framework WebKit -lresolv
+LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -framework WebKit -lresolv -framework CoreAudio
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
