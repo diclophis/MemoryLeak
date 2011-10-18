@@ -23,6 +23,8 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int min_buffer;
 
+static int game_index = 0;
+
 AudioDeviceID device; //the default device
 UInt32 deviceBufferSize; //bufferSize returned by kAudioDevicePropertyBufferSize
 AudioStreamBasicDescription deviceFormat; //info about the default device
@@ -33,6 +35,18 @@ public:
     //LOGV("pump up the jam\n");
   };
 };
+
+bool pushMessageToWebView(const char *theMessage) {
+	return true;
+}
+
+
+const char *popMessageFromWebView() {
+  return "";
+}
+
+void SimulationThreadCleanup() {
+}
 
 GLuint loadTexture(NSBitmapImageRep *image) {
   GLuint text = 0;
@@ -62,12 +76,12 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 }
 
 void draw(void) {
-  //game->DrawScreen(0);
+  Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
 }
 
 void resize(int width, int height) {
-  //game->ResizeScreen(width, height);
+  Engine::CurrentGameResizeScreen(width, height);
 }
 
 void processMouse(int button, int state, int x, int y) {
@@ -88,6 +102,14 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
+  printf("key: %c\n", key);
+
+  game_index += 1;
+  if (game_index > 2) {
+    game_index = 0;
+  }
+
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 /*
   switch (key) {
     case 27:
@@ -217,8 +239,7 @@ int main(int argc, char** argv) {
 		sounds.push_back(firstModel);
 	}
 
-  //game = new FlightControl(kWindowWidth, kWindowHeight, textures, models, levels, sounds);
-  //game->CreateThread();
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);

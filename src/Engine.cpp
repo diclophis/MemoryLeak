@@ -228,7 +228,6 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
-  LOGV("start\n");
 	if (m_IsSceneBuilt) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
@@ -253,6 +252,7 @@ void Engine::DrawScreen(float rotation) {
     glLoadIdentity();
     Engine::CheckGL("glMatrixMode3 in E");
     //glOrtho((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 0.01f, 1.0f);
+    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
     //LOGV("%f %f %f %f %f %f\n", (-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 0.01f, 1.0f);
     Engine::CheckGL("glOrthof in E");
 
@@ -262,13 +262,11 @@ void Engine::DrawScreen(float rotation) {
     Engine::CheckGL("glLoadIdentidfdf3434 in E");
     RenderSpritePhase();
 	} else {
-    LOGV("wtf@#$!@#$@#$\n");
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
   pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
  
-  LOGV("end\n");
   Engine::CheckGL("END OF DRAW");
 }
 
