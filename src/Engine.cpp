@@ -228,7 +228,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
-	if (m_IsSceneBuilt) {
+	if (m_IsSceneBuilt && m_SimulationTime > 1.0) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
 
@@ -276,8 +276,8 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenHeight = height;
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
-  Engine::CheckGL("ERROR BEFORE!?@# in E");
-  LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
+  //Engine::CheckGL("ERROR BEFORE!?@# in E");
+  //LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   Engine::CheckGL("glViewport in E");
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

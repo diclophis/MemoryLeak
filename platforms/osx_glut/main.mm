@@ -5,41 +5,21 @@
 #import <QuartzCore/QuartzCore.h>
 #include <CoreAudio/AudioHardware.h>
 
-
 #include "MemoryLeak.h"
-
-//#define kWindowWidth 480
-//#define kWindowHeight 320
 
 #define kWindowWidth 320
 #define kWindowHeight 480
-
-//#define kWindowWidth 480
-//#define kWindowHeight 640
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
-static int min_buffer;
 
 static int game_index = 0;
-
-AudioDeviceID device; //the default device
-UInt32 deviceBufferSize; //bufferSize returned by kAudioDevicePropertyBufferSize
-AudioStreamBasicDescription deviceFormat; //info about the default device
-
-class Callbacks {
-public:
-  static void *PumpAudio(void *buffer, int buffer_position, int divisor) {
-    //LOGV("pump up the jam\n");
-  };
-};
 
 bool pushMessageToWebView(const char *theMessage) {
 	return true;
 }
-
 
 const char *popMessageFromWebView() {
   return "";
@@ -87,22 +67,20 @@ void resize(int width, int height) {
 void processMouse(int button, int state, int x, int y) {
   switch (state) {
     case GLUT_DOWN:
-      //game->Hit(x, y, 0);
+      Engine::CurrentGameHit(x, y, 0);
       break;
     case GLUT_UP:
-      //game->Hit(x, y, 2);
+      Engine::CurrentGameHit(x, y, 2);
       break;
   }
 }
 
-
 void processMouseMotion(int x, int y) {
-  //game->Hit(x, y, 1);
+  Engine::CurrentGameHit(x, y, 1);
 }
 
-
 void processNormalKeys(unsigned char key, int x, int y) {
-  printf("key: %c\n", key);
+  printf("key: %d %c\n", key, key);
 
   game_index += 1;
   if (game_index > 2) {
@@ -173,7 +151,6 @@ int main(int argc, char** argv) {
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  //glutGameModeString("1440x900:32@65");
 
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
