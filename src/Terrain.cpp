@@ -5,6 +5,7 @@
 
 
 Terrain::Terrain(b2World *w, GLuint t) {
+  nHillVertices = 0;
   firstTime = false;
   world = w;
   screenW = 320;
@@ -60,9 +61,9 @@ void Terrain::GenerateHillKeyPoints() {
   float maxHeight = screenH;
   float minHeight = 0;
   while (nHillKeyPoints < kMaxHillKeyPoints-1) {
-    dx = random() % rangeDX + minDX;
+    dx = minDX; //random() % rangeDX + minDX;
     x += dx;
-    dy = random() % rangeDY + minDY;
+    dy = minDY; //random() % rangeDY + minDY;
     ny = y + dy * sign;
     if(ny > maxHeight) ny = maxHeight;
     if(ny < minHeight) ny = minHeight;
@@ -142,6 +143,8 @@ void Terrain::ResetHillVertices() {
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
   float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
 
+  //LOGV("left right %f %f\n", leftSideX, rightSideX);
+
   while (hillKeyPoints[fromKeyPointI+1].x < leftSideX) {
     fromKeyPointI++;
     if (fromKeyPointI > nHillKeyPoints-1) {
@@ -159,6 +162,7 @@ void Terrain::ResetHillVertices() {
   }
     
   if (prevFromKeyPointI != fromKeyPointI || prevToKeyPointI != toKeyPointI) {
+  //LOGV("good!\n");
     // vertices for visible area
     nHillVertices = 0;
     MLPoint p0, p1, pt0, pt1;
@@ -183,6 +187,7 @@ void Terrain::ResetHillVertices() {
           hillTexCoords[nHillVertices++] = MLPointMake(pt0.x/(float)textureSize, (float)(k)/vSegments);
           hillVertices[nHillVertices] = MLPointMake(pt1.x, pt1.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt1.x/(float)textureSize, (float)(k)/vSegments);
+          //LOGV("WHA %d\n", nHillVertices);
         }
         pt0 = pt1;
       }
@@ -192,11 +197,16 @@ void Terrain::ResetHillVertices() {
         
     prevFromKeyPointI = fromKeyPointI;
     prevToKeyPointI = toKeyPointI;
+  } else {
+    //LOGV("BADD!@#$!@#!@# %d %d %d %d\n", prevFromKeyPointI, fromKeyPointI, prevToKeyPointI, toKeyPointI);
   }
+
+  //LOGV("nHillVertices should be set here %d\n", nHillVertices);
 }
 
 
 void Terrain::Render() {
+  //LOGV("draw\n");
   glEnableClientState(GL_VERTEX_ARRAY);
   if (true) {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -208,6 +218,7 @@ void Terrain::Render() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
+    Engine::CheckGL("Error before glDrawArrays? in T");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
