@@ -113,9 +113,9 @@ int Engine::RunThread() {
 
 	while (m_GameState > 0) {
 
-//if (pthread_mutex_trylock(&m_GameSwitchLock) == 0) {
+if (pthread_mutex_trylock(&m_Mutex) == 0) {
 
-pthread_mutex_lock(&m_Mutex);
+//pthread_mutex_trylock(&m_Mutex);
 
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -146,12 +146,13 @@ pthread_mutex_lock(&m_Mutex);
 
 
 //  pthread_mutex_unlock(&m_GameSwitchLock);
-//}
-pthread_mutex_unlock(&m_Mutex);
-
     m_IsSceneBuilt = true;
+  pthread_mutex_unlock(&m_Mutex);
 
+}
     WaitVsync();
+
+
 
 	}
 
@@ -168,17 +169,27 @@ void Engine::PauseSimulation() {
 
 
 void Engine::StopSimulation() {
+  pthread_mutex_lock(&m_Mutex);
+
   m_IsSceneBuilt = false;
   m_GameState = -1;
   while (m_GameState != -3) {
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
   pthread_join(m_CurrentGame->m_Thread, NULL);
+
+  pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
-	m_GameState = 1;
+  if (m_GameState == 2) {
+    pthread_mutex_lock(&m_Mutex);
+
+    m_GameState = 1;
+    
+    pthread_mutex_unlock(&m_Mutex);
+  }
 }
 
 
