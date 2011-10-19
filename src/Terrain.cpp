@@ -248,16 +248,23 @@ GLuint Terrain::GenerateStripesTexture() {
   rt = new RenderTexture(textureSize, textureSize);
 
   
+  Engine::CheckGL("Prob in RenderTexture in T");
+
   glPushMatrix();
+  Engine::CheckGL("glPushMatrix in T");
   {
     glMatrixMode(GL_PROJECTION);
+    Engine::CheckGL("glMatrixMode in T");
     glLoadIdentity();
+    Engine::CheckGL("glLoadIdentity in T");
     glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
-    //Engine::CheckGL();
+    Engine::CheckGL("glOrthof in T");
 
     glMatrixMode(GL_MODELVIEW);
+    Engine::CheckGL("glMatrixMode in T");
     
     glViewport(0, 0, texSize.x, texSize.y);
+    Engine::CheckGL("glViewPort in T");
 
     rt->Begin();
     //texture = genTexture = rt->name;
@@ -321,17 +328,29 @@ GLuint Terrain::GenerateStripesTexture() {
       }
 
       glEnableClientState(GL_VERTEX_ARRAY);
+      Engine::CheckGL("glEnableClientState VERTEX in T");
       glEnableClientState(GL_COLOR_ARRAY);
+      Engine::CheckGL("glColorArray COLOR in T");
       glEnable(GL_BLEND);
+      Engine::CheckGL("glEnable in T");
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      Engine::CheckGL("glBlendFunc in T");
       glColor4f(1, 1, 1, 1);
+      Engine::CheckGL("glColorf in T");
       glVertexPointer(2, GL_FLOAT, 0, vertices);
+      Engine::CheckGL("glVertexPointer in T");
       glColorPointer(4, GL_FLOAT, 0, colors);
+      Engine::CheckGL("glColorPointer in T");
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      Engine::CheckGL("glBlendFunc in T");
       glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
+      Engine::CheckGL("glDrawArrays in T");
       glDisable(GL_BLEND);
+      Engine::CheckGL("glDisable in T");
       glDisableClientState(GL_COLOR_ARRAY);
+      Engine::CheckGL("glDisableClientState COLOR in T");
       glDisableClientState(GL_VERTEX_ARRAY);
+      Engine::CheckGL("glDisableClientState VERTEX in T");
 
     }
     
@@ -358,20 +377,30 @@ GLuint Terrain::GenerateStripesTexture() {
       }
 
       glEnable(GL_BLEND);
+      Engine::CheckGL("glBlend in T");
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      Engine::CheckGL("glBlendFunc in T");
       glEnableClientState(GL_VERTEX_ARRAY);
+      Engine::CheckGL("glEnableClientState VERTEX in T");
       glEnableClientState(GL_COLOR_ARRAY);
+      Engine::CheckGL("glEnableClientState COLOR in T");
       glVertexPointer(2, GL_FLOAT, 0, vertices);
+      Engine::CheckGL("glVertexPointer in T");
       glColorPointer(4, GL_FLOAT, 0, colors);
+      Engine::CheckGL("glColorPointer in T");
       glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
+      Engine::CheckGL("glDrawArrays in T");
       glDisableClientState(GL_COLOR_ARRAY);
+      Engine::CheckGL("glDisableClientState COLOR in T");
       glDisableClientState(GL_VERTEX_ARRAY);
+      Engine::CheckGL("glDisableClientState VERTEX in T");
       glDisable(GL_BLEND);
+      Engine::CheckGL("glDisable in T");
       
     }
     
     
-    if (true) {
+    if (false) {
       // layer: highlight
 
       float highlightAlpha = 0.5f;
@@ -399,7 +428,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
 
 
-    if (true) {
+    if (false) {
       // layer: top border
 
       float borderAlpha = 0.5f;
@@ -421,7 +450,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
 
     
-    if (true) {
+    if (false) {
       // layer: noise
       glEnable(GL_BLEND);
       glBlendFunc(GL_DST_COLOR, GL_ZERO);
@@ -438,8 +467,10 @@ GLuint Terrain::GenerateStripesTexture() {
     
   }
   glPopMatrix();
+  Engine::CheckGL("glPopMatrix in T");
 
   glViewport(0, 0, size.x, size.y);
+  Engine::CheckGL("glViewport in T");
 
   return rt->name;
   

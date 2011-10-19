@@ -408,7 +408,7 @@ int main(int argc, char** argv) {
     printf("cant start Audio\n");
   }
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(2, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);

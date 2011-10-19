@@ -55,6 +55,7 @@ public:
   static void CheckGL(const char *s);
 
   bool m_IsSceneBuilt;
+  bool m_IsScreenResized;
   bool m_IsViewportSet;
   float m_SimulationTime;
   float m_DeltaTime;

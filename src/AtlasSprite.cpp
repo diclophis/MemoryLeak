@@ -3,9 +3,7 @@
 
 #include "MemoryLeak.h"
 
-
 static GLuint g_lastTexture = -1;
-//static float g_lastRotation = 0.0;
 static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
@@ -14,11 +12,9 @@ void AtlasSprite::ReleaseBuffers() {
 
 void AtlasSprite::Scrub() {
   g_lastFrame = -1;
-  //g_lastRotation = -999.0;
 }
 
 AtlasSprite::~AtlasSprite() {
-  LOGV("AtlastSprite::dealloc\n");
   free(vertices);
   free(texture);
   delete m_Position;

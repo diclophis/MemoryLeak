@@ -8,11 +8,15 @@
 RenderTexture::RenderTexture(int width, int height) {
   name = 0;
   glFlush();
+  Engine::CheckGL("glFlush in R");
   
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
+  Engine::CheckGL("glGetInteger in R");
+  LOGV("old get %d %d\n", oldFBO, oldRBO);
 
   glEnable(GL_TEXTURE_2D);
+  Engine::CheckGL("glEnableTexture in R");
   
   glGenTextures(1, &name);
   if (name == 0) {
@@ -42,6 +46,7 @@ RenderTexture::RenderTexture(int width, int height) {
   
   // associate texture with FBO
   glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, name, 0);
+  Engine::CheckGL("glFramebufferTexture2DOES in R");
 
   // check if it worked (probably worth doing :) )
   GLuint status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
@@ -50,9 +55,14 @@ RenderTexture::RenderTexture(int width, int height) {
   }
 
   glDisable(GL_TEXTURE_2D);
+  Engine::CheckGL("glDisable in R");
 
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
-  glBindFramebufferOES(GL_RENDERBUFFER_OES, oldRBO);
+  Engine::CheckGL("glBindFramebufferOES FRAME in R");
+  glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
+  Engine::CheckGL("glBindFramebufferOES RENDER in R");
+
+  LOGV("old unbind %d %d\n", oldFBO, oldRBO);
 
 }
 
@@ -64,7 +74,6 @@ RenderTexture::~RenderTexture() {
 
 
 void RenderTexture::Begin() {
-  
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
   //glBindTexture(GL_TEXTURE_2D, name);

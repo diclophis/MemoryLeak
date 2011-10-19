@@ -104,6 +104,7 @@
 #ifdef DESKTOP
     #define glGenFramebuffersOES glGenFramebuffersEXT
     #define glBindFramebufferOES glBindFramebufferEXT
+    #define glBindRenderbufferOES glBindRenderbufferEXT
     #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING_EXT
     #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER_EXT
     #define GL_RENDERBUFFER_OES GL_RENDERBUFFER_EXT
