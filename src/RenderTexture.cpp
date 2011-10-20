@@ -11,8 +11,9 @@ RenderTexture::RenderTexture(int width, int height) {
   Engine::CheckGL("glFlush in R");
   
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
-  Engine::CheckGL("glGetInteger in R");
+  Engine::CheckGL("glGetInteger in R1");
+  glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
+  Engine::CheckGL("glGetInteger in R2");
   LOGV("old get %d %d\n", oldFBO, oldRBO);
 
   glEnable(GL_TEXTURE_2D);

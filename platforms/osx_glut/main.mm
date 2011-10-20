@@ -5,10 +5,13 @@
 #import <QuartzCore/QuartzCore.h>
 #include <CoreAudio/AudioHardware.h>
 
+
 #include "MemoryLeak.h"
+
 
 static int kWindowWidth = 320;
 static int kWindowHeight = 480;
+static int win;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -18,134 +21,53 @@ static std::vector<foo*> levels;
 static int game_index = 0;
 static bool not_printed = true;
 
-//typedef struct {
-  // the default device
-  // bufferSize returned by kAudioDevicePropertyBufferSize
-  // info about the default device
-  AudioDeviceID device;
-  UInt32 deviceBufferSize;
-  AudioStreamBasicDescription deviceFormat;
-//} sinewavedef;
+AudioDeviceID device;
+UInt32 deviceBufferSize;
+AudioStreamBasicDescription deviceFormat;
 
-OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const AudioBufferList*   inInputData, 
-                             const AudioTimeStamp*  inInputTime, AudioBufferList*  outOutputData, const AudioTimeStamp* inOutputTime, 
-                             void* defptr)
-{    
-    //sinewavedef* def = defptr;
-
-/*
-    sinewavedef*	def = defptr; // get access to Sinewave's data
-    int i;
-    
-    // load instance vars into registers
-    double phase = def->phase;
-    double amp = def->amp;
-    double pan = def->pan;
-    double freq = def->freq;
-
-    double ampz = def->ampz;
-    double panz = def->panz;
-    double freqz = def->freqz;
-    
-    int numSamples = def->deviceBufferSize / def->deviceFormat.mBytesPerFrame;
-    
-    // assume floats for now....
-    float *out = outOutputData->mBuffers[0].mData;
-    
-    for (i=0; i<numSamples; ++i) {
-    
-        float wave = sin(phase) * ampz;		// generate sine wave
-        phase = phase + freqz;			// increment phase
-        
-        // write output
-        *out++ = wave * (1.0-panz);		// left channel
-        *out++ = wave * panz;			// right channel
-        
-        // de-zipper controls
-        panz  = 0.001 * pan  + 0.999 * panz;
-        ampz  = 0.001 * amp  + 0.999 * ampz;
-        freqz = 0.001 * freq + 0.999 * freqz;
-    }
-    
-    // save registers back to object
-    def->phase = phase;
-    def->freqz = freqz;
-    def->ampz = ampz;
-    def->panz = panz;
-*/
-
+OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const AudioBufferList*   inInputData, const AudioTimeStamp*  inInputTime, AudioBufferList*  outOutputData, const AudioTimeStamp* inOutputTime, void* defptr) {    
   int numSamples = deviceBufferSize / deviceFormat.mBytesPerFrame;
-
-
 	if (outOutputData->mNumberBuffers != 1) {
 		LOGV("the fuck\n");
 	}
-	
 	AudioBuffer *ioData = &outOutputData->mBuffers[0];
-
-  //4096 8 512
   if (not_printed) {
     not_printed = false;
     printf("%d %d %d %d\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize);
   }
-
-
-/*
-deviceBufferSize = 4096
-mSampleRate = 44100
-mFormatFlags = 00000009
-mBytesPerPacket = 8
-mFramesPerPacket = 1
-mChannelsPerFrame = 2
-mBytesPerFrame = 8
-mBitsPerChannel = 32
-*/
-	
   memset(ioData->mData, 0, ioData->mDataByteSize);
-  //Engine::CurrentGameDoAudio(ioData->mData, numSamples);
-  
-  return kAudioHardwareNoError;     
+  Engine::CurrentGameDoAudio((short int*)ioData->mData, numSamples);
+  return kAudioHardwareNoError;
 }
 
-bool startAudio()
-{
-  OSStatus		err = kAudioHardwareNoError;
-  //sinewavedef *def;
-  void *def;
 
+bool startAudio() {
+  OSStatus		err = kAudioHardwareNoError;
+  void *def;
   err = AudioDeviceAddIOProc(device, appIOProc, (void *) def);	// setup our device with an IO proc
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "AudioDeviceAddIOProc failed\n");
     return false;
   }
-
   err = AudioDeviceStart(device, appIOProc);				// start playing sound through the device
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "AudioDeviceStart failed\n");
     return false;
   }
-
   return true;
-
 }
 
 bool setupAudio() {
   OSStatus				err = kAudioHardwareNoError;
   UInt32				count;    
   device = kAudioDeviceUnknown;
-
-  //initialized = NO;
- 
   // get the default output device for the HAL
   count = sizeof(device);		// it is required to pass the size of the data to be returned
   err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice,  &count, (void *) &device);
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "get kAudioHardwarePropertyDefaultOutputDevice error %ld\n", err);
-      return false;
+    return false;
   }
-
-
-  
   // get the buffersize that the default device uses for IO
   count = sizeof(deviceBufferSize);	// it is required to pass the size of the data to be returned
   err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyBufferSize, &count, &deviceBufferSize);
@@ -154,7 +76,6 @@ bool setupAudio() {
       return false;
   }
   fprintf(stderr, "deviceBufferSize = %ld\n", deviceBufferSize);
- 
   // get a description of the data format used by the default device
   count = sizeof(deviceFormat);	// it is required to pass the size of the data to be returned
   err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyStreamFormat, &count, &deviceFormat);
@@ -170,27 +91,6 @@ bool setupAudio() {
     fprintf(stderr, "Sorry, currently only works with float format....\n");
       return false;
   }
-
-  /*
-  UInt32 propsize = sizeof(AudioStreamBasicDescription);
-	size_t bytesPerSample = sizeof(short);
-	deviceFormat.mSampleRate = 44100;
-	deviceFormat.mFormatID = kAudioFormatLinearPCM;
-	deviceFormat.mFormatFlags = kLinearPCMFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
-	deviceFormat.mFramesPerPacket = 1;
-	deviceFormat.mChannelsPerFrame = 1;
-	deviceFormat.mBitsPerChannel = 16;
-	deviceFormat.mBytesPerPacket = bytesPerSample;
-	deviceFormat.mBytesPerFrame	= bytesPerSample;
-
-  err = AudioDeviceSetProperty(device, NULL, 0, false, kAudioDevicePropertyStreamFormat, propsize, &deviceFormat);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "cant set kAudioDevicePropertyStreamFormat error %ld\n", err);
-  }
-  */
-  
-  //initialized = YES;
-
   fprintf(stderr, "mSampleRate = %g\n", deviceFormat.mSampleRate);
   fprintf(stderr, "mFormatFlags = %08lX\n", deviceFormat.mFormatFlags);
   fprintf(stderr, "mBytesPerPacket = %ld\n", deviceFormat.mBytesPerPacket);
@@ -267,7 +167,6 @@ void processMouseMotion(int x, int y) {
 
 void processNormalKeys(unsigned char key, int x, int y) {
   printf("key: %d %c\n", key, key);
-
   game_index += 1;
   if (game_index > 2) {
     game_index = 0;
@@ -277,49 +176,54 @@ void processNormalKeys(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char** argv) {
-
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
-  glutCreateWindow("main");
-
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/models"];
+  win = glutCreateWindow("main");
+  glutDisplayFunc(draw);
+  glutKeyboardFunc(processNormalKeys);
+  glutMouseFunc(processMouse);
+  glutMotionFunc(processMouseMotion);
+  glutIdleFunc(draw);
+  glutReshapeFunc(resize);
+  NSBundle *mainBundle = [NSBundle mainBundle];
+  NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];
+  NSString *model_path = [NSString stringWithCString:"../../../assets/models" encoding:NSUTF8StringEncoding];
+  NSString *textures_path = [NSString stringWithCString:"../../../assets/textures" encoding:NSUTF8StringEncoding];
+  NSString *levels_path = [NSString stringWithCString:"../../../assets/levels" encoding:NSUTF8StringEncoding];
+  NSString *sounds_path = [NSString stringWithCString:"../../../assets/sounds" encoding:NSUTF8StringEncoding];
+	NSArray *model_names = [mainBundle pathsForResourcesOfType:nil inDirectory:model_path];
 	for (NSString *path in model_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-
 		foo *firstModel = new foo;
 		firstModel->fp = fd;
 		firstModel->off = 0;
 		firstModel->len = len;
-		
 		models.push_back(firstModel);
 	}
-
-	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/textures"];
+  [model_names release];
+  [model_path release];
+	NSArray *texture_names = [mainBundle pathsForResourcesOfType:nil inDirectory:textures_path];
 	for (NSString *path in texture_names) {
-    NSLog(@"path: %@", path);
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
     NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
-    
     if (image == nil) {
       throw 1;
     }
-
 	  textures.push_back(loadTexture(image));
     [image release];
     [texData release];
   }
-
-	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/levels"];
+  [texture_names release];
+  [textures_path release];
+	NSArray *level_names = [mainBundle pathsForResourcesOfType:nil inDirectory:levels_path];
 	for (NSString *path in level_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
@@ -331,10 +235,11 @@ int main(int argc, char** argv) {
 		
 		levels.push_back(firstModel);
 	}
-
-	NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"../../../assets/sounds"];
+  [level_names release];
+  [levels_path release];
+	NSArray *sound_names = [mainBundle pathsForResourcesOfType:nil inDirectory:sounds_path];
 	for (NSString *path in sound_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
@@ -346,6 +251,9 @@ int main(int argc, char** argv) {
 		
 		sounds.push_back(firstModel);
 	}
+  [sound_names release];
+  [sounds_path release];
+  [mainBundle release];
 
   if (!setupAudio()) {
     printf("cant setup Audio\n");
@@ -355,17 +263,9 @@ int main(int argc, char** argv) {
     printf("cant start Audio\n");
   }
 
-  Engine::Start(2, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 
-  glutKeyboardFunc(processNormalKeys);
-  glutMouseFunc(processMouse);
-  glutMotionFunc(processMouseMotion);
-  glutDisplayFunc(draw);
-  glutIdleFunc(draw);
-  glutReshapeFunc(resize);
   glutMainLoop();
-
-  [pool release];
 
   return 0;
 }

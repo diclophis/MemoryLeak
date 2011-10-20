@@ -42,6 +42,11 @@ Engine::~Engine() {
   }
   m_Models.clear();
 
+  for (std::vector<ModPlugFile *>::iterator i = m_Sounds.begin(); i != m_Sounds.end(); ++i) {
+    ModPlug_Unload(*i);
+  }
+  m_Sounds.clear();
+
   LOGV("dealloc Engine\n");
 }
 
