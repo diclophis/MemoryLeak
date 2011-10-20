@@ -85,9 +85,6 @@ public:
   short *m_AudioMixBuffer;
   int m_AudioBufferSize;
   bool m_IsPushingAudio;
-  GlobalInfo g;
-  CURLMcode rc;
-  CURLSH *share;
   float m_Zoom;
   float m_Balance;
   float m_WebViewTimeout;
