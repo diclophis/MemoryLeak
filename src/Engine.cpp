@@ -65,6 +65,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
 
 	m_AudioBufferSize = 0;
@@ -210,8 +212,8 @@ void Engine::DrawScreen(float rotation) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glEnableClientState(GL_VERTEX_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
@@ -228,8 +230,8 @@ void Engine::DrawScreen(float rotation) {
     RenderSpritePhase();
     AtlasSprite::ReleaseBuffers();
     AtlasSprite::Scrub();
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
+    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glDisableClientState(GL_VERTEX_ARRAY);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 	} else {
