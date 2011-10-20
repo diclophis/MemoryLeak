@@ -65,13 +65,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
-	//ResizeScreen(m_ScreenWidth, m_ScreenHeight);
-
-  //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  Engine::CheckGL("glHint in E1");
-
   //glClearColor(0.5, 0.2, 0.1, 1.0);
-  Engine::CheckGL("glClearColor in E");
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
