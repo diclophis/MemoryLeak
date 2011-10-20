@@ -277,6 +277,9 @@ GLuint Terrain::GenerateStripesTexture() {
     
     glViewport(0, 0, texSize.x, texSize.y);
     Engine::CheckGL("glViewPort in T");
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glFinish();
 
     rt->Begin();
     if (true) {      
@@ -453,6 +456,9 @@ GLuint Terrain::GenerateStripesTexture() {
   glPopMatrix();
 
   glViewport(0, 0, size.x, size.y);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glFinish();
 
   return rt->name;
   
