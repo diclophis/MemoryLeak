@@ -166,42 +166,26 @@ void Engine::StopSimulation() {
 void Engine::StartSimulation() {
   if (m_GameState == 2) {
     pthread_mutex_lock(&m_Mutex);
-
     m_GameState = 1;
-    
     pthread_mutex_unlock(&m_Mutex);
   }
 }
 
 
 void Engine::DoAudio(short buffer[], int size) {
-
   memset(buffer, 0, size * sizeof(short));
-
   if (Active() && m_IsPushingAudio) {
     if (m_AudioBufferSize == 0) {
       m_AudioBufferSize = size;
       m_AudioMixBuffer = new short[size];
       memset(m_AudioMixBuffer, 0, size * sizeof(short));
     }
-
-    //ModPlug_SetMasterVolume(m_Sounds[0], 100.0);
-    //ModPlug_SetMasterVolume(m_Sounds[1], 200.0);
     if (m_AudioTimeout < 0.0) {
     } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.75) {
-      //ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
-      //ModPlug_SetMasterVolume(m_Sounds[0], 200.0);
-      //ModPlug_SetMasterVolume(m_Sounds[1], 100.0);
     } else if (m_AudioTimeout > 0.25) {
       m_AudioTimeout = -1.0;
     }
-
-
     ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
-
-    //for (int i=0; i<size; i++) {
-    //  buffer[i] = (buffer[i] + m_AudioMixBuffer[i]);
-    //}
   }
 }
 
