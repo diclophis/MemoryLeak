@@ -46,9 +46,11 @@
 		[webView setBackgroundColor:[UIColor clearColor]];
 		[webView setAllowsInlineMediaPlayback:YES];
 		[webView setMediaPlaybackRequiresUserAction:NO];
+    //[webView setBaseUrl:@"wtf"];
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"html" subdirectory:@"assets/offline"];
     NSString *guts = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-		[webView loadHTMLString:guts baseURL:[NSURL URLWithString:@"https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ"]];
+    [webView loadHTMLString:guts baseURL:[[NSBundle mainBundle] bundleURL]];
+
 		[glView build:webView];
 		[glView startGame:[NSNumber numberWithInt:0]];
 		[glView startAnimation];
