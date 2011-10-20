@@ -70,10 +70,6 @@ void Hero::UpdateNodePosition() {
   b2Vec2 vel = body->GetLinearVelocity();
   float angle = atan2f(vel.y, vel.x);
 
-//#ifdef DRAW_BOX2D_WORLD
-//    body->SetTransform(body->GetPosition(), angle);
-//#else
-    
   rotation = 1 * RadiansToDegrees(angle);
   sprite->m_Rotation = rotation;
 
