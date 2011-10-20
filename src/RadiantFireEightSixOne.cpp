@@ -72,7 +72,7 @@ int RadiantFireEightSixOne::Simulate() {
   float dt = m_DeltaTime;
   world->Step(dt, velocityIterations, positionIterations);
   hero->UpdateNodePosition();
-  //terrain->SetOffsetX(hero->position.x);
+  terrain->SetOffsetX(hero->position.x);
   return 1;
 }
 
@@ -82,11 +82,11 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
-  //glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
-  //terrain->Render();
+  glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
+  terrain->Render();
   //glEnable(GL_BLEND);
   //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  //hero->Render();
-  //RenderSpriteRange(0, 1);
+  hero->Render();
+  RenderSpriteRange(0, 1);
   //glDisable(GL_BLEND);
 }

@@ -18,6 +18,9 @@ static pthread_mutex_t m_GameSwitchLock;
 
 
 Engine::~Engine() {
+
+  AtlasSprite::ReleaseBuffers();
+
   if (m_AudioBufferSize > 0) {
     delete m_AudioMixBuffer;
   }
@@ -63,12 +66,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glEnable(GL_TEXTURE_2D);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
-
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
   m_AudioTimeout = -1.0;
@@ -210,10 +207,6 @@ void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    //glEnableClientState(GL_VERTEX_ARRAY);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
@@ -230,15 +223,11 @@ void Engine::DrawScreen(float rotation) {
     RenderSpritePhase();
     AtlasSprite::ReleaseBuffers();
     AtlasSprite::Scrub();
-    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    //glDisableClientState(GL_VERTEX_ARRAY);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
+  pthread_mutex_unlock(&m_Mutex);
   Engine::CheckGL("END OF DRAW");
 }
 
@@ -250,6 +239,7 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   m_IsScreenResized = true;
 }
 

@@ -18,7 +18,7 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
-static int game_index = 0;
+static int game_index = 2;
 static bool not_printed = true;
 
 AudioDeviceID device;
@@ -167,7 +167,6 @@ void processMouseMotion(int x, int y) {
 
 void processNormalKeys(unsigned char key, int x, int y) {
   printf("key: %d %c\n", key, key);
-  //game_index += 1;
   game_index = key - 49;
   if (game_index > 2) {
     game_index = 0;

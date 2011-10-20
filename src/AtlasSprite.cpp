@@ -89,10 +89,14 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 void AtlasSprite::Render() {
 
 	if (m_AnimationLength == 0) {
-		LOGV("Fail, animation is at least 1 frame\n");
-		return;
-	}
-  
+    LOGV("Fail, animation is at least 1 frame\n");
+    return;
+  }
+
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+
 	if (m_Texture != g_lastTexture) {
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -154,6 +158,10 @@ void AtlasSprite::Render() {
     }
 	}
 	glPopMatrix();
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisable(GL_TEXTURE_2D);
   
 }
 

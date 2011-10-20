@@ -86,10 +86,12 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u
 //foofoos must contain #of frame info, look into replace interp
 //implement addverticestofoofoobuffersatposition,rotation,scale,frame
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
-  //glEnable(GL_DEPTH_TEST);
-  
+
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	foofoo *ff = new foofoo;
-  
   int interp = 3;
 	if (a->mNumMeshes > 1) {
 		//ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);
@@ -98,13 +100,11 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 		interp = 1;
 		ff->m_numFrames = a->mNumMeshes;
 	}
-	
 	ff->m_numFaces = a->mMeshes[0]->mNumFaces;
 	ff->m_numBuffers = ff->m_numFrames;
 	ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_NormalBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-
 	ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (1));
 	ff->m_AnimationStart = s;
 	ff->m_AnimationEnd = e;
@@ -173,6 +173,10 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
   
 	return ff;
 }

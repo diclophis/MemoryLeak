@@ -4,9 +4,9 @@
 
 RenderTexture::RenderTexture(int width, int height) {
   name = 0;
-  GLint oldFBO2;
-  //glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO2);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
+  glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
+  glEnable(GL_TEXTURE_2D);
   glGenTextures(1, &name);
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
@@ -30,36 +30,36 @@ RenderTexture::RenderTexture(int width, int height) {
   if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
     LOGV("INVALID GL CONTEXT CANT MAKE BUFFER\n");
   }
-  glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindTexture(GL_TEXTURE_2D, 0);
-  //glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
+  glDisable(GL_TEXTURE_2D);
+  glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
+  glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
+  glFinish();
 }
 
 
 RenderTexture::~RenderTexture() {
 LOGV("delete text\n");
-  //glDeleteTextures(1, &name);
-  //glDeleteBuffers(1, &fbo);
+  glDeleteTextures(1, &name);
+  glDeleteBuffers(1, &fbo);
   //glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
 void RenderTexture::Begin() {
-  //glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
-  //glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
-	//glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
+  glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
+  glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glFlush();
+  glFinish();
 }
 
 
 void RenderTexture::End() {
-  //glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
-  //glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
-  glClearColor(0.0, 0.0, 0.0, 1.0);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glFlush();
-  //AtlasSprite::ReleaseBuffers();
-  //AtlasSprite::Scrub();
+  glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
+  glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
+  //glClearColor(0.0, 0.0, 0.0, 1.0);
+  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glFinish();
 }
