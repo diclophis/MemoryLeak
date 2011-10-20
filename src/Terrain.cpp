@@ -12,11 +12,6 @@ Terrain::Terrain(b2World *w, GLuint t) {
   screenH = 480;
   offsetX = 0.0;
   textureSize = 512;
-  //stripes = new SpriteGun(t, 1, 1, 0, 1, 1.0, "", 8, 11, 1.0, textureSize, textureSize);
-  //stripes->m_IsAlive = false;
-  //stripes->Build(0);
-  //m_TextureIndex = 0;
-  //m_Textures.push_back(GenerateStripesTexture());
   GenerateStripesTexture();
   
   GenerateHillKeyPoints();
@@ -218,6 +213,7 @@ void Terrain::Render() {
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   } else {

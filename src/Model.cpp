@@ -17,11 +17,6 @@ static GLuint g_lastNormalBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
 
-//static GLuint g_staticVertexBuffer = 0;
-//static GLuint g_staticNormalBuffer = 0;
-//static GLuint g_staticTexcoordBuffer = 0;
-//static GLuint g_staticElementBuffer = 0;
-
 void Model::ReleaseBuffers() {
 	g_lastVertexBuffer = 0;
 	g_lastNormalBuffer = 0;
@@ -31,7 +26,7 @@ void Model::ReleaseBuffers() {
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
+
 }
 
 
@@ -199,10 +194,10 @@ void Model::Render() {
 		glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
-		if (m_Texture != g_lastTexture) {
+		//if (m_Texture != g_lastTexture) {
 			glBindTexture(GL_TEXTURE_2D, m_Texture);
 			g_lastTexture = m_Texture;
-		}
+		//}
 
 		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
 			g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];

@@ -42,7 +42,6 @@ RenderTexture::~RenderTexture() {
 LOGV("delete text\n");
   glDeleteTextures(1, &name);
   glDeleteBuffers(1, &fbo);
-  //glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -59,7 +58,7 @@ void RenderTexture::Begin() {
 void RenderTexture::End() {
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
-  //glClearColor(0.0, 0.0, 0.0, 1.0);
-  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   glFinish();
 }

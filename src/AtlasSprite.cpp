@@ -97,7 +97,7 @@ void AtlasSprite::Render() {
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
 
-	if (m_Texture != g_lastTexture) {
+	//if (m_Texture != g_lastTexture) {
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -106,7 +106,8 @@ void AtlasSprite::Render() {
 
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		g_lastTexture = m_Texture;
-	}
+
+	//}
 
 	glPushMatrix();
 	{
@@ -119,7 +120,7 @@ void AtlasSprite::Render() {
     GLfloat ty = m_Sprites[i].ty1;
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
     GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
-    if (i != g_lastFrame) {
+    //if (i != g_lastFrame) {
       vertices[0] =  (-w / 2);
       vertices[1] = (-h / 2);
       vertices[2] = (w / 2);
@@ -143,7 +144,7 @@ void AtlasSprite::Render() {
       glTexCoordPointer(2, GL_FLOAT, 0, texture);
 
       g_lastFrame = i;
-    }
+    //}
     
 		const GLushort indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
