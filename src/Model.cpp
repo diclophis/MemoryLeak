@@ -151,39 +151,23 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 				}
       }
 
-      /*
-				
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[used_buffer]);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, a->mMeshes[mm]->mNumFaces * 3 * sizeof(short), indices, GL_STATIC_DRAW);
-				
-				glBindBuffer(GL_ARRAY_BUFFER, ff->m_VerticeBuffers[used_buffer]);
-				glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
-				
-				glBindBuffer(GL_ARRAY_BUFFER, ff->m_NormalBuffers[used_buffer]);
-				glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
-				used_buffer++;
-			} else {
-      */
-				//if (mm < (a->mRootNode->mNumMeshes - 1)) {
-					float percent_of_way = (float)iiii / (float)interp;
+      float percent_of_way = (float)iiii / (float)interp;
 
-					for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
-						vertices[jk+0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
-						vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][1] - a->mMeshes[mm]->mVertices[ik][1]));
-						vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][2] - a->mMeshes[mm]->mVertices[ik][2]));
-					}
-					
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[used_buffer]);
-					glBufferData(GL_ELEMENT_ARRAY_BUFFER, a->mMeshes[mm]->mNumFaces * 3 * sizeof(short), indices, GL_STATIC_DRAW);
-					
-					glBindBuffer(GL_ARRAY_BUFFER, ff->m_VerticeBuffers[used_buffer]);
-					glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
-					
-					glBindBuffer(GL_ARRAY_BUFFER, ff->m_NormalBuffers[used_buffer]);
-					glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
-					used_buffer++;
-				//}
-			//}
+      for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
+        vertices[jk+0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
+        vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][1] - a->mMeshes[mm]->mVertices[ik][1]));
+        vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][2] - a->mMeshes[mm]->mVertices[ik][2]));
+      }
+      
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[used_buffer]);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, a->mMeshes[mm]->mNumFaces * 3 * sizeof(short), indices, GL_STATIC_DRAW);
+      
+      glBindBuffer(GL_ARRAY_BUFFER, ff->m_VerticeBuffers[used_buffer]);
+      glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+      
+      glBindBuffer(GL_ARRAY_BUFFER, ff->m_NormalBuffers[used_buffer]);
+      glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
+      used_buffer++;
 			
 			delete vertices;
 			delete indices;
@@ -196,17 +180,12 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
-	//glDisable(GL_DEPTH_TEST);
   
 	return ff;
 }
 
 
 void Model::Render() {
-  
-  //NOTE: this checks the depth buffer
-  //GLint f;
-  //glGetIntegerv(GL_DEPTH_BITS, &f);
   
   glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -231,38 +210,28 @@ void Model::Render() {
 		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
 			g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
-      
 			glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-
 		}
 
 		if (m_FooFoo->m_NormalBuffers[m_Frame] != g_lastNormalBuffer) {
 			g_lastNormalBuffer = m_FooFoo->m_NormalBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastNormalBuffer);
-
 			glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
-
 		}
 
 		if (m_FooFoo->m_TextureBuffer[0] != g_lastTexcoordBuffer) {
 			g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[0];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
-
 			glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-
 		}
 
 		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
 			g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-
 		}
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-    //glDrawElements(GL_LINES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-
 	}
 	glPopMatrix();
-  
   glDisable(GL_TEXTURE_2D);
   glDisable(GL_NORMALIZE);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -333,10 +302,7 @@ float Model::Simulate(float dt, bool pushing) {
 		float tz = cos(DEGREES_TO_RADIANS(m_Rotation[1]));
 		m_Position[0] += tx * (m_Velocity[0] * dt);
 		m_Position[1] += (m_Velocity[1] * dt);
-		//m_Position[1] = 0.7 + (fastSinf(m_Life) * 0.1);
 		m_Position[2] += tz * (m_Velocity[0] * dt);
-		
-		//LOGV("vy: %f\n", m_Velocity[1]);
 	}
 	
 	return m_Life;
@@ -352,16 +318,12 @@ void Model::Live(float dt) {
 	//move and what not
 	m_Life += dt;
 	if (m_Climbing) {
-		//LOGV("climbing\n");
 	} else if (m_IsFalling) {
-		//LOGV("falling\n");
 	} else if (!m_IsPushing) {
 		if (m_IsMoving) {
-			//LOGV("moving\n");
 			MoveTo(m_Velocity[0], m_Velocity[1], m_Velocity[2], dt);
 		} else {
 			if (m_Steps->size() > 1) {
-				//LOGV("stepping\n");
 				int ax, ay;
 				micropather::ModelOctree::NodeToXY(m_Steps->at(1), &ax, &ay);
 				float sx = m_Position[0];

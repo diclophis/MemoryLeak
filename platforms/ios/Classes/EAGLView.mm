@@ -571,28 +571,27 @@ static OSStatus playbackCallback(void *inRefCon,
         NSInteger i = [query intValue];
         //GL CONTEXT VALID!!!!
         [self performSelectorInBackground:@selector(startGame:) withObject:[NSNumber numberWithInt:i]];
-        //[self performSelectorOnMainThread:@selector(startGame:) withObject:[NSNumber numberWithInt:i] waitUntilDone:NO];
-        //Engine::Start(i, self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
       } else if ([@"/exit" isEqualToString:path]) {
         LOGV("exit\n");
       } else if ([@"/show" isEqualToString:path]) {
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"showWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 120.0)]; //webView.frame.size.height
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 120.0)];
         [UIView commitAnimations];
       } else if ([@"/hide" isEqualToString:path]) {
         [UIView setAnimationBeginsFromCurrentState:YES];
-        //[webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
+        [webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
         [UIView beginAnimations:@"hideWebView" context:nil];
         [UIView setAnimationDuration:0.5];
         [webView setFrame:CGRectMake(0.0, -webView.frame.size.height, self.frame.size.width,  webView.frame.size.height)];
         [UIView commitAnimations];
       } else if ([@"/fullscreen" isEqualToString:path]) {
+        [webView setBackgroundColor:[UIColor redColor]];
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView beginAnimations:@"fullscreenWebView" context:nil];
         [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 120.0)]; //self.frame.size.height
+        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
         [UIView commitAnimations];
       }
     } else if ([@"openfeint" isEqualToString:scheme]) {

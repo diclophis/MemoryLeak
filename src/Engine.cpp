@@ -149,6 +149,10 @@ if (pthread_mutex_trylock(&m_Mutex) == 0) {
       PopMessageFromWebView();
     }
 
+  if (m_SimulationTime > 15.0 && m_GameState != 4) {
+    m_GameState = 4;
+    PushMessageToWebView(CreateWebViewFunction("start(0)"));
+  }
 
 //  pthread_mutex_unlock(&m_GameSwitchLock);
     m_IsSceneBuilt = true;
@@ -250,6 +254,9 @@ void Engine::DrawScreen(float rotation) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     Engine::CheckGL("glClear in E");
 
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+
 		glMatrixMode(GL_PROJECTION);
     Engine::CheckGL("glMatrixMode in E");
     glLoadIdentity();
@@ -263,7 +270,7 @@ void Engine::DrawScreen(float rotation) {
     glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
     Engine::CheckGL("gluLookAt in E");
     RenderModelPhase();
-    Model::ReleaseBuffers();
+    //Model::ReleaseBuffers();
 
     glMatrixMode(GL_PROJECTION);
     Engine::CheckGL("glMatrixMode2 in E");
@@ -279,6 +286,10 @@ void Engine::DrawScreen(float rotation) {
     glLoadIdentity();
     Engine::CheckGL("glLoadIdentidfdf3434 in E");
     RenderSpritePhase();
+
+  glDisable(GL_CULL_FACE);
+  glDisable(GL_DEPTH_TEST);
+
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
@@ -298,7 +309,7 @@ void Engine::ResizeScreen(int width, int height) {
   LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   Engine::CheckGL("glViewport in E");
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   Engine::CheckGL("glClear in E2");
   m_IsScreenResized = true;
 }
