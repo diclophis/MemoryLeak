@@ -7,8 +7,8 @@
 
 #include "MemoryLeak.h"
 
-#define kWindowWidth 320
-#define kWindowHeight 480
+static int kWindowWidth = 320;
+static int kWindowHeight = 480;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -245,6 +245,8 @@ void draw(void) {
 }
 
 void resize(int width, int height) {
+  kWindowWidth = width;
+  kWindowHeight = height;
   Engine::CurrentGameResizeScreen(width, height);
 }
 

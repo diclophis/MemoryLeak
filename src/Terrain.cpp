@@ -411,7 +411,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
     
     
-    if (false) {
+    if (true) {
       // layer: highlight
 
       float highlightAlpha = 0.5f;
@@ -439,7 +439,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
 
 
-    if (false) {
+    if (true) {
       // layer: top border
 
       float borderAlpha = 0.5f;
@@ -461,7 +461,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
 
     
-    if (false) {
+    if (true) {
       // layer: noise
       glEnable(GL_BLEND);
       glBlendFunc(GL_DST_COLOR, GL_ZERO);
