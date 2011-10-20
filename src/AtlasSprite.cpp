@@ -93,10 +93,6 @@ void AtlasSprite::Render() {
 		return;
 	}
   
-  glEnable(GL_TEXTURE_2D);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
-
 	if (m_Texture != g_lastTexture) {
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -112,7 +108,6 @@ void AtlasSprite::Render() {
 	{
 		glTranslatef(m_Position[0], m_Position[1], 0.0);
     glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-    //g_lastRotation = m_Rotation;
 		int i = (m_Frame % m_AnimationLength);
     GLshort w = m_Sprites[i].dx;
     GLshort h = m_Sprites[i].dy;
@@ -121,15 +116,6 @@ void AtlasSprite::Render() {
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
     GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
     if (i != g_lastFrame) {
-      /*
-      GLshort vertices[8] = {
-        (-w / 2), (-h / 2),
-        (w / 2), (-h / 2),
-        (w / 2), (h / 2),
-        (-w / 2), (h / 2)
-      };
-      */
-
       vertices[0] =  (-w / 2);
       vertices[1] = (-h / 2);
       vertices[2] = (w / 2);
@@ -140,15 +126,6 @@ void AtlasSprite::Render() {
       vertices[7] = (h / 2);
 
       glVertexPointer(2, GL_SHORT, 0, vertices);
-
-      /*
-      GLfloat texture[8] = {
-        tx, (ty + th),
-        tx + tw, (ty + th),
-        tx + tw, ty,
-        tx, ty
-      };
-      */
 
       texture[0] = tx;
       texture[1] = (ty + th);
@@ -178,21 +155,15 @@ void AtlasSprite::Render() {
 	}
 	glPopMatrix();
   
-  glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisable(GL_TEXTURE_2D);
-
 }
 
-	void AtlasSprite::SetScale(float x, float y) {
-		//m_Scale[0] = x;
-		//m_Scale[1] = y;
-		int i = (m_Frame % m_AnimationLength);
-    //GLshort w = m_Sprites[i].dx;
-    //GLshort h = m_Sprites[i].dy;
-    m_Sprites[i].dx = (100.0 * x);
-    m_Sprites[i].dy = (100.0 * y);
-	}
+
+void AtlasSprite::SetScale(float x, float y) {
+  int i = (m_Frame % m_AnimationLength);
+  m_Sprites[i].dx = (100.0 * x);
+  m_Sprites[i].dy = (100.0 * y);
+}
+
 
 void AtlasSprite::Simulate(float deltaTime) {
 	float dx = m_Velocity[0] * deltaTime;
@@ -221,4 +192,4 @@ void AtlasSprite::Simulate(float deltaTime) {
       m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
     }
   }
-};
+}

@@ -87,9 +87,6 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u
 //implement addverticestofoofoobuffersatposition,rotation,scale,frame
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
   //glEnable(GL_DEPTH_TEST);
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   
 	foofoo *ff = new foofoo;
   
@@ -176,10 +173,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
   
 	return ff;
 }

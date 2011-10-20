@@ -22,8 +22,6 @@ Engine::~Engine() {
     delete m_AudioMixBuffer;
   }
 
-  AtlasSprite::ReleaseBuffers();
-
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
     delete *i;
   }
@@ -65,7 +63,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
-  //glClearColor(0.5, 0.2, 0.1, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_NORMAL_ARRAY);
 
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -206,52 +206,37 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
-	if (m_IsSceneBuilt && m_IsScreenResized) { // && m_SimulationTime > 2.0) {
+	if (m_IsSceneBuilt && m_IsScreenResized) {
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    Engine::CheckGL("glClear in E");
-
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glMatrixMode(GL_PROJECTION);
-    Engine::CheckGL("glMatrixMode in E");
     glLoadIdentity();
-    Engine::CheckGL("glLoadIdentity in E");
     GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
-
     glMatrixMode(GL_MODELVIEW);
-    Engine::CheckGL("glMatrixMode in E");
     glLoadIdentity();
-    Engine::CheckGL("glLoadIdentiryt213 in E");
     glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-    Engine::CheckGL("gluLookAt in E");
     RenderModelPhase();
-    //Model::ReleaseBuffers();
-
+    Model::ReleaseBuffers();
     glMatrixMode(GL_PROJECTION);
-    Engine::CheckGL("glMatrixMode2 in E");
     glLoadIdentity();
-    Engine::CheckGL("glMatrixMode3 in E");
-    //glOrtho((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 0.01f, 1.0f);
     glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-    //LOGV("%f %f %f %f %f %f\n", (-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 0.01f, 1.0f);
-    Engine::CheckGL("glOrthof in E");
-
     glMatrixMode(GL_MODELVIEW);
-    Engine::CheckGL("glMtrixdff in E");
     glLoadIdentity();
-    Engine::CheckGL("glLoadIdentidfdf3434 in E");
     RenderSpritePhase();
-
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_DEPTH_TEST);
-
+    AtlasSprite::ReleaseBuffers();
+    AtlasSprite::Scrub();
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
   pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
- 
   Engine::CheckGL("END OF DRAW");
 }
 
@@ -261,12 +246,8 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenHeight = height;
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
-  //Engine::CheckGL("ERROR BEFORE!?@# in E");
   LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  Engine::CheckGL("glViewport in E");
-  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  Engine::CheckGL("glClear in E2");
   m_IsScreenResized = true;
 }
 
@@ -348,12 +329,8 @@ void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat center
 #undef M
 	glMultMatrixf(m);
 	
-  Engine::CheckGL("glMultiMatrix in E");
-
 	/* Translate Eye to Origin */
 	glTranslatef(-eyex, -eyey, -eyez);
-
-  Engine::CheckGL("glTranslatemulfidfd in E");
 	
 }
 
@@ -372,7 +349,6 @@ void Engine::gluePerspective(float fovy, float aspect,
              (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
              (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
 
-  Engine::CheckGL("glFrustrum in E");
 }
 
 

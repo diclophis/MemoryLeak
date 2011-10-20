@@ -167,11 +167,11 @@ void processMouseMotion(int x, int y) {
 
 void processNormalKeys(unsigned char key, int x, int y) {
   printf("key: %d %c\n", key, key);
-  game_index += 1;
+  //game_index += 1;
+  game_index = key - 49;
   if (game_index > 2) {
     game_index = 0;
   }
-
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 }
 

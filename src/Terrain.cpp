@@ -16,9 +16,7 @@ Terrain::Terrain(b2World *w, GLuint t) {
   stripes->m_IsAlive = false;
   stripes->Build(0);
   m_TextureIndex = 0;
-  for (unsigned int i=0; i<1; i++) {
-    m_Textures.push_back(GenerateStripesTexture());
-  }
+  m_Textures.push_back(GenerateStripesTexture());
   
   GenerateHillKeyPoints();
   GenerateBorderVertices();
@@ -206,11 +204,7 @@ void Terrain::ResetHillVertices() {
 
 
 void Terrain::Render() {
-  //LOGV("draw\n");
-  glEnableClientState(GL_VERTEX_ARRAY);
   if (true) {
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_Textures.at(m_TextureIndex));
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -218,17 +212,13 @@ void Terrain::Render() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
-    Engine::CheckGL("Error before glDrawArrays? in T");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
-    glDisable(GL_TEXTURE_2D);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   } else {
     glColor4f(1, 1, 1, 1);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glLineWidth(2.0);
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
   }
-  glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 
@@ -238,9 +228,6 @@ GLuint Terrain::GenerateStripesTexture() {
 	// Calculate the adjustment ratios based on the old and new projections
 	MLPoint size = MLPointMake(320.0, 480.0);
 	
-  //float widthRatio = size.x / texSize.x;
-	//float heightRatio = size.y / texSize.y;
-  
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
@@ -258,7 +245,6 @@ GLuint Terrain::GenerateStripesTexture() {
   
   rt = new RenderTexture(textureSize, textureSize);
 
-  
   Engine::CheckGL("Prob in RenderTexture in T");
 
   glPushMatrix();
@@ -278,13 +264,9 @@ GLuint Terrain::GenerateStripesTexture() {
     Engine::CheckGL("glViewPort in T");
 
     rt->Begin();
-    //texture = genTexture = rt->name;
-
     if (true) {      
       // layer 1: stripes
       if (random() % 2) {
-      //if (true) {
-        // diagonal stripes
         dx = (float)textureSize*2 / (float)nStripes;
         dy = 0;
         x1 = -textureSize;
@@ -339,30 +321,17 @@ GLuint Terrain::GenerateStripesTexture() {
       }
 
       glEnableClientState(GL_VERTEX_ARRAY);
-      Engine::CheckGL("glEnableClientState VERTEX in T");
       glEnableClientState(GL_COLOR_ARRAY);
-      Engine::CheckGL("glColorArray COLOR in T");
       glEnable(GL_BLEND);
-      Engine::CheckGL("glEnable in T");
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      Engine::CheckGL("glBlendFunc in T");
       glColor4f(1, 1, 1, 1);
-      Engine::CheckGL("glColorf in T");
       glVertexPointer(2, GL_FLOAT, 0, vertices);
-      Engine::CheckGL("glVertexPointer in T");
       glColorPointer(4, GL_FLOAT, 0, colors);
-      Engine::CheckGL("glColorPointer in T");
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      Engine::CheckGL("glBlendFunc in T");
       glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
-      Engine::CheckGL("glDrawArrays in T");
       glDisable(GL_BLEND);
-      Engine::CheckGL("glDisable in T");
       glDisableClientState(GL_COLOR_ARRAY);
-      Engine::CheckGL("glDisableClientState COLOR in T");
       glDisableClientState(GL_VERTEX_ARRAY);
-      Engine::CheckGL("glDisableClientState VERTEX in T");
-
     }
     
 
@@ -467,7 +436,6 @@ GLuint Terrain::GenerateStripesTexture() {
       glBlendFunc(GL_DST_COLOR, GL_ZERO);
       stripes->SetPosition(textureSize / 2, textureSize / 2);
       glColor4f(1, 1, 1, 1);
-      AtlasSprite::Scrub();
       stripes->Render();
       stripes->Render();
       stripes->Render();
