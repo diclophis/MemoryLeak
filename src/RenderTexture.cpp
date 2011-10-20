@@ -8,16 +8,20 @@ RenderTexture::RenderTexture(int width, int height) {
   glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
   glEnable(GL_TEXTURE_2D);
   glGenTextures(1, &name);
+  LOGV("generated: %d\n", name);
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);
   }
   glBindTexture(GL_TEXTURE_2D, name);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
   // generate FBO
   glGenFramebuffersOES(1, &fbo);
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
@@ -29,17 +33,18 @@ RenderTexture::RenderTexture(int width, int height) {
   GLuint status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
   if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
     LOGV("INVALID GL CONTEXT CANT MAKE BUFFER\n");
+    assert(false);
   }
-  glBindTexture(GL_TEXTURE_2D, 0);
+  //glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
-  glFinish();
+  //glFinish();
 }
 
 
 RenderTexture::~RenderTexture() {
-LOGV("delete text\n");
+  LOGV("delete text %d\n", name);
   glDeleteTextures(1, &name);
   glDeleteBuffers(1, &fbo);
 }
@@ -49,16 +54,32 @@ void RenderTexture::Begin() {
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glFinish();
+
+/*
+      texture[0] = tx;
+      texture[1] = (ty + th);
+      texture[2] = tx + tw;
+      texture[3] = (ty + th);
+      texture[4] = tx + tw;
+      texture[5] = ty;
+      texture[6] = tx;
+      texture[7] = ty;
+
+      glTexCoordPointer(2, GL_FLOAT, 0, texture);
+*/
+
+  //glBindTexture(GL_TEXTURE_2D, name);
+  //glClearColor(1.0, 1.0, 1.0, 1.0);
+  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  //glFinish();
 }
 
 
 void RenderTexture::End() {
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glFinish();
+  //glBindTexture(GL_TEXTURE_2D, 0);
+  //glClearColor(1.0, 1.0, 1.0, 1.0);
+  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  //glFinish();
 }

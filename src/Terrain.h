@@ -13,14 +13,22 @@ public:
 	Terrain(b2World *w, GLuint t);
 	~Terrain();
 
-  MLPoint hillKeyPoints[kMaxHillKeyPoints];
   int nHillKeyPoints;
   int fromKeyPointI;
   int toKeyPointI;
+
+  MLPoint *hillKeyPoints;
+  MLPoint *hillVertices;
+  MLPoint *hillTexCoords;
+  MLPoint *borderVertices;
+  /*
+  MLPoint hillKeyPoints[kMaxHillKeyPoints];
   MLPoint hillVertices[kMaxHillVertices];
   MLPoint hillTexCoords[kMaxHillVertices];
-  int nHillVertices;
   MLPoint borderVertices[kMaxBorderVertices];
+  */
+
+  int nHillVertices;
   int nBorderVertices;
   SpriteGun *stripes;
   b2World *world;
@@ -51,4 +59,7 @@ public:
   bool firstTime;
 
   RenderTexture *rt;
+
+  int prevFromKeyPointI;
+  int prevToKeyPointI;
 };

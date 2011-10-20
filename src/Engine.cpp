@@ -19,8 +19,6 @@ static pthread_mutex_t m_GameSwitchLock;
 
 Engine::~Engine() {
 
-  AtlasSprite::ReleaseBuffers();
-
   if (m_AudioBufferSize > 0) {
     delete m_AudioMixBuffer;
   }
@@ -33,6 +31,7 @@ Engine::~Engine() {
   for (std::vector<SpriteGun *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
     delete *i;
   }
+  m_AtlasSprites.clear();
 
   for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
     delete *i;
@@ -128,10 +127,10 @@ int Engine::RunThread() {
         m_WebViewTimeout = 0.0;
         PopMessageFromWebView();
       }
-      if (m_SimulationTime > 15.0 && m_GameState != 4) {
-        m_GameState = 4;
-        PushMessageToWebView(CreateWebViewFunction("start(0)"));
-      }
+      //if (m_SimulationTime > 2.0 && m_GameState != 4) {
+      //  m_GameState = 4;
+      //  PushMessageToWebView(CreateWebViewFunction("start(0)"));
+      //}
       m_IsSceneBuilt = true;
       pthread_mutex_unlock(&m_Mutex);
     }
@@ -215,15 +214,15 @@ void Engine::DrawScreen(float rotation) {
     glLoadIdentity();
     glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
     RenderModelPhase();
-    Model::ReleaseBuffers();
+    //Model::ReleaseBuffers();
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     RenderSpritePhase();
-    AtlasSprite::ReleaseBuffers();
-    AtlasSprite::Scrub();
+    //AtlasSprite::ReleaseBuffers();
+    //AtlasSprite::Scrub();
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
