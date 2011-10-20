@@ -274,61 +274,6 @@ void processNormalKeys(unsigned char key, int x, int y) {
   }
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-/*
-  switch (key) {
-    case 27:
-    gameController->pause();
-    break;
-
-    case 13:
-    gameController->hitTest(x, y, 0);
-    gameController->hitTest(x, y, 2);
-    break;
-
-    case 113:
-    glDepthFunc(GL_NEVER);
-    break;
-
-    case 119:
-    glDepthFunc(GL_LESS);
-    break;
-
-    case 101:
-    glDepthFunc(GL_EQUAL);
-    break;
-
-    case 114:
-    glDepthFunc(GL_LEQUAL);
-    break;
-
-    case 116:
-    glDepthFunc(GL_GREATER);
-    break;
-
-    case 121:
-    glDepthFunc(GL_NOTEQUAL);
-    break;
-
-    case 117:
-    glDepthFunc(GL_GEQUAL);
-    break;
-
-    case 105:
-    glDepthFunc(GL_ALWAYS);
-    break;
-
-    case 111:
-    glDisable(GL_BLEND);
-    break;
-
-    case 112:
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    break;
-  }
-
-  LOGV("the fuck: %d\n", key);
-*/
 }
 
 int main(int argc, char** argv) {
