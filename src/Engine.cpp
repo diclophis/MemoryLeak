@@ -103,61 +103,43 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	double interp = 1.0;
-
   StartSimulation();
-
 	while (m_GameState > 0) {
-
-if (pthread_mutex_trylock(&m_Mutex) == 0) {
-
-//pthread_mutex_trylock(&m_Mutex);
-
-    gettimeofday(&tim, NULL);
-    t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-    averageWait = t2 - t1;
-    gettimeofday(&tim, NULL);
-    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-    if (m_GameState > 1) {
-      LOGV("paused\n");
-    } else {
-      for (unsigned int i=0; i<interp; i++) {
-        m_DeltaTime = (averageWait / interp);
-        m_SimulationTime += (m_DeltaTime);
-        if (m_AudioTimeout >= 0.0) {
-          m_AudioTimeout += (m_DeltaTime);
-        }
-        
-        
-        if (Active()) {
-          Simulate();
+    if (pthread_mutex_trylock(&m_Mutex) == 0) {
+      gettimeofday(&tim, NULL);
+      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+      averageWait = t2 - t1;
+      gettimeofday(&tim, NULL);
+      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+      if (m_GameState > 1) {
+        LOGV("paused\n");
+      } else {
+        for (unsigned int i=0; i<interp; i++) {
+          m_DeltaTime = (averageWait / interp);
+          m_SimulationTime += (m_DeltaTime);
+          if (m_AudioTimeout >= 0.0) {
+            m_AudioTimeout += (m_DeltaTime);
+          }
+          if (Active()) {
+            Simulate();
+          }
         }
       }
+      if ((m_WebViewTimeout += m_DeltaTime) > 0.075) {
+        m_WebViewTimeout = 0.0;
+        PopMessageFromWebView();
+      }
+      if (m_SimulationTime > 15.0 && m_GameState != 4) {
+        m_GameState = 4;
+        PushMessageToWebView(CreateWebViewFunction("start(0)"));
+      }
+      m_IsSceneBuilt = true;
+      pthread_mutex_unlock(&m_Mutex);
     }
-    
-    if ((m_WebViewTimeout += m_DeltaTime) > 0.075) {
-      m_WebViewTimeout = 0.0;
-      PopMessageFromWebView();
-    }
-
-  if (m_SimulationTime > 15.0 && m_GameState != 4) {
-    m_GameState = 4;
-    PushMessageToWebView(CreateWebViewFunction("start(0)"));
-  }
-
-//  pthread_mutex_unlock(&m_GameSwitchLock);
-    m_IsSceneBuilt = true;
-  pthread_mutex_unlock(&m_Mutex);
-
-}
     WaitVsync();
-
-
-
 	}
-
   m_SimulationThreadCleanup();
   m_GameState = -3;
-
 	return m_GameState;
 }
 
