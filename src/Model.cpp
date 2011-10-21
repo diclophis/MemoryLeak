@@ -40,7 +40,7 @@ Model::~Model() {
 }
 
 
-Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a), m_UsesStaticBuffer(u) {
+Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a) {
   m_Frame = 0;
 	m_IsPlayer = false;
 	m_IsEnemy = false;
@@ -194,33 +194,33 @@ void Model::Render() {
 		glRotatef(m_Rotation[2],1,0,0);
 		glScalef(m_Scale[0],m_Scale[1],m_Scale[2]);
 	
-		//if (m_Texture != g_lastTexture) {
+		if (m_Texture != g_lastTexture) {
 			glBindTexture(GL_TEXTURE_2D, m_Texture);
 			g_lastTexture = m_Texture;
-		//}
+		}
 
-		//if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
+		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
 			g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
 			glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-		//}
+		}
 
-		//if (m_FooFoo->m_NormalBuffers[m_Frame] != g_lastNormalBuffer) {
+		if (m_FooFoo->m_NormalBuffers[m_Frame] != g_lastNormalBuffer) {
 			g_lastNormalBuffer = m_FooFoo->m_NormalBuffers[m_Frame];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastNormalBuffer);
 			glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
-		//}
+		}
 
-		//if (m_FooFoo->m_TextureBuffer[0] != g_lastTexcoordBuffer) {
+		if (m_FooFoo->m_TextureBuffer[0] != g_lastTexcoordBuffer) {
 			g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[0];
 			glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
 			glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-		//}
+		}
 
-		//if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
+		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
 			g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-		//}
+		}
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 	}
 	glPopMatrix();

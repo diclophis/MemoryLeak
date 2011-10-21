@@ -111,7 +111,6 @@ public:
 		m_IsFalling = true;
 	}
 
-	bool m_UsesStaticBuffer;
 	bool m_IsPushing;
 	bool m_IsPlayer;
 	bool m_IsEnemy;

@@ -24,6 +24,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 
 
 MainMenu::~MainMenu() {
+  Model::ReleaseBuffers();
   LOGV("main menu dealloc\n");
 }
 
