@@ -60,7 +60,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridStopIndex = m_SpriteCount;
 
   m_WarpTimeout = 0.0;
-
 }
 
 

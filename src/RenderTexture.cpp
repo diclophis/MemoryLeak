@@ -56,6 +56,10 @@ RenderTexture::~RenderTexture() {
   glDeleteTextures(1, &name);
   glDeleteBuffers(1, &fbo);
   //glDeleteBuffers(1, &rbo);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glFlush();
+  glFinish();
 }
 
 
@@ -64,16 +68,18 @@ void RenderTexture::Begin() {
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
 
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, name);
+  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  //glEnable(GL_TEXTURE_2D);
+  //glBindTexture(GL_TEXTURE_2D, name);
 
+  /*
     GLfloat texCoord[] = { 0.0f, 1.0f, 
                  0.0f, 0.0f,
                  1.0f, 0.0f,
                  1.0f, 1.0f };
 
     glTexCoordPointer(2, GL_FLOAT, 0, texCoord);
+  */
 
   //glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
 
@@ -94,16 +100,26 @@ void RenderTexture::Begin() {
   //glClearColor(1.0, 1.0, 1.0, 1.0);
   //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   //glFinish();
+
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glFlush();
+  glFinish();
 }
 
 
 void RenderTexture::End() {
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisable(GL_TEXTURE_2D);
+  //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  //glDisable(GL_TEXTURE_2D);
   //glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
   //glBindTexture(GL_TEXTURE_2D, 0);
   //glclearcolor(1.0, 1.0, 1.0, 1.0);
   //glclear(gl_depth_buffer_bit | gl_color_buffer_bit);
   //glfinish();
+
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glFlush();
+  glFinish();
 }

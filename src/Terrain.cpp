@@ -335,7 +335,6 @@ GLuint Terrain::GenerateStripesTexture() {
           y1 += dy;
           y2 += dy;
         }
-
       }
 
       glEnableClientState(GL_VERTEX_ARRAY);
