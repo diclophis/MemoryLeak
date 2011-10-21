@@ -24,7 +24,6 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 
 
 MainMenu::~MainMenu() {
-  Model::ReleaseBuffers();
   LOGV("main menu dealloc\n");
 }
 
@@ -61,7 +60,12 @@ int MainMenu::Simulate() {
 
 
 void MainMenu::RenderModelPhase() {
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
   RenderModelRange(0, m_ModelCount);
+  Model::ReleaseBuffers();
+  glDisable(GL_CULL_FACE);
+  glDisable(GL_DEPTH_TEST);
 }
 
 

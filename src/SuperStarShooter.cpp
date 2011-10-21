@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 20
-#define GRID_Y 20
+#define GRID_X 8
+#define GRID_Y 10
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -101,7 +101,10 @@ void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
   Engine::CheckGL("glTranslate in SSS");
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
+  AtlasSprite::Scrub();
   RenderSpriteRange(0, m_GridStartIndex);
+  AtlasSprite::Scrub();
+  AtlasSprite::ReleaseBuffers();
 }
 
 

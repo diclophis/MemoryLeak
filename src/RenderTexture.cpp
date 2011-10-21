@@ -26,8 +26,8 @@ RenderTexture::RenderTexture(int width, int height) {
   glGenFramebuffersOES(1, &fbo);
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
 
-  glGenRenderbuffersOES(1, &rbo);
-  glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
+  //glGenRenderbuffersOES(1, &rbo);
+  //glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
 
   // associate texture with FBO
   Engine::CheckGL("Prob in RenderTexture in T");

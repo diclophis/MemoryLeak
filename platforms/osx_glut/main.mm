@@ -171,6 +171,9 @@ void processNormalKeys(unsigned char key, int x, int y) {
   if (game_index > 2) {
     game_index = 0;
   }
+  if (game_index < 0) {
+    game_index = 0;
+  }
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 }
 
