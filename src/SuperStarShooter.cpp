@@ -99,7 +99,6 @@ void SuperStarShooter::RenderModelPhase() {
 
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
-  Engine::CheckGL("glTranslate in SSS");
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
   AtlasSprite::Scrub();
   RenderSpriteRange(0, m_GridStartIndex);

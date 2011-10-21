@@ -224,7 +224,6 @@ void Engine::DrawScreen(float rotation) {
   }
   pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
-  Engine::CheckGL("END OF DRAW");
 }
 
 

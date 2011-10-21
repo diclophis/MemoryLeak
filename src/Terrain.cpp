@@ -3,6 +3,11 @@
 
 #include "MemoryLeak.h"
 
+#define kMaxHillKeyPoints 10
+#define kMaxHillVertices 2000
+#define kMaxBorderVertices 2000
+#define kHillSegmentWidth 15
+
 
 Terrain::Terrain(b2World *w, GLuint t) {
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);

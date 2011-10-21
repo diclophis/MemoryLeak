@@ -129,9 +129,7 @@ void AtlasSprite::Render() {
       vertices[5] = (h / 2);
       vertices[6] = (-w / 2);
       vertices[7] = (h / 2);
-
       glVertexPointer(2, GL_SHORT, 0, vertices);
-
       texture[0] = tx;
       texture[1] = (ty + th);
       texture[2] = tx + tw;
@@ -140,9 +138,7 @@ void AtlasSprite::Render() {
       texture[5] = ty;
       texture[6] = tx;
       texture[7] = ty;
-
       glTexCoordPointer(2, GL_FLOAT, 0, texture);
-
       g_lastFrame = i;
     }
     

@@ -1,10 +1,6 @@
 // Jon Bardin GPL
 
 
-#define kMaxHillKeyPoints 101
-#define kMaxHillVertices 1000
-#define kMaxBorderVertices 5000
-#define kHillSegmentWidth 15
 
 class Terrain {
 

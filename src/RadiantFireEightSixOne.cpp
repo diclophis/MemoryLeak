@@ -80,7 +80,6 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
   {
     glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
     terrain->Render();
-    AtlasSprite::Scrub();
     hero->Render();
     AtlasSprite::Scrub();
     AtlasSprite::ReleaseBuffers();
