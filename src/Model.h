@@ -126,7 +126,7 @@ public:
 	bool m_IsMoving;
 	bool m_IsFalling;
 	bool m_IsAlive;
-	foofoo *m_FooFoo;
+	const foofoo *m_FooFoo;
 	float m_Life;
 	GLfloat *m_Scale;
 	float *m_Position;
