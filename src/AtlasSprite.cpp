@@ -26,7 +26,7 @@ AtlasSprite::~AtlasSprite() {
 
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, float vdx, float vdy) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
   m_Fps = 0;
-	m_Rotation = 0.0;
+	m_Rotation = m_LastRotation = 0.0;
 	m_Position = new float[2];
 	m_Velocity = new float[2];
 	m_Scale = new float[2];
@@ -55,7 +55,6 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 			m_Frames[i] = m_Start + i;
 		}
 	}
-	//m_Count = m_SpritesPerRow * m_Rows;
 	int m_TotalCount = m_SpritesPerRow * m_Rows;
 	m_Count = m_AnimationLength;
 	m_Sprites = new Sprite[m_Count];
@@ -64,7 +63,7 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	float texture_x = 0.0;
 	float texture_y = 0.0;
 	int ii = 0;
-	for (unsigned i=0; i<m_TotalCount; i++) {
+	for (unsigned int i=0; i<m_TotalCount; i++) {
 		int b = (i % m_SpritesPerRow);
 		if (i == m_Frames[ii] && ii < m_Count) {
 			m_Sprites[ii].dx = vdx;
@@ -83,6 +82,17 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	}
   vertices = (GLshort *) malloc(8 * sizeof(GLshort));
   texture = (GLfloat *)malloc(8 * sizeof(GLfloat));
+
+
+	//glGenBuffers(1, m_IndexBuffer);
+
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+  //glBufferData(GL_ELEMENT_ARRAY_BUFFER, 8 * sizeof(GLshort), vertices, GL_STATIC_DRAW);
+
+  //src/Model.cpp:170:      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  //src/Model.cpp:222:                      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+
 }
 
 
@@ -93,26 +103,22 @@ void AtlasSprite::Render() {
     return;
   }
 
-  glEnable(GL_TEXTURE_2D);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
 
 	if (m_Texture != g_lastTexture) {
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		g_lastTexture = m_Texture;
 
 	}
 
-	glPushMatrix();
-	{
+	//glPushMatrix();
+	//{
 		glTranslatef(m_Position[0], m_Position[1], 0.0);
-    glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+    if (m_LastRotation != m_Rotation) {
+      glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+      m_LastRotation = m_Rotation;
+    }
 		int i = (m_Frame % m_AnimationLength);
     GLshort w = m_Sprites[i].dx;
     GLshort h = m_Sprites[i].dy;
@@ -145,6 +151,40 @@ void AtlasSprite::Render() {
 		const GLushort indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
 
+
+/*
+			glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
+			glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+		}
+
+		if (m_FooFoo->m_NormalBuffers[m_Frame] != g_lastNormalBuffer) {
+			g_lastNormalBuffer = m_FooFoo->m_NormalBuffers[m_Frame];
+			glBindBuffer(GL_ARRAY_BUFFER, g_lastNormalBuffer);
+			glNormalPointer(GL_FLOAT, 0, (GLvoid*)((char*)NULL)	);
+		}
+
+		if (m_FooFoo->m_TextureBuffer[0] != g_lastTexcoordBuffer) {
+			g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[0];
+			glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
+			glTexCoordPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+		}
+
+		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
+			g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+		}
+		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+*/
+
+
+
+
+
+
+
+
+
+
     if (false) {
       glDisable(GL_TEXTURE_2D);
       glLineWidth(2.0);
@@ -153,12 +193,9 @@ void AtlasSprite::Render() {
       glColor4f(1.0, 1.0, 1.0, 1.0);
       glEnable(GL_TEXTURE_2D);
     }
-	}
-	glPopMatrix();
-
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisable(GL_TEXTURE_2D);
+		glTranslatef(-m_Position[0], -m_Position[1], 0.0);
+	//}
+	//glPopMatrix();
   
 }
 

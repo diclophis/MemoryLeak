@@ -35,4 +35,6 @@ public:
 
   float m_WarpTimeout;
 
+  float m_DebugTimeout;
+
 };

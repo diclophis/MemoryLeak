@@ -34,8 +34,10 @@ public:
 	float m_AnimationLife;
 	float m_MaxLife;
 	float m_Rotation;
+  float m_LastRotation;
   GLshort *vertices;
   GLfloat *texture;
+
 	
 	void SetFrame(int f) {
 		m_Frame = f;
@@ -76,5 +78,8 @@ public:
 
   void SetScale(float, float);
   static void Scrub();
+
+  GLuint m_IndexBuffer;
+	foofoo *m_FooFoo;
 
 };

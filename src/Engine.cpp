@@ -43,6 +43,10 @@ Engine::~Engine() {
   }
   m_Sounds.clear();
 
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisable(GL_TEXTURE_2D);
+
   LOGV("dealloc Engine\n");
 }
 
@@ -58,7 +62,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	pthread_cond_init(&m_AudioSyncCond, NULL);
   pthread_mutex_init(&m_Mutex, NULL);
   pthread_mutex_init(&m_Mutex2, NULL);
-    
+
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
@@ -69,6 +73,15 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_IsPushingAudio = false;
   m_AudioTimeout = -1.0;
   m_WebViewTimeout = 0.0;
+
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 
@@ -127,10 +140,10 @@ int Engine::RunThread() {
         m_WebViewTimeout = 0.0;
         PopMessageFromWebView();
       }
-      //if (m_SimulationTime > 2.0 && m_GameState != 4) {
-      //  m_GameState = 4;
-      //  PushMessageToWebView(CreateWebViewFunction("start(0)"));
-      //}
+      if (m_SimulationTime > 10.0 && m_GameState != 4) {
+        //m_GameState = 4;
+        //PushMessageToWebView(CreateWebViewFunction("start(0)"));
+      }
       m_IsSceneBuilt = true;
       pthread_mutex_unlock(&m_Mutex);
     }

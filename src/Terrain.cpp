@@ -213,10 +213,10 @@ void Terrain::ResetHillVertices() {
 
 
 void Terrain::Render() {
-  glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_VERTEX_ARRAY);
   if (true) {
-    glEnable(GL_TEXTURE_2D);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glEnable(GL_TEXTURE_2D);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     //LOGV("bind: %d\n", rt->name);
     //glBindTexture(GL_TEXTURE_2D, rt->name - 2);
     glBindTexture(GL_TEXTURE_2D, rt->name);
@@ -229,18 +229,17 @@ void Terrain::Render() {
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     //glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_TEXTURE_2D);
+    //glDisable(GL_TEXTURE_2D);
   } else {
     glColor4f(1, 1, 1, 1);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glLineWidth(2.0);
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
   }
-  glDisableClientState(GL_VERTEX_ARRAY);
-  Engine::CheckGL("Render in T");
-  
+  //glDisableClientState(GL_VERTEX_ARRAY);
+  //Engine::CheckGL("Render in T");
 }
 
 
@@ -342,7 +341,7 @@ GLuint Terrain::GenerateStripesTexture() {
         }
       }
 
-      glEnableClientState(GL_VERTEX_ARRAY);
+      //glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -350,10 +349,15 @@ GLuint Terrain::GenerateStripesTexture() {
       glVertexPointer(2, GL_FLOAT, 0, vertices);
       glColorPointer(4, GL_FLOAT, 0, colors);
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
       glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
+      
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
       glDisable(GL_BLEND);
       glDisableClientState(GL_COLOR_ARRAY);
-      glDisableClientState(GL_VERTEX_ARRAY);
+      //glDisableClientState(GL_VERTEX_ARRAY);
     }
     
 
@@ -380,13 +384,17 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      glEnableClientState(GL_VERTEX_ARRAY);
+      //glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
       glVertexPointer(2, GL_FLOAT, 0, vertices);
       glColorPointer(4, GL_FLOAT, 0, colors);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
       glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
       glDisableClientState(GL_COLOR_ARRAY);
-      glDisableClientState(GL_VERTEX_ARRAY);
+
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      //glDisableClientState(GL_VERTEX_ARRAY);
       glDisable(GL_BLEND);
       
     }
@@ -408,13 +416,17 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnableClientState(GL_VERTEX_ARRAY);
+      //glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
       glVertexPointer(2, GL_FLOAT, 0, vertices);
       glColorPointer(4, GL_FLOAT, 0, colors);
+      
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
       glDisableClientState(GL_COLOR_ARRAY);
-      glDisableClientState(GL_VERTEX_ARRAY);
+      //glDisableClientState(GL_VERTEX_ARRAY);
       glDisable(GL_BLEND);
       
     }
@@ -431,13 +443,17 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnableClientState(GL_VERTEX_ARRAY);
+      //glEnableClientState(GL_VERTEX_ARRAY);
       glLineWidth(borderWidth);
       glColor4f(1.0, 0.0, 0.0, borderAlpha);
       glVertexPointer(2, GL_FLOAT, 0, vertices);
+      
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nVertices);
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
       glColor4f(1.0, 1.0, 1.0, 1.0);
-      glDisableClientState(GL_VERTEX_ARRAY);
+      //glDisableClientState(GL_VERTEX_ARRAY);
       glDisable(GL_BLEND);
     }
 

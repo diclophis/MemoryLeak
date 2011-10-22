@@ -6,7 +6,7 @@ RenderTexture::RenderTexture(int width, int height) {
   name = 0;
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   //glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
-  glEnable(GL_TEXTURE_2D);
+  //glEnable(GL_TEXTURE_2D);
   glGenTextures(1, &name);
   LOGV("generated: %d\n", name);
   if (name == 0) {
@@ -44,7 +44,7 @@ RenderTexture::RenderTexture(int width, int height) {
     assert(false);
   }
   //glBindTexture(GL_TEXTURE_2D, 0);
-  glDisable(GL_TEXTURE_2D);
+  //glDisable(GL_TEXTURE_2D);
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   //glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
   //glFinish();

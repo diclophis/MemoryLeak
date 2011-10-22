@@ -83,8 +83,8 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a) {
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
   glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  //glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	foofoo *ff = new foofoo;
   int interp = 3;
@@ -169,9 +169,9 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
+  //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  //glDisableClientState(GL_VERTEX_ARRAY);
   
 	return ff;
 }
@@ -179,11 +179,11 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 void Model::Render() {
   
-  glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnable(GL_TEXTURE_2D);
+  //glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnable(GL_NORMALIZE);
   
 	glPushMatrix();
@@ -224,11 +224,11 @@ void Model::Render() {
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 	}
 	glPopMatrix();
-  glDisable(GL_TEXTURE_2D);
   glDisable(GL_NORMALIZE);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
+  //glDisable(GL_TEXTURE_2D);
+  //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  //glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 
