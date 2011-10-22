@@ -107,12 +107,16 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
-  RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
-  AtlasSprite::Scrub();
-  //RenderSpriteRange(0, m_GridStartIndex);
-  AtlasSprite::Scrub();
-  //AtlasSprite::ReleaseBuffers();
+  glPushMatrix();
+  {
+    glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
+    RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
+    AtlasSprite::Scrub();
+    //RenderSpriteRange(0, m_GridStartIndex);
+    AtlasSprite::Scrub();
+    //AtlasSprite::ReleaseBuffers();
+  }
+  glPopMatrix();
 }
 
 
