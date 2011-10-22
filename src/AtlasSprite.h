@@ -37,6 +37,7 @@ public:
   float m_LastRotation;
   GLshort *vertices;
   GLfloat *texture;
+  GLushort *indices;
 
 	
 	void SetFrame(int f) {

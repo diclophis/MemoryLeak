@@ -25,6 +25,9 @@ static std::vector<foo*> models;
 static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
 
+static GLuint g_LastFrameBuffer = -1;
+static GLuint g_LastRenderBuffer = -1;
+
 void checkStatus(OSStatus status) {
 	if(status == 0)
 		NSLog(@"success");
@@ -171,7 +174,7 @@ const char *popMessageFromWebView() {
 		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
 		return;
 	}
-	
+
 	animating = FALSE;
 	displayLinkSupported = FALSE;
 	animationFrameInterval = 1;
@@ -309,11 +312,18 @@ const char *popMessageFromWebView() {
 -(void)drawView:(id)sender {
   if (animating) {
     [EAGLContext setCurrentContext:context];
-    
-    glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
+
+    if (g_LastFrameBuffer != defaultFramebuffer) {
+      g_LastFrameBuffer = defaultFramebuffer;
+      glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
+    }
+
     Engine::CurrentGameDrawScreen(0);		
-		
-    glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+	
+    if (g_LastRenderBuffer != colorRenderbuffer) {
+      g_LastRenderBuffer = colorRenderbuffer;
+      glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+    }
 		[context presentRenderbuffer:GL_RENDERBUFFER_OES];
   }
 }

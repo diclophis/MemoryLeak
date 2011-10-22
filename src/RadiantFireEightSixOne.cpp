@@ -13,6 +13,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   m_Touched = false;
   CreateBox2DWorld();
   terrain = new Terrain(world, m_Textures->at(0));  
+  //hero = NULL;
   hero = new Hero(world, m_Textures->at(1));
   b2BodyDef spriteBodyDef;
   spriteBodyDef.type = b2_dynamicBody;
@@ -57,15 +58,17 @@ int RadiantFireEightSixOne::Simulate() {
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
-  if (!hero->awake) {
-    hero->Wake();
+  if (hero) {
+    if (!hero->awake) {
+      hero->Wake();
+    }
+    if (m_Touched) {
+      hero->Dive();
+    }
+    hero->LimitVelocity();
+    hero->UpdateNodePosition();
+    terrain->SetOffsetX(hero->position.x);
   }
-  if (m_Touched) {
-    hero->Dive();
-  }
-  hero->LimitVelocity();
-  hero->UpdateNodePosition();
-  terrain->SetOffsetX(hero->position.x);
 
   return 1;
 }
@@ -80,7 +83,9 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
   {
     glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
     terrain->Render();
-    hero->Render();
+    if (hero) {
+      hero->Render();
+    }
     AtlasSprite::Scrub();
     AtlasSprite::ReleaseBuffers();
   }

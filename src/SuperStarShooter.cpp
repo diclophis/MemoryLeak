@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 10
-#define GRID_Y 10
+#define GRID_X 1
+#define GRID_Y 1
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -52,7 +52,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_GridPositions[(i * 2)] = xx;
     m_GridPositions[(i * 2) + 1] = yy;
-    m_AtlasSprites[m_SpriteCount]->SetPosition(xx * 10, yy * 10);
+    LOGV("%f %f\n", xx * SUBDIVIDE, yy * SUBDIVIDE);
+    //m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE, yy * SUBDIVIDE);
     xx++;
     if (xx >= GRID_X) {
       xx = 0;
@@ -67,7 +68,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
 
 SuperStarShooter::~SuperStarShooter() {
-  AtlasSprite::ReleaseBuffers();
+  //AtlasSprite::ReleaseBuffers();
   delete m_Space;
   delete m_GridPositions;
 }

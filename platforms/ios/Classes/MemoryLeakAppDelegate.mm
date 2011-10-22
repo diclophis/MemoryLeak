@@ -52,7 +52,7 @@
     [webView loadHTMLString:guts baseURL:[[NSBundle mainBundle] bundleURL]];
 
 		[glView build:webView];
-		[glView startGame:[NSNumber numberWithInt:0]];
+		[glView startGame:[NSNumber numberWithInt:1]];
 		[glView startAnimation];
 	}
 }

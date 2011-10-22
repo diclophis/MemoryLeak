@@ -224,9 +224,9 @@ public class DemoActivity extends Activity {
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
     final Context myApp = this;
     final Activity MyActivity = this;
-		mGLView = new DemoGLSurfaceView(this);
-    Global.mFooWtf = mGLView;
-		setContentView(mGLView);
+		//mGLView = new DemoGLSurfaceView(this);
+    //Global.mFooWtf = mGLView;
+		//setContentView(mGLView);
     mWebView = new WebView(this);
     mJavascriptBridge = new JavascriptBridge(this);
     mWebView.addJavascriptInterface(mJavascriptBridge, "javascriptBridge");
@@ -241,32 +241,6 @@ public class DemoActivity extends Activity {
         }).setCancelable(false).create().show();
         return true;
       };
-      /*
-      @Override
-      public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
-        Log.v(this.toString(), "holy shit");
-        super.onShowCustomView(view, callback);
-        if (view instanceof FrameLayout){
-          FrameLayout frame = (FrameLayout) view;
-          if (frame.getFocusedChild() instanceof VideoView){
-            VideoView video = (VideoView) frame.getFocusedChild();
-            frame.removeView(video);
-            a.setContentView(video);
-            video.setOnCompletionListener(this);
-            video.setOnErrorListener(this);
-            video.start();
-          }
-        }
-      }
-      */
-/*
-      public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "Video completo");
-        a.setContentView(R.layout.main);
-        WebView wb = (WebView) a.findViewById(R.id.webview);
-        a.initWebView();
-      }
-*/
     });
     mWebView.setWebViewClient(new WebViewClient() {
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
@@ -303,6 +277,7 @@ public class DemoActivity extends Activity {
     }
     addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 120));
 
+/*
     int model_count;
     java.io.FileDescriptor[] fd1;
     int[] off1;
@@ -385,6 +360,7 @@ public class DemoActivity extends Activity {
     } catch (java.io.IOException e) {
       Log.v(this.toString(), e.toString());
     }
+*/
 	}
 
 
@@ -454,14 +430,14 @@ public class DemoActivity extends Activity {
   @Override
   protected void onPause() {
     super.onPause();
-    mGLView.onPause();
+    //mGLView.onPause();
   }
 
 
   @Override
   protected void onResume() {
     super.onResume();
-    mGLView.onResume();
+    //mGLView.onResume();
   }
 
 

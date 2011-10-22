@@ -77,7 +77,7 @@ void Hero::UpdateNodePosition() {
     Sleep();
   }
 
-  sprite->SetPosition(position.x, position.y);
+  //sprite->SetPosition(position.x, position.y);
 }
 
 
