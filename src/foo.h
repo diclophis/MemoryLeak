@@ -32,11 +32,13 @@ struct foofoo {
 	~foofoo()
 	{
     glDeleteBuffers(m_numFrames, m_VerticeBuffers);
-    glDeleteBuffers(m_numFrames, m_NormalBuffers);
+    glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
     glDeleteBuffers(m_numFrames, m_IndexBuffers);
-    glDeleteBuffers(1, m_TextureBuffer);
+    glDeleteBuffers(m_numTextureBuffers, m_TextureBuffer);
     free(m_VerticeBuffers);
-    free(m_NormalBuffers);
+    if (m_numNormalBuffers > 0) {
+      free(m_NormalBuffers);
+    }
     free(m_IndexBuffers);
     free(m_TextureBuffer);
     printf("dealloc foofoo\n");
@@ -51,6 +53,8 @@ struct foofoo {
 	GLuint *m_TextureBuffer;
 	int m_numFaces;
 	int m_numFrames;
+  int m_numTextureBuffers;
+  int m_numNormalBuffers;
 	int m_AnimationStart;
 	int m_AnimationEnd;
 };

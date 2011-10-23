@@ -15,7 +15,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   spriteBodyDef.type = b2_dynamicBody;
   CreateBox2DWorld();
   terrain = new Terrain(world, m_Textures->at(0));  
-  //hero = new Hero(world, m_Textures->at(1));
+  hero = new Hero(world, m_Textures->at(1));
   //spriteBodyDef.position.Set(hero->position.x / PTM_RATIO, hero->position.y / PTM_RATIO);
   b2Body *spriteBody = world->CreateBody(&spriteBodyDef);
   b2PolygonShape spriteShape;
@@ -37,7 +37,7 @@ void RadiantFireEightSixOne::CreateBox2DWorld() {
 
 RadiantFireEightSixOne::~RadiantFireEightSixOne() {
   delete terrain;
-  //delete hero;
+  delete hero;
   delete world;
 }
 
@@ -57,7 +57,6 @@ int RadiantFireEightSixOne::Simulate() {
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
-/*
   if (hero) {
     if (!hero->awake) {
       hero->Wake();
@@ -69,9 +68,8 @@ int RadiantFireEightSixOne::Simulate() {
     hero->UpdateNodePosition();
     terrain->SetOffsetX(hero->position.x);
   }
-*/
   
-  //terrain->SetOffsetX(m_SimulationTime);
+  //terrain->SetOffsetX(m_SimulationTime * 300);
 
   return 1;
 }
@@ -86,11 +84,11 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
   {
     glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
     terrain->Render();
-    //if (hero) {
-    //  hero->Render();
-    //}
-    //AtlasSprite::Scrub();
-    //AtlasSprite::ReleaseBuffers();
+    if (hero) {
+      hero->Render();
+    }
+    AtlasSprite::Scrub();
+    AtlasSprite::ReleaseBuffers();
   }
   glPopMatrix();
 }

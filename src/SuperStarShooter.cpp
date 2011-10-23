@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 0
-#define GRID_Y 0
+#define GRID_X 10
+#define GRID_Y 10
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -54,7 +54,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_GridPositions[(i * 2)] = xx;
     m_GridPositions[(i * 2) + 1] = yy;
     LOGV("%f %f\n", xx * SUBDIVIDE, yy * SUBDIVIDE);
-    //m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE, yy * SUBDIVIDE);
+    m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE * 0.5, yy * SUBDIVIDE * 0.5);
     xx++;
     if (xx >= GRID_X) {
       xx = 0;
@@ -77,10 +77,9 @@ SuperStarShooter::~SuperStarShooter() {
 void SuperStarShooter::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
-  m_CameraOffsetX = -xx;
-  m_CameraOffsetY = -yy;
+  //m_CameraOffsetX = -xx;
+  //m_CameraOffsetY = -yy;
 
-/*
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);
   float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE * 0.5);
 	float collide_x = (dx);
@@ -99,7 +98,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   }
   m_CameraOffsetX = m_CameraStopOffsetX - xx;
   m_CameraOffsetY = m_CameraStopOffsetY -yy;
-*/
 }
 
 
@@ -111,7 +109,7 @@ void SuperStarShooter::RenderSpritePhase() {
   glPushMatrix();
   {
     glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
-    //RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
+    RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
     //AtlasSprite::Scrub();
     //AtlasSprite::Scrub();
   }

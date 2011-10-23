@@ -97,6 +97,8 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	}
 	ff->m_numFaces = a->mMeshes[0]->mNumFaces;
 	ff->m_numBuffers = ff->m_numFrames;
+  ff->m_numTextureBuffers = 1;
+  ff->m_numNormalBuffers = ff->m_numBuffers;
 	ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_NormalBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));

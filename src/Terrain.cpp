@@ -213,7 +213,9 @@ void Terrain::ResetHillVertices() {
 
 void Terrain::Render() {
   //glEnableClientState(GL_VERTEX_ARRAY);
-  if (false) {
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  if (true) {
     //glEnable(GL_TEXTURE_2D);
     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     //LOGV("bind: %d\n", rt->name);
@@ -234,9 +236,9 @@ void Terrain::Render() {
   } else {
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glColor4f(1.0, 1.0, 1.0, 0.5);
-    glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     Engine::CheckGL("wtf");
     glLineWidth(2.0);
+    glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   }
@@ -434,7 +436,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
 
 
-    if (false) {
+    if (true) {
       // layer: top border
 
       float borderAlpha = 0.5f;

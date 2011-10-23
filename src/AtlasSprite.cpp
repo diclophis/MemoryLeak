@@ -3,11 +3,10 @@
 
 #include "MemoryLeak.h"
 
-//static GLuint g_lastTexture = 0;
-//static GLuint g_lastVertexBuffer = 0;
-//static GLuint g_lastNormalBuffer = 0;
-//static GLuint g_lastTexcoordBuffer = 0;
-//static GLuint g_lastElementBuffer = 0;
+static GLuint g_lastTexture = 0;
+static GLuint g_lastVertexBuffer = 0;
+static GLuint g_lastTexcoordBuffer = 0;
+static GLuint g_lastElementBuffer = 0;
 //static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
@@ -19,6 +18,7 @@ void AtlasSprite::Scrub() {
 }
 
 AtlasSprite::~AtlasSprite() {
+LOGV("AtlasSprite::dealloc\n");
   free(vertices);
   free(texture);
   free(indices);
@@ -27,9 +27,11 @@ AtlasSprite::~AtlasSprite() {
   delete m_Scale;
   delete m_Frames;
   delete m_Sprites;
+  delete m_FooFoo;
 }
 
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, float vdx, float vdy) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
+LOGV("AtlasSprite::alloc\n");
   m_Fps = 0;
 	m_Rotation = m_LastRotation = 0.0;
 	m_Position = new float[2];
@@ -86,24 +88,10 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 		}
 	}
 
-  vertices = (GLshort *) malloc(8 * sizeof(GLshort));
-  texture = (GLfloat *) malloc(8 * sizeof(GLshort));
-  indices = (GLushort *) malloc(4 * sizeof(GLushort));
-
-  indices[0] = 1;
-  indices[1] = 2;
-  indices[2] = 0;
-  indices[3] = 3;
-
   int i = 0;
-
   GLshort w = m_Sprites[i].dx;
   GLshort h = m_Sprites[i].dy;
-  GLfloat tx = m_Sprites[i].tx1;
-  GLfloat ty = m_Sprites[i].ty1;
-  GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
-  GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
-
+  vertices = (GLshort *) malloc(8 * sizeof(GLshort));
   vertices[0] =  (-w / 2);
   vertices[1] = (-h / 2);
   vertices[2] = (w / 2);
@@ -112,6 +100,12 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
   vertices[5] = (h / 2);
   vertices[6] = (-w / 2);
   vertices[7] = (h / 2);
+
+  GLfloat tx = m_Sprites[i].tx1;
+  GLfloat ty = m_Sprites[i].ty1;
+  GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
+  GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
+  texture = (GLfloat *) malloc(8 * sizeof(GLfloat));
   texture[0] = tx;
   texture[1] = (ty + th);
   texture[2] = tx + tw;
@@ -121,10 +115,18 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
   texture[6] = tx;
   texture[7] = ty;
 
-/*
+  indices = (GLushort *) malloc(4 * sizeof(GLushort));
+
+  indices[0] = 1;
+  indices[1] = 2;
+  indices[2] = 0;
+  indices[3] = 3;
+
 	foofoo *ff = new foofoo;
   ff->m_numFrames = 1;
 	ff->m_numBuffers = ff->m_numFrames;
+  ff->m_numTextureBuffers = ff->m_numFrames;
+  ff->m_numNormalBuffers = 0;
 	ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
@@ -148,7 +150,6 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   m_FooFoo = ff;
-*/     
 
 }
 
@@ -209,8 +210,8 @@ void AtlasSprite::Render() {
 		const GLushort indices [] = {1, 2, 0, 3};
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
     */
-/*
-  m_Frame = 0;
+
+    m_Frame = 0;
 
     g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
     glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
@@ -223,7 +224,7 @@ void AtlasSprite::Render() {
     g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
 
-    //glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
 	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -240,8 +241,6 @@ void AtlasSprite::Render() {
     }
 
 		//glTranslatef(-m_Position[0], -m_Position[1], 0.0);
-*/
-
   }
 	glPopMatrix();
   
