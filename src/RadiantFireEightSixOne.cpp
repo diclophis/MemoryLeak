@@ -13,7 +13,6 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   m_Touched = false;
   CreateBox2DWorld();
   terrain = new Terrain(world, m_Textures->at(0));  
-  //hero = NULL;
   hero = new Hero(world, m_Textures->at(1));
   b2BodyDef spriteBodyDef;
   spriteBodyDef.type = b2_dynamicBody;

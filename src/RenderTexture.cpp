@@ -22,6 +22,7 @@ RenderTexture::RenderTexture(int width, int height) {
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
+  Engine::CheckGL("wtf in RenderREnder::RenderTexture\n");
   // generate FBO
   glGenFramebuffersOES(1, &fbo);
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);

@@ -3,19 +3,19 @@
 
 #include "MemoryLeak.h"
 
-static GLuint g_lastTexture = 0;
-static GLuint g_lastVertexBuffer = 0;
-static GLuint g_lastNormalBuffer = 0;
-static GLuint g_lastTexcoordBuffer = 0;
-static GLuint g_lastElementBuffer = 0;
-static int g_lastFrame = -1;
+//static GLuint g_lastTexture = 0;
+//static GLuint g_lastVertexBuffer = 0;
+//static GLuint g_lastNormalBuffer = 0;
+//static GLuint g_lastTexcoordBuffer = 0;
+//static GLuint g_lastElementBuffer = 0;
+//static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
-	g_lastTexture = -1;
+	//g_lastTexture = -1;
 }
 
 void AtlasSprite::Scrub() {
-  g_lastFrame = -1;
+  //g_lastFrame = -1;
 }
 
 AtlasSprite::~AtlasSprite() {
@@ -167,13 +167,13 @@ void AtlasSprite::Render() {
   }
 
 
-	if (m_Texture != g_lastTexture) {
+	//if (m_Texture != g_lastTexture) {
 
 
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
-		g_lastTexture = m_Texture;
+		//g_lastTexture = m_Texture;
 
-	}
+	//}
 
 	glPushMatrix();
 	{

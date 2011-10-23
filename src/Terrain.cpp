@@ -3,11 +3,10 @@
 
 #include "MemoryLeak.h"
 
-#define kMaxHillKeyPoints 10
-#define kMaxHillVertices 2000
-#define kMaxBorderVertices 2000
+#define kMaxHillKeyPoints 100
+#define kMaxHillVertices 5000
+#define kMaxBorderVertices 5000
 #define kHillSegmentWidth 15
-
 
 Terrain::Terrain(b2World *w, GLuint t) {
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);
@@ -68,7 +67,7 @@ void Terrain::GenerateHillKeyPoints() {
   float maxHeight = screenH;
   float minHeight = 0;
   while (nHillKeyPoints < kMaxHillKeyPoints-1) {
-    dx = minDX; //random() % rangeDX + minDX;
+    dx = random() % rangeDX + minDX;
     x += dx;
     dy = minDY; //random() % rangeDY + minDY;
     ny = y + dy * sign;
@@ -214,7 +213,7 @@ void Terrain::ResetHillVertices() {
 
 void Terrain::Render() {
   //glEnableClientState(GL_VERTEX_ARRAY);
-  if (true) {
+  if (false) {
     //glEnable(GL_TEXTURE_2D);
     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     //LOGV("bind: %d\n", rt->name);
@@ -233,13 +232,16 @@ void Terrain::Render() {
     //glBindTexture(GL_TEXTURE_2D, 0);
     //glDisable(GL_TEXTURE_2D);
   } else {
-    glColor4f(1, 1, 1, 1);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glColor4f(1.0, 1.0, 1.0, 0.5);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
+    Engine::CheckGL("wtf");
     glLineWidth(2.0);
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   }
   //glDisableClientState(GL_VERTEX_ARRAY);
-  //Engine::CheckGL("Render in T");
+  Engine::CheckGL("Render in T");
 }
 
 
@@ -432,7 +434,7 @@ GLuint Terrain::GenerateStripesTexture() {
     }
 
 
-    if (true) {
+    if (false) {
       // layer: top border
 
       float borderAlpha = 0.5f;

@@ -6,4 +6,4 @@ touch assets/textures/.DS_Store && rm assets/textures/.DS_Store
 cd platforms/osx_glut/
 
 #make clean
-make -j 2 && cd ../../ && ./platforms/osx_glut/build/raptor_island $1
+make && cd ../../ && ./platforms/osx_glut/build/raptor_island $1
