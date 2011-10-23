@@ -135,7 +135,7 @@ int Engine::RunThread() {
           }
         }
       }
-      if ((m_WebViewTimeout += m_DeltaTime) > 0.075) {
+      if ((m_WebViewTimeout += m_DeltaTime) > 0.05) {
         m_WebViewTimeout = 0.0;
         PopMessageFromWebView();
       }

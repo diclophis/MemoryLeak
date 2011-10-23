@@ -4,31 +4,39 @@
 
 RenderTexture::RenderTexture(int width, int height) {
   name = 0;
+  Engine::CheckGL("Probi7 in RenderTexture in T");
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
-  //glEnable(GL_TEXTURE_2D);
+  Engine::CheckGL("Prob6 in RenderTexture in T");
+
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
   glGenTextures(1, &name);
+  Engine::CheckGL("Prob5 in RenderTexture in T");
   LOGV("generated: %d\n", name);
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);
   }
   glBindTexture(GL_TEXTURE_2D, name);
+  Engine::CheckGL("Prob4 in RenderTexture in T");
 
   // generate FBO
   glGenFramebuffersOES(1, &fbo);
+  Engine::CheckGL("Prob3 in RenderTexture in T");
+
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
+  Engine::CheckGL("Prob2 in RenderTexture in T");
 
   glGenRenderbuffersOES(1, &rbo);
-  glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
+  Engine::CheckGL("Prob1 in RenderTexture in T");
 
-  // associate texture with FBO
+  glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
   Engine::CheckGL("Prob in RenderTexture in T");
 
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 

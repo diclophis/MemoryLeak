@@ -276,7 +276,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
   if (Engine::CurrentGame()) {
     Engine::CurrentGameStart();
   } else {
-    Engine::Start(0, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+    Engine::Start(2, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
     pthread_create(&audio_thread, 0, pump_audio, NULL);
   }
 }
