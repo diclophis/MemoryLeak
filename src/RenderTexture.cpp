@@ -3,6 +3,9 @@
 #include "MemoryLeak.h"
 
 RenderTexture::RenderTexture(int width, int height) {
+  glFinish();
+  glEnable(GL_TEXTURE_2D);
+
   name = 0;
   Engine::CheckGL("Probi7 in RenderTexture in T");
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
@@ -14,6 +17,8 @@ RenderTexture::RenderTexture(int width, int height) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+  Engine::CheckGL("wtf in RenderREnder::RenderTexture\n");
+
   glGenTextures(1, &name);
   Engine::CheckGL("Prob5 in RenderTexture in T");
   LOGV("generated: %d\n", name);
@@ -23,6 +28,9 @@ RenderTexture::RenderTexture(int width, int height) {
   }
   glBindTexture(GL_TEXTURE_2D, name);
   Engine::CheckGL("Prob4 in RenderTexture in T");
+
+  LOGV("wtf: %d %d\n", width, height);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
   // generate FBO
   glGenFramebuffersOES(1, &fbo);
@@ -37,10 +45,6 @@ RenderTexture::RenderTexture(int width, int height) {
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
   Engine::CheckGL("Prob in RenderTexture in T");
 
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-  Engine::CheckGL("wtf in RenderREnder::RenderTexture\n");
 
   glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, rbo);
   Engine::CheckGL("111 in RenderREnder::RenderTexture\n");
