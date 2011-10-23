@@ -76,7 +76,6 @@ public:
   std::vector<foo *> *m_ModelFoos;
   std::vector<foo *> *m_LevelFoos;
   std::vector<foo *> *m_SoundFoos;
-  Assimp::Importer m_Importer;
   std::vector<Model *> m_Models;
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;

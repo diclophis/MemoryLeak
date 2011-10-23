@@ -67,7 +67,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_GameState = 2;
   m_Zoom = 1.0;
 
-	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
@@ -486,6 +485,8 @@ void Engine::LoadSound(int i) {
 
 void Engine::LoadModel(int i, int s, int e) {
   //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
+  Assimp::Importer m_Importer;
+	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
 	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
 	char path[128];
 	snprintf(path, sizeof(s), "%d", i);

@@ -20,18 +20,18 @@ void AtlasSprite::Scrub() {
 
 AtlasSprite::~AtlasSprite() {
   if (vertices) {
-  free(vertices);
+    free(vertices);
   }
   if (texture) {
-  free(texture);
+    free(texture);
   }
   if (indices) {
-  free(indices);
+    free(indices);
   }
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
-  //delete m_Frames;
+  delete m_Frames;
   delete m_Sprites;
 }
 
