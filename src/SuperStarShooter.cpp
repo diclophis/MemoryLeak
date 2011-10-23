@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 1
-#define GRID_Y 1
+#define GRID_X 0
+#define GRID_Y 0
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -48,6 +48,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridStartIndex = m_SpriteCount;
 
   for (unsigned int i=0; i<m_GridCount; i++) {
+    LOGV("foo\n");
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_GridPositions[(i * 2)] = xx;
@@ -68,7 +69,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
 
 SuperStarShooter::~SuperStarShooter() {
-  //AtlasSprite::ReleaseBuffers();
   delete m_Space;
   delete m_GridPositions;
 }
@@ -111,11 +111,9 @@ void SuperStarShooter::RenderSpritePhase() {
   glPushMatrix();
   {
     glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
-    RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
-    AtlasSprite::Scrub();
-    //RenderSpriteRange(0, m_GridStartIndex);
-    AtlasSprite::Scrub();
-    //AtlasSprite::ReleaseBuffers();
+    //RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
+    //AtlasSprite::Scrub();
+    //AtlasSprite::Scrub();
   }
   glPopMatrix();
 }
