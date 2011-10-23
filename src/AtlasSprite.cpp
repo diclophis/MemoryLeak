@@ -19,15 +19,9 @@ void AtlasSprite::Scrub() {
 }
 
 AtlasSprite::~AtlasSprite() {
-  if (vertices) {
-    free(vertices);
-  }
-  if (texture) {
-    free(texture);
-  }
-  if (indices) {
-    free(indices);
-  }
+  free(vertices);
+  free(texture);
+  free(indices);
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
@@ -93,8 +87,8 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 	}
 
   vertices = (GLshort *) malloc(8 * sizeof(GLshort));
-  texture = (GLfloat *)malloc(8 * sizeof(GLshort));
-  indices = (GLushort *)malloc(4 * sizeof(GLushort));
+  texture = (GLfloat *) malloc(8 * sizeof(GLshort));
+  indices = (GLushort *) malloc(4 * sizeof(GLushort));
 
   indices[0] = 1;
   indices[1] = 2;

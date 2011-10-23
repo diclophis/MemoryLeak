@@ -148,8 +148,8 @@ int Engine::RunThread() {
     }
     WaitVsync();
 	}
-  m_SimulationThreadCleanup();
   m_GameState = -3;
+  m_SimulationThreadCleanup();
 	return m_GameState;
 }
 
@@ -165,6 +165,7 @@ void Engine::StopSimulation() {
   m_IsSceneBuilt = false;
   m_GameState = -1;
   while (m_GameState != -3) {
+    LOGV("trying to signal vsync\n");
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
   pthread_join(m_CurrentGame->m_Thread, NULL);
