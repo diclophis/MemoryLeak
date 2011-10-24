@@ -418,7 +418,7 @@ void Engine::CurrentGameHit(float x, float y, int hitState) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->Hit(x, y, hitState);
   } else {
-    LOGV("\n\nFOOOOOOOOOOOOOOOOO\n\n\n");
+    //LOGV("\n\nFOOOOOOOOOOOOOOOOO\n\n\n");
   }
 }
 
@@ -427,7 +427,7 @@ void Engine::CurrentGameResizeScreen(int width, int height) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->ResizeScreen(width, height);
   } else {
-    LOGV("\n really??\n");
+    //LOGV("\n really??\n");
   }
 }
 
@@ -437,7 +437,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
     if (m_CurrentGame != NULL) {
       m_CurrentGame->DrawScreen(rotation);
     } else {
-      LOGV("foooo man chuuu\n");
+      //LOGV("foooo man chuuu\n");
     }
     pthread_mutex_unlock(&m_GameSwitchLock);
   }
@@ -464,7 +464,7 @@ void Engine::CurrentGameStart() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->StartSimulation();
   } else {
-    LOGV("WTF!!!!!!!\n");
+    //LOGV("WTF!!!!!!!\n");
   }
 }
 

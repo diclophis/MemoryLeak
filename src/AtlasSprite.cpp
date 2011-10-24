@@ -10,7 +10,12 @@ static GLuint g_lastElementBuffer = 0;
 //static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
-	//g_lastTexture = -1;
+	g_lastTexture = -1;
+  g_lastVertexBuffer = -1;
+  g_lastTexcoordBuffer = -1;
+  g_lastElementBuffer = -1;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void AtlasSprite::Scrub() {
@@ -146,8 +151,12 @@ LOGV("AtlasSprite::alloc\n");
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[i]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
 
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  glFlush();
+  glFinish();
 
   m_FooFoo = ff;
 
@@ -162,13 +171,13 @@ void AtlasSprite::Render() {
   }
 
 
-	//if (m_Texture != g_lastTexture) {
+	if (m_Texture != g_lastTexture) {
 
 
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
-		//g_lastTexture = m_Texture;
+		g_lastTexture = m_Texture;
 
-	//}
+	}
 
 	glPushMatrix();
 	{
@@ -211,23 +220,31 @@ void AtlasSprite::Render() {
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices);
     */
 
+
+
+
+
     m_Frame = 0;
 
-    g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
-    glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
-    glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
+		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
+      g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
+      glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
+      glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
+    }
 
-    g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
-    glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
-    glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+		if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
+      g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
+      glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
+      glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+    }
 
-    g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
+      g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+    }
 
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     if (false) {
       glDisable(GL_TEXTURE_2D);

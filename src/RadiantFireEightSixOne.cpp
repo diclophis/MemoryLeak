@@ -87,7 +87,6 @@ void RadiantFireEightSixOne::RenderSpritePhase() {
     if (hero) {
       hero->Render();
     }
-    AtlasSprite::Scrub();
     AtlasSprite::ReleaseBuffers();
   }
   glPopMatrix();
