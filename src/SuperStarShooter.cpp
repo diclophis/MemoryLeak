@@ -54,7 +54,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_GridPositions[(i * 2)] = xx;
     m_GridPositions[(i * 2) + 1] = yy;
     LOGV("%f %f\n", xx * SUBDIVIDE, yy * SUBDIVIDE);
-    m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE * 0.5, yy * SUBDIVIDE * 0.5);
+    m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE, yy * SUBDIVIDE);
     xx++;
     if (xx >= GRID_X) {
       xx = 0;
