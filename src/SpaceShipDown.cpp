@@ -160,11 +160,13 @@ void SpaceShipDown::RenderSpritePhase() {
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     AtlasSprite::ReleaseBuffers();
 
-    glDisable(GL_TEXTURE_2D);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    world->DrawDebugData();
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnable(GL_TEXTURE_2D);
+    if (false) {
+      glDisable(GL_TEXTURE_2D);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      world->DrawDebugData();
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glEnable(GL_TEXTURE_2D);
+    }
   }
   glPopMatrix();
 }

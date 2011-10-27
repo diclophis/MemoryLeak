@@ -219,7 +219,7 @@ void *start_game( void *ptr ) {
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
   playing_audio = false;
   pthread_join(audio_thread, NULL);
-  //Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   LOGV("Engine::start: %d\n", g);
   create_audio_thread();
 }

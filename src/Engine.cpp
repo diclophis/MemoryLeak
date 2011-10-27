@@ -138,10 +138,10 @@ int Engine::RunThread() {
           }
         }
       }
-      if ((m_WebViewTimeout += m_DeltaTime) > 0.05) {
+      if ((m_WebViewTimeout += m_DeltaTime) > 1.0) {
         m_WebViewTimeout = 0.0;
         PopMessageFromWebView();
-        PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));
+        //PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));
       }
       if (m_SimulationTime > 10.0 && m_GameState != 4) {
         //m_GameState = 4;
