@@ -295,7 +295,7 @@ public class DemoActivity extends Activity {
 
     int rate = 44100;
     int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
-    setMinBuffer(min / 4);
+    setMinBuffer(min / 32);
     at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
     at1.play();
     at1.setStereoVolume(1.0f, 1.0f);

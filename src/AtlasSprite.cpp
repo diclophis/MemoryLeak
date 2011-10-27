@@ -10,15 +10,15 @@ static GLuint g_lastElementBuffer = 0;
 //static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
-	g_lastTexture = -1;
   g_lastVertexBuffer = -1;
   g_lastTexcoordBuffer = -1;
   g_lastElementBuffer = -1;
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void AtlasSprite::Scrub() {
+	g_lastTexture = -1;
   //g_lastFrame = -1;
 }
 
@@ -171,7 +171,6 @@ LOGV("AtlasSprite::alloc\n");
 
   glFlush();
   glFinish();
-  Engine::CheckGL("in atlas sprite?");
 
   m_FooFoo = ff;
 
@@ -215,24 +214,20 @@ void AtlasSprite::Render() {
       g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
       glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
       glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
-      Engine::CheckGL("in render sprite 1");
     }
 
 		if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
       g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
       glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
       glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-      Engine::CheckGL("in render sprite 2");
     }
 
 		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
       g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-      Engine::CheckGL("in render sprite 3");
     }
 
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-    Engine::CheckGL("in render sprite 4");
 
     if (false) {
       glDisable(GL_TEXTURE_2D);
@@ -240,14 +235,12 @@ void AtlasSprite::Render() {
       glColor4f(0.0, 1.0, 0.0, 1.0);
       //glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
       glDrawElements(GL_LINES, 2 * 2, GL_UNSIGNED_BYTE, (GLvoid*)((char*)NULL));
-      Engine::CheckGL("in render sprite 5");
       glColor4f(1.0, 1.0, 1.0, 1.0);
       glEnable(GL_TEXTURE_2D);
     }
 
   }
 	glPopMatrix();
-  Engine::CheckGL("in render sprite");
   
 }
 

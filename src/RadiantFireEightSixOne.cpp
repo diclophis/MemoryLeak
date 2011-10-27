@@ -84,14 +84,15 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
-  glPushMatrix();
-  {
+  //glPushMatrix();
+  //{
     glTranslatef(terrain->position.x - 128.0, -175.0, 0.0);
     terrain->Render();
     if (hero) {
       hero->Render();
     }
     AtlasSprite::ReleaseBuffers();
-  }
-  glPopMatrix();
+    AtlasSprite::Scrub();
+  //}
+  //glPopMatrix();
 }

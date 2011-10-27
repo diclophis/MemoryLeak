@@ -153,8 +153,8 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
-  glPushMatrix();
-  {
+  //glPushMatrix();
+  //{
     glTranslatef(-m_AtlasSprites[m_PlayerIndex]->m_Position[0], -m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
@@ -167,6 +167,6 @@ void SpaceShipDown::RenderSpritePhase() {
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glEnable(GL_TEXTURE_2D);
     }
-  }
-  glPopMatrix();
+  //}
+  //glPopMatrix();
 }

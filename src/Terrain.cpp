@@ -25,7 +25,6 @@ Terrain::Terrain(b2World *w, GLuint t) {
   GenerateBorderVertices();
   CreateBox2DBody();
   SetOffsetX(0.0);
-Engine::CheckGL("Terrain::alloc");
 }
 
 
@@ -214,7 +213,7 @@ void Terrain::ResetHillVertices() {
 
 void Terrain::Render() {
   //glEnableClientState(GL_VERTEX_ARRAY);
-  //glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 //Engine::CheckGL("Render in T2");
   if (true) {
@@ -222,10 +221,6 @@ void Terrain::Render() {
     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     //LOGV("bind: %d\n", rt->name);
     //glBindTexture(GL_TEXTURE_2D, rt->name - 2);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, rt->name);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
@@ -237,7 +232,6 @@ void Terrain::Render() {
   } else {
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glColor4f(1.0, 1.0, 1.0, 0.5);
-    Engine::CheckGL("wtf");
     glLineWidth(2.0);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
@@ -249,8 +243,6 @@ void Terrain::Render() {
 
 
 GLuint Terrain::GenerateStripesTexture() {  
-  Engine::CheckGL("RWTFSDS");
-  
   MLPoint texSize = MLPointMake(textureSize, textureSize);
 	// Calculate the adjustment ratios based on the old and new projections
 	MLPoint size = MLPointMake(320.0, 480.0);
@@ -276,17 +268,12 @@ GLuint Terrain::GenerateStripesTexture() {
   //Engine::CheckGL("glPushMatrix in T");
   {
     glMatrixMode(GL_PROJECTION);
-    Engine::CheckGL("glMatrixMode in T");
     glLoadIdentity();
-    Engine::CheckGL("glLoadIdentity in T");
     glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
-    Engine::CheckGL("glOrthof in T");
 
     glMatrixMode(GL_MODELVIEW);
-    Engine::CheckGL("glMatrixMode in T");
     
     glViewport(0, 0, texSize.x, texSize.y);
-    Engine::CheckGL("glViewPort in T");
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glFinish();

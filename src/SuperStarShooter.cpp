@@ -104,13 +104,14 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glPushMatrix();
-  {
+  //glPushMatrix();
+  //{
     glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
     RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
     AtlasSprite::ReleaseBuffers();
-  }
-  glPopMatrix();
+    AtlasSprite::Scrub();
+  //}
+  //glPopMatrix();
 }
 
 

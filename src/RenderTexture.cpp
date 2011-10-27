@@ -3,14 +3,11 @@
 #include "MemoryLeak.h"
 
 RenderTexture::RenderTexture(int width, int height) {
-  Engine::CheckGL("Probi732323 in RenderTexture in T");
   glFinish();
   glEnable(GL_TEXTURE_2D);
   name = 0;
-  Engine::CheckGL("Probi7 in RenderTexture in T");
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
-  Engine::CheckGL("Prob6 in RenderTexture in T");
 
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -18,43 +15,33 @@ RenderTexture::RenderTexture(int width, int height) {
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 
-  Engine::CheckGL("wtf in RenderREnder::RenderTexture\n");
 
   glGenTextures(1, &name);
-  Engine::CheckGL("Prob5 in RenderTexture in T");
   LOGV("generated: %d\n", name);
   if (name == 0) {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(name);
   }
   glBindTexture(GL_TEXTURE_2D, name);
-  Engine::CheckGL("Prob4 in RenderTexture in T");
 
   LOGV("wtf: %d %d\n", width, height);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei) width, (GLsizei) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
   // generate FBO
   glGenFramebuffersOES(1, &fbo);
-  Engine::CheckGL("Prob3 in RenderTexture in T");
 
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
-  Engine::CheckGL("Prob2 in RenderTexture in T");
 
   glGenRenderbuffersOES(1, &rbo);
-  Engine::CheckGL("Prob1 in RenderTexture in T");
 
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
-  Engine::CheckGL("Prob in RenderTexture in T");
 
 
   glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, rbo);
-  Engine::CheckGL("111 in RenderREnder::RenderTexture\n");
 
   glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, name, 0);
-  Engine::CheckGL("222 in RenderREnder::RenderTexture\n");
 
 
-  Engine::CheckGL("Prob in RenderTexture in T2");
   // check if it worked (probably worth doing :) )
   GLuint status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
   if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
@@ -82,6 +69,10 @@ RenderTexture::~RenderTexture() {
 
 
 void RenderTexture::Begin() {
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);

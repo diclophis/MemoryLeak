@@ -74,6 +74,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_AudioTimeout = -1.0;
   m_WebViewTimeout = 0.0;
 
+	glColor4f(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -83,7 +84,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  Engine::CheckGL("RWTFSDSasdasdasdasdasd");
 }
 
 
@@ -222,8 +222,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
-	  glColor4f(1.0, 1.0, 1.0, 1.0);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
