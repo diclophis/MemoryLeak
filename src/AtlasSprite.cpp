@@ -14,8 +14,8 @@ void AtlasSprite::ReleaseBuffers() {
   g_lastVertexBuffer = -1;
   g_lastTexcoordBuffer = -1;
   g_lastElementBuffer = -1;
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void AtlasSprite::Scrub() {
@@ -211,25 +211,25 @@ void AtlasSprite::Render() {
 
     m_Frame = 0;
 
-		//if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
+		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
       g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
       glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
       glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
       Engine::CheckGL("in render sprite 1");
-    //}
+    }
 
-		//if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
+		if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
       g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
       glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
       glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
       Engine::CheckGL("in render sprite 2");
-    //}
+    }
 
-		//if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
+		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
       g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
       Engine::CheckGL("in render sprite 3");
-    //}
+    }
 
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     Engine::CheckGL("in render sprite 4");
