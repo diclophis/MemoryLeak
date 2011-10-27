@@ -275,7 +275,7 @@ public class DemoActivity extends Activity {
       Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       Log.v(this.toString(), e.toString());
     }
-    //addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 120));
+    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 120));
 
     int model_count;
     java.io.FileDescriptor[] fd1;
@@ -295,7 +295,8 @@ public class DemoActivity extends Activity {
 
     int rate = 44100;
     int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
-    setMinBuffer(min / 128);
+    setMinBuffer(min);
+    //min = 1024;
     at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
     at1.play();
     at1.setStereoVolume(1.0f, 1.0f);

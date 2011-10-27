@@ -275,7 +275,7 @@ GLuint Terrain::GenerateStripesTexture() {
     glLoadIdentity();
     glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_MODELVIEW);
     
     glViewport(0, 0, texSize.x, texSize.y);
     glClearColor(1.0, 1.0, 1.0, 1.0);
