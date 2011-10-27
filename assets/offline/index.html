@@ -10,6 +10,7 @@
     <script type="text/javascript">
       var queue = new Array();
       var scroll = null;
+      last_game_time = 0;
       function dequeue() {
         if (queue.length > 0) {
           var item = queue.shift();
@@ -51,7 +52,10 @@
         }, 1);
       };
       update = function(simulation_time) {
-        document.getElementById("simulation_time").innerHTML = simulation_time + ' ' + queue.length;
+        time_since_last_update = simulation_time - last_game_time;
+
+        last_game_time = simulation_time;
+        document.getElementById("simulation_time").innerHTML = simulation_time.toFixed(1) + ' ' + time_since_last_update.toFixed(3) + ' ' + (1.0 / time_since_last_update).toFixed(2);
       };
       window.onload = loaded;
       document.addEventListener('DOMContentLoaded', offline, false);
