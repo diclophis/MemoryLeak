@@ -14,5 +14,10 @@ public:
   b2World *world;
   //Terrain *terrain;
   //Hero *hero;
-  bool m_Touched;
+  int m_LandscapeIndex;
+  int m_PlayerIndex;
+  b2Body *m_PlayerBody;
+
+  bool m_TouchedLeft;
+  bool m_TouchedRight;
 };

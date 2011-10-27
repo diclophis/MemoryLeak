@@ -17,6 +17,8 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   terrain = new Terrain(world, m_Textures->at(0));  
   hero = NULL;
   hero = new Hero(world, m_Textures->at(1));
+
+  /*
   spriteBodyDef.position.Set(hero->position.x / PTM_RATIO, hero->position.y / PTM_RATIO);
   b2Body *spriteBody = world->CreateBody(&spriteBodyDef);
   b2PolygonShape spriteShape;
@@ -26,6 +28,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   spriteShapeDef.density = 10.0;
   spriteShapeDef.isSensor = true;
   spriteBody->CreateFixture(&spriteShapeDef);
+  */
 }
 
 
