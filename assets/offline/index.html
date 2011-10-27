@@ -45,6 +45,7 @@
           actions = document.body.getElementsByTagName("form");
           for (i=0; i<actions.length; i++) {
             actions[i].onclick = function(event) {
+              console.log(this.action);
               queue.push(this.action);
             };
           }
