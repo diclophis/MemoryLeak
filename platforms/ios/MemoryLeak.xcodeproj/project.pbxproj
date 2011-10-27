@@ -126,6 +126,8 @@
 		FC2C4B6713C1778700FECDEA /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6413C1778600FECDEA /* Terrain.cpp */; };
 		FC2C4B6913C1792D00FECDEA /* MLPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6813C1792D00FECDEA /* MLPoint.cpp */; };
 		FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6A13C1AB6F00FECDEA /* RenderTexture.cpp */; };
+		FC32AB0214594448007FCB03 /* GLES-Render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC32AAFE14594448007FCB03 /* GLES-Render.cpp */; };
+		FC32AB0314594448007FCB03 /* SpaceShipDown.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC32AB0014594448007FCB03 /* SpaceShipDown.cpp */; };
 		FC5EC4D513807C7100C31CC0 /* ObjFileImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D213807C7100C31CC0 /* ObjFileImporter.cpp */; };
 		FC5EC4D613807C7100C31CC0 /* ObjFileMtlImporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D313807C7100C31CC0 /* ObjFileMtlImporter.cpp */; };
 		FC5EC4D713807C7100C31CC0 /* ObjFileParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5EC4D413807C7100C31CC0 /* ObjFileParser.cpp */; };
@@ -585,6 +587,10 @@
 		FC2C4B6813C1792D00FECDEA /* MLPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MLPoint.cpp; sourceTree = "<group>"; };
 		FC2C4B6A13C1AB6F00FECDEA /* RenderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTexture.cpp; sourceTree = "<group>"; };
 		FC2C4B6B13C1AB7100FECDEA /* RenderTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderTexture.h; sourceTree = "<group>"; };
+		FC32AAFE14594448007FCB03 /* GLES-Render.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "GLES-Render.cpp"; sourceTree = "<group>"; };
+		FC32AAFF14594448007FCB03 /* GLES-Render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GLES-Render.h"; sourceTree = "<group>"; };
+		FC32AB0014594448007FCB03 /* SpaceShipDown.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpaceShipDown.cpp; sourceTree = "<group>"; };
+		FC32AB0114594448007FCB03 /* SpaceShipDown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpaceShipDown.h; sourceTree = "<group>"; };
 		FC5EC4D213807C7100C31CC0 /* ObjFileImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileImporter.cpp; sourceTree = "<group>"; };
 		FC5EC4D313807C7100C31CC0 /* ObjFileMtlImporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileMtlImporter.cpp; sourceTree = "<group>"; };
 		FC5EC4D413807C7100C31CC0 /* ObjFileParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileParser.cpp; sourceTree = "<group>"; };
@@ -744,6 +750,10 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FC32AAFE14594448007FCB03 /* GLES-Render.cpp */,
+				FC32AAFF14594448007FCB03 /* GLES-Render.h */,
+				FC32AB0014594448007FCB03 /* SpaceShipDown.cpp */,
+				FC32AB0114594448007FCB03 /* SpaceShipDown.h */,
 				FC2C4B6A13C1AB6F00FECDEA /* RenderTexture.cpp */,
 				FC2C4B6B13C1AB7100FECDEA /* RenderTexture.h */,
 				FC2C4B6813C1792D00FECDEA /* MLPoint.cpp */,
@@ -1631,6 +1641,8 @@
 				FC2C4B6713C1778700FECDEA /* Terrain.cpp in Sources */,
 				FC2C4B6913C1792D00FECDEA /* MLPoint.cpp in Sources */,
 				FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */,
+				FC32AB0214594448007FCB03 /* GLES-Render.cpp in Sources */,
+				FC32AB0314594448007FCB03 /* SpaceShipDown.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

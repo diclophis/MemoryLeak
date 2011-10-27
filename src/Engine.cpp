@@ -222,6 +222,7 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
+	  glColor4f(1.0, 1.0, 1.0, 1.0);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -239,8 +240,8 @@ void Engine::DrawScreen(float rotation) {
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
+  pthread_mutex_unlock(&m_Mutex);
 }
 
 

@@ -30,13 +30,13 @@
 #include <cstdarg>
 #include <cstring>
 
-GLESDebugDraw::GLESDebugDraw()
-	: mRatio( 1.0f )
-{
+GLESDebugDraw::GLESDebugDraw() : mRatio( 1.0f ) {
 }
+
 GLESDebugDraw::GLESDebugDraw( float32 ratio )
 	: mRatio( ratio )
 {
+  glLineWidth(1.0);
 }
 
 

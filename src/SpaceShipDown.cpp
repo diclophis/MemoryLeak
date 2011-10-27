@@ -2,7 +2,6 @@
 
 
 #include "MemoryLeak.h"
-#include "GLES-Render.h"
 #include "SpaceShipDown.h"
 
 
@@ -90,6 +89,7 @@ void SpaceShipDown::CreateBox2DWorld() {
 
 
 SpaceShipDown::~SpaceShipDown() {
+  delete m_DebugDraw;
   delete world;
 }
 

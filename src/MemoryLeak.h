@@ -144,6 +144,7 @@
 #include "Game.h"
 #include "FooIO.h"
 #include "RenderTexture.h"
+#include "GLES-Render.h"
 #include "Engine.h"
 
 #include "MLPoint.h"
