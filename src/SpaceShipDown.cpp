@@ -12,7 +12,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_Zoom = 3.0;
 
   m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(4), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 1024, 1024));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(4), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048, 2048));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 512.0);
   m_SpriteCount++;
