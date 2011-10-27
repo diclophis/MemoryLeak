@@ -268,9 +268,9 @@ GLuint Terrain::GenerateStripesTexture() {
   
   rt = new RenderTexture(textureSize, textureSize);
 
-  glPushMatrix();
+  //glPushMatrix();
   //Engine::CheckGL("glPushMatrix in T");
-  {
+  //{
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
@@ -469,8 +469,8 @@ GLuint Terrain::GenerateStripesTexture() {
     
     rt->End();
     
-  }
-  glPopMatrix();
+  //}
+  //glPopMatrix();
 
   glViewport(0, 0, size.x, size.y);
   glClearColor(1.0, 1.0, 1.0, 1.0);

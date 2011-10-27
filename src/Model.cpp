@@ -190,8 +190,8 @@ void Model::Render() {
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnable(GL_NORMALIZE);
   
-	glPushMatrix();
-	{
+	//glPushMatrix();
+	//{
 		glTranslatef(m_Position[0],m_Position[1],m_Position[2]);
 		glRotatef(m_Rotation[1],0,-1,0);
 		glRotatef(m_Rotation[0],0,0,1);
@@ -226,8 +226,8 @@ void Model::Render() {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
 		}
 		glDrawElements(GL_TRIANGLES, (3 * m_FooFoo->m_numFaces), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-	}
-	glPopMatrix();
+	//}
+	//glPopMatrix();
   glDisable(GL_NORMALIZE);
   glDisableClientState(GL_NORMAL_ARRAY);
   //glDisable(GL_TEXTURE_2D);

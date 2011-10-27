@@ -47,7 +47,7 @@ Engine::~Engine() {
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
+  //glPopMatrix();
 
   LOGV("dealloc Engine\n");
 }
@@ -79,7 +79,10 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
-  glPushMatrix();
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  //glPushMatrix();
 
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

@@ -193,8 +193,8 @@ void AtlasSprite::Render() {
 
 	}
 
-	glPushMatrix();
-	{
+	//glPushMatrix();
+	//{
 
     //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -239,8 +239,10 @@ void AtlasSprite::Render() {
       glEnable(GL_TEXTURE_2D);
     }
 
-  }
-	glPopMatrix();
+		glTranslatef(-m_Position[0], -m_Position[1], 0.0);
+
+  //}
+	//glPopMatrix();
   
 }
 
