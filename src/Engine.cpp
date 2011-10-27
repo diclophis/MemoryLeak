@@ -145,7 +145,7 @@ int Engine::RunThread() {
           }
         }
       }
-      if ((m_WebViewTimeout += m_DeltaTime) > 0.1) {
+      if ((m_WebViewTimeout += m_DeltaTime) > 0.05) {
         m_WebViewTimeout = 0.0;
         PopMessageFromWebView();
         PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));

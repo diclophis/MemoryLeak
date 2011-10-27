@@ -62,7 +62,7 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a) {
 	m_IsFalling = false;
 
 	m_Life = 0.0;
-	m_Fps = 30.0;
+	m_Fps = 160.0;
 	m_Theta = 0.0;
 	m_IsAlive = false;
 
@@ -89,7 +89,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
   //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	foofoo *ff = new foofoo;
-  int interp = 3;
+  int interp = 5;
 	if (a->mNumMeshes > 1) {
 		//ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);
     ff->m_numFrames = (e - s) * interp;
