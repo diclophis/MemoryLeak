@@ -6,6 +6,7 @@
 #include "MainMenu.h"
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
+#include "SpaceShipDown.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -388,6 +389,7 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
     games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
+    games.push_back(new GameImpl<SpaceShipDown>);
     pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
 

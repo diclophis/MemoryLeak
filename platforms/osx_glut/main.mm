@@ -168,7 +168,7 @@ void processMouseMotion(int x, int y) {
 void processNormalKeys(unsigned char key, int x, int y) {
   printf("key: %d %c\n", key, key);
   game_index = key - 49;
-  if (game_index > 2) {
+  if (game_index > 3) {
     game_index = 0;
   }
   if (game_index < 0) {
