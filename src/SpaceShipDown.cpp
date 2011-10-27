@@ -2,6 +2,7 @@
 
 
 #include "MemoryLeak.h"
+#include "GLES-Render.h"
 #include "SpaceShipDown.h"
 
 
@@ -62,6 +63,18 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   // bottom
   groundBox.SetAsBox(floor_size / PTM_RATIO, floor_height / PTM_RATIO);
   groundBody->CreateFixture(&groundBox,0);
+
+
+  m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
+  world->SetDebugDraw(m_DebugDraw);
+  
+  uint32 flags = 0;
+  flags += b2Draw::e_shapeBit;
+  flags += b2Draw::e_jointBit;
+  flags += b2Draw::e_aabbBit;
+  flags += b2Draw::e_pairBit;
+  flags += b2Draw::e_centerOfMassBit;
+  m_DebugDraw->SetFlags(flags);   
 
   m_TouchedLeft = false;
   m_TouchedRight = false;
@@ -146,6 +159,12 @@ void SpaceShipDown::RenderSpritePhase() {
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     AtlasSprite::ReleaseBuffers();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    world->DrawDebugData();
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnable(GL_TEXTURE_2D);
   }
   glPopMatrix();
 }

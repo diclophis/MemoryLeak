@@ -20,4 +20,7 @@ public:
 
   bool m_TouchedLeft;
   bool m_TouchedRight;
+
+  GLESDebugDraw *m_DebugDraw;
+
 };
