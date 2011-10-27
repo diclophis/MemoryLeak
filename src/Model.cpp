@@ -26,7 +26,6 @@ void Model::ReleaseBuffers() {
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 }
 
 
@@ -75,6 +74,9 @@ Model::Model(const foofoo *a, int t, bool u) : m_FooFoo(a) {
 	m_Steps = new std::vector<void *>;
 	
 	m_FramesOfAnimationCount = m_FooFoo->m_numFrames; //m_FooFoo->m_AnimationEnd - m_FooFoo->m_AnimationStart;	
+
+  glFlush();
+  glFinish();
 }
 
 

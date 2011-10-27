@@ -212,6 +212,8 @@ void Terrain::ResetHillVertices() {
 
 
 void Terrain::Render() {
+  //glPushMatrix();
+  //{
   //glEnableClientState(GL_VERTEX_ARRAY);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -239,6 +241,8 @@ void Terrain::Render() {
   }
   //glDisableClientState(GL_VERTEX_ARRAY);
   //Engine::CheckGL("Render in T");
+  //}
+  //glPopMatrix();
 }
 
 

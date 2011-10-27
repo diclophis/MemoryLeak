@@ -167,6 +167,8 @@ void SpaceShipDown::RenderSpritePhase() {
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glEnable(GL_TEXTURE_2D);
     }
+
+    //glTranslatef(m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
   //}
   //glPopMatrix();
 }

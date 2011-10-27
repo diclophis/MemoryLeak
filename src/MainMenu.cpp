@@ -20,6 +20,8 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   m_CameraY = 0.0;
   m_CameraZ = 0.0;
   m_CameraR = 0.0;
+
+  m_IsThreeD = true;
 }
 
 

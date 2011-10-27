@@ -93,6 +93,7 @@ public:
   pthread_t m_ScriptThread;
   int m_SpriteCount;
   int m_ModelCount;
+  bool m_IsThreeD;
 
 
 };
