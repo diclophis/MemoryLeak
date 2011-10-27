@@ -25,6 +25,7 @@ Terrain::Terrain(b2World *w, GLuint t) {
   GenerateBorderVertices();
   CreateBox2DBody();
   SetOffsetX(0.0);
+Engine::CheckGL("Terrain::alloc");
 }
 
 
@@ -213,8 +214,9 @@ void Terrain::ResetHillVertices() {
 
 void Terrain::Render() {
   //glEnableClientState(GL_VERTEX_ARRAY);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//Engine::CheckGL("Render in T2");
   if (true) {
     //glEnable(GL_TEXTURE_2D);
     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -223,10 +225,11 @@ void Terrain::Render() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, rt->name);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
+//Engine::CheckGL("Render in T1");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
     //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     //glBindTexture(GL_TEXTURE_2D, 0);
@@ -241,11 +244,12 @@ void Terrain::Render() {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   }
   //glDisableClientState(GL_VERTEX_ARRAY);
-  Engine::CheckGL("Render in T");
+  //Engine::CheckGL("Render in T");
 }
 
 
 GLuint Terrain::GenerateStripesTexture() {  
+  Engine::CheckGL("RWTFSDS");
   
   MLPoint texSize = MLPointMake(textureSize, textureSize);
 	// Calculate the adjustment ratios based on the old and new projections

@@ -14,8 +14,8 @@ public:
 			float dy;
 			float height;
 		};
-		int tx1, ty1;
-		int tx2, ty2;
+		float tx1, ty1;
+		float tx2, ty2;
 	} Sprite;
 
 	std::string m_Animation;
@@ -36,8 +36,7 @@ public:
 	float m_Rotation;
   float m_LastRotation;
   GLshort *vertices;
-  //GLfloat *texture;
-  GLshort *texture;
+  GLfloat *texture;
   GLushort *indices;
 
 	

@@ -3,9 +3,9 @@
 #include "MemoryLeak.h"
 
 RenderTexture::RenderTexture(int width, int height) {
+  Engine::CheckGL("Probi732323 in RenderTexture in T");
   glFinish();
   glEnable(GL_TEXTURE_2D);
-
   name = 0;
   Engine::CheckGL("Probi7 in RenderTexture in T");
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);

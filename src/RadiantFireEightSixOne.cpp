@@ -15,7 +15,8 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   spriteBodyDef.type = b2_dynamicBody;
   CreateBox2DWorld();
   terrain = new Terrain(world, m_Textures->at(0));  
-  hero = new Hero(world, m_Textures->at(1));
+  hero = NULL;
+  //hero = new Hero(world, m_Textures->at(1));
   //spriteBodyDef.position.Set(hero->position.x / PTM_RATIO, hero->position.y / PTM_RATIO);
   b2Body *spriteBody = world->CreateBody(&spriteBodyDef);
   b2PolygonShape spriteShape;
@@ -37,7 +38,7 @@ void RadiantFireEightSixOne::CreateBox2DWorld() {
 
 RadiantFireEightSixOne::~RadiantFireEightSixOne() {
   delete terrain;
-  delete hero;
+  //delete hero;
   delete world;
 }
 
