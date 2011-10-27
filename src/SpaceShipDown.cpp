@@ -55,15 +55,16 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PlayerBody->CreateFixture(&fd);
   m_PlayerBody->SetActive(true);
 
-  float desiredAngle = atan2f(0.0, 1.0);
+  float desiredAngle = atan2f(1.0, 1.0);
   m_PlayerBody->SetTransform(m_PlayerBody->GetPosition(), desiredAngle);
 
-
+/*
   b2PolygonShape polygonShape;
   bd.type = b2_staticBody;
   bd.position.Set(0, 0);
   polygonShape.SetAsBox(10.0 / PTM_RATIO, 10.0 / PTM_RATIO);
   world->CreateBody(&bd)->CreateFixture(&fd);
+*/
 
   m_TouchedLeft = false;
   m_TouchedRight = false;
@@ -108,25 +109,26 @@ int SpaceShipDown::Simulate() {
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
-  //forcePosition. -= 10;
 
   if (m_TouchedLeft) {
-    m_PlayerBody->ApplyForce(b2Vec2(-10, 20), forcePosition);
+    m_PlayerBody->ApplyForce(b2Vec2(-0.5, 5), forcePosition);
   }
 
   if (m_TouchedRight) {
-    m_PlayerBody->ApplyForce(b2Vec2(10, 20), forcePosition);
+    m_PlayerBody->ApplyForce(b2Vec2(0.5, 5), forcePosition);
   }
 
   float x = m_PlayerBody->GetPosition().x * PTM_RATIO;
   float y = m_PlayerBody->GetPosition().y * PTM_RATIO;
-
   MLPoint position = MLPointMake(x, y);
+
+  /*
   b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
   float angle = atan2f(vel.y, vel.x);
-
   float rotation = RadiansToDegrees(angle);
-  m_AtlasSprites[m_PlayerIndex]->m_Rotation = rotation;
+  */
+
+  m_AtlasSprites[m_PlayerIndex]->m_Rotation = RadiansToDegrees(m_PlayerBody->GetAngle());
 
   m_AtlasSprites[m_PlayerIndex]->SetPosition(position.x, position.y);
 
