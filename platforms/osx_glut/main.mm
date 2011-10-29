@@ -135,6 +135,9 @@ bool setupAudio() {
 }
 
 bool pushMessageToWebView(const char *theMessage) {
+  std::wstring script(theMessage, theMessage + strlen(theMessage));
+  //src, src + strlen(src)
+  bk_texture_window->window()->executeJavascript(WideString::point_to(script)); 
 	return true;
 }
 
