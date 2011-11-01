@@ -9,27 +9,12 @@
 #include "berkelium/Window.hpp"
 #include "berkelium/WindowDelegate.hpp"
 #include "berkelium/Context.hpp"
-
-#include <berkelium/glut_util.hpp>
-
+#include "berkelium/glut_util.hpp"
 
 #include "MemoryLeak.h"
 
-
-
-
-using namespace Berkelium;
-
 // Some global data:
 GLTextureWindow* bk_texture_window = NULL;
-
-// Current angle for animations
-float angle = 0;
-
-// And some global constants
-#define WIDTH 512
-#define HEIGHT 512
-#define USE_TRANSPARENCY true
 
 void loadURL(std::string url) {
     if (bk_texture_window == NULL)
@@ -52,24 +37,32 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
 static int game_index = 3;
-static bool not_printed = true;
 
 AudioDeviceID device;
 UInt32 deviceBufferSize;
 AudioStreamBasicDescription deviceFormat;
 
 OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const AudioBufferList*   inInputData, const AudioTimeStamp*  inInputTime, AudioBufferList*  outOutputData, const AudioTimeStamp* inOutputTime, void* defptr) {    
-  int numSamples = deviceBufferSize / deviceFormat.mBytesPerFrame;
+  int numSamples = deviceBufferSize;  // deviceFormat.mBytesPerFrame;
+
 	if (outOutputData->mNumberBuffers != 1) {
 		LOGV("the fuck\n");
 	}
+  
 	AudioBuffer *ioData = &outOutputData->mBuffers[0];
-  if (not_printed) {
-    not_printed = false;
-    printf("%d %d %d %d\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize);
-  }
   memset(ioData->mData, 0, ioData->mDataByteSize);
-  Engine::CurrentGameDoAudio((short int*)ioData->mData, numSamples);
+
+  short b[numSamples];
+  
+  //4096 / 8 = 512 4096
+  LOGV("%lu / %lu = %d %lu float(%lu) short(%lu) short-int(%lu)\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize, sizeof(float), sizeof(short), sizeof(short int));
+
+  Engine::CurrentGameDoAudio(b, numSamples);
+
+  //for (int i=0; i<numSamples; i++) {
+  //  ioData->mData[i] = (float)b[i];
+  //}
+
   return kAudioHardwareNoError;
 }
 
@@ -77,18 +70,24 @@ OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const
 bool startAudio() {
   OSStatus		err = kAudioHardwareNoError;
   void *def;
-  err = AudioDeviceAddIOProc(device, appIOProc, (void *) def);	// setup our device with an IO proc
+
+  AudioDeviceIOProcID theIOProcID = NULL;
+  err = AudioDeviceCreateIOProcID(device, appIOProc, (void *)def, &theIOProcID);
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "AudioDeviceAddIOProc failed\n");
     return false;
   }
-  err = AudioDeviceStart(device, appIOProc);				// start playing sound through the device
+
+  err = AudioDeviceStart(device, theIOProcID);
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "AudioDeviceStart failed\n");
     return false;
   }
+
+
   return true;
 }
+
 
 bool setupAudio() {
   OSStatus				err = kAudioHardwareNoError;
@@ -103,6 +102,9 @@ bool setupAudio() {
   }
   // get the buffersize that the default device uses for IO
   count = sizeof(deviceBufferSize);	// it is required to pass the size of the data to be returned
+
+  //deviceBufferSize = buffFrames * sizeof(short) * 1;   /* set to requested size  */
+
   err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyBufferSize, &count, &deviceBufferSize);
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "get kAudioDevicePropertyBufferSize error %ld\n", err);
@@ -134,19 +136,22 @@ bool setupAudio() {
   return true;
 }
 
+
 bool pushMessageToWebView(const char *theMessage) {
-  std::wstring script(theMessage, theMessage + strlen(theMessage));
-  //src, src + strlen(src)
-  bk_texture_window->window()->executeJavascript(WideString::point_to(script)); 
+  //std::wstring script(theMessage, theMessage + strlen(theMessage));
+  //bk_texture_window->window()->executeJavascript(WideString::point_to(script)); 
 	return true;
 }
+
 
 const char *popMessageFromWebView() {
   return "";
 }
 
+
 void SimulationThreadCleanup() {
 }
+
 
 GLuint loadTexture(NSBitmapImageRep *image) {
   GLuint text = 0;
@@ -175,6 +180,7 @@ GLuint loadTexture(NSBitmapImageRep *image) {
   return text;
 }
 
+
 void draw(void) {
   Engine::CurrentGameResizeScreen(kWindowWidth, kWindowHeight);
 
@@ -183,47 +189,31 @@ void draw(void) {
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity();
   glOrtho( -1.f, 1.f, 1.f, -1.f, -1.f, 1.f );
-
   glMatrixMode( GL_MODELVIEW );
   glLoadIdentity();
-
   glPushMatrix();
-
-  bk_texture_window->bind();
-
-  glBegin(GL_QUADS);
-  glTexCoord2f(0.f, 0.f); glVertex3f(-0.5f, -0.5f, 0.f);
-  glTexCoord2f(0.f, 0.5f); glVertex3f(-0.5f, 0.5f, 0.f);
-  glTexCoord2f(0.5f, 0.5f); glVertex3f( 0.5f, 0.5f, 0.f);
-  glTexCoord2f(0.5f, 0.f); glVertex3f( 0.5f, -0.5f, 0.f);
-  glEnd();
-
-  bk_texture_window->bind();
-
+  {
+    bk_texture_window->bind();
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.f, 0.f); glVertex3f(-0.5f, -0.5f, 0.f);
+    glTexCoord2f(0.f, 0.5f); glVertex3f(-0.5f, 0.5f, 0.f);
+    glTexCoord2f(0.5f, 0.5f); glVertex3f( 0.5f, 0.5f, 0.f);
+    glTexCoord2f(0.5f, 0.f); glVertex3f( 0.5f, -0.5f, 0.f);
+    glEnd();
+    bk_texture_window->bind();
+  }
   glPopMatrix();
 
   glutSwapBuffers();
 }
 
+
 void resize(int width, int height) {
   kWindowWidth = width;
   kWindowHeight = height;
   Engine::CurrentGameResizeScreen(width, height);
-
-  /*
-  glClearColor( .3, .3, .3, 1 );
-
-  glEnable(GL_TEXTURE_2D);
-  glShadeModel(GL_SMOOTH);
-
-  glMatrixMode( GL_PROJECTION );
-  glLoadIdentity();
-
-  glOrtho( -1.f, 1.f, 1.f, -1.f, -1.f, 1.f );
-  glViewport( 0, 0, width, height );
-  */
-
 }
+
 
 void processMouse(int button, int state, int x, int y) {
   switch (state) {
@@ -236,31 +226,27 @@ void processMouse(int button, int state, int x, int y) {
   }
 
 
-    unsigned int tex_coord_x = mapGLUTCoordToTexCoord(x, kWindowWidth, kWindowHeight);
-    unsigned int tex_coord_y = mapGLUTCoordToTexCoord(y, kWindowWidth, kWindowHeight);
+  unsigned int tex_coord_x = mapGLUTCoordToTexCoord(x, kWindowWidth, kWindowHeight);
+  unsigned int tex_coord_y = mapGLUTCoordToTexCoord(y, kWindowWidth, kWindowHeight);
 
-    // Make sure Berkelium knows the mouse has moved over the where the event is happening
-    bk_texture_window->getWindow()->mouseMoved(tex_coord_x, tex_coord_y);
+  // Make sure Berkelium knows the mouse has moved over the where the event is happening
+  bk_texture_window->getWindow()->mouseMoved(tex_coord_x, tex_coord_y);
 
-    // And figure out precisely what to inject
-    if (button == GLUT_LEFT_BUTTON || button == GLUT_MIDDLE_BUTTON || button == GLUT_RIGHT_BUTTON) {
-    LOGV("wtf\n");
-        bk_texture_window->getWindow()->mouseButton(
-            button,
-            (state == GLUT_DOWN)
-        );
-    }
-
+  // And figure out precisely what to inject
+  if (button == GLUT_LEFT_BUTTON || button == GLUT_MIDDLE_BUTTON || button == GLUT_RIGHT_BUTTON) {
+    bk_texture_window->getWindow()->mouseButton(button, (state == GLUT_DOWN));
+  }
 }
 
+
 void processMouseMotion(int x, int y) {
-    LOGV("wtf 2\n");
   Engine::CurrentGameHit(x, y, 1);
 
   unsigned int tex_coord_x = mapGLUTCoordToTexCoord(x, kWindowWidth, kWindowWidth);
   unsigned int tex_coord_y = mapGLUTCoordToTexCoord(y, kWindowHeight, kWindowHeight);
   bk_texture_window->getWindow()->mouseMoved(tex_coord_x, tex_coord_y);
 }
+
 
 void processNormalKeys(unsigned char key, int x, int y) {
   printf("key: %d %c\n", key, key);
@@ -277,24 +263,21 @@ void processNormalKeys(unsigned char key, int x, int y) {
 
 void idle() {
   {
-  #ifdef _WIN32
-  Sleep(30);
-  #else
-  struct timeval tv;
-  tv.tv_sec = 0;
-  tv.tv_usec = 30000;
-  select(0,NULL,NULL,NULL, &tv);
-  #endif
+    #ifdef _WIN32
+    Sleep(30);
+    #else
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 30000;
+    select(0,NULL,NULL,NULL, &tv);
+    #endif
   }
 
   Berkelium::update();
 
-  angle = angle + .1f;
-  if (angle > 360.f)
-    angle = 0.f;
-
   glutPostRedisplay();
 }
+
 
 int main(int argc, char** argv) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -307,7 +290,6 @@ int main(int argc, char** argv) {
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
-  //glutIdleFunc(draw);
   glutIdleFunc(idle);
   glutReshapeFunc(resize);
   NSBundle *mainBundle = [NSBundle mainBundle];
@@ -377,22 +359,20 @@ int main(int argc, char** argv) {
   [sounds_path release];
   [mainBundle release];
 
-  //if (!setupAudio()) {
-  //  printf("cant setup Audio\n");
-  //}
+  if (!setupAudio()) {
+    printf("cant setup Audio\n");
+  }
 
-  //if (!startAudio()) {
-  //  printf("cant start Audio\n");
-  //}
+  if (!startAudio()) {
+    printf("cant start Audio\n");
+  }
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 
   // Initialize Berkelium and create a window
   Berkelium::init(FileString::empty());
-
-  bk_texture_window = new GLTextureWindow(WIDTH, HEIGHT, USE_TRANSPARENCY);
+  bk_texture_window = new GLTextureWindow(kWindowWidth, kWindowHeight, true);
   bk_texture_window->window()->focus();
-
   loadURL(std::string("file:///Users/jon/iPhone/MemoryLeak/assets/offline/index.html"));
 
   glutMainLoop();

@@ -376,6 +376,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
     memset(ioData->mData, 0, ioData->mDataByteSize);
+    //LOGV("%lu %d\n", ioData->mDataByteSize, inNumberFrames);
     Engine::CurrentGameDoAudio((short int *)ioData->mData, inNumberFrames);
 	
   return noErr;
