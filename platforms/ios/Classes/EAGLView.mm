@@ -417,9 +417,7 @@ static OSStatus playbackCallback(void *inRefCon,
 								  sizeof(flag));
 	checkStatus(status);
 	
-	size_t bytesPerSample = sizeof(short);
 	AudioStreamBasicDescription audioFormat = {0};
-
 	
 	audioFormat.mSampleRate			= 44100;
 	audioFormat.mFormatID			= kAudioFormatLinearPCM;
@@ -427,8 +425,8 @@ static OSStatus playbackCallback(void *inRefCon,
 	audioFormat.mFramesPerPacket	= 1;
 	audioFormat.mChannelsPerFrame	= 1;
 	audioFormat.mBitsPerChannel		= 16;
-	audioFormat.mBytesPerPacket		= bytesPerSample;
-	audioFormat.mBytesPerFrame		= bytesPerSample;
+  audioFormat.mBytesPerFrame =  audioFormat.mBitsPerChannel / 8 * audioFormat.mChannelsPerFrame;
+  audioFormat.mBytesPerPacket = audioFormat.mBytesPerFrame * audioFormat.mFramesPerPacket;
 	
 	status = AudioUnitSetProperty(audioUnit, 
 								  kAudioUnitProperty_StreamFormat, 
