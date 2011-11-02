@@ -190,6 +190,7 @@ bool setupAudio() {
   }
 
 
+  /*
   float newVolume = 0.5;
 
   property.mSelector = kAudioHardwareServiceDeviceProperty_VirtualMasterVolume;
@@ -203,6 +204,7 @@ bool setupAudio() {
     exit(1);
     return false;
   }
+  */
 
   return true;
 }

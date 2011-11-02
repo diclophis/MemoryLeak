@@ -13,8 +13,8 @@ void AtlasSprite::ReleaseBuffers() {
   g_lastVertexBuffer = -1;
   g_lastTexcoordBuffer = -1;
   g_lastElementBuffer = -1;
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void AtlasSprite::Scrub() {

@@ -199,6 +199,9 @@ public class DemoActivity extends Activity {
 
 
   public static void writeAudio(short[] bytes, int offset, int size) {
+    if (at1.getPlayState() != AudioTrack.PLAYSTATE_PLAYING) {
+      at1.play();
+    }
     int written = at1.write(bytes, offset, size);
   }
 
@@ -251,13 +254,13 @@ public class DemoActivity extends Activity {
     String path;
     String[] files;
     WebSettings webSettings = mWebView.getSettings();
-    webSettings.setLoadsImagesAutomatically(true);
-    webSettings.setJavaScriptEnabled(true);
-    webSettings.setSupportZoom(false);
-    webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
     webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
-    webSettings.setBuiltInZoomControls(false);
-    webSettings.setPluginsEnabled(true);
+    webSettings.setJavaScriptEnabled(true);
+    webSettings.setLoadsImagesAutomatically(true);
+    //webSettings.setSupportZoom(false);
+    //webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+    //webSettings.setBuiltInZoomControls(false);
+    //webSettings.setPluginsEnabled(true);
     try {
       String base_url = "https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ";
       InputStream inputStream = am.open("offline/index.html");
@@ -294,11 +297,10 @@ public class DemoActivity extends Activity {
     int[] len3;
 
     int rate = 44100;
-    int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
     setMinBuffer(min);
-    //min = 1024;
-    at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
-    at1.play();
+    at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
+    //at1.play();
     at1.setStereoVolume(1.0f, 1.0f);
 
     try {

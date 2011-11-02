@@ -160,13 +160,15 @@ void SpaceShipDown::RenderSpritePhase() {
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     AtlasSprite::ReleaseBuffers();
 
-    if (false) {
+    if (true) {
       glDisable(GL_TEXTURE_2D);
       glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       world->DrawDebugData();
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glEnable(GL_TEXTURE_2D);
     }
+
+    glColor4f(1.0, 1.0, 1.0, 1.0);
 
     //glTranslatef(m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
   //}

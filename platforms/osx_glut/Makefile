@@ -38,6 +38,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
 
 raptor_island: $(build) $(objects)
+	cp bin/berkelium $(build)/
 	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
 
 $(build)/%.o: %.mm

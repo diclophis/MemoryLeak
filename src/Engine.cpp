@@ -143,7 +143,7 @@ int Engine::RunThread() {
       }
       if ((m_WebViewTimeout += m_DeltaTime) > 0.05) {
         m_WebViewTimeout = 0.0;
-        //PopMessageFromWebView();
+        PopMessageFromWebView();
         //PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));
       }
       if (m_SimulationTime > 10.0 && m_GameState != 4) {
