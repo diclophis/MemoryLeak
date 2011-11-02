@@ -1,13 +1,11 @@
 # OSX Makefile, needs to know where the main src root is
 
-#NOTE: wierd flags for doing static analysis
-#CXX=/Users/jon/llvm/Debug+Asserts/bin/clang++
-#CXX=g++
-#CXX=~/Desktop/checker-249/libexec/c++-analyzer
-
 build=build
-CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
+
+CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround -I../../src/yajl -I../../src/yajl/api
+
 CFLAGS=$(CXXFLAGS)
+
 LDFLAGS=-framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -framework WebKit
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
