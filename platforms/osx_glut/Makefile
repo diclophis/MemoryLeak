@@ -1,9 +1,15 @@
 # OSX Makefile
 
 build=build
-#CXXFLAGS=-Wall -g -D__MACOSX_CORE__ -D_iPhoneVersion -DDESKTOP -DHAVE_SETENV -I../../src -I../../src/include -I../../src/include/libmodplug -I../../src/octree -I../../src/assimp/BoostWorkaround
+
 CXXFLAGS=\
--m32 -Wall -g -pg -DDESKTOP -DHAVE_SETENV -D__MACOSX_CORE__ -D_iPhoneVersion \
+-Wall \
+-g \
+-pg \
+-DDESKTOP \
+-DHAVE_SETENV \
+-D__MACOSX_CORE__ \
+-D_iPhoneVersion \
 -I/usr/include \
 -I../../src \
 -I../../src/include \
@@ -13,7 +19,7 @@ CXXFLAGS=\
 -I../../src/Box2D
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-m32 ./lib/liblibberkelium.dylib -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
+LDFLAGS=./lib/liblibberkelium.dylib -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))

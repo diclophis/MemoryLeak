@@ -87,10 +87,10 @@ OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const
   
   //4096 / 8 = 512 4096
   //4096 / 4 = 4096 4096 float(4) short(2) short-int(2)
+  //4096 / 4 = 1024 4096 float(4) short(2) short-int(2)
+  //LOGV("%lu / %lu = %d %lu float(%lu) short(%lu) short-int(%lu)\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize, sizeof(float), sizeof(short), sizeof(short int));
 
-  LOGV("%lu / %lu = %d %lu float(%lu) short(%lu) short-int(%lu)\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize, sizeof(float), sizeof(short), sizeof(short int));
-
-  //Engine::CurrentGameDoAudio((short int*)ioData->mData, numSamples);
+  Engine::CurrentGameDoAudio((short int*)ioData->mData, numSamples);
 
   //for (int i=0; i<numSamples; i++) {
   //  ioData->mData[i] = (float)b[i];
@@ -143,36 +143,7 @@ bool setupAudio() {
   }
   fprintf(stderr, "deviceBufferSize = %ld\n", deviceBufferSize);
 
-  /*
-  // get a description of the data format used by the default device
-  count = sizeof(deviceFormat);	// it is required to pass the size of the data to be returned
-  err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyStreamFormat, &count, &deviceFormat);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "get kAudioDevicePropertyStreamFormat error %ld\n", err);
-      return false;
-  }
-  */
-  /*
-  if (deviceFormat.mFormatID != kAudioFormatLinearPCM) {
-    fprintf(stderr, "mFormatID !=  kAudioFormatLinearPCM\n");
-      return false;
-  }
-  if (!(deviceFormat.mFormatFlags & kLinearPCMFormatFlagIsFloat)) {
-    fprintf(stderr, "Sorry, currently only works with float format....\n");
-      return false;
-  }
-  fprintf(stderr, "mSampleRate = %g\n", deviceFormat.mSampleRate);
-  fprintf(stderr, "mFormatFlags = %08lX\n", deviceFormat.mFormatFlags);
-  fprintf(stderr, "mBytesPerPacket = %ld\n", deviceFormat.mBytesPerPacket);
-  fprintf(stderr, "mFramesPerPacket = %ld\n", deviceFormat.mFramesPerPacket);
-  fprintf(stderr, "mChannelsPerFrame = %ld\n", deviceFormat.mChannelsPerFrame);
-  fprintf(stderr, "mBytesPerFrame = %ld\n", deviceFormat.mBytesPerFrame);
-  fprintf(stderr, "mBitsPerChannel = %ld\n", deviceFormat.mBitsPerChannel);
-  */
-
-
   count = sizeof(AudioStreamBasicDescription);
-
   AudioObjectPropertyAddress property = { kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
   property.mScope = kAudioDevicePropertyScopeOutput;
 
@@ -194,9 +165,9 @@ bool setupAudio() {
 
   deviceFormat.mSampleRate = 44100;
   deviceFormat.mFormatID = kAudioFormatLinearPCM;
-  //deviceFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsBigEndian | kLinearPCMFormatFlagIsPacked;
+  deviceFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
   deviceFormat.mFramesPerPacket = 1;
-  deviceFormat.mChannelsPerFrame = 1;
+  deviceFormat.mChannelsPerFrame = 2;
   deviceFormat.mBitsPerChannel = 16;
   deviceFormat.mBytesPerFrame =  deviceFormat.mBitsPerChannel / 8 * deviceFormat.mChannelsPerFrame;
   deviceFormat.mBytesPerPacket = deviceFormat.mBytesPerFrame * deviceFormat.mFramesPerPacket;
@@ -213,6 +184,21 @@ bool setupAudio() {
   err = AudioObjectSetPropertyData(device, &property, 0, NULL, count, &deviceFormat);
   if (err != kAudioHardwareNoError) {
     fprintf(stderr, "set kAudioDevicePropertyStreamFormat error %ld\n", err);
+    checkStatus(err);
+    exit(1);
+    return false;
+  }
+
+
+  float newVolume = 0.5;
+
+  property.mSelector = kAudioHardwareServiceDeviceProperty_VirtualMasterVolume;
+
+  UInt32 propertySize;
+  propertySize = sizeof(Float32);
+  err = AudioHardwareServiceSetPropertyData(device, &property, 0, NULL, propertySize, &newVolume); 
+  if (err != kAudioHardwareNoError) {
+    fprintf(stderr, "set volume error %ld\n", err);
     checkStatus(err);
     exit(1);
     return false;

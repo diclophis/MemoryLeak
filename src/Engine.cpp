@@ -72,7 +72,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
-  m_AudioTimeout = -1.0;
   m_WebViewTimeout = 0.0;
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -137,9 +136,6 @@ int Engine::RunThread() {
         for (unsigned int i=0; i<interp; i++) {
           m_DeltaTime = (averageWait / interp);
           m_SimulationTime += (m_DeltaTime);
-          if (m_AudioTimeout >= 0.0) {
-            m_AudioTimeout += (m_DeltaTime);
-          }
           if (Active()) {
             Simulate();
           }
@@ -147,8 +143,8 @@ int Engine::RunThread() {
       }
       if ((m_WebViewTimeout += m_DeltaTime) > 0.05) {
         m_WebViewTimeout = 0.0;
-        PopMessageFromWebView();
-        PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));
+        //PopMessageFromWebView();
+        //PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));
       }
       if (m_SimulationTime > 10.0 && m_GameState != 4) {
         //m_GameState = 4;
@@ -195,19 +191,9 @@ void Engine::StartSimulation() {
 
 
 void Engine::DoAudio(short buffer[], int size) {
-  memset(buffer, 0, size * sizeof(short));
+  memset(buffer, 0, size * sizeof(short) * 2);
   if (Active() && m_IsPushingAudio) {
-    if (m_AudioBufferSize == 0) {
-      m_AudioBufferSize = size;
-      m_AudioMixBuffer = new short[size];
-      memset(m_AudioMixBuffer, 0, size * sizeof(short));
-    }
-    if (m_AudioTimeout < 0.0) {
-    } else if (m_AudioTimeout > 0.0 && m_AudioTimeout < 0.75) {
-    } else if (m_AudioTimeout > 0.25) {
-      m_AudioTimeout = -1.0;
-    }
-    ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short));
+    ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short) * 2);
   }
 }
 

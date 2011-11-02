@@ -18,7 +18,7 @@ namespace ModPlug
 	ModPlug_Settings gSettings =
 	{
     MODPLUG_ENABLE_OVERSAMPLING | MODPLUG_ENABLE_NOISE_REDUCTION,
-		1,
+		2,
 		16,
 		44100,
 		MODPLUG_RESAMPLE_FIR,

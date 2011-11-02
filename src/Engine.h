@@ -87,8 +87,6 @@ public:
   float m_Zoom;
   float m_Balance;
   float m_WebViewTimeout;
-  float m_AudioTimeout;
-  //OOLUA::Script *m_Script;
   pthread_mutex_t m_ScriptMutex;
   pthread_t m_ScriptThread;
   int m_SpriteCount;
