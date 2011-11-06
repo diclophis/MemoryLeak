@@ -3,15 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSImage.h>
 #import <QuartzCore/QuartzCore.h>
-//#include <CoreAudio/AudioHardware.h>
 #import <AudioToolbox/AudioToolbox.h>
-
-
-#include "berkelium/Berkelium.hpp"
-#include "berkelium/Window.hpp"
-#include "berkelium/WindowDelegate.hpp"
-#include "berkelium/Context.hpp"
-#include "berkelium/glut_util.hpp"
 
 #include "MemoryLeak.h"
 
@@ -44,20 +36,6 @@ AudioComponentInstance audioUnit;
 AudioQueueRef mAudioQueue;
 AudioQueueBufferRef *mBuffers;
 
-// Some global data:
-GLTextureWindow* bk_texture_window = NULL;
-
-void loadURL(std::string url) {
-    if (bk_texture_window == NULL)
-        return;
-
-    bk_texture_window->clear();
-
-    // And navigate to a new one
-    bk_texture_window->getWindow()->navigateTo(url.data(), url.length());
-}
-
-
 static int kWindowWidth = 320;
 static int kWindowHeight = 480;
 static int win;
@@ -83,18 +61,7 @@ OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const
 	AudioBuffer *ioData = &outOutputData->mBuffers[0];
   memset(ioData->mData, 0, ioData->mDataByteSize);
 
-  //short b[numSamples];
-  
-  //4096 / 8 = 512 4096
-  //4096 / 4 = 4096 4096 float(4) short(2) short-int(2)
-  //4096 / 4 = 1024 4096 float(4) short(2) short-int(2)
-  //LOGV("%lu / %lu = %d %lu float(%lu) short(%lu) short-int(%lu)\n", deviceBufferSize, deviceFormat.mBytesPerFrame, numSamples, ioData->mDataByteSize, sizeof(float), sizeof(short), sizeof(short int));
-
   Engine::CurrentGameDoAudio((short int*)ioData->mData, numSamples);
-
-  //for (int i=0; i<numSamples; i++) {
-  //  ioData->mData[i] = (float)b[i];
-  //}
 
   return kAudioHardwareNoError;
 }
@@ -211,8 +178,6 @@ bool setupAudio() {
 
 
 bool pushMessageToWebView(const char *theMessage) {
-  //std::wstring script(theMessage, theMessage + strlen(theMessage));
-  //bk_texture_window->window()->executeJavascript(WideString::point_to(script)); 
 	return true;
 }
 
@@ -255,28 +220,7 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 
 
 void draw(void) {
-  Engine::CurrentGameResizeScreen(kWindowWidth, kWindowHeight);
-
   Engine::CurrentGameDrawScreen(0);
-
-  glMatrixMode( GL_PROJECTION );
-  glLoadIdentity();
-  glOrtho( -1.f, 1.f, 1.f, -1.f, -1.f, 1.f );
-  glMatrixMode( GL_MODELVIEW );
-  glLoadIdentity();
-  glPushMatrix();
-  {
-    bk_texture_window->bind();
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.f, 0.f); glVertex3f(-0.5f, -0.5f, 0.f);
-    glTexCoord2f(0.f, 0.5f); glVertex3f(-0.5f, 0.5f, 0.f);
-    glTexCoord2f(0.5f, 0.5f); glVertex3f( 0.5f, 0.5f, 0.f);
-    glTexCoord2f(0.5f, 0.f); glVertex3f( 0.5f, -0.5f, 0.f);
-    glEnd();
-    bk_texture_window->bind();
-  }
-  glPopMatrix();
-
   glutSwapBuffers();
 }
 
@@ -297,27 +241,11 @@ void processMouse(int button, int state, int x, int y) {
       Engine::CurrentGameHit(x, y, 2);
       break;
   }
-
-
-  unsigned int tex_coord_x = mapGLUTCoordToTexCoord(x, kWindowWidth, kWindowHeight);
-  unsigned int tex_coord_y = mapGLUTCoordToTexCoord(y, kWindowWidth, kWindowHeight);
-
-  // Make sure Berkelium knows the mouse has moved over the where the event is happening
-  bk_texture_window->getWindow()->mouseMoved(tex_coord_x, tex_coord_y);
-
-  // And figure out precisely what to inject
-  if (button == GLUT_LEFT_BUTTON || button == GLUT_MIDDLE_BUTTON || button == GLUT_RIGHT_BUTTON) {
-    bk_texture_window->getWindow()->mouseButton(button, (state == GLUT_DOWN));
-  }
 }
 
 
 void processMouseMotion(int x, int y) {
   Engine::CurrentGameHit(x, y, 1);
-
-  unsigned int tex_coord_x = mapGLUTCoordToTexCoord(x, kWindowWidth, kWindowWidth);
-  unsigned int tex_coord_y = mapGLUTCoordToTexCoord(y, kWindowHeight, kWindowHeight);
-  bk_texture_window->getWindow()->mouseMoved(tex_coord_x, tex_coord_y);
 }
 
 
@@ -334,24 +262,6 @@ void processNormalKeys(unsigned char key, int x, int y) {
 }
 
 
-void idle() {
-  {
-    #ifdef _WIN32
-    Sleep(30);
-    #else
-    struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 30000;
-    select(0,NULL,NULL,NULL, &tv);
-    #endif
-  }
-
-  Berkelium::update();
-
-  glutPostRedisplay();
-}
-
-
 int main(int argc, char** argv) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   glutInit(&argc, argv);
@@ -363,7 +273,7 @@ int main(int argc, char** argv) {
   glutKeyboardFunc(processNormalKeys);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
-  glutIdleFunc(idle);
+  glutIdleFunc(draw);
   glutReshapeFunc(resize);
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];
@@ -441,12 +351,6 @@ int main(int argc, char** argv) {
   }
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-
-  // Initialize Berkelium and create a window
-  Berkelium::init(FileString::empty());
-  bk_texture_window = new GLTextureWindow(kWindowWidth, kWindowHeight, true);
-  bk_texture_window->window()->focus();
-  loadURL(std::string("file:///Users/jon/iPhone/MemoryLeak/assets/offline/index.html"));
 
   glutMainLoop();
 

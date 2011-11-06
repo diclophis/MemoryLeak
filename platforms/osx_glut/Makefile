@@ -19,7 +19,7 @@ CXXFLAGS=\
 -I../../src/Box2D
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-m32 ./lib/liblibberkelium.dylib -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
+LDFLAGS=-m32 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
@@ -38,7 +38,6 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
 
 raptor_island: $(build) $(objects)
-	cp bin/berkelium $(build)/
 	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
 
 $(build)/%.o: %.mm
