@@ -11,8 +11,6 @@
 #import "EAGLView.h"
 
 
-EAGLView *g_View;
-
 void nada();
 void checkStatus(OSStatus s);
 
@@ -86,16 +84,12 @@ void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inProper
 
 
 bool pushMessageToWebView(const char *theMessage) {
-	return [g_View pushMessageToWebView:theMessage];
+	return true;
 }
 
 
 const char *popMessageFromWebView() {
-	if (g_View) {
-		return [g_View popMessageFromWebView];
-	} else {
-		return "noway";
-	}
+  return "";
 }
 
 
@@ -113,19 +107,16 @@ const char *popMessageFromWebView() {
 }
 
 
--(void)build:(UIWebView *)theWebView {
+-(void)build {
 
 	// Get the layer
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 
 	[self setMPoppedMessages:[NSMutableArray arrayWithCapacity:10]];
 
-	g_View = self;
-	webView = theWebView;
-	[webView setFrame:CGRectMake(0.0, -self.frame.size.height, self.frame.size.width, self.frame.size.height)];
-
-	[self setClearsContextBeforeDrawing:NO];
-	[self setBackgroundColor:[UIColor blackColor]];
+  
+	//[self setClearsContextBeforeDrawing:NO];
+	//[self setBackgroundColor:[UIColor blackColor]];
 	
   //EAGLSharegroup *sharegroup = [context sharegroup];
   //EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
@@ -134,7 +125,7 @@ const char *popMessageFromWebView() {
   //Share = [[EAGLSharegroup alloc] init];
 
 	//GL_RGBA4
-    //kEAGLColorFormatRGBA8
+  //kEAGLColorFormatRGBA8
 	eaglLayer.opaque = TRUE;
 	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
 	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
@@ -272,9 +263,7 @@ const char *popMessageFromWebView() {
 		for (UITouch *touch in touches) {			
 			location = [touch locationInView:self];
 			location.y = location.y;
-
-            Engine::CurrentGameHit(location.x, location.y, 1);
-			
+      Engine::CurrentGameHit(location.x, location.y, 1);
 		}
 	}
 }
@@ -288,7 +277,7 @@ const char *popMessageFromWebView() {
 		for (UITouch *touch in touches) {			
 			location = [touch locationInView:self];
 			location.y = location.y;
-            Engine::CurrentGameHit(location.x, location.y, 2);
+      Engine::CurrentGameHit(location.x, location.y, 2);
 		}
 	}
 }
@@ -304,7 +293,7 @@ const char *popMessageFromWebView() {
 		CGPoint location;
 		location = [touch locationInView:self];
 		location.y = location.y;
-        Engine::CurrentGameHit(location.x, location.y, -1);
+    Engine::CurrentGameHit(location.x, location.y, -1);
 	}
 }
 
@@ -533,97 +522,21 @@ static OSStatus playbackCallback(void *inRefCon,
 
 
 -(BOOL)pushMessageToWebView:(const char *)theMessage {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	BOOL safeToPush = [webView request] && ![webView isLoading];
-	[pool release];	
-	if (safeToPush) {
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		NSString *theMessageAsString = [NSString stringWithCString:theMessage encoding:NSUTF8StringEncoding];
-		[webView performSelectorOnMainThread:@selector(stringByEvaluatingJavaScriptFromString:) withObject:theMessageAsString waitUntilDone:NO];
-		[pool release];
-		return YES;
-	} else {
-		return NO;
-	}
+  return YES;
 }
 
 
 -(const char *)popMessageFromWebView {
-	[self performSelectorOnMainThread:@selector(actuallyPopMessageFromWebView) withObject:nil waitUntilDone:NO];
-  if ([mPoppedMessages count] > 0) {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    NSString *mLastMessagePopped = (NSString *)[mPoppedMessages objectAtIndex:0];
-    const char *mLastMessagePoppedCstring = [mLastMessagePopped cStringUsingEncoding:NSUTF8StringEncoding];
-    [mPoppedMessages removeObjectAtIndex:0];
-    [pool release];
-    return mLastMessagePoppedCstring;
-  } else {
-    return "unknown";
-  }
-}
-
-
--(void)actuallyPopMessageFromWebView {
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-  if ([webView request] && ![webView isLoading]) {
-    
-    NSString *mLastMessagePopped = [webView stringByEvaluatingJavaScriptFromString:@"(typeof(dequeue) == 'function' ? dequeue() : 'nodequeue')"];
-    [mPoppedMessages addObject:mLastMessagePopped];
-    
-    NSURL *action = [NSURL URLWithString:mLastMessagePopped];
-    NSString *scheme = [action scheme];
-    NSString *path = [action path];
-    NSString *query = [action query];
-
-    if ([@"memoryleak" isEqualToString:scheme]) {
-      if ([@"/start" isEqualToString:path]) {
-        NSInteger i = [query intValue];
-        //GL CONTEXT VALID!!!!
-        [self performSelectorInBackground:@selector(startGame:) withObject:[NSNumber numberWithInt:i]];
-      } else if ([@"/exit" isEqualToString:path]) {
-        LOGV("exit\n");
-      } else if ([@"/show" isEqualToString:path]) {
-        [UIView setAnimationBeginsFromCurrentState:YES];
-        [UIView beginAnimations:@"showWebView" context:nil];
-        [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 120.0)];
-        [UIView commitAnimations];
-      } else if ([@"/hide" isEqualToString:path]) {
-        [UIView setAnimationBeginsFromCurrentState:YES];
-        [webView setFrame:CGRectMake(0.0, webView.frame.origin.y, self.frame.size.width, webView.frame.size.height)];
-        [UIView beginAnimations:@"hideWebView" context:nil];
-        [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, -webView.frame.size.height, self.frame.size.width,  webView.frame.size.height)];
-        [UIView commitAnimations];
-      } else if ([@"/fullscreen" isEqualToString:path]) {
-        [webView setBackgroundColor:[UIColor redColor]];
-        [UIView setAnimationBeginsFromCurrentState:YES];
-        [UIView beginAnimations:@"fullscreenWebView" context:nil];
-        [UIView setAnimationDuration:0.5];
-        [webView setFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
-        [UIView commitAnimations];
-      }
-    } else if ([@"openfeint" isEqualToString:scheme]) {
-      
-    }
-      
-  } else {
-    [mPoppedMessages insertObject:@"loading" atIndex:0];
-  }
-
-  [pool release];
+  return "";
 }
 
 
 -(void)startGame:(id)i {
   if ([[NSThread currentThread] isEqual:[NSThread mainThread]]) {
     Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
-
   } else {
     [EAGLContext setCurrentContext:WorkingContext];
-
     Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
-  
     [EAGLContext setCurrentContext:nil];
   }
 }

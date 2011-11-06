@@ -53,7 +53,6 @@ typedef struct Engine Engine;
 	AudioComponentInstance audioUnit;
 	AudioQueueRef mAudioQueue;
 	AudioQueueBufferRef *mBuffers;
-  UIWebView *webView;
 	NSMutableArray *mPoppedMessages;
 	BOOL mLastMessageReady;
 }
@@ -64,7 +63,7 @@ typedef struct Engine Engine;
 @property (retain) NSMutableArray *mPoppedMessages;
 
 
--(void)build:(UIWebView *)theWebView;
+-(void)build;
 -(void)startAnimation;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
