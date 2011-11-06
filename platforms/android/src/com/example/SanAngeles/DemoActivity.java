@@ -139,17 +139,22 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    float x = event.getX();
-    float y = event.getY();
-    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-      nativeTouch(x, y, 0);
-    }
-    if (event.getAction() == MotionEvent.ACTION_MOVE) {
-      nativeTouch(x, y, 1);
-    }
-    if (event.getAction() == MotionEvent.ACTION_UP) {
-      nativeTouch(x, y, 2);
-    }
+    queueEvent(new Runnable() {
+      public void run() {
+        float x = event.getX();
+        float y = event.getY();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+          nativeTouch(x, y, 0);
+        }
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+          nativeTouch(x, y, 1);
+        }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+          nativeTouch(x, y, 2);
+        }
+      }
+    });
+
     return true;
   }
 

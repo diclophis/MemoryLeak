@@ -115,6 +115,25 @@ bool Engine::WaitVsync() {
 }
 
 
+void Engine::DrawScreen(float rotation) {
+  pthread_mutex_lock(&m_Mutex);
+	if (m_IsSceneBuilt && m_IsScreenResized) {
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    if (m_IsThreeD) {
+      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+      RenderModelPhase();
+    } else {
+      RenderSpritePhase();
+    }
+	} else {
+    ResizeScreen(m_ScreenWidth, m_ScreenHeight);
+  }
+  pthread_mutex_unlock(&m_Mutex);
+  pthread_cond_signal(&m_VsyncCond);
+}
+
+
 int Engine::RunThread() {
 	double t1, t2, averageWait;
 	timeval tim;
@@ -124,7 +143,8 @@ int Engine::RunThread() {
 	double interp = 1.0;
   StartSimulation();
 	while (m_GameState > 0) {
-    if (pthread_mutex_trylock(&m_Mutex) == 0) {
+    //if (pthread_mutex_trylock(&m_Mutex) == 0) {
+      pthread_mutex_lock(&m_Mutex);
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
       averageWait = t2 - t1;
@@ -141,18 +161,9 @@ int Engine::RunThread() {
           }
         }
       }
-      if ((m_WebViewTimeout += m_DeltaTime) > 0.05) {
-        m_WebViewTimeout = 0.0;
-        PopMessageFromWebView();
-        //PushMessageToWebView(CreateWebViewFunction("update(%f)", m_SimulationTime));
-      }
-      if (m_SimulationTime > 10.0 && m_GameState != 4) {
-        //m_GameState = 4;
-        //PushMessageToWebView(CreateWebViewFunction("start(0)"));
-      }
       m_IsSceneBuilt = true;
       pthread_mutex_unlock(&m_Mutex);
-    }
+    //}
     WaitVsync();
 	}
   m_GameState = -3;
@@ -213,23 +224,6 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 }
 
 
-void Engine::DrawScreen(float rotation) {
-  pthread_mutex_lock(&m_Mutex);
-	if (m_IsSceneBuilt && m_IsScreenResized) {
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    if (m_IsThreeD) {
-      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-      RenderModelPhase();
-    } else {
-      RenderSpritePhase();
-    }
-	} else {
-    ResizeScreen(m_ScreenWidth, m_ScreenHeight);
-  }
-  pthread_cond_signal(&m_VsyncCond);
-  pthread_mutex_unlock(&m_Mutex);
-}
 
 
 void Engine::ResizeScreen(int width, int height) {

@@ -91,7 +91,7 @@ void *pump_audio(void *) {
   short *b = new short[min_buffer];
 
   while (playing_audio) {
-    LOGV("%d min_buffer\n", min_buffer);
+    LOGV("%d min_buffer wtf\n", min_buffer);
     Engine::CurrentGameDoAudio(b, min_buffer / (sizeof(short) * 2));
     g_Env->SetShortArrayRegion(ab, 0, min_buffer, b);
     g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / (sizeof(short) * 2));
@@ -147,7 +147,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env,
   pthread_join(audio_thread, NULL);
   Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   LOGV("Engine::start: %d\n", g);
-  create_audio_thread();
+  //create_audio_thread();
 }
 
 
@@ -205,8 +205,8 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
     Engine::CurrentGameStart();
   } else {
     Engine::Start(3, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-    LOGV("Engine::start2 : %d\n", 0);
-    pthread_create(&audio_thread, 0, pump_audio, NULL);
+    //LOGV("Engine::start2 : %d\n", 0);
+    //pthread_create(&audio_thread, 0, pump_audio, NULL);
   }
 }
 
