@@ -143,27 +143,25 @@ int Engine::RunThread() {
 	double interp = 1.0;
   StartSimulation();
 	while (m_GameState > 0) {
-    //if (pthread_mutex_trylock(&m_Mutex) == 0) {
-      pthread_mutex_lock(&m_Mutex);
-      gettimeofday(&tim, NULL);
-      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-      averageWait = t2 - t1;
-      gettimeofday(&tim, NULL);
-      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_GameState > 1) {
-        LOGV("paused\n");
-      } else {
-        for (unsigned int i=0; i<interp; i++) {
-          m_DeltaTime = (averageWait / interp);
-          m_SimulationTime += (m_DeltaTime);
-          if (Active()) {
-            Simulate();
-          }
+    pthread_mutex_lock(&m_Mutex);
+    gettimeofday(&tim, NULL);
+    t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+    averageWait = t2 - t1;
+    gettimeofday(&tim, NULL);
+    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    if (m_GameState > 1) {
+      LOGV("paused\n");
+    } else {
+      for (unsigned int i=0; i<interp; i++) {
+        m_DeltaTime = (averageWait / interp);
+        m_SimulationTime += (m_DeltaTime);
+        if (Active()) {
+          Simulate();
         }
       }
-      m_IsSceneBuilt = true;
-      pthread_mutex_unlock(&m_Mutex);
-    //}
+    }
+    m_IsSceneBuilt = true;
+    pthread_mutex_unlock(&m_Mutex);
     WaitVsync();
 	}
   m_GameState = -3;
