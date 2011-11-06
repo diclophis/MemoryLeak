@@ -53,14 +53,12 @@ typedef struct Engine Engine;
 	AudioComponentInstance audioUnit;
 	AudioQueueRef mAudioQueue;
 	AudioQueueBufferRef *mBuffers;
-	NSMutableArray *mPoppedMessages;
 	BOOL mLastMessageReady;
 }
 
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
-@property (retain) NSMutableArray *mPoppedMessages;
 
 
 -(void)build;

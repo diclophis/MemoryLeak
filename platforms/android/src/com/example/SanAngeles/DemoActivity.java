@@ -107,12 +107,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   public void onDrawFrame(GL10 gl) {
-    if (Global.wtf == -1) {
-      nativeRender();
-    } else {
-      Global.mFooWtf.onFoo(Global.wtf);
-      Global.wtf = -1;
-    }
+    nativeRender();
   }
 
 
@@ -170,11 +165,6 @@ class DemoGLSurfaceView extends GLSurfaceView {
   public void onResume() {
     super.onResume();
     nativeResume();
-  }
-
-
-  public void onFoo(int i) {
-    nativeStartGame(i);
   }
 
 

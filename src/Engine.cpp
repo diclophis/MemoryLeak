@@ -1,16 +1,16 @@
 //JonBardin GPL 2011
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 #include "MemoryLeak.h"
 #include "MainMenu.h"
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
 #include "SpaceShipDown.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 
 static std::vector<Game *> games;
@@ -47,7 +47,6 @@ Engine::~Engine() {
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
-  //glPopMatrix();
 
   LOGV("dealloc Engine\n");
 }
@@ -81,12 +80,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  //glPushMatrix();
-
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   m_IsThreeD = false;
 
@@ -177,15 +170,12 @@ void Engine::PauseSimulation() {
 
 void Engine::StopSimulation() {
   pthread_mutex_lock(&m_Mutex);
-
   m_IsSceneBuilt = false;
   m_GameState = -1;
   while (m_GameState != -3) {
-    LOGV("trying to signal vsync\n");
     pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
   }
   pthread_join(m_CurrentGame->m_Thread, NULL);
-
   pthread_mutex_unlock(&m_Mutex);
 }
 
@@ -200,10 +190,9 @@ void Engine::StartSimulation() {
 
 
 void Engine::DoAudio(short buffer[], int size) {
-  int buffer_size = size * sizeof(short) * 2;
-  memset(buffer, 0, buffer_size);
+  memset(buffer, 0, size);
   if (Active() && m_IsPushingAudio) {
-    ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short) * 2);
+    ModPlug_Read(m_Sounds[0], buffer, size);
   }
 }
 
@@ -222,14 +211,11 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
 }
 
 
-
-
 void Engine::ResizeScreen(int width, int height) {
   m_ScreenWidth = width;
   m_ScreenHeight = height;
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
-  //LOGV("ResizeTo %d %d\n", m_ScreenWidth, m_ScreenHeight);
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

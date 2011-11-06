@@ -4,8 +4,6 @@
 
 
 #include "MemoryLeak.h"
-#include "SuperStarShooter.h"
-#include "RadiantFireEightSixOne.h"
 
 
 #import "EAGLView.h"
@@ -46,7 +44,7 @@ void checkStatus(OSStatus status) {
 	else if(status == errSecDecode)
 		NSLog(@"unable to decode data");
 	else
-		NSLog(@"unknown: %d", status);
+		NSLog(@"unknown: %ld", status);
 	
 }
 
@@ -98,7 +96,6 @@ const char *popMessageFromWebView() {
 
 @synthesize animating;
 @dynamic animationFrameInterval;
-@synthesize mPoppedMessages;
 
 
 // You must implement this method
@@ -112,20 +109,6 @@ const char *popMessageFromWebView() {
 	// Get the layer
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 
-	[self setMPoppedMessages:[NSMutableArray arrayWithCapacity:10]];
-
-  
-	//[self setClearsContextBeforeDrawing:NO];
-	//[self setBackgroundColor:[UIColor blackColor]];
-	
-  //EAGLSharegroup *sharegroup = [context sharegroup];
-  //EAGLContext *k_context = [[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:sharegroup] autorelease];
-  //[EAGLContext setCurrentContext:k_context];
-  
-  //Share = [[EAGLSharegroup alloc] init];
-
-	//GL_RGBA4
-  //kEAGLColorFormatRGBA8
 	eaglLayer.opaque = TRUE;
 	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
 	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
@@ -136,7 +119,6 @@ const char *popMessageFromWebView() {
 	}
   
   Share = context.sharegroup;
-  //EAGLSharegroup* group = context.sharegroup;
   if (!Share)
   {
     NSLog(@"Could not get sharegroup from the main context");
@@ -364,9 +346,7 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	AudioBuffer *ioData = &ioDataList->mBuffers[0];
 	
-  //memset(ioData->mData, 0, ioData->mDataByteSize);
-  //LOGV("%lu %lu %lu\n", ioData->mDataByteSize, inNumberFrames, ioDataList->mNumberBuffers);
-  Engine::CurrentGameDoAudio((short int *)ioData->mData, inNumberFrames);
+  Engine::CurrentGameDoAudio((short int *)ioData->mData, inNumberFrames * sizeof(short) * 2);
 	
   return noErr;
 }
