@@ -92,15 +92,18 @@ void *pump_audio(void *) {
     android_dumpAudio = g_Env->GetStaticMethodID(player, "writeAudio", "([SII)V");
   }
 
-  short *b;
-  b = new short[min_buffer];
-  //LOGV("\n\n\n min_buffer %d\n\n\n\n", min_buffer);
+  min_buffer = min_buffer / 16;
+
+  short *b = new short[min_buffer];
 
   while (playing_audio) {
-    Engine::CurrentGameDoAudio(b, min_buffer / sizeof(short) * 2);
-    g_Env->SetShortArrayRegion(ab, 0, min_buffer / sizeof(short) * 2, b);
-    g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / sizeof(short) * 2);
+    LOGV("%d min_buffer\n", min_buffer);
+    Engine::CurrentGameDoAudio(b, min_buffer / (sizeof(short) * 2));
+    g_Env->SetShortArrayRegion(ab, 0, min_buffer, b);
+    g_Env->CallStaticVoidMethod(player, android_dumpAudio, ab, 0, min_buffer / (sizeof(short) * 2));
   }
+
+  delete b;
 
   g_Vm->DetachCurrentThread();
 }

@@ -191,7 +191,8 @@ void Engine::StartSimulation() {
 
 
 void Engine::DoAudio(short buffer[], int size) {
-  memset(buffer, 0, size * sizeof(short) * 2);
+  int buffer_size = size * sizeof(short) * 2;
+  memset(buffer, 0, buffer_size);
   if (Active() && m_IsPushingAudio) {
     ModPlug_Read(m_Sounds[0], buffer, size * sizeof(short) * 2);
   }
