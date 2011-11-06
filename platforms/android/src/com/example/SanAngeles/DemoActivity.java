@@ -193,9 +193,6 @@ public class DemoActivity extends Activity {
 
   protected static AudioTrack at1;
 	private DemoGLSurfaceView mGLView;
-  private WebView mWebView;
-  private JavascriptBridge mJavascriptBridge;
-  public static BlockingQueue<String> mWebViewMessages;
 
 
   public static void writeAudio(short[] bytes, int offset, int size) {
@@ -206,79 +203,18 @@ public class DemoActivity extends Activity {
   }
 
 
-  public InputStream getInputStreamFromUrl(String url) {
-    InputStream content = null;
-    try {
-      HttpGet httpGet = new HttpGet(url);
-      HttpClient httpclient = new DefaultHttpClient();
-      HttpResponse response = httpclient.execute(httpGet);
-      content = response.getEntity().getContent();
-    } catch (Exception e) {
-      Log.v(this.toString(), e.toString());
-    }
-    return content;
-  }
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-    DemoActivity.mWebViewMessages = new LinkedBlockingQueue<String>();
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
     final Context myApp = this;
     final Activity MyActivity = this;
 		mGLView = new DemoGLSurfaceView(this);
     Global.mFooWtf = mGLView;
 		setContentView(mGLView);
-    mWebView = new WebView(this);
-    mJavascriptBridge = new JavascriptBridge(this);
-    mWebView.addJavascriptInterface(mJavascriptBridge, "javascriptBridge");
-    mWebView.setBackgroundColor(Color.argb(0,0,0,0));
-    mWebView.setWebChromeClient(new WebChromeClient() {  
-      @Override  
-      public boolean onJsAlert(WebView view, String url, String message, final android.webkit.JsResult result) {
-        new AlertDialog.Builder(myApp).setTitle("javaScript dialog").setMessage(message).setPositiveButton(android.R.string.ok, new AlertDialog.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-            result.confirm();
-          }
-        }).setCancelable(false).create().show();
-        return true;
-      };
-    });
-    mWebView.setWebViewClient(new WebViewClient() {
-      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        Log.v(this.toString(), "WTF!@#!@#" + description);
-      }
-    });
     AssetManager am = getAssets();
     String path;
     String[] files;
-    WebSettings webSettings = mWebView.getSettings();
-    webSettings.setRenderPriority(WebSettings.RenderPriority.LOW);
-    webSettings.setJavaScriptEnabled(true);
-    webSettings.setLoadsImagesAutomatically(true);
-    //webSettings.setSupportZoom(false);
-    //webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-    //webSettings.setBuiltInZoomControls(false);
-    //webSettings.setPluginsEnabled(true);
-    try {
-      String base_url = "https://api.openfeint.com/?key=lxJAPbgkzhW91LqMeXEIg&secret=anQAUrXZTMfJxP8bLOMzmhfBlpuZMH9UPw45wCkGsQ";
-      InputStream inputStream = am.open("offline/index.html");
-      BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream), 4096);
-      String line;
-      StringBuilder sb =  new StringBuilder();
-      while ((line = rd.readLine()) != null) {
-        Log.v(this.toString(), line);
-        sb.append(line);
-      }
-      rd.close();
-      String contentOfMyInputStream = sb.toString();
-      mWebView.loadDataWithBaseURL(base_url, contentOfMyInputStream, "text/html", "utf-8", "about:blank");
-    } catch (java.lang.Exception e) {
-      Log.v(this.toString(), "WTF!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      Log.v(this.toString(), e.toString());
-    }
-    addContentView(mWebView, new LayoutParams(LayoutParams.FILL_PARENT, 120));
 
     int model_count;
     java.io.FileDescriptor[] fd1;
@@ -300,7 +236,6 @@ public class DemoActivity extends Activity {
     int min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT);
     setMinBuffer(min);
     at1 = new AudioTrack(AudioManager.STREAM_MUSIC, rate, AudioFormat.CHANNEL_CONFIGURATION_STEREO, AudioFormat.ENCODING_PCM_16BIT, min, AudioTrack.MODE_STREAM);
-    //at1.play();
     at1.setStereoVolume(1.0f, 1.0f);
 
     try {
@@ -366,66 +301,18 @@ public class DemoActivity extends Activity {
 
 
   public boolean pushMessageToWebView(String messageToPush) {
-    boolean r = false;
-    int p = mWebView.getProgress();
-    if (p == 100) {
-      final String f = new String(messageToPush);
-      mWebView.loadUrl(f);
-      r = true;
-    }
-
-    messageToPush = null;
-    return r;
+    return true;
   }
 
 
   public String popMessageFromWebView() {
-    // Popped messages are JSON structures that indicate status of operations, etc
-    if (mWebView.getProgress() < 100) {
-      return "wtfc";
-    }
-
-    if (DemoActivity.mWebViewMessages == null) {
-      return "wtf3";
-    }
-
-    final String mLastMessagePopped;
-
-    try {
-      if (DemoActivity.mWebViewMessages.isEmpty()) {
-        final String messagePopBridge = "javascript:(function() { var foo = dequeue(); if (foo) { window.javascriptBridge.pushToJava(foo); } })()";
-        mWebView.loadUrl(messagePopBridge);
-        return "empty_in_java";
-      } else {
-        mLastMessagePopped = DemoActivity.mWebViewMessages.take();
-        try {
-          URI action = new URI(mLastMessagePopped);
-          String scheme = action.getScheme();
-          String path = action.getPath();
-          String query = action.getQuery();
-          if ("memoryleak".equals(scheme)) {
-            if ("/start".equals(path)) {
-              Global.wtf = Integer.parseInt(query);
-            } else if ("/show".equals(path)) {
-            } else if ("/hide".equals(path)) {
-            }
-          }
-        } catch(java.net.URISyntaxException wtf) {
-          Log.v(this.toString(), wtf.toString());
-        }
-        return mLastMessagePopped;
-      }
-    } catch (java.lang.InterruptedException wtf) {
-      Log.v(this.toString(), wtf.toString());
-      return "wtfa";
-    }
+    return "";
   }
 
 
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
   }
-
 
 
   @Override
@@ -448,25 +335,6 @@ public class DemoActivity extends Activity {
 
   static {
     System.loadLibrary("sanangeles");
-  }
-
-
-}
-
-
-class JavascriptBridge {
-
-
-  private DemoActivity mActivity;
-
-
-  public JavascriptBridge(DemoActivity theActivity) {
-    mActivity = theActivity;
-  }
-
-
-  public void pushToJava(String messageFromJavascript) {
-    DemoActivity.mWebViewMessages.offer(messageFromJavascript);
   }
 
 

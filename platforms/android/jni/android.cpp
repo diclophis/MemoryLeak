@@ -9,9 +9,7 @@
 #include <float.h>
 #include <assert.h>
 
-#include "modplug.h"
 #include "stdafx.h"
-#include "sndfile.h"
 
 #include "MemoryLeak.h"
 
@@ -36,10 +34,6 @@ static std::vector<foo*> sounds;
 static int  sWindowWidth  = 0;
 static int  sWindowHeight = 0;
 static jobject activity;
-jmethodID android_push_webview;
-jmethodID android_pop_webview;
-
-jstring messagePush = NULL;
 
 bool playing_audio = false;
 
@@ -111,7 +105,6 @@ void *pump_audio(void *) {
 
 void SimulationThreadCleanup() {
   g_Env3 = NULL;
-  android_pop_webview = NULL;
   g_Env = NULL;
   android_dumpAudio = NULL;
   g_Vm->DetachCurrentThread();
@@ -119,63 +112,12 @@ void SimulationThreadCleanup() {
 
 
 bool pushMessageToWebView(const char *messageToPush) {
-  if (g_Env2 == NULL) {
-    g_Vm->AttachCurrentThread(&g_Env2, NULL);
-  }
-
-  if (g_Env2 == NULL || g_Env2 == 0) {
-    return false;
-  }
-
-  if (android_push_webview == NULL) {
-    android_push_webview = g_Env2->GetMethodID(player, "pushMessageToWebView", "(Ljava/lang/String;)Z");
-    if (android_push_webview == 0) {
-      LOGV("failed to find method\n");
-      return false;
-    }
-  }
-
-  jstring js = g_Env2->NewStringUTF(messageToPush);
-
-  jboolean jbool = g_Env2->CallBooleanMethod(activity, android_push_webview, js);
-
-  g_Env2->DeleteLocalRef(js);
-
-  return jbool;
+  return true;
 }
 
 
 const char *popMessageFromWebView() {
-  if (activity == NULL) {
-    return "broke";
-  }
-
-  if (g_Vm == NULL || g_Vm == 0) {
-    return "broke";
-  }
-
-  if (g_Env3 == NULL) {
-    g_Vm->GetEnv((void **)&g_Env3, JNI_VERSION_1_6);
-    g_Vm->AttachCurrentThread(&g_Env3, NULL);
-  }
-
-  if (g_Env3 == NULL || g_Env3 == 0) {
-    return "broke";
-  }
-
-  if (android_pop_webview == NULL) {
-    android_pop_webview = g_Env3->GetMethodID(player, "popMessageFromWebView", "()Ljava/lang/String;");
-    if (android_pop_webview == 0) {
-      LOGV("failed to find method\n");
-      return "broke";
-    }
-  } else {
-    jstring rv = (jstring) g_Env3->CallObjectMethod(activity, android_pop_webview, 0); 
-    jboolean isCopy = false;
-    const char *r = g_Env3->GetStringUTFChars(rv, &isCopy);
-    g_Env3->DeleteLocalRef(rv);
-    return r;
-  }
+  return "";
 }
 
 
