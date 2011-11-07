@@ -23,4 +23,6 @@ public:
 
   GLESDebugDraw *m_DebugDraw;
 
+  void CreatePlatform(float x, float y, float w, float h);
+
 };
