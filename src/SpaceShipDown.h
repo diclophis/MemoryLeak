@@ -10,19 +10,21 @@ public:
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();
-  void CreateBox2DWorld();
+  void CreateWorld();
+  void CreatePlayer();
+  void CreateSpaceShipPart();
+  void CreatePlatform(float x, float y, float w, float h);
+
   b2World *world;
-  //Terrain *terrain;
-  //Hero *hero;
+  b2Body *m_PlayerBody;
+
   int m_LandscapeIndex;
   int m_PlayerIndex;
-  b2Body *m_PlayerBody;
 
   bool m_TouchedLeft;
   bool m_TouchedRight;
 
   GLESDebugDraw *m_DebugDraw;
-
-  void CreatePlatform(float x, float y, float w, float h);
+  
 
 };

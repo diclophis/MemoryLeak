@@ -4,6 +4,13 @@
 #include "MemoryLeak.h"
 #include "SpaceShipDown.h"
 
+#define GRAVITY -20.0
+#define PART_DENSITY 1.0
+#define PART_FRICTION 500.0 
+#define PLAYER_DENSITY 2.0
+#define PLAYER_FRICTION 500.0
+#define PLAYER_HORIZONTAL_THRUST 600.0
+#define PLAYER_VERTICAL_THRUST 2000.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(2);
@@ -16,31 +23,12 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 512.0);
   m_SpriteCount++;
 
-  m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
-  m_AtlasSprites[m_PlayerIndex]->Build(0);
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
-  m_SpriteCount++;
 
-  CreateBox2DWorld();
+  CreateWorld();
 
-  float radius = 128.0;
-  MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
-  b2BodyDef bd;
-  bd.type = b2_dynamicBody;
-  bd.linearDamping = 0.0f;
-  bd.fixedRotation = true;
-  bd.position.Set(startPosition.x, startPosition.y);
-  m_PlayerBody = world->CreateBody(&bd);
-  b2CircleShape shape;
-  shape.m_radius = radius / PTM_RATIO;
-  b2FixtureDef fd;
-  fd.shape = &shape;
-  fd.density = 1.0f;
-  fd.restitution = 0.0;
-  fd.friction = 0.0;
-  m_PlayerBody->CreateFixture(&fd);
-  m_PlayerBody->SetActive(true);
+  CreatePlayer();
+
+  CreateSpaceShipPart();
 
   CreatePlatform(600.0, 1000.0, 512.0, 25.0);
   CreatePlatform(-600.0, 500.0, 512.0, 25.0);
@@ -61,6 +49,63 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_TouchedLeft = false;
   m_TouchedRight = false;
 
+}
+
+
+void SpaceShipDown::CreatePlayer() {
+  float radius = 64.0;
+
+  m_PlayerIndex = m_SpriteCount;
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
+  m_SpriteCount++;
+
+  MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
+  b2BodyDef bd;
+  bd.type = b2_dynamicBody;
+  bd.linearDamping = 0.0f;
+  bd.fixedRotation = true;
+  bd.position.Set(startPosition.x, startPosition.y);
+  m_PlayerBody = world->CreateBody(&bd);
+  b2CircleShape shape;
+  shape.m_radius = radius / PTM_RATIO;
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.density = PLAYER_DENSITY;
+  fd.restitution = 0.0;
+  fd.friction = PLAYER_FRICTION;
+  m_PlayerBody->CreateFixture(&fd);
+  m_PlayerBody->SetActive(true);
+}
+
+
+void SpaceShipDown::CreateSpaceShipPart() {
+  int part_index = m_SpriteCount;
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites[part_index]->Build(0);
+  m_AtlasSprites[part_index]->SetPosition(-256.0, 1500.0);
+  m_SpriteCount++;
+
+  float radius = 128.0;
+  MLPoint startPosition = MLPointMake(m_AtlasSprites[part_index]->m_Position[0] / PTM_RATIO, m_AtlasSprites[part_index]->m_Position[1] / PTM_RATIO);
+  b2BodyDef bd;
+  bd.type = b2_dynamicBody;
+  bd.linearDamping = 0.0f;
+  bd.fixedRotation = true;
+  bd.position.Set(startPosition.x, startPosition.y);
+
+  b2Body *part_body;
+  part_body = world->CreateBody(&bd);
+  b2CircleShape shape;
+  shape.m_radius = radius / PTM_RATIO;
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.density = PART_DENSITY;
+  fd.restitution = 0.0;
+  fd.friction = PART_FRICTION;
+  part_body->CreateFixture(&fd);
+  part_body->SetActive(true);
 }
 
 
@@ -85,9 +130,9 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
 }
 
 
-void SpaceShipDown::CreateBox2DWorld() {
+void SpaceShipDown::CreateWorld() {
   b2Vec2 gravity;
-  gravity.Set(0.0, -9.8);
+  gravity.Set(0.0, GRAVITY);
   world = new b2World(gravity, false);
 }
 
@@ -124,11 +169,11 @@ int SpaceShipDown::Simulate() {
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
 
   if (m_TouchedLeft) {
-    m_PlayerBody->ApplyForce(b2Vec2(-600.0, 2000.0), forcePosition);
+    m_PlayerBody->ApplyForce(b2Vec2(-PLAYER_HORIZONTAL_THRUST, PLAYER_VERTICAL_THRUST), forcePosition);
   }
 
   if (m_TouchedRight) {
-    m_PlayerBody->ApplyForce(b2Vec2(600.0, 2000.0), forcePosition);
+    m_PlayerBody->ApplyForce(b2Vec2(PLAYER_HORIZONTAL_THRUST, PLAYER_VERTICAL_THRUST), forcePosition);
   }
 
   float x = m_PlayerBody->GetPosition().x * PTM_RATIO;
