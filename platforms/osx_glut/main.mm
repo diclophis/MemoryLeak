@@ -41,6 +41,7 @@ static int kWindowHeight = 1024;
 static int win;
 static bool left_down = false;
 static bool right_down = false;
+static bool reset_down = false;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -268,14 +269,18 @@ void processNormalKeys(unsigned char key, int x, int y) {
     }
     right_down = !right_down;
   } else {
-    game_index = key - 49;
-    if (game_index > 3) {
-      game_index = 0;
+    if (reset_down) {
+    } else {
+      game_index = key - 49;
+      if (game_index > 3) {
+        game_index = 0;
+      }
+      if (game_index < 0) {
+        game_index = 0;
+      }
+      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
     }
-    if (game_index < 0) {
-      game_index = 0;
-    }
-    Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+    reset_down = !reset_down;
   }
 }
 

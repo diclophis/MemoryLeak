@@ -12,7 +12,7 @@ public:
 	void RenderSpritePhase();
   void CreateWorld();
   void CreatePlayer();
-  void CreateSpaceShipPart();
+  void CreateSpaceShipPart(float x, float y);
   void CreatePlatform(float x, float y, float w, float h);
 
   b2World *world;

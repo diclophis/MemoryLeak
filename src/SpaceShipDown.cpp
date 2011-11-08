@@ -4,20 +4,20 @@
 #include "MemoryLeak.h"
 #include "SpaceShipDown.h"
 
-#define GRAVITY -25.0
+#define GRAVITY -30.0
 #define PART_DENSITY 1.0
 #define PART_FRICTION 500.0 
 #define PLAYER_DENSITY 2.0
 #define PLAYER_FRICTION 500.0
 #define PLAYER_HORIZONTAL_THRUST 1000.0
 #define PLAYER_VERTICAL_THRUST 2500.0
-#define PLAYER_MAX_VELOCITY_X 10.0
-#define PLAYER_MAX_VELOCITY_Y 10.0
+#define PLAYER_MAX_VELOCITY_X 15.0
+#define PLAYER_MAX_VELOCITY_Y 15.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   m_IsPushingAudio = true;
-  m_Zoom = 6.0;
+  m_Zoom = 10.0;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -29,7 +29,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
   CreatePlayer();
 
-  CreateSpaceShipPart();
+  CreateSpaceShipPart(-100.0, -100.0);
 
   CreatePlatform(600.0, 1000.0, 512.0, 25.0);
   CreatePlatform(-600.0, 500.0, 512.0, 25.0);
@@ -81,11 +81,11 @@ void SpaceShipDown::CreatePlayer() {
 }
 
 
-void SpaceShipDown::CreateSpaceShipPart() {
+void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int part_index = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
   m_AtlasSprites[part_index]->Build(0);
-  m_AtlasSprites[part_index]->SetPosition(-256.0, 1500.0);
+  m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
 
   float radius = 128.0;
@@ -201,16 +201,17 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
 
   if (hitState == 0) {
-    //ModPlug_SetTempo(m_Sounds[0], 50);
     if (xx > 0) {
       m_TouchedRight = true;
     } else {
       m_TouchedLeft = true;
     }
   } else if (hitState == 2) {
-    //ModPlug_SetTempo(m_Sounds[0], 150);
-    m_TouchedLeft = false;
-    m_TouchedRight = false;
+    if (xx > 0) {
+      m_TouchedRight = false;
+    } else {
+      m_TouchedLeft = false;
+    }
   }
 }
 
@@ -234,14 +235,19 @@ int SpaceShipDown::Simulate() {
 
   float x = m_PlayerBody->GetPosition().x * PTM_RATIO;
   float y = m_PlayerBody->GetPosition().y * PTM_RATIO;
-  MLPoint position = MLPointMake(x, y);
 
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
   if (player_velocity.x > PLAYER_MAX_VELOCITY_X) {
     player_velocity.x = PLAYER_MAX_VELOCITY_X;
   }
+  if (player_velocity.x < -PLAYER_MAX_VELOCITY_X) {
+    player_velocity.x = -PLAYER_MAX_VELOCITY_X;
+  }
   if (player_velocity.y > PLAYER_MAX_VELOCITY_Y) {
     player_velocity.y = PLAYER_MAX_VELOCITY_Y;
+  }
+  if (player_velocity.y < -PLAYER_MAX_VELOCITY_Y) {
+    player_velocity.y = -PLAYER_MAX_VELOCITY_Y;
   }
   m_PlayerBody->SetLinearVelocity(player_velocity);
 
@@ -253,7 +259,7 @@ int SpaceShipDown::Simulate() {
 
   m_AtlasSprites[m_PlayerIndex]->m_Rotation = RadiansToDegrees(m_PlayerBody->GetAngle());
 
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(position.x, position.y);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
 
   return 1;
 }

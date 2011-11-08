@@ -60,18 +60,14 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   Context mContext;
-  long startTime;
 
 
   public DemoRenderer(Context context) {
     mContext = context;
-    startTime = System.currentTimeMillis();
   }
 
 
   public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
-
     try {
       AssetManager am = mContext.getAssets();
       String path = "textures";
@@ -180,22 +176,6 @@ class DemoGLSurfaceView extends GLSurfaceView {
           if (masked) { break; }
         }
       }
-
-/*
-printSamples(event);
-        float x = event.getX();
-        float y = event.getY();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-          nativeTouch(x, y, 0);
-        }
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-          nativeTouch(x, y, 1);
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-          nativeTouch(x, y, 2);
-        }
-      }
-*/
     });
 
     return true;
@@ -225,12 +205,6 @@ printSamples(event);
 }
 
 
-class Global {
-  public static DemoGLSurfaceView mFooWtf;
-  public static int wtf = -1;
-}
-
-
 public class DemoActivity extends Activity {
 
 
@@ -254,7 +228,6 @@ public class DemoActivity extends Activity {
     final Context myApp = this;
     final Activity MyActivity = this;
 		mGLView = new DemoGLSurfaceView(this);
-    Global.mFooWtf = mGLView;
 		setContentView(mGLView);
     AssetManager am = getAssets();
     String path;
