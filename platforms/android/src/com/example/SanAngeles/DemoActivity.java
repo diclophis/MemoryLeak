@@ -60,14 +60,18 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   Context mContext;
+  long startTime;
 
 
   public DemoRenderer(Context context) {
     mContext = context;
+    startTime = System.currentTimeMillis();
   }
 
 
   public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+
     try {
       AssetManager am = mContext.getAssets();
       String path = "textures";
@@ -131,11 +135,54 @@ class DemoGLSurfaceView extends GLSurfaceView {
     setRenderer(mRenderer);
   }
 
+  void printSamples(MotionEvent ev) {
+    final int historySize = ev.getHistorySize();
+    final int pointerCount = ev.getPointerCount();
+    for (int h = 0; h < historySize; h++) {
+      for (int p = 0; p < pointerCount; p++) {
+        Log.v(this.toString(), String.format("pointer %d: (%f,%f)",
+        ev.getPointerId(p), ev.getHistoricalX(p, h), ev.getHistoricalY(p, h)));
+      }
+    }
+
+    for (int p = 0; p < pointerCount; p++) {
+      Log.v(this.toString(), String.format("pointer %d: (%f,%f)",
+      ev.getPointerId(p), ev.getX(p), ev.getY(p)));
+    }
+  }
 
   @Override
-  public boolean onTouchEvent(final MotionEvent event) {
+  public boolean onTouchEvent(final MotionEvent e) {
     queueEvent(new Runnable() {
       public void run() {
+        for (int i=0; i<e.getPointerCount(); i++) {
+          boolean masked = false;
+          switch(e.getActionMasked()) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_POINTER_UP:
+              masked = true;
+            break;
+          }
+          if (masked && i != e.getActionIndex()) { continue; }
+          float x = e.getX(i); float y = e.getY(i);
+          int pid = e.getPointerId(i);
+          int type = 0;
+          switch (e.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN: type=0; break;
+            case MotionEvent.ACTION_MOVE: type=1; break;
+            case MotionEvent.ACTION_OUTSIDE: type=1; break;
+            case MotionEvent.ACTION_POINTER_DOWN: type=0; break;
+            case MotionEvent.ACTION_POINTER_UP: type=2; break;
+            case MotionEvent.ACTION_UP: type=2; break;
+            case MotionEvent.ACTION_CANCEL: type=2; break;
+          }
+          nativeTouch(x, y, type);
+          if (masked) { break; }
+        }
+      }
+
+/*
+printSamples(event);
         float x = event.getX();
         float y = event.getY();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -148,6 +195,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
           nativeTouch(x, y, 2);
         }
       }
+*/
     });
 
     return true;
@@ -201,6 +249,7 @@ public class DemoActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+    setRequestedOrientation(getResources().getConfiguration().orientation);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
     final Context myApp = this;
     final Activity MyActivity = this;

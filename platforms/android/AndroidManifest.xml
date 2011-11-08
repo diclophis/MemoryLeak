@@ -8,7 +8,8 @@
                   android:label="@string/app_name"
                   android:clearTaskOnLaunch="true"
                   android:configChanges="orientation"
-                  android:screenOrientation="portrait"
+                  android:noHistory="true"
+                  android:multiprocess="false"
                   android:launchMode="singleTask"
                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
             <intent-filter>
@@ -17,9 +18,6 @@
             </intent-filter>
         </activity>
     </application>
-    <!--
-    <application android:icon="@drawable/icon" android:theme="@android:style/Theme.NoTitleBar">
-    -->
-    <uses-sdk android:minSdkVersion="4" />
+    <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest> 
