@@ -36,9 +36,11 @@ AudioComponentInstance audioUnit;
 AudioQueueRef mAudioQueue;
 AudioQueueBufferRef *mBuffers;
 
-static int kWindowWidth = 320;
-static int kWindowHeight = 480;
+static int kWindowWidth = 1024;
+static int kWindowHeight = 1024;
 static int win;
+static bool left_down = false;
+static bool right_down = false;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -250,29 +252,30 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  printf("key: %d %c\n", key, key);
-  game_index = key - 49;
-  if (game_index > 3) {
-    game_index = 0;
-  }
-  if (game_index < 0) {
-    game_index = 0;
-  }
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-}
-
-
-void processSpecialKeys(int key, int x, int y) {
-  printf("key: %d %c\n", key, key);
-  switch(key) {
-    case GLUT_KEY_LEFT:
-    break;
-
-    case GLUT_KEY_RIGHT:
-    break;
-
-    case GLUT_KEY_UP:
-    break;
+  //printf("key: %d %c\n", key, key);
+  if (key == 110) {
+    if (left_down) {
+      Engine::CurrentGameHit(0, 0, 2);
+    } else {
+      Engine::CurrentGameHit(0, 0, 0);
+    }
+    left_down = !left_down;
+  } else if (key == 109) {
+    if (right_down) {
+      Engine::CurrentGameHit(1024, 1024, 2);
+    } else {
+      Engine::CurrentGameHit(1024, 1024, 0);
+    }
+    right_down = !right_down;
+  } else {
+    game_index = key - 49;
+    if (game_index > 3) {
+      game_index = 0;
+    }
+    if (game_index < 0) {
+      game_index = 0;
+    }
+    Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   }
 }
 
@@ -286,7 +289,8 @@ int main(int argc, char** argv) {
   win = glutCreateWindow("main");
   glutDisplayFunc(draw);
   glutKeyboardFunc(processNormalKeys);
-  glutSpecialFunc(processSpecialKeys);
+  glutKeyboardUpFunc(processNormalKeys);
+  glutIgnoreKeyRepeat(true);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutIdleFunc(draw);

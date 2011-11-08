@@ -136,7 +136,7 @@ int Engine::RunThread() {
 	gettimeofday(&tim, NULL);
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-	double interp = 1.0;
+	//double interp = 1.0;
   StartSimulation();
 	while (m_GameState > 0) {
     pthread_mutex_lock(&m_Mutex);
@@ -148,13 +148,13 @@ int Engine::RunThread() {
     if (m_GameState > 1) {
       LOGV("paused\n");
     } else {
-      for (unsigned int i=0; i<interp; i++) {
-        m_DeltaTime = (averageWait / interp);
+      //for (unsigned int i=0; i<interp; i++) {
+        m_DeltaTime = averageWait; //(averageWait / interp);
         m_SimulationTime += (m_DeltaTime);
         if (Active()) {
           Simulate();
         }
-      }
+      //}
     }
     m_IsSceneBuilt = true;
     pthread_mutex_unlock(&m_Mutex);
@@ -416,14 +416,14 @@ void Engine::CurrentGameResizeScreen(int width, int height) {
 
 
 void Engine::CurrentGameDrawScreen(float rotation) {
-  if (pthread_mutex_trylock(&m_GameSwitchLock) == 0) {
+  //if (pthread_mutex_trylock(&m_GameSwitchLock) == 0) {
     if (m_CurrentGame != NULL) {
       m_CurrentGame->DrawScreen(rotation);
     } else {
       //LOGV("foooo man chuuu\n");
     }
     pthread_mutex_unlock(&m_GameSwitchLock);
-  }
+  //}
 }
 
 

@@ -6,7 +6,7 @@
 
 
 RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-  LoadSound(2);
+  LoadSound(0);
   m_IsPushingAudio = true;
   m_Zoom = 2.0;
   m_RequestedFullscreen = false;
@@ -16,7 +16,7 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   CreateBox2DWorld();
   terrain = new Terrain(world, m_Textures->at(0));  
   hero = NULL;
-  hero = new Hero(world, m_Textures->at(1));
+  hero = new Hero(world, m_Textures->at(0));
 
   /*
   spriteBodyDef.position.Set(hero->position.x / PTM_RATIO, hero->position.y / PTM_RATIO);

@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SpaceShipDown.h"
 
-#define GRAVITY -20.0
+#define GRAVITY -25.0
 #define PART_DENSITY 1.0
 #define PART_FRICTION 500.0 
 #define PLAYER_DENSITY 2.0
 #define PLAYER_FRICTION 500.0
 #define PLAYER_HORIZONTAL_THRUST 1000.0
-#define PLAYER_VERTICAL_THRUST 2000.0
+#define PLAYER_VERTICAL_THRUST 2500.0
 #define PLAYER_MAX_VELOCITY_X 10.0
 #define PLAYER_MAX_VELOCITY_Y 10.0
 
@@ -57,7 +57,7 @@ void SpaceShipDown::CreatePlayer() {
   float radius = 64.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
   m_SpriteCount++;
@@ -201,12 +201,14 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
 
   if (hitState == 0) {
+    //ModPlug_SetTempo(m_Sounds[0], 50);
     if (xx > 0) {
       m_TouchedRight = true;
     } else {
       m_TouchedLeft = true;
     }
   } else if (hitState == 2) {
+    //ModPlug_SetTempo(m_Sounds[0], 150);
     m_TouchedLeft = false;
     m_TouchedRight = false;
   }
@@ -215,8 +217,8 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 int SpaceShipDown::Simulate() {
 
-  int velocityIterations = 1;
-  int positionIterations = 1;
+  int velocityIterations = 32;
+  int positionIterations = 32;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -262,7 +264,9 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
-  glTranslatef(-m_AtlasSprites[m_PlayerIndex]->m_Position[0], -m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
+
+  //glTranslatef(-m_AtlasSprites[m_PlayerIndex]->m_Position[0], -m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
+
   RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
   AtlasSprite::ReleaseBuffers();
