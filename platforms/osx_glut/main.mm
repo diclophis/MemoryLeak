@@ -262,6 +262,21 @@ void processNormalKeys(unsigned char key, int x, int y) {
 }
 
 
+void processSpecialKeys(int key, int x, int y) {
+  printf("key: %d %c\n", key, key);
+  switch(key) {
+    case GLUT_KEY_LEFT:
+    break;
+
+    case GLUT_KEY_RIGHT:
+    break;
+
+    case GLUT_KEY_UP:
+    break;
+  }
+}
+
+
 int main(int argc, char** argv) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   glutInit(&argc, argv);
@@ -271,6 +286,7 @@ int main(int argc, char** argv) {
   win = glutCreateWindow("main");
   glutDisplayFunc(draw);
   glutKeyboardFunc(processNormalKeys);
+  glutSpecialFunc(processSpecialKeys);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutIdleFunc(draw);

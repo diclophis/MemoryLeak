@@ -117,6 +117,9 @@ void Engine::DrawScreen(float rotation) {
       glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
       RenderModelPhase();
     } else {
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
       RenderSpritePhase();
     }
 	} else {

@@ -9,20 +9,21 @@
 #define PART_FRICTION 500.0 
 #define PLAYER_DENSITY 2.0
 #define PLAYER_FRICTION 500.0
-#define PLAYER_HORIZONTAL_THRUST 600.0
+#define PLAYER_HORIZONTAL_THRUST 1000.0
 #define PLAYER_VERTICAL_THRUST 2000.0
+#define PLAYER_MAX_VELOCITY_X 10.0
+#define PLAYER_MAX_VELOCITY_Y 10.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(2);
   m_IsPushingAudio = true;
-  m_Zoom = 4.0;
+  m_Zoom = 6.0;
 
   m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(4), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048, 2048));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(4), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
-  m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 512.0);
+  m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
   m_SpriteCount++;
-
 
   CreateWorld();
 
@@ -132,8 +133,60 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
 
 void SpaceShipDown::CreateWorld() {
   b2Vec2 gravity;
+  b2BodyDef borderBodyDef;
+  b2PolygonShape borderBox;
+  b2Body* borderBody;
+
   gravity.Set(0.0, GRAVITY);
   world = new b2World(gravity, false);
+
+  float x = 0.0;
+  float y = 0.0;
+  float w = 1024.0 * 2.0;
+  float h = 1024.0 * 2.0;
+  float t = 10.0;
+  float hs = 0.0;
+  float vs = 0.0;
+
+  x = 0;
+  y = -512 * 4;
+  hs = w;
+  vs = t;
+
+  borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+  borderBody = world->CreateBody(&borderBodyDef);
+  borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
+  borderBody->CreateFixture(&borderBox, 0);
+
+  x = -512 * 4;
+  y = 0;
+  hs = t;
+  vs = w;
+
+  borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+  borderBody = world->CreateBody(&borderBodyDef);
+  borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
+  borderBody->CreateFixture(&borderBox, 0);
+
+  x = 0;
+  y = 512 * 4;
+  hs = w;
+  vs = t;
+
+  borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+  borderBody = world->CreateBody(&borderBodyDef);
+  borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
+  borderBody->CreateFixture(&borderBox, 0);
+
+  x = 512 * 4;
+  y = 0;
+  hs = t;
+  vs = w;
+
+  borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
+  borderBody = world->CreateBody(&borderBodyDef);
+  borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
+  borderBody->CreateFixture(&borderBox, 0);
 }
 
 
@@ -161,6 +214,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 int SpaceShipDown::Simulate() {
+
   int velocityIterations = 1;
   int positionIterations = 1;
 
@@ -179,6 +233,15 @@ int SpaceShipDown::Simulate() {
   float x = m_PlayerBody->GetPosition().x * PTM_RATIO;
   float y = m_PlayerBody->GetPosition().y * PTM_RATIO;
   MLPoint position = MLPointMake(x, y);
+
+  b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
+  if (player_velocity.x > PLAYER_MAX_VELOCITY_X) {
+    player_velocity.x = PLAYER_MAX_VELOCITY_X;
+  }
+  if (player_velocity.y > PLAYER_MAX_VELOCITY_Y) {
+    player_velocity.y = PLAYER_MAX_VELOCITY_Y;
+  }
+  m_PlayerBody->SetLinearVelocity(player_velocity);
 
   /*
   b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
