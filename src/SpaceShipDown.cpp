@@ -15,12 +15,12 @@
 #define PLAYER_MAX_VELOCITY_Y 10.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-  LoadSound(2);
+  LoadSound(0);
   m_IsPushingAudio = true;
   m_Zoom = 6.0;
 
   m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(4), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
   m_SpriteCount++;
@@ -57,7 +57,7 @@ void SpaceShipDown::CreatePlayer() {
   float radius = 64.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
   m_SpriteCount++;
@@ -83,7 +83,7 @@ void SpaceShipDown::CreatePlayer() {
 
 void SpaceShipDown::CreateSpaceShipPart() {
   int part_index = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(-256.0, 1500.0);
   m_SpriteCount++;
