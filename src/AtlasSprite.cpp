@@ -23,7 +23,6 @@ void AtlasSprite::Scrub() {
 }
 
 AtlasSprite::~AtlasSprite() {
-  //LOGV("AtlasSprite::dealloc\n");
   free(vertices);
   free(texture);
   free(indices);
@@ -36,7 +35,6 @@ AtlasSprite::~AtlasSprite() {
 }
 
 AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, float vdx, float vdy) : m_Texture(t), m_SpritesPerRow(spr), m_Rows(rows), m_Start(s), m_End(e), m_MaxLife(m) {
-LOGV("AtlasSprite::alloc\n");
   m_Fps = 0;
 	m_Rotation = m_LastRotation = 0.0;
 	m_Position = new float[2];
@@ -72,7 +70,6 @@ LOGV("AtlasSprite::alloc\n");
 	m_Sprites = new Sprite[m_Count];
 	GLfloat tdx = 1.0 / (float)m_SpritesPerRow;
 	GLfloat tdy = 1.0 / (float)m_Rows;
-  LOGV("tdx, tdy %f %f\n", tdx, tdy);
 
 	float texture_x = 0;
 	float texture_y = 0;
@@ -114,16 +111,6 @@ LOGV("AtlasSprite::alloc\n");
   GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
 
   texture = (GLfloat *) malloc(8 * sizeof(GLfloat));
-  /*
-  texture[0] = 0.0;//tx;
-  texture[1] = 1.0;//(ty + th);
-  texture[2] = 1.0;//tx + tw;
-  texture[3] = 1.0;//(ty + th);
-  texture[4] = 1.0;//tx + tw;
-  texture[5] = 0.0;//ty;
-  texture[6] = 0.0;//tx;
-  texture[7] = 0.0;//ty;
-  */
   texture[0] = tx;
   texture[1] = (ty + th);
   texture[2] = tx + tw;
@@ -133,10 +120,7 @@ LOGV("AtlasSprite::alloc\n");
   texture[6] = tx;
   texture[7] = ty;
 
-  LOGV("tx: %f ty: %f tw: %f, th: %f\n", tx, ty, tw, th);
-
   indices = (GLushort *) malloc(4 * sizeof(GLushort));
-
   indices[0] = 1;
   indices[1] = 2;
   indices[2] = 0;
@@ -193,56 +177,44 @@ void AtlasSprite::Render() {
 
 	}
 
-	//glPushMatrix();
-	//{
+  glTranslatef(m_Position[0], m_Position[1], 0.0);
+  
+  if (m_LastRotation != m_Rotation) {
+    glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+    m_LastRotation = m_Rotation;
+  }
 
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  m_Frame = 0;
 
-		glTranslatef(m_Position[0], m_Position[1], 0.0);
-    
-    if (m_LastRotation != m_Rotation) {
-      glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-      m_LastRotation = m_Rotation;
-    }
+  if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
+    g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
+    glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
+    glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
+  }
 
-    m_Frame = 0;
+  if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
+    g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
+    glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
+    glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
+  }
 
-		if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
-      g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
-      glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
-      glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
-    }
+  if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
+    g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+  }
 
-		if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
-      g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
-      glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
-      glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-    }
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-		if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
-      g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-    }
+  if (false) {
+    glDisable(GL_TEXTURE_2D);
+    glPointSize(1.0);
+    glColor4f(0.0, 1.0, 0.0, 1.0);
+    glDrawElements(GL_LINES, 2 * 2, GL_UNSIGNED_BYTE, (GLvoid*)((char*)NULL));
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
+  }
 
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-
-    if (false) {
-      glDisable(GL_TEXTURE_2D);
-      glPointSize(1.0);
-      glColor4f(0.0, 1.0, 0.0, 1.0);
-      //glDrawElements(GL_LINES, 4, GL_UNSIGNED_BYTE, indices);
-      glDrawElements(GL_LINES, 2 * 2, GL_UNSIGNED_BYTE, (GLvoid*)((char*)NULL));
-      glColor4f(1.0, 1.0, 1.0, 1.0);
-      glEnable(GL_TEXTURE_2D);
-    }
-
-		glTranslatef(-m_Position[0], -m_Position[1], 0.0);
-
-  //}
-	//glPopMatrix();
+  glTranslatef(-m_Position[0], -m_Position[1], 0.0);
   
 }
 
