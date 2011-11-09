@@ -17,7 +17,7 @@
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   m_IsPushingAudio = true;
-  m_Zoom = 10.0;
+  m_Zoom = 1.0;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -57,9 +57,9 @@ void SpaceShipDown::CreatePlayer() {
   float radius = 64.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
-  m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 11, 64, 0.25, 256.0, 256.0));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
+  m_AtlasSprites[m_PlayerIndex]->Build(10);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -107,6 +107,13 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.friction = PART_FRICTION;
   part_body->CreateFixture(&fd);
   part_body->SetActive(true);
+
+
+  b2DistanceJointDef dj;
+  dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
+  dj.collideConnected = true;
+  b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
+
 }
 
 
@@ -257,6 +264,13 @@ int SpaceShipDown::Simulate() {
   float rotation = RadiansToDegrees(angle);
   */
 
+  m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 100.0) * 500.0 * randf();
+  m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -1500.0;
+
+  m_AtlasSprites[m_PlayerIndex]->Fire();
+
+  m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+
   m_AtlasSprites[m_PlayerIndex]->m_Rotation = RadiansToDegrees(m_PlayerBody->GetAngle());
 
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
@@ -274,7 +288,10 @@ void SpaceShipDown::RenderSpritePhase() {
   //glTranslatef(-m_AtlasSprites[m_PlayerIndex]->m_Position[0], -m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
 
   RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+  glDisable(GL_BLEND);
   AtlasSprite::ReleaseBuffers();
 
   if (true) {
