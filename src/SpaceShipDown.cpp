@@ -17,7 +17,6 @@
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   m_IsPushingAudio = true;
-  m_Zoom = 1.0;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -109,10 +108,23 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   part_body->SetActive(true);
 
 
-  b2DistanceJointDef dj;
-  dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
-  dj.collideConnected = true;
-  b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
+  //b2DistanceJointDef dj;
+  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
+  //dj.collideConnected = true;
+  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
+
+  b2RopeJointDef *rjd = new b2RopeJointDef();
+  rjd->bodyA = part_body;
+  rjd->bodyB = m_PlayerBody;
+  rjd->localAnchorA = b2Vec2(0.0, 0.0);
+  rjd->localAnchorB = b2Vec2(0.0, 0.0);
+  rjd->maxLength = 500.0 / PTM_RATIO;
+
+  b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
+
+  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
+  //dj.collideConnected = true;
+  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
 
 }
 
@@ -224,6 +236,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 int SpaceShipDown::Simulate() {
+  m_Zoom = 4096.0 / (float)m_ScreenWidth;
 
   int velocityIterations = 32;
   int positionIterations = 32;

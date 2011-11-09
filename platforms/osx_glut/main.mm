@@ -36,8 +36,8 @@ AudioComponentInstance audioUnit;
 AudioQueueRef mAudioQueue;
 AudioQueueBufferRef *mBuffers;
 
-static int kWindowWidth = 1024;
-static int kWindowHeight = 1024;
+static int kWindowWidth = 256;
+static int kWindowHeight = 256;
 static int win;
 static bool left_down = false;
 static bool right_down = false;
