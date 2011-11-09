@@ -25,7 +25,6 @@ struct foofoo {
 	//! Default constructor
 	foofoo()
 	{
-    printf("alloc foofoo\n");
 	}
 
 	//! Default destructor. Delete the index array
@@ -41,7 +40,6 @@ struct foofoo {
     }
     free(m_IndexBuffers);
     free(m_TextureBuffer);
-    printf("dealloc foofoo\n");
 	}
 
 #endif
