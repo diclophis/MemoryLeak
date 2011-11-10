@@ -64,7 +64,8 @@ OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const
 	AudioBuffer *ioData = &outOutputData->mBuffers[0];
   memset(ioData->mData, 0, ioData->mDataByteSize);
 
-  Engine::CurrentGameDoAudio((short int*)ioData->mData, numSamples);
+LOGV("wtf %d\n", ioData->mDataByteSize);
+  Engine::CurrentGameDoAudio((short int*)ioData->mData, ioData->mDataByteSize);
 
   return kAudioHardwareNoError;
 }
@@ -367,9 +368,9 @@ int main(int argc, char** argv) {
   [sounds_path release];
   [mainBundle release];
 
-  if (!setupAudio()) {
-    printf("cant setup Audio\n");
-  }
+  //if (!setupAudio()) {
+  //  printf("cant setup Audio\n");
+  //}
 
   //if (!startAudio()) {
   //  printf("cant start Audio\n");

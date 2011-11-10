@@ -2,6 +2,7 @@
 
 
 #include "MemoryLeak.h"
+#include "SpaceShipDownContactListener.h"
 #include "SpaceShipDown.h"
 
 #define GRAVITY -35.0
@@ -37,6 +38,9 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
   m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
   world->SetDebugDraw(m_DebugDraw);
+
+  m_ContactListener = new SpaceShipDownContactListener();
+  world->SetContactListener(m_ContactListener);
   
   uint32 flags = 0;
   flags += b2Draw::e_shapeBit;
@@ -49,6 +53,13 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_TouchedLeft = false;
   m_TouchedRight = false;
 
+}
+
+
+SpaceShipDown::~SpaceShipDown() {
+  delete m_DebugDraw;
+  delete m_ContactListener;
+  delete world;
 }
 
 
@@ -208,16 +219,13 @@ void SpaceShipDown::CreateWorld() {
 }
 
 
-SpaceShipDown::~SpaceShipDown() {
-  delete m_DebugDraw;
-  delete world;
-}
 
 
 void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
 
+  LOGV("state: %d %f %f\n", hitState, x, y);
   if (hitState == 0) {
     if (xx > 0) {
       m_TouchedRight = true;
@@ -288,6 +296,49 @@ int SpaceShipDown::Simulate() {
   m_AtlasSprites[m_PlayerIndex]->m_Rotation = RadiansToDegrees(m_PlayerBody->GetAngle());
 
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
+
+
+
+
+
+
+  std::vector<b2Body*> toDestroy; 
+  std::vector<MLContact>::iterator pos;
+  for (pos = m_ContactListener->m_Contacts.begin(); pos != m_ContactListener->m_Contacts.end(); ++pos) {
+    MLContact contact = *pos;
+
+    b2Body *bodyA = contact.fixtureA->GetBody();
+    b2Body *bodyB = contact.fixtureB->GetBody();
+
+    if (bodyA == m_PlayerBody || bodyB == m_PlayerBody) {
+      LOGV("player touching something\n");
+    }
+
+    /*
+    if (bodyA->GetUserData() != NULL && bodyB->GetUserData() != NULL) {
+      CCSprite *spriteA = (CCSprite *) bodyA->GetUserData();
+      CCSprite *spriteB = (CCSprite *) bodyB->GetUserData();
+
+      if (spriteA.tag == 1 && spriteB.tag == 2) {
+        toDestroy.push_back(bodyA);
+      } else if (spriteA.tag == 2 && spriteB.tag == 1) {
+        toDestroy.push_back(bodyB);
+      } 
+    }        
+    */
+  }
+
+  std::vector<b2Body *>::iterator pos2;
+  for(pos2 = toDestroy.begin(); pos2 != toDestroy.end(); ++pos2) {
+    b2Body *body = *pos2;     
+    /*
+    if (body->GetUserData() != NULL) {
+      CCSprite *sprite = (CCSprite *) body->GetUserData();
+      [_spriteSheet removeChild:sprite cleanup:YES];
+    }
+    _world->DestroyBody(body);
+    */
+  }
 
   return 1;
 }

@@ -25,6 +25,8 @@ public:
   bool m_TouchedRight;
 
   GLESDebugDraw *m_DebugDraw;
+
+  SpaceShipDownContactListener *m_ContactListener;
   
 
 };

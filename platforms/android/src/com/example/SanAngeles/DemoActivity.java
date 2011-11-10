@@ -148,9 +148,10 @@ class DemoGLSurfaceView extends GLSurfaceView {
   }
 
   @Override
-  public boolean onTouchEvent(final MotionEvent e) {
+  public boolean onTouchEvent(final MotionEvent event) {
     queueEvent(new Runnable() {
       public void run() {
+/*
         for (int i=0; i<e.getPointerCount(); i++) {
           boolean masked = false;
           switch(e.getActionMasked()) {
@@ -175,6 +176,73 @@ class DemoGLSurfaceView extends GLSurfaceView {
           nativeTouch(x, y, type);
           if (masked) { break; }
         }
+*/
+
+        float x = 0;
+        float y = 0;
+        int type = -1;
+
+
+        for (int i = 0; i < event.getPointerCount(); i++) {
+          switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
+              //Log.d(TAG,"down "+ ev.getPointerId(i));
+              x = event.getX(i);
+              y = event.getY(i);
+              nativeTouch(x, y, 0);
+              break;
+            case MotionEvent.ACTION_MOVE:
+              //Log.d(TAG,"move "+ ev.getPointerId(i));
+              x = event.getX(i);
+              y = event.getY(i);
+              nativeTouch(x, y, 1);
+              break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_POINTER_UP:
+              //Log.d(TAG,"up "+ ev.getPointerId(i));
+              x = event.getX(i);
+              y = event.getY(i);
+              nativeTouch(x, y, 2);
+              break;  
+          }
+        }
+
+/*
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
+
+        if (action == MotionEvent.ACTION_DOWN) {
+          x = event.getX();
+          y = event.getY();
+          type = 0;
+        } else if (action == MotionEvent.ACTION_UP) {
+          x = event.getX();
+          y = event.getY();
+          type = 2;
+        } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
+          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+          x = event.getX(pointer);
+          y = event.getY(pointer);
+          type = 0;
+        } else if (action == MotionEvent.ACTION_POINTER_UP) {
+          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+          x = event.getX(pointer);
+          y = event.getY(pointer);
+          type = 2;
+        } else if (action == MotionEvent.ACTION_MOVE) {
+          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+          x = event.getX(pointer);
+          y = event.getY(pointer);
+          type = 1;
+        } else if (action == MotionEvent.ACTION_CANCEL) {
+          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+          x = event.getX(pointer);
+          y = event.getY(pointer);
+          type = 2;
+        }
+        nativeTouch(x, y, type);
+*/
       }
     });
 
