@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SpaceShipDown.h"
 
-#define GRAVITY -30.0
-#define PART_DENSITY 1.0
-#define PART_FRICTION 500.0 
+#define GRAVITY -35.0
+#define PART_DENSITY 0.1
+#define PART_FRICTION 0.0 
 #define PLAYER_DENSITY 2.0
 #define PLAYER_FRICTION 500.0
 #define PLAYER_HORIZONTAL_THRUST 1000.0
-#define PLAYER_VERTICAL_THRUST 2500.0
+#define PLAYER_VERTICAL_THRUST 3000.0
 #define PLAYER_MAX_VELOCITY_X 15.0
 #define PLAYER_MAX_VELOCITY_Y 15.0
 
@@ -58,7 +58,7 @@ void SpaceShipDown::CreatePlayer() {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 11, 64, 0.25, 256.0, 256.0));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(10);
+  m_AtlasSprites[m_PlayerIndex]->Build(5);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -106,7 +106,6 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.friction = PART_FRICTION;
   part_body->CreateFixture(&fd);
   part_body->SetActive(true);
-
 
   //b2DistanceJointDef dj;
   //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
@@ -238,8 +237,8 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 int SpaceShipDown::Simulate() {
   m_Zoom = 4096.0 / (float)m_ScreenWidth;
 
-  int velocityIterations = 32;
-  int positionIterations = 32;
+  int velocityIterations = 1;
+  int positionIterations = 1;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -251,6 +250,10 @@ int SpaceShipDown::Simulate() {
 
   if (m_TouchedRight) {
     m_PlayerBody->ApplyForce(b2Vec2(PLAYER_HORIZONTAL_THRUST, PLAYER_VERTICAL_THRUST), forcePosition);
+  }
+
+  if (m_TouchedLeft || m_TouchedRight) {
+    m_AtlasSprites[m_PlayerIndex]->Fire();
   }
 
   float x = m_PlayerBody->GetPosition().x * PTM_RATIO;
@@ -266,9 +269,9 @@ int SpaceShipDown::Simulate() {
   if (player_velocity.y > PLAYER_MAX_VELOCITY_Y) {
     player_velocity.y = PLAYER_MAX_VELOCITY_Y;
   }
-  if (player_velocity.y < -PLAYER_MAX_VELOCITY_Y) {
-    player_velocity.y = -PLAYER_MAX_VELOCITY_Y;
-  }
+  //if (player_velocity.y < -PLAYER_MAX_VELOCITY_Y) {
+  //  player_velocity.y = -PLAYER_MAX_VELOCITY_Y;
+  //}
   m_PlayerBody->SetLinearVelocity(player_velocity);
 
   /*
@@ -277,10 +280,8 @@ int SpaceShipDown::Simulate() {
   float rotation = RadiansToDegrees(angle);
   */
 
-  m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 100.0) * 500.0 * randf();
+  m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0; //fastSinf(m_SimulationTime * 100.0) * 500.0 * randf();
   m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -1500.0;
-
-  m_AtlasSprites[m_PlayerIndex]->Fire();
 
   m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
 

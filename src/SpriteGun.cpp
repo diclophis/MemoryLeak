@@ -67,7 +67,8 @@ void SpriteGun::Fire() {
   m_IsAlive = true;
   int shot = 0;
   for (unsigned int i=0; i<m_NumParticles; i++) {
-    if (shot == 0 && (m_TimeSinceLastShot > 0.01 && !m_AtlasSprites[i]->m_IsAlive)) {
+    if (shot == 0 && (m_TimeSinceLastShot > 0.05 && !m_AtlasSprites[i]->m_IsAlive)) {
+      ResetParticle(i);
       ShootParticle(i);
       shot++;
     }
