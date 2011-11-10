@@ -6,7 +6,7 @@
 #include "SpaceShipDown.h"
 
 #define GRAVITY -35.0
-#define PART_DENSITY 0.1
+#define PART_DENSITY 0.0
 #define PART_FRICTION 0.0 
 #define PLAYER_DENSITY 2.0
 #define PLAYER_FRICTION 500.0
@@ -18,6 +18,9 @@
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   m_IsPushingAudio = true;
+  m_SpaceShipPartsStartIndex = -1;
+  m_SpaceShipPartsStopIndex = -1;
+  m_PickedUpPartIndex = -1;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -30,6 +33,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   CreatePlayer();
 
   CreateSpaceShipPart(-100.0, -100.0);
+  CreateSpaceShipPart(100.0, 100.0);
 
   CreatePlatform(600.0, 1000.0, 512.0, 25.0);
   CreatePlatform(-600.0, 500.0, 512.0, 25.0);
@@ -79,6 +83,7 @@ void SpaceShipDown::CreatePlayer() {
   bd.fixedRotation = true;
   bd.position.Set(startPosition.x, startPosition.y);
   m_PlayerBody = world->CreateBody(&bd);
+  m_PlayerBody->SetUserData((void *)m_PlayerIndex);
   b2CircleShape shape;
   shape.m_radius = radius / PTM_RATIO;
   b2FixtureDef fd;
@@ -93,10 +98,16 @@ void SpaceShipDown::CreatePlayer() {
 
 void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int part_index = m_SpriteCount;
+
+  if (m_SpaceShipPartsStartIndex == -1) {
+    m_SpaceShipPartsStartIndex = part_index;
+  }
+
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
+  m_SpaceShipPartsStopIndex = m_SpriteCount;
 
   float radius = 128.0;
   MLPoint startPosition = MLPointMake(m_AtlasSprites[part_index]->m_Position[0] / PTM_RATIO, m_AtlasSprites[part_index]->m_Position[1] / PTM_RATIO);
@@ -108,6 +119,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   b2Body *part_body;
   part_body = world->CreateBody(&bd);
+  part_body->SetUserData((void *)part_index);
   b2CircleShape shape;
   shape.m_radius = radius / PTM_RATIO;
   b2FixtureDef fd;
@@ -115,7 +127,17 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.density = PART_DENSITY;
   fd.restitution = 0.0;
   fd.friction = PART_FRICTION;
+  fd.isSensor = false;
   part_body->CreateFixture(&fd);
+
+  shape.m_radius = (radius * 3.0) / PTM_RATIO;
+  fd.shape = &shape;
+  fd.density = PART_DENSITY;
+  fd.restitution = 0.0;
+  fd.friction = PART_FRICTION;
+  fd.isSensor = true;
+  part_body->CreateFixture(&fd);
+
   part_body->SetActive(true);
 
   //b2DistanceJointDef dj;
@@ -123,19 +145,15 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   //dj.collideConnected = true;
   //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
 
-  b2RopeJointDef *rjd = new b2RopeJointDef();
-  rjd->bodyA = part_body;
-  rjd->bodyB = m_PlayerBody;
-  rjd->localAnchorA = b2Vec2(0.0, 0.0);
-  rjd->localAnchorB = b2Vec2(0.0, 0.0);
-  rjd->maxLength = 500.0 / PTM_RATIO;
-
-  b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
-
-  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
-  //dj.collideConnected = true;
-  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
-
+  if (false) {
+    b2RopeJointDef *rjd = new b2RopeJointDef();
+    rjd->bodyA = part_body;
+    rjd->bodyB = m_PlayerBody;
+    rjd->localAnchorA = b2Vec2(0.0, 0.0);
+    rjd->localAnchorB = b2Vec2(0.0, 0.0);
+    rjd->maxLength = 500.0 / PTM_RATIO;
+    b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
+  }
 }
 
 
@@ -150,6 +168,7 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // from a pool and creates the ground box shape (also from a pool).
   // The body is also added to the world.
   b2Body* groundBody = world->CreateBody(&groundBodyDef);
+  //groundBody->SetUserData((void *)-1);
   
   // Define the ground box shape.
   b2PolygonShape groundBox;   
@@ -184,6 +203,7 @@ void SpaceShipDown::CreateWorld() {
 
   borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
   borderBody = world->CreateBody(&borderBodyDef);
+  //borderBody->SetUserData((void *)-1);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
 
@@ -219,8 +239,6 @@ void SpaceShipDown::CreateWorld() {
 }
 
 
-
-
 void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
@@ -245,10 +263,12 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 int SpaceShipDown::Simulate() {
   m_Zoom = 4096.0 / (float)m_ScreenWidth;
 
-  int velocityIterations = 1;
-  int positionIterations = 1;
+  int velocityIterations = 8;
+  int positionIterations = 3;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
+
+  m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
 
@@ -264,43 +284,32 @@ int SpaceShipDown::Simulate() {
     m_AtlasSprites[m_PlayerIndex]->Fire();
   }
 
-  float x = m_PlayerBody->GetPosition().x * PTM_RATIO;
-  float y = m_PlayerBody->GetPosition().y * PTM_RATIO;
-
-  b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
-  if (player_velocity.x > PLAYER_MAX_VELOCITY_X) {
-    player_velocity.x = PLAYER_MAX_VELOCITY_X;
+  for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
+    int body_index = (int) b->GetUserData();
+    if (body_index == 0) {
+      //DO NOTHING
+    } else {
+      float x = b->GetPosition().x * PTM_RATIO;
+      float y = b->GetPosition().y * PTM_RATIO;
+      if (body_index == m_PlayerIndex) {
+        b2Vec2 player_velocity = b->GetLinearVelocity();
+        if (player_velocity.x > PLAYER_MAX_VELOCITY_X) {
+          player_velocity.x = PLAYER_MAX_VELOCITY_X;
+        }
+        if (player_velocity.x < -PLAYER_MAX_VELOCITY_X) {
+          player_velocity.x = -PLAYER_MAX_VELOCITY_X;
+        }
+        if (player_velocity.y > PLAYER_MAX_VELOCITY_Y) {
+          player_velocity.y = PLAYER_MAX_VELOCITY_Y;
+        }
+        b->SetLinearVelocity(player_velocity);
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0; //fastSinf(m_SimulationTime * 100.0) * 500.0 * randf();
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -1500.0;
+      }
+      m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
+      m_AtlasSprites[body_index]->SetPosition(x, y);
+    }
   }
-  if (player_velocity.x < -PLAYER_MAX_VELOCITY_X) {
-    player_velocity.x = -PLAYER_MAX_VELOCITY_X;
-  }
-  if (player_velocity.y > PLAYER_MAX_VELOCITY_Y) {
-    player_velocity.y = PLAYER_MAX_VELOCITY_Y;
-  }
-  //if (player_velocity.y < -PLAYER_MAX_VELOCITY_Y) {
-  //  player_velocity.y = -PLAYER_MAX_VELOCITY_Y;
-  //}
-  m_PlayerBody->SetLinearVelocity(player_velocity);
-
-  /*
-  b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
-  float angle = atan2f(vel.y, vel.x);
-  float rotation = RadiansToDegrees(angle);
-  */
-
-  m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0; //fastSinf(m_SimulationTime * 100.0) * 500.0 * randf();
-  m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -1500.0;
-
-  m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
-
-  m_AtlasSprites[m_PlayerIndex]->m_Rotation = RadiansToDegrees(m_PlayerBody->GetAngle());
-
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-
-
-
-
-
 
   std::vector<b2Body*> toDestroy; 
   std::vector<MLContact>::iterator pos;
@@ -310,9 +319,32 @@ int SpaceShipDown::Simulate() {
     b2Body *bodyA = contact.fixtureA->GetBody();
     b2Body *bodyB = contact.fixtureB->GetBody();
 
+    int indexA = (int)bodyA->GetUserData();
+    int indexB = (int)bodyB->GetUserData();
+
+    if (indexA == m_PlayerIndex || indexB == m_PlayerIndex) {
+      if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
+        if (m_PickedUpPartIndex == -1) {
+          m_PickedUpPartIndex = 1;
+
+          b2RopeJointDef *rjd = new b2RopeJointDef();
+          rjd->bodyA = bodyA;
+          rjd->bodyB = bodyB;
+          rjd->localAnchorA = b2Vec2(0.0, 0.0);
+          rjd->localAnchorB = b2Vec2(0.0, 0.0);
+          rjd->maxLength = 500.0 / PTM_RATIO;
+          b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
+
+          LOGV("player touched part\n");
+        }
+      }
+    }
+
+    /*
     if (bodyA == m_PlayerBody || bodyB == m_PlayerBody) {
       LOGV("player touching something\n");
     }
+    */
 
     /*
     if (bodyA->GetUserData() != NULL && bodyB->GetUserData() != NULL) {
@@ -353,10 +385,6 @@ void SpaceShipDown::RenderSpritePhase() {
   //glTranslatef(-m_AtlasSprites[m_PlayerIndex]->m_Position[0], -m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
 
   RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-  glDisable(GL_BLEND);
   AtlasSprite::ReleaseBuffers();
 
   if (true) {
@@ -368,4 +396,17 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnable(GL_TEXTURE_2D);
   }
 
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+  RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+  glDisable(GL_BLEND);
+  AtlasSprite::ReleaseBuffers();
+
 }
+
+    /*
+    b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
+    float angle = atan2f(vel.y, vel.x);
+    float rotation = RadiansToDegrees(angle);
+    */

@@ -20,6 +20,9 @@ public:
 
   int m_LandscapeIndex;
   int m_PlayerIndex;
+  int m_SpaceShipPartsStartIndex;
+  int m_SpaceShipPartsStopIndex;
+  int m_PickedUpPartIndex;
 
   bool m_TouchedLeft;
   bool m_TouchedRight;
