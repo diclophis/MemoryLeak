@@ -19,12 +19,16 @@ public:
 
   b2World *world;
   b2Body *m_PlayerBody;
+  b2RopeJointDef *m_PickupJointDef;
+  b2RopeJoint *m_PickupJoint;
 
   int m_LandscapeIndex;
   int m_PlayerIndex;
   int m_SpaceShipPartsStartIndex;
   int m_SpaceShipPartsStopIndex;
   int m_PickedUpPartIndex;
+
+  float m_PickupTimeout;
 
   bool m_TouchedLeft;
   bool m_TouchedRight;

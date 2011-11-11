@@ -5,13 +5,13 @@
 #include "SpaceShipDown.h"
 
 #define GRAVITY -35.0
-#define PART_DENSITY 0.0
-#define PART_FRICTION 0.0 
+#define PART_DENSITY 10.0
+#define PART_FRICTION 0.5
 #define PLAYER_DENSITY 2.0
 #define PLAYER_FRICTION 500.0
-#define PLAYER_HORIZONTAL_THRUST 1000.0
+#define PLAYER_HORIZONTAL_THRUST 1500.0
 #define PLAYER_VERTICAL_THRUST 3000.0
-#define PLAYER_MAX_VELOCITY_X 15.0
+#define PLAYER_MAX_VELOCITY_X 20.0
 #define PLAYER_MAX_VELOCITY_Y 15.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
@@ -20,6 +20,12 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_SpaceShipPartsStartIndex = -1;
   m_SpaceShipPartsStopIndex = -1;
   m_PickedUpPartIndex = -1;
+  m_PickupTimeout = -1;
+
+  m_PickupJointDef = new b2RopeJointDef();
+  m_PickupJointDef->localAnchorA = b2Vec2(0.0, 0.0);
+  m_PickupJointDef->localAnchorB = b2Vec2(0.0, 0.0);
+  m_PickupJointDef->maxLength = 400.0 / PTM_RATIO;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -31,8 +37,8 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
   CreatePlayer();
 
-  CreateSpaceShipPart(-100.0, -100.0);
-  CreateSpaceShipPart(100.0, 100.0);
+  CreateSpaceShipPart(-200.0, -100.0);
+  CreateSpaceShipPart(200.0, 100.0);
 
   CreatePlatform(600.0, 1000.0, 512.0, 25.0);
   CreatePlatform(-600.0, 500.0, 512.0, 25.0);
@@ -63,6 +69,7 @@ SpaceShipDown::~SpaceShipDown() {
   delete m_DebugDraw;
   delete m_ContactListener;
   delete world;
+  delete m_PickupJointDef;
 }
 
 
@@ -102,7 +109,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_SpaceShipPartsStartIndex = part_index;
   }
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 1, 2, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
@@ -116,6 +123,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   bd.fixedRotation = true;
   bd.position.Set(startPosition.x, startPosition.y);
 
+  //part
   b2Body *part_body;
   part_body = world->CreateBody(&bd);
   part_body->SetUserData((void *)part_index);
@@ -129,11 +137,12 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.isSensor = false;
   part_body->CreateFixture(&fd);
 
-  shape.m_radius = (radius * 3.0) / PTM_RATIO;
+  //part pickup sensor
+  shape.m_radius = (radius * 1.1) / PTM_RATIO;
   fd.shape = &shape;
-  fd.density = PART_DENSITY;
+  fd.density = 0.0;
   fd.restitution = 0.0;
-  fd.friction = PART_FRICTION;
+  fd.friction = 0.0;
   fd.isSensor = true;
   part_body->CreateFixture(&fd);
 
@@ -158,8 +167,6 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
 void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // Define the ground body.
-  //float floor_size = 512.0;
-  //float floor_height = 50.0;
   b2BodyDef groundBodyDef;
   groundBodyDef.position.Set(x / PTM_RATIO, ((y - h) / PTM_RATIO));// bottom-left corner
   
@@ -167,10 +174,10 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // from a pool and creates the ground box shape (also from a pool).
   // The body is also added to the world.
   b2Body* groundBody = world->CreateBody(&groundBodyDef);
-  //groundBody->SetUserData((void *)-1);
+  groundBody->SetUserData((void *)-1);
   
   // Define the ground box shape.
-  b2PolygonShape groundBox;   
+  b2PolygonShape groundBox;
   
   // bottom
   groundBox.SetAsBox(w / PTM_RATIO, h / PTM_RATIO);
@@ -241,7 +248,6 @@ void SpaceShipDown::CreateWorld() {
 void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
-
   LOGV("state: %d %f %f\n", hitState, x, y);
   if (hitState == 0) {
     if (xx > 0) {
@@ -260,6 +266,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 int SpaceShipDown::Simulate() {
+  m_PickupTimeout += m_DeltaTime;
   m_Zoom = 4096.0 / (float)m_ScreenWidth;
 
   int velocityIterations = 8;
@@ -271,23 +278,29 @@ int SpaceShipDown::Simulate() {
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
 
+  float thrust_x = 0;
+  float thrust_y = PLAYER_VERTICAL_THRUST;
+
   if (m_TouchedLeft) {
-    m_PlayerBody->ApplyForce(b2Vec2(-PLAYER_HORIZONTAL_THRUST, PLAYER_VERTICAL_THRUST), forcePosition);
+    thrust_x += -PLAYER_HORIZONTAL_THRUST;
   }
 
   if (m_TouchedRight) {
-    m_PlayerBody->ApplyForce(b2Vec2(PLAYER_HORIZONTAL_THRUST, PLAYER_VERTICAL_THRUST), forcePosition);
+    thrust_x += PLAYER_HORIZONTAL_THRUST;
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
+    if (m_PickedUpPartIndex != -1) {
+      thrust_x *= 10;
+      thrust_y *= 10;
+    }
+    m_PlayerBody->ApplyForce(b2Vec2(thrust_x, thrust_y), forcePosition);
     m_AtlasSprites[m_PlayerIndex]->Fire();
   }
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
     int body_index = (int) b->GetUserData();
-    if (body_index == 0) {
-      //DO NOTHING
-    } else {
+    if (body_index > 0) {
       float x = b->GetPosition().x * PTM_RATIO;
       float y = b->GetPosition().y * PTM_RATIO;
       if (body_index == m_PlayerIndex) {
@@ -302,7 +315,7 @@ int SpaceShipDown::Simulate() {
           player_velocity.y = PLAYER_MAX_VELOCITY_Y;
         }
         b->SetLinearVelocity(player_velocity);
-        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0; //fastSinf(m_SimulationTime * 100.0) * 500.0 * randf();
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0;
         m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -1500.0;
       }
       m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
@@ -310,65 +323,39 @@ int SpaceShipDown::Simulate() {
     }
   }
 
-  std::vector<b2Body*> toDestroy; 
   std::vector<MLContact>::iterator pos;
   for (pos = m_ContactListener->m_Contacts.begin(); pos != m_ContactListener->m_Contacts.end(); ++pos) {
     MLContact contact = *pos;
-
     b2Body *bodyA = contact.fixtureA->GetBody();
     b2Body *bodyB = contact.fixtureB->GetBody();
-
     int indexA = (int)bodyA->GetUserData();
     int indexB = (int)bodyB->GetUserData();
-
     if (indexA == m_PlayerIndex || indexB == m_PlayerIndex) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex == -1) {
-          m_PickedUpPartIndex = 1;
-
-          b2RopeJointDef *rjd = new b2RopeJointDef();
-          rjd->bodyA = bodyA;
-          rjd->bodyB = bodyB;
-          rjd->localAnchorA = b2Vec2(0.0, 0.0);
-          rjd->localAnchorB = b2Vec2(0.0, 0.0);
-          rjd->maxLength = 200.0 / PTM_RATIO;
-          b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
-
+          m_PickupTimeout = 0.0;
+          if (bodyA == m_PlayerBody) {
+            m_PickedUpPartIndex = indexB;
+          } else {
+            m_PickedUpPartIndex = indexA;
+          }
+          m_PickupJointDef->bodyA = bodyA;
+          m_PickupJointDef->bodyB = bodyB;
+          m_PickupJoint = (b2RopeJoint *)world->CreateJoint(m_PickupJointDef);
           LOGV("player touched part\n");
         }
       }
+    } else if (indexA == -1 || indexB == -1) {
+      if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
+        if (m_PickedUpPartIndex != -1 && (indexA == m_PickedUpPartIndex || indexB == m_PickedUpPartIndex)) {
+          if (m_PickupTimeout > 2.0) {
+            m_PickedUpPartIndex = -1;
+            world->DestroyJoint(m_PickupJoint);
+            LOGV("break joint\n");
+          }
+        }
+      }
     }
-
-    /*
-    if (bodyA == m_PlayerBody || bodyB == m_PlayerBody) {
-      LOGV("player touching something\n");
-    }
-    */
-
-    /*
-    if (bodyA->GetUserData() != NULL && bodyB->GetUserData() != NULL) {
-      CCSprite *spriteA = (CCSprite *) bodyA->GetUserData();
-      CCSprite *spriteB = (CCSprite *) bodyB->GetUserData();
-
-      if (spriteA.tag == 1 && spriteB.tag == 2) {
-        toDestroy.push_back(bodyA);
-      } else if (spriteA.tag == 2 && spriteB.tag == 1) {
-        toDestroy.push_back(bodyB);
-      } 
-    }        
-    */
-  }
-
-  std::vector<b2Body *>::iterator pos2;
-  for(pos2 = toDestroy.begin(); pos2 != toDestroy.end(); ++pos2) {
-    b2Body *body = *pos2;     
-    /*
-    if (body->GetUserData() != NULL) {
-      CCSprite *sprite = (CCSprite *) body->GetUserData();
-      [_spriteSheet removeChild:sprite cleanup:YES];
-    }
-    _world->DestroyBody(body);
-    */
   }
 
   return 1;
