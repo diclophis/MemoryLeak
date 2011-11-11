@@ -2,7 +2,6 @@
 
 
 #include "MemoryLeak.h"
-#include "SpaceShipDownContactListener.h"
 #include "SpaceShipDown.h"
 
 #define GRAVITY -35.0
@@ -332,7 +331,7 @@ int SpaceShipDown::Simulate() {
           rjd->bodyB = bodyB;
           rjd->localAnchorA = b2Vec2(0.0, 0.0);
           rjd->localAnchorB = b2Vec2(0.0, 0.0);
-          rjd->maxLength = 500.0 / PTM_RATIO;
+          rjd->maxLength = 200.0 / PTM_RATIO;
           b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
 
           LOGV("player touched part\n");

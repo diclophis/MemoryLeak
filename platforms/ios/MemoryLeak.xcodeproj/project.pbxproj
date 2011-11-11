@@ -134,6 +134,7 @@
 		FC6D4CA113A459D000DE1200 /* RadiantFireEightSixOne.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6D4C9D13A459D000DE1200 /* RadiantFireEightSixOne.cpp */; };
 		FC6D4CA213A459D000DE1200 /* SuperStarShooter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6D4C9F13A459D000DE1200 /* SuperStarShooter.cpp */; };
 		FC6D4D6A13A46D1B00DE1200 /* MainMenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6D4D6813A46D1B00DE1200 /* MainMenu.cpp */; };
+		FC710BA2146C9B6A00800C95 /* SpaceShipDownContactListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC710BA1146C9B6A00800C95 /* SpaceShipDownContactListener.cpp */; };
 		FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */; };
 		FC8BE42013B12C5600EAA5EE /* fastmix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC8BE41F13B12C5600EAA5EE /* fastmix.cpp */; };
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
@@ -610,6 +611,7 @@
 		FC6D4D6713A46D1B00DE1200 /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Game.h; sourceTree = "<group>"; };
 		FC6D4D6813A46D1B00DE1200 /* MainMenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainMenu.cpp; sourceTree = "<group>"; };
 		FC6D4D6913A46D1B00DE1200 /* MainMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenu.h; sourceTree = "<group>"; };
+		FC710BA1146C9B6A00800C95 /* SpaceShipDownContactListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpaceShipDownContactListener.cpp; sourceTree = "<group>"; };
 		FC8A93EE12C9D8EB006E9C83 /* SpriteGun.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteGun.cpp; sourceTree = "<group>"; };
 		FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteGun.h; sourceTree = "<group>"; };
 		FC8BE41F13B12C5600EAA5EE /* fastmix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fastmix.cpp; sourceTree = "<group>"; };
@@ -750,6 +752,7 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				FC710BA1146C9B6A00800C95 /* SpaceShipDownContactListener.cpp */,
 				FC32AAFE14594448007FCB03 /* GLES-Render.cpp */,
 				FC32AAFF14594448007FCB03 /* GLES-Render.h */,
 				FC32AB0014594448007FCB03 /* SpaceShipDown.cpp */,
@@ -1643,6 +1646,7 @@
 				FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */,
 				FC32AB0214594448007FCB03 /* GLES-Render.cpp in Sources */,
 				FC32AB0314594448007FCB03 /* SpaceShipDown.cpp in Sources */,
+				FC710BA2146C9B6A00800C95 /* SpaceShipDownContactListener.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,7 @@
 // Jon Bardin GPL
 
+#include "SpaceShipDownContactListener.h"
+
 class SpaceShipDown : public Engine {
 
 public:
