@@ -8,7 +8,7 @@
 #define PART_DENSITY 10.0
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 2.0
-#define PLAYER_FRICTION 500.0
+#define PLAYER_FRICTION 2.0
 #define PLAYER_HORIZONTAL_THRUST 1500.0
 #define PLAYER_VERTICAL_THRUST 3000.0
 #define PLAYER_MAX_VELOCITY_X 20.0
@@ -25,7 +25,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PickupJointDef = new b2RopeJointDef();
   m_PickupJointDef->localAnchorA = b2Vec2(0.0, 0.0);
   m_PickupJointDef->localAnchorB = b2Vec2(0.0, 0.0);
-  m_PickupJointDef->maxLength = 400.0 / PTM_RATIO;
+  m_PickupJointDef->maxLength = 300.0 / PTM_RATIO;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -34,12 +34,9 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_SpriteCount++;
 
   CreateWorld();
-
   CreatePlayer();
-
   CreateSpaceShipPart(-200.0, -100.0);
   CreateSpaceShipPart(200.0, 100.0);
-
   CreatePlatform(600.0, 1000.0, 512.0, 25.0);
   CreatePlatform(-600.0, 500.0, 512.0, 25.0);
   CreatePlatform(1200.0, 200.0, 512.0, 25.0);
@@ -57,7 +54,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   flags += b2Draw::e_aabbBit;
   flags += b2Draw::e_pairBit;
   flags += b2Draw::e_centerOfMassBit;
-  m_DebugDraw->SetFlags(flags);   
+  m_DebugDraw->SetFlags(flags);
 
   m_TouchedLeft = false;
   m_TouchedRight = false;
@@ -249,13 +246,13 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   LOGV("state: %d %f %f\n", hitState, x, y);
-  if (hitState == 0) {
+  if (hitState != 2) {
     if (xx > 0) {
       m_TouchedRight = true;
     } else {
       m_TouchedLeft = true;
     }
-  } else if (hitState == 2) {
+  } else {
     if (xx > 0) {
       m_TouchedRight = false;
     } else {
