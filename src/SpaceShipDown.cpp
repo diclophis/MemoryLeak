@@ -145,20 +145,6 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   part_body->SetActive(true);
 
-  //b2DistanceJointDef dj;
-  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
-  //dj.collideConnected = true;
-  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
-
-  if (false) {
-    b2RopeJointDef *rjd = new b2RopeJointDef();
-    rjd->bodyA = part_body;
-    rjd->bodyB = m_PlayerBody;
-    rjd->localAnchorA = b2Vec2(0.0, 0.0);
-    rjd->localAnchorB = b2Vec2(0.0, 0.0);
-    rjd->maxLength = 500.0 / PTM_RATIO;
-    b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
-  }
 }
 
 
@@ -206,7 +192,6 @@ void SpaceShipDown::CreateWorld() {
 
   borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
   borderBody = world->CreateBody(&borderBodyDef);
-  //borderBody->SetUserData((void *)-1);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
 
@@ -365,8 +350,6 @@ void SpaceShipDown::RenderModelPhase() {
 
 void SpaceShipDown::RenderSpritePhase() {
 
-  //glTranslatef(-m_AtlasSprites[m_PlayerIndex]->m_Position[0], -m_AtlasSprites[m_PlayerIndex]->m_Position[1], 0.0);
-
   RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
   AtlasSprite::ReleaseBuffers();
 
@@ -393,3 +376,20 @@ void SpaceShipDown::RenderSpritePhase() {
     float angle = atan2f(vel.y, vel.x);
     float rotation = RadiansToDegrees(angle);
     */
+
+  //b2DistanceJointDef dj;
+  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
+  //dj.collideConnected = true;
+  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
+
+/*
+  if (false) {
+    b2RopeJointDef *rjd = new b2RopeJointDef();
+    rjd->bodyA = part_body;
+    rjd->bodyB = m_PlayerBody;
+    rjd->localAnchorA = b2Vec2(0.0, 0.0);
+    rjd->localAnchorB = b2Vec2(0.0, 0.0);
+    rjd->maxLength = 500.0 / PTM_RATIO;
+    b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
+  }
+*/
