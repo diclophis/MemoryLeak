@@ -315,7 +315,7 @@ int SpaceShipDown::Simulate() {
   }
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
-    int body_index = (int) b->GetUserData();
+    intptr_t body_index = (intptr_t) b->GetUserData();
     if (body_index > 0) {
       float x = b->GetPosition().x * PTM_RATIO;
       float y = b->GetPosition().y * PTM_RATIO;
@@ -344,8 +344,8 @@ int SpaceShipDown::Simulate() {
     MLContact contact = *pos;
     b2Body *bodyA = contact.fixtureA->GetBody();
     b2Body *bodyB = contact.fixtureB->GetBody();
-    int indexA = (int)bodyA->GetUserData();
-    int indexB = (int)bodyB->GetUserData();
+    intptr_t indexA = (intptr_t)bodyA->GetUserData();
+    intptr_t indexB = (intptr_t)bodyB->GetUserData();
     if (indexA == m_PlayerIndex || indexB == m_PlayerIndex) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex == -1) {

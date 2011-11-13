@@ -45,6 +45,9 @@ snd_pcm_hw_params_t *hwparams;
 char *pcm_name;
 
 static int game_index = 0;
+static bool left_down = false;
+static bool right_down = false;
+static bool reset_down = false;
 
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
@@ -54,9 +57,8 @@ void *pump_audio(void *) {
   memset(buffer, 0, min_buffer * sizeof(short));
 
   while (true) {
-    Engine::CurrentGameDoAudio(buffer, min_buffer / sizeof(short));
-    //Engine::CurrentGameDoAudio(buffer, min_buffer);
-    foo = snd_pcm_writei(pcm_handle, buffer, min_buffer);
+    Engine::CurrentGameDoAudio(buffer, min_buffer * sizeof(short));
+    foo = snd_pcm_writei(pcm_handle, buffer, min_buffer / sizeof(short));
     if (foo < 0) {
       LOGV("wtf: %s\n", snd_strerror(foo));
     } else if (foo > 0) {
@@ -106,7 +108,7 @@ void processMouseMotion(int x, int y) {
 }
 
 
-void processNormalKeys(unsigned char key, int x, int y) {
+void xprocessNormalKeys(unsigned char key, int x, int y) {
   printf("key: %d %c\n", key, key);
 
   game_index += 1;
@@ -120,6 +122,38 @@ void processNormalKeys(unsigned char key, int x, int y) {
       int save_result = SOIL_save_screenshot("/tmp/awesomenessity.png", SOIL_SAVE_TYPE_BMP, 0, 0, 320, 480);
       exit(0);
     break;
+  }
+}
+
+void processNormalKeys(unsigned char key, int x, int y) {
+  //printf("key: %d %c\n", key, key);
+  if (key == 110) {
+    if (left_down) {
+      Engine::CurrentGameHit(0, 0, 2);
+    } else {
+      Engine::CurrentGameHit(0, 0, 0);
+    }
+    left_down = !left_down;
+  } else if (key == 109) {
+    if (right_down) {
+      Engine::CurrentGameHit(1024, 1024, 2);
+    } else {
+      Engine::CurrentGameHit(1024, 1024, 0);
+    }
+    right_down = !right_down;
+  } else {
+    if (reset_down) {
+    } else {
+      game_index = key - 49;
+      if (game_index > 3) {
+        game_index = 0;
+      }
+      if (game_index < 0) {
+        game_index = 0;
+      }
+      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+    }
+    reset_down = !reset_down;
   }
 }
 
@@ -146,10 +180,12 @@ int main(int argc, char** argv) {
   glutInitWindowPosition(0,0);
   glutCreateWindow("simple");
   glutKeyboardFunc(processNormalKeys);
+  glutKeyboardUpFunc(processNormalKeys);
+  glutIgnoreKeyRepeat(true);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);
-  //glutIdleFunc(draw);
+  glutIdleFunc(draw);
   glutReshapeFunc(resize);
 
   struct dirent *dp;
@@ -320,7 +356,7 @@ int main(int argc, char** argv) {
   }
 
   /* Set number of channels */
-  if (snd_pcm_hw_params_set_channels(pcm_handle, hwparams, 1) < 0) {
+  if (snd_pcm_hw_params_set_channels(pcm_handle, hwparams, 2) < 0) {
     fprintf(stderr, "Error setting channels.\n");
     return(-1);
   }
@@ -364,7 +400,7 @@ int main(int argc, char** argv) {
 
   min_buffer = periodsize2 * 16;
 
-  Engine::Start(0, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(3, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutMainLoop();
