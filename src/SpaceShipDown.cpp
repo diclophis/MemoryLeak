@@ -83,7 +83,8 @@ void SpaceShipDown::CreatePlayer() {
   float radius = 40.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 11, 64, 0.25, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 11, 14, 0.25, 512.0, 512.0));
+  m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
   m_AtlasSprites[m_PlayerIndex]->Build(5);
   m_SpriteCount++;
@@ -116,7 +117,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_SpaceShipPartsStartIndex = part_index;
   }
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 1, 2, 1.0, "", 0, 64, 0.0, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 1, 2, 1.0, "", 0, 0, 0.0, 600.0, 600.0));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
@@ -366,7 +367,7 @@ int SpaceShipDown::Simulate() {
     } else if (indexA == -1 || indexB == -1) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex != -1 && (indexA == m_PickedUpPartIndex || indexB == m_PickedUpPartIndex)) {
-          if (m_PickupTimeout > 2.0) {
+          if (m_PickupTimeout > 1.0) {
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
             //world->DestroyJoint(m_FrictionJoint);

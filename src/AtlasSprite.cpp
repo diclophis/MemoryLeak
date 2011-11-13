@@ -92,66 +92,68 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 		}
 	}
 
-  int i = 0;
-  GLshort w = m_Sprites[i].dx; 
-  GLshort h = m_Sprites[i].dy; 
-  vertices = (GLshort *) malloc(8 * sizeof(GLshort));
-  vertices[0] =  (-w / 2);
-  vertices[1] = (-h / 2);
-  vertices[2] = (w / 2);
-  vertices[3] = (-h / 2);
-  vertices[4] = (w / 2);
-  vertices[5] = (h / 2);
-  vertices[6] = (-w / 2);
-  vertices[7] = (h / 2);
-
-  GLfloat tx = m_Sprites[i].tx1;
-  GLfloat ty = m_Sprites[i].ty1;
-  GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
-  GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
-
-  texture = (GLfloat *) malloc(8 * sizeof(GLfloat));
-  texture[0] = tx;
-  texture[1] = (ty + th);
-  texture[2] = tx + tw;
-  texture[3] = (ty + th);
-  texture[4] = tx + tw;
-  texture[5] = ty;
-  texture[6] = tx;
-  texture[7] = ty;
-
-  indices = (GLushort *) malloc(4 * sizeof(GLushort));
-  indices[0] = 1;
-  indices[1] = 2;
-  indices[2] = 0;
-  indices[3] = 3;
-
 	foofoo *ff = new foofoo;
-  ff->m_numFrames = 1;
+  ff->m_numFrames = m_AnimationLength;
 	ff->m_numBuffers = ff->m_numFrames;
   ff->m_numTextureBuffers = ff->m_numFrames;
   ff->m_numNormalBuffers = 0;
 	ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-	ff->m_AnimationStart = 0;
-	ff->m_AnimationEnd = 1;
+	ff->m_AnimationStart = -1;
+	ff->m_AnimationEnd = -1;
 
 	glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
 	glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
 	glGenBuffers(ff->m_numBuffers, ff->m_TextureBuffer);
 
-  glBindBuffer(GL_ARRAY_BUFFER, ff->m_VerticeBuffers[i]);
-  glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLshort), vertices, GL_STATIC_DRAW);
-  
-  glBindBuffer(GL_ARRAY_BUFFER, ff->m_TextureBuffer[i]);
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), texture, GL_STATIC_DRAW);
-  
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[i]);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
+  for (unsigned int i=0; i<m_AnimationLength; i++) {
+    GLshort w = m_Sprites[i].dx; 
+    GLshort h = m_Sprites[i].dy; 
+    vertices = (GLshort *) malloc(8 * sizeof(GLshort));
+    vertices[0] =  (-w / 2);
+    vertices[1] = (-h / 2);
+    vertices[2] = (w / 2);
+    vertices[3] = (-h / 2);
+    vertices[4] = (w / 2);
+    vertices[5] = (h / 2);
+    vertices[6] = (-w / 2);
+    vertices[7] = (h / 2);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    GLfloat tx = m_Sprites[i].tx1;
+    GLfloat ty = m_Sprites[i].ty1;
+    GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1);
+    GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
+
+    texture = (GLfloat *) malloc(8 * sizeof(GLfloat));
+    texture[0] = tx;
+    texture[1] = (ty + th);
+    texture[2] = tx + tw;
+    texture[3] = (ty + th);
+    texture[4] = tx + tw;
+    texture[5] = ty;
+    texture[6] = tx;
+    texture[7] = ty;
+
+    indices = (GLushort *) malloc(4 * sizeof(GLushort));
+    indices[0] = 1;
+    indices[1] = 2;
+    indices[2] = 0;
+    indices[3] = 3;
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, ff->m_VerticeBuffers[i]);
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLshort), vertices, GL_STATIC_DRAW);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, ff->m_TextureBuffer[i]);
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), texture, GL_STATIC_DRAW);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[i]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
 
   glFlush();
   glFinish();
@@ -170,11 +172,8 @@ void AtlasSprite::Render() {
 
 
 	if (m_Texture != g_lastTexture) {
-
-
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		g_lastTexture = m_Texture;
-
 	}
 
   glTranslatef(m_Position[0], m_Position[1], 0.0);
@@ -183,8 +182,6 @@ void AtlasSprite::Render() {
     glRotatef(m_Rotation, 0.0, 0.0, 1.0);
     m_LastRotation = m_Rotation;
   }
-
-  m_Frame = 0;
 
   if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
     g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
