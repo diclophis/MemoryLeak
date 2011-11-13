@@ -7,7 +7,7 @@ static GLuint g_lastTexture = 0;
 static GLuint g_lastVertexBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
-//static int g_lastFrame = -1;
+static int g_lastFrame = -1;
 
 void AtlasSprite::ReleaseBuffers() {
   g_lastVertexBuffer = -1;
@@ -19,7 +19,7 @@ void AtlasSprite::ReleaseBuffers() {
 
 void AtlasSprite::Scrub() {
 	g_lastTexture = -1;
-  //g_lastFrame = -1;
+  g_lastFrame = -1;
 }
 
 AtlasSprite::~AtlasSprite() {
@@ -164,12 +164,10 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 
 
 void AtlasSprite::Render() {
-
 	if (m_AnimationLength == 0) {
     LOGV("Fail, animation is at least 1 frame\n");
     return;
   }
-
 
 	if (m_Texture != g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
@@ -212,7 +210,6 @@ void AtlasSprite::Render() {
   }
 
   glTranslatef(-m_Position[0], -m_Position[1], 0.0);
-  
 }
 
 
@@ -228,10 +225,8 @@ void AtlasSprite::Simulate(float deltaTime) {
 	float dy = m_Velocity[1] * deltaTime;
 	m_Position[0] += dx;
 	m_Position[1] += dy;
-
 	m_Life += deltaTime;
 	m_AnimationLife += deltaTime;
-
   if (m_IsAlive) {
     if (m_Fps > 0) {
       if (m_AnimationLife > (1.0 / (float)m_Fps)) {
