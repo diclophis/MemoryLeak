@@ -7,10 +7,10 @@
 #define GRAVITY -35.0
 #define PART_DENSITY 10.0
 #define PART_FRICTION 0.5
-#define PLAYER_DENSITY 2.0
+#define PLAYER_DENSITY 2.5
 #define PLAYER_FRICTION 2.0
 #define PLAYER_HORIZONTAL_THRUST 1500.0
-#define PLAYER_VERTICAL_THRUST 3000.0
+#define PLAYER_VERTICAL_THRUST 2500.0
 #define PLAYER_MAX_VELOCITY_X 20.0
 #define PLAYER_MAX_VELOCITY_Y 15.0
 
@@ -83,10 +83,10 @@ void SpaceShipDown::CreatePlayer() {
   float radius = 40.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 11, 14, 0.25, 512.0, 512.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 11, 14, 0.125, 512.0, 512.0));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(5);
+  m_AtlasSprites[m_PlayerIndex]->Build(3);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
