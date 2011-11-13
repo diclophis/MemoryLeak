@@ -19,8 +19,10 @@ public:
 
   b2World *world;
   b2Body *m_PlayerBody;
-  b2RopeJointDef *m_PickupJointDef;
-  b2RopeJoint *m_PickupJoint;
+  b2Joint *m_PickupJoint;
+  std::vector<b2JointDef*> m_PickupJointDefs;
+  b2FrictionJointDef *m_FrictionJointDef;
+  b2FrictionJoint *m_FrictionJoint;
 
   int m_LandscapeIndex;
   int m_PlayerIndex;

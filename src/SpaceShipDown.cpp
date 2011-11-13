@@ -22,10 +22,23 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PickedUpPartIndex = -1;
   m_PickupTimeout = -1;
 
-  m_PickupJointDef = new b2RopeJointDef();
-  m_PickupJointDef->localAnchorA = b2Vec2(0.0, 0.0);
-  m_PickupJointDef->localAnchorB = b2Vec2(0.0, 0.0);
-  m_PickupJointDef->maxLength = 300.0 / PTM_RATIO;
+  b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
+  rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
+  rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0);
+  rope_joint_def->maxLength = 300.0 / PTM_RATIO;
+  m_PickupJointDefs.push_back(rope_joint_def);
+
+  b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
+  distance_joint_def->length = 300.0 / PTM_RATIO;
+  distance_joint_def->dampingRatio = 0.0;
+  m_PickupJointDefs.push_back(distance_joint_def);
+  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
+  //dj.collideConnected = true;
+  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
+
+  m_FrictionJointDef = new b2FrictionJointDef();
+  m_FrictionJointDef->maxForce = 10000.0;
+  m_FrictionJointDef->maxTorque = 0.0;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
@@ -66,7 +79,6 @@ SpaceShipDown::~SpaceShipDown() {
   delete m_DebugDraw;
   delete m_ContactListener;
   delete world;
-  delete m_PickupJointDef;
 }
 
 
@@ -82,7 +94,7 @@ void SpaceShipDown::CreatePlayer() {
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
   b2BodyDef bd;
   bd.type = b2_dynamicBody;
-  bd.linearDamping = 0.0f;
+  bd.linearDamping = 0.0;
   bd.fixedRotation = true;
   bd.position.Set(startPosition.x, startPosition.y);
   m_PlayerBody = world->CreateBody(&bd);
@@ -96,6 +108,7 @@ void SpaceShipDown::CreatePlayer() {
   fd.friction = PLAYER_FRICTION;
   m_PlayerBody->CreateFixture(&fd);
   m_PlayerBody->SetActive(true);
+  m_FrictionJointDef->bodyB = m_PlayerBody;
 }
 
 
@@ -214,6 +227,7 @@ void SpaceShipDown::CreateWorld() {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
+  m_FrictionJointDef->bodyA = borderBody;
 
   x = 512 * 4;
   y = 0;
@@ -273,6 +287,26 @@ int SpaceShipDown::Simulate() {
 
   if (m_TouchedLeft || m_TouchedRight) {
     if (m_PickedUpPartIndex != -1) {
+      /*
+      float pl_x = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+      //float pl_y = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+      float pa_x = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[0];
+      //float pa_y = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[1];
+      if (m_TouchedRight) {
+        if (pl_x > pa_x) {
+          thrust_x *= 12;
+        } else {
+          thrust_x *= 0.1;
+        }
+      } else if (m_TouchedLeft) {
+        if (pl_x < pa_x) {
+          thrust_x *= 12;
+        } else {
+          thrust_x *= 0.1;
+        }
+      }
+      */
+      
       thrust_x *= 10;
       thrust_y *= 10;
     }
@@ -321,9 +355,11 @@ int SpaceShipDown::Simulate() {
           } else {
             m_PickedUpPartIndex = indexA;
           }
-          m_PickupJointDef->bodyA = bodyA;
-          m_PickupJointDef->bodyB = bodyB;
-          m_PickupJoint = (b2RopeJoint *)world->CreateJoint(m_PickupJointDef);
+          b2JointDef *pickup_joint_def = m_PickupJointDefs.at(0);
+          pickup_joint_def->bodyA = bodyA;
+          pickup_joint_def->bodyB = bodyB;
+          m_PickupJoint = (b2RopeJoint *)world->CreateJoint(pickup_joint_def);
+          m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
           LOGV("player touched part\n");
         }
       }
@@ -333,6 +369,7 @@ int SpaceShipDown::Simulate() {
           if (m_PickupTimeout > 2.0) {
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
+            world->DestroyJoint(m_FrictionJoint);
             LOGV("break joint\n");
           }
         }
