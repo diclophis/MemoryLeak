@@ -34,6 +34,7 @@ public:
 	float m_TimeSinceLastShot;
 	
 	bool m_IsReady;
+  bool m_RenderBullets;
   int m_IsFlags;
 	
 };

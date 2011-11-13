@@ -15,8 +15,8 @@
 #include <alsa/asoundlib.h>
 #include <vector>
 
-#define kWindowWidth 320
-#define kWindowHeight 480
+#define kWindowWidth 1024
+#define kWindowHeight 1024
 
 static pthread_t audio_thread;
 
@@ -108,25 +108,8 @@ void processMouseMotion(int x, int y) {
 }
 
 
-void xprocessNormalKeys(unsigned char key, int x, int y) {
-  printf("key: %d %c\n", key, key);
-
-  game_index += 1;
-  if (game_index > 2) {
-    game_index = 0;
-  }
-
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-  switch (key) {
-    case 27:
-      int save_result = SOIL_save_screenshot("/tmp/awesomenessity.png", SOIL_SAVE_TYPE_BMP, 0, 0, 320, 480);
-      exit(0);
-    break;
-  }
-}
-
 void processNormalKeys(unsigned char key, int x, int y) {
-  //printf("key: %d %c\n", key, key);
+  printf("key: %d %c\n", key, key);
   if (key == 110) {
     if (left_down) {
       Engine::CurrentGameHit(0, 0, 2);
@@ -141,6 +124,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
       Engine::CurrentGameHit(1024, 1024, 0);
     }
     right_down = !right_down;
+  } else if (key == 27 || key == 113) {
+    exit(0);
   } else {
     if (reset_down) {
     } else {
@@ -176,7 +161,7 @@ int main(int argc, char** argv) {
 
   glutInit(&argc,argv);
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-  glutInitWindowSize(320, 480);
+  glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(0,0);
   glutCreateWindow("simple");
   glutKeyboardFunc(processNormalKeys);
@@ -185,7 +170,7 @@ int main(int argc, char** argv) {
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);
-  glutIdleFunc(draw);
+  //glutIdleFunc(draw);
   glutReshapeFunc(resize);
 
   struct dirent *dp;

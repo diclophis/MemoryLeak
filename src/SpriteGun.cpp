@@ -19,6 +19,7 @@ SpriteGun::SpriteGun(GLuint t, int spr, int rows, int s, int e, float m, const s
   m_ShotEnd = e2;
   m_ShotMaxLife = m2;
   m_IsReady = false;
+  m_RenderBullets = false;
   m_EmitVelocity = new float[2];
   m_EmitVelocity[0] = 0;
   m_EmitVelocity[1] = 0;
@@ -94,26 +95,20 @@ void SpriteGun::Simulate(float deltaTime) {
 
 
 void SpriteGun::Render() {
-	//if (m_IsAlive) {
-		AtlasSprite::Render();
-		if (true) { //TODO: reverse render
-			int i=(m_NumParticles);
-			while (i-- > 0) {
-				if (m_AtlasSprites[i]->m_IsAlive) {
-          AtlasSprite::Scrub();
-					m_AtlasSprites[i]->Render();
-          AtlasSprite::Scrub();
-				}
-			}
-		} else {
-			int i=0;
-			while (i++ < (m_NumParticles - 1)) {
-				if (m_AtlasSprites[i]->m_IsAlive) {
-					m_AtlasSprites[i]->Render();
-				}
-			}
-		}
-	//} else {
-	//	AtlasSprite::Render();
-	//}
+  AtlasSprite::Render();
+  if (true) { //TODO: reverse render
+    int i=(m_NumParticles);
+    while (i-- > 0) {
+      if (m_AtlasSprites[i]->m_IsAlive && m_RenderBullets) {
+        m_AtlasSprites[i]->Render();
+      }
+    }
+  } else {
+    int i=0;
+    while (i++ < (m_NumParticles - 1)) {
+      if (m_AtlasSprites[i]->m_IsAlive) {
+        m_AtlasSprites[i]->Render();
+      }
+    }
+  }
 }

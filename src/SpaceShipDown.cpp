@@ -32,9 +32,6 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   distance_joint_def->length = 300.0 / PTM_RATIO;
   distance_joint_def->dampingRatio = 0.0;
   m_PickupJointDefs.push_back(distance_joint_def);
-  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
-  //dj.collideConnected = true;
-  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
 
   m_FrictionJointDef = new b2FrictionJointDef();
   m_FrictionJointDef->maxForce = 10000.0;
@@ -83,7 +80,7 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreatePlayer() {
-  float radius = 64.0;
+  float radius = 40.0;
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 0, 64, 1.0, "", 11, 64, 0.25, 256.0, 256.0));
@@ -271,6 +268,7 @@ int SpaceShipDown::Simulate() {
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
   m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+  m_AtlasSprites[m_PlayerIndex]->Fire();
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
 
@@ -311,7 +309,9 @@ int SpaceShipDown::Simulate() {
       thrust_y *= 10;
     }
     m_PlayerBody->ApplyForce(b2Vec2(thrust_x, thrust_y), forcePosition);
-    m_AtlasSprites[m_PlayerIndex]->Fire();
+    m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = true;
+  } else {
+    m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
   }
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
@@ -359,7 +359,7 @@ int SpaceShipDown::Simulate() {
           pickup_joint_def->bodyA = bodyA;
           pickup_joint_def->bodyB = bodyB;
           m_PickupJoint = (b2RopeJoint *)world->CreateJoint(pickup_joint_def);
-          m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
+          //m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
           LOGV("player touched part\n");
         }
       }
@@ -369,7 +369,7 @@ int SpaceShipDown::Simulate() {
           if (m_PickupTimeout > 2.0) {
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
-            world->DestroyJoint(m_FrictionJoint);
+            //world->DestroyJoint(m_FrictionJoint);
             LOGV("break joint\n");
           }
         }
