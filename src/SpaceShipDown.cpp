@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SpaceShipDown.h"
 
-#define GRAVITY -35.0
-#define PART_DENSITY 10.0
-#define PART_FRICTION 0.5
-#define PLAYER_DENSITY 2.5
-#define PLAYER_FRICTION 2.0
-#define PLAYER_HORIZONTAL_THRUST 1500.0
-#define PLAYER_VERTICAL_THRUST 2500.0
+#define GRAVITY -150.0
+#define PART_DENSITY 4.25
+#define PART_FRICTION 0.1
+#define PLAYER_DENSITY 3.0
+#define PLAYER_FRICTION 0.0
+#define PLAYER_HORIZONTAL_THRUST 2000.0
+#define PLAYER_VERTICAL_THRUST -GRAVITY * 10.0
 #define PLAYER_MAX_VELOCITY_X 20.0
 #define PLAYER_MAX_VELOCITY_Y 15.0
 
@@ -21,6 +21,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_SpaceShipPartsStopIndex = -1;
   m_PickedUpPartIndex = -1;
   m_PickupTimeout = -1;
+  m_ThrustLevel = 0.0;
 
   b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
   rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
@@ -29,16 +30,16 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PickupJointDefs.push_back(rope_joint_def);
 
   b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
-  distance_joint_def->length = 300.0 / PTM_RATIO;
+  distance_joint_def->length = 500.0 / PTM_RATIO;
   distance_joint_def->dampingRatio = 0.0;
   m_PickupJointDefs.push_back(distance_joint_def);
 
   m_FrictionJointDef = new b2FrictionJointDef();
-  m_FrictionJointDef->maxForce = 10000.0;
+  m_FrictionJointDef->maxForce = 1500.0;
   m_FrictionJointDef->maxTorque = 0.0;
 
   m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 64, 1.0, "", 0, 64, 0.0, 2048 * 2.0, 2048 * 2.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, 2048 * 2.0, 2048 * 2.0));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
   m_SpriteCount++;
@@ -47,10 +48,10 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   CreatePlayer();
   CreateSpaceShipPart(-200.0, -100.0);
   CreateSpaceShipPart(200.0, 100.0);
-  CreatePlatform(600.0, 1000.0, 512.0, 25.0);
-  CreatePlatform(-600.0, 500.0, 512.0, 25.0);
-  CreatePlatform(1200.0, 200.0, 512.0, 25.0);
-  CreatePlatform(-1200.0, 0.0, 512.0, 25.0);
+  CreatePlatform(1500.0, 1500.0, 512.0, 25.0);
+  CreatePlatform(0.0, 1000.0, 512.0, 25.0);
+  CreatePlatform(0.0, -1000.0, 512.0, 25.0);
+  CreatePlatform(-1500.0, -1500.0, 512.0, 25.0);
 
   m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
   world->SetDebugDraw(m_DebugDraw);
@@ -61,7 +62,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   uint32 flags = 0;
   flags += b2Draw::e_shapeBit;
   flags += b2Draw::e_jointBit;
-  flags += b2Draw::e_aabbBit;
+  //flags += b2Draw::e_aabbBit;
   flags += b2Draw::e_pairBit;
   flags += b2Draw::e_centerOfMassBit;
   m_DebugDraw->SetFlags(flags);
@@ -80,13 +81,13 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreatePlayer() {
-  float radius = 40.0;
+  float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 48, 1.0, "", 11, 14, 0.125, 512.0, 512.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 45, 1.0, "", 11, 12, 0.333, 400.0, 400.0));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(3);
+  m_AtlasSprites[m_PlayerIndex]->Build(16);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -117,17 +118,17 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_SpaceShipPartsStartIndex = part_index;
   }
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 1, 2, 1.0, "", 0, 0, 0.0, 600.0, 600.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 1, 2, 1.0, "", 0, 1, 0.0, 256.0, 256.0));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
   m_SpaceShipPartsStopIndex = m_SpriteCount;
 
-  float radius = 128.0;
+  float radius = 60.0;
   MLPoint startPosition = MLPointMake(m_AtlasSprites[part_index]->m_Position[0] / PTM_RATIO, m_AtlasSprites[part_index]->m_Position[1] / PTM_RATIO);
   b2BodyDef bd;
   bd.type = b2_dynamicBody;
-  bd.linearDamping = 0.0f;
+  bd.linearDamping = 1.0f;
   bd.fixedRotation = true;
   bd.position.Set(startPosition.x, startPosition.y);
 
@@ -146,7 +147,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   part_body->CreateFixture(&fd);
 
   //part pickup sensor
-  shape.m_radius = (radius * 1.1) / PTM_RATIO;
+  shape.m_radius = (radius * 1.25) / PTM_RATIO;
   fd.shape = &shape;
   fd.density = 0.0;
   fd.restitution = 0.0;
@@ -225,7 +226,6 @@ void SpaceShipDown::CreateWorld() {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
-  m_FrictionJointDef->bodyA = borderBody;
 
   x = 512 * 4;
   y = 0;
@@ -242,7 +242,7 @@ void SpaceShipDown::CreateWorld() {
 void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
-  LOGV("state: %d %f %f\n", hitState, x, y);
+  //LOGV("state: %d %f %f\n", hitState, x, y);
   if (hitState != 2) {
     if (xx > 0) {
       m_TouchedRight = true;
@@ -263,18 +263,18 @@ int SpaceShipDown::Simulate() {
   m_PickupTimeout += m_DeltaTime;
   m_Zoom = 4096.0 / (float)m_ScreenWidth;
 
-  int velocityIterations = 8;
-  int positionIterations = 3;
+  int velocityIterations = 3;
+  int positionIterations = 1;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
   m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
-  m_AtlasSprites[m_PlayerIndex]->Fire();
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
+  b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
 
-  float thrust_x = 0;
-  float thrust_y = PLAYER_VERTICAL_THRUST;
+  float thrust_x = 0.0;
+  float thrust_y = 1.0;
 
   if (m_TouchedLeft) {
     thrust_x += -PLAYER_HORIZONTAL_THRUST;
@@ -306,14 +306,20 @@ int SpaceShipDown::Simulate() {
       }
       */
       
-      thrust_x *= 10;
-      thrust_y *= 10;
+      thrust_x *= 2.0;
+      thrust_y = 1.0;
     }
-    m_PlayerBody->ApplyForce(b2Vec2(thrust_x, thrust_y), forcePosition);
-    m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = true;
+    if (player_velocity.y < PLAYER_MAX_VELOCITY_Y) {
+      m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
+    }
+    m_PlayerBody->ApplyForce(b2Vec2(thrust_x, m_ThrustLevel), forcePosition);
+    m_AtlasSprites[m_PlayerIndex]->Fire();
   } else {
-    m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
+    m_ThrustLevel = 0.0;
+    //m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
   }
+  
+  m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = true;
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
     intptr_t body_index = (intptr_t) b->GetUserData();
@@ -321,7 +327,6 @@ int SpaceShipDown::Simulate() {
       float x = b->GetPosition().x * PTM_RATIO;
       float y = b->GetPosition().y * PTM_RATIO;
       if (body_index == m_PlayerIndex) {
-        b2Vec2 player_velocity = b->GetLinearVelocity();
         if (player_velocity.x > PLAYER_MAX_VELOCITY_X) {
           player_velocity.x = PLAYER_MAX_VELOCITY_X;
         }
@@ -331,11 +336,14 @@ int SpaceShipDown::Simulate() {
         if (player_velocity.y > PLAYER_MAX_VELOCITY_Y) {
           player_velocity.y = PLAYER_MAX_VELOCITY_Y;
         }
+        if (player_velocity.y < -PLAYER_MAX_VELOCITY_Y * 2.5) {
+          player_velocity.y = -PLAYER_MAX_VELOCITY_Y * 2.5;
+        }
         b->SetLinearVelocity(player_velocity);
-        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0;
-        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -1500.0;
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 100.0) * 200.0;
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = player_velocity.y - 1000.0 ;
       }
-      m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
+      //m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
       m_AtlasSprites[body_index]->SetPosition(x, y);
     }
   }
@@ -353,14 +361,16 @@ int SpaceShipDown::Simulate() {
           m_PickupTimeout = 0.0;
           if (bodyA == m_PlayerBody) {
             m_PickedUpPartIndex = indexB;
+            m_FrictionJointDef->bodyA = bodyB;
           } else {
             m_PickedUpPartIndex = indexA;
+            m_FrictionJointDef->bodyA = bodyA;
           }
           b2JointDef *pickup_joint_def = m_PickupJointDefs.at(0);
           pickup_joint_def->bodyA = bodyA;
           pickup_joint_def->bodyB = bodyB;
           m_PickupJoint = (b2RopeJoint *)world->CreateJoint(pickup_joint_def);
-          //m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
+          m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
           LOGV("player touched part\n");
         }
       }
@@ -370,7 +380,7 @@ int SpaceShipDown::Simulate() {
           if (m_PickupTimeout > 1.0) {
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
-            //world->DestroyJoint(m_FrictionJoint);
+            world->DestroyJoint(m_FrictionJoint);
             LOGV("break joint\n");
           }
         }
@@ -402,8 +412,8 @@ void SpaceShipDown::RenderSpritePhase() {
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
   RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
   glDisable(GL_BLEND);
   AtlasSprite::ReleaseBuffers();
 

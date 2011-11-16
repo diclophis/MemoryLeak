@@ -1,7 +1,5 @@
 // Vanilla Linux OpenGL+GLUT+SOIL App
 
-//#include "MemoryLeak.h"
-
 #define GL_GLEXT_PROTOTYPES
 
 #include <GL/gl.h>
@@ -109,7 +107,7 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  printf("key: %d %c\n", key, key);
+  //printf("key: %d %c\n", key, key);
   if (key == 110) {
     if (left_down) {
       Engine::CurrentGameHit(0, 0, 2);
@@ -188,9 +186,6 @@ int main(int argc, char** argv) {
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
       );
-      
-      //printf( "SOIL loading error: '%s'\n", SOIL_last_result());
-
       textures.push_back(tex_2d);
     }
 
@@ -367,7 +362,7 @@ int main(int argc, char** argv) {
   }
 
   if (snd_pcm_prepare(pcm_handle) < 0) {
-    fprintf (stderr, "cannot prepare audio interface for use\n");
+    fprintf(stderr, "cannot prepare audio interface for use\n");
     return(-1);
   }
 
@@ -380,8 +375,6 @@ int main(int argc, char** argv) {
     fprintf(stderr, "Error cant get num frames\n");
     return(-1);
   }
-
-  printf("fooo %lu %lu\n", buffersize2, periodsize2);
 
   min_buffer = periodsize2 * 16;
 

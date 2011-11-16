@@ -31,6 +31,7 @@ public:
   int m_PickedUpPartIndex;
 
   float m_PickupTimeout;
+  float m_ThrustLevel;
 
   bool m_TouchedLeft;
   bool m_TouchedRight;
