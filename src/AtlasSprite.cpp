@@ -8,6 +8,7 @@ static GLuint g_lastVertexBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
 static int g_lastFrame = -1;
+static int g_BufferCount = 0;
 
 void AtlasSprite::ReleaseBuffers() {
   g_lastVertexBuffer = -1;
