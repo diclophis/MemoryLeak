@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 #include "SpaceShipDown.h"
 
-#define GRAVITY -150.0
+#define GRAVITY -100.0
 #define PART_DENSITY 4.25
 #define PART_FRICTION 0.1
 #define PLAYER_DENSITY 3.0
@@ -84,10 +84,10 @@ void SpaceShipDown::CreatePlayer() {
   float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 45, 1.0, "", 11, 12, 0.333, 400.0, 400.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 45, 1.0, "", 11, 12, 0.125, 400.0, 400.0));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(16);
+  m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -263,8 +263,8 @@ int SpaceShipDown::Simulate() {
   m_PickupTimeout += m_DeltaTime;
   m_Zoom = 4096.0 / (float)m_ScreenWidth;
 
-  int velocityIterations = 3;
-  int positionIterations = 1;
+  int velocityIterations = 32;
+  int positionIterations = 32;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
