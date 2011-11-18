@@ -6,9 +6,9 @@
 
 #define GRAVITY -100.0
 #define PART_DENSITY 4.25
-#define PART_FRICTION 0.1
+#define PART_FRICTION 0.2
 #define PLAYER_DENSITY 3.0
-#define PLAYER_FRICTION 0.0
+#define PLAYER_FRICTION 0.2
 #define PLAYER_HORIZONTAL_THRUST 2000.0
 #define PLAYER_VERTICAL_THRUST -GRAVITY * 10.0
 #define PLAYER_MAX_VELOCITY_X 20.0
@@ -22,6 +22,8 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PickedUpPartIndex = -1;
   m_PickupTimeout = -1;
   m_ThrustLevel = 0.0;
+  m_WorldWidthInPixels = 0.0; //4096
+  m_WorldHeightInPixels = 0.0; //4096
 
   b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
   rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
@@ -39,19 +41,18 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_FrictionJointDef->maxTorque = 0.0;
 
   m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, 2048 * 2.0, 2048 * 2.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
   m_SpriteCount++;
 
   CreateWorld();
-  CreatePlayer();
-  CreateSpaceShipPart(-200.0, -100.0);
-  CreateSpaceShipPart(200.0, 100.0);
-  CreatePlatform(1500.0, 1500.0, 512.0, 25.0);
-  CreatePlatform(0.0, 1000.0, 512.0, 25.0);
-  CreatePlatform(0.0, -1000.0, 512.0, 25.0);
-  CreatePlatform(-1500.0, -1500.0, 512.0, 25.0);
+  LoadLevel(0, 2);
+  LoadLevel(0, 1);
+  LoadLevel(0, 0);
+  CreateBorder(m_WorldWidthInPixels, m_WorldHeightInPixels);
+  //CreatePlayer(0.0, 0.0);
+  //CreateSpaceShipPart(-200.0, -100.0);
 
   m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
   world->SetDebugDraw(m_DebugDraw);
@@ -62,7 +63,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   uint32 flags = 0;
   flags += b2Draw::e_shapeBit;
   flags += b2Draw::e_jointBit;
-  //flags += b2Draw::e_aabbBit;
+  flags += b2Draw::e_aabbBit;
   flags += b2Draw::e_pairBit;
   flags += b2Draw::e_centerOfMassBit;
   m_DebugDraw->SetFlags(flags);
@@ -80,13 +81,13 @@ SpaceShipDown::~SpaceShipDown() {
 }
 
 
-void SpaceShipDown::CreatePlayer() {
+void SpaceShipDown::CreatePlayer(float x, float y) {
   float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 45, 1.0, "", 11, 12, 0.125, 400.0, 400.0));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 1024.0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 
@@ -162,8 +163,9 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
 void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // Define the ground body.
+  // bottom-left corner
   b2BodyDef groundBodyDef;
-  groundBodyDef.position.Set(x / PTM_RATIO, ((y - h) / PTM_RATIO));// bottom-left corner
+  groundBodyDef.position.Set(x / PTM_RATIO, ((y - h) / PTM_RATIO));
   
   // Call the body factory which allocates memory for the ground body
   // from a pool and creates the ground box shape (also from a pool).
@@ -182,23 +184,26 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
 
 void SpaceShipDown::CreateWorld() {
   b2Vec2 gravity;
+  gravity.Set(0.0, GRAVITY);
+  world = new b2World(gravity, false);
+}
+
+
+void SpaceShipDown::CreateBorder(float width, float height) {
   b2BodyDef borderBodyDef;
   b2PolygonShape borderBox;
   b2Body* borderBody;
 
-  gravity.Set(0.0, GRAVITY);
-  world = new b2World(gravity, false);
-
   float x = 0.0;
   float y = 0.0;
-  float w = 1024.0 * 2.0;
-  float h = 1024.0 * 2.0;
+  float w = width;
+  float h = height;
   float t = 10.0;
   float hs = 0.0;
   float vs = 0.0;
 
   x = 0;
-  y = -512 * 4;
+  y = -height;
   hs = w;
   vs = t;
 
@@ -207,7 +212,7 @@ void SpaceShipDown::CreateWorld() {
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
 
-  x = -512 * 4;
+  x = -width;
   y = 0;
   hs = t;
   vs = w;
@@ -218,7 +223,7 @@ void SpaceShipDown::CreateWorld() {
   borderBody->CreateFixture(&borderBox, 0);
 
   x = 0;
-  y = 512 * 4;
+  y = height;
   hs = w;
   vs = t;
 
@@ -227,7 +232,7 @@ void SpaceShipDown::CreateWorld() {
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
 
-  x = 512 * 4;
+  x = width;
   y = 0;
   hs = t;
   vs = w;
@@ -261,7 +266,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 int SpaceShipDown::Simulate() {
   m_PickupTimeout += m_DeltaTime;
-  m_Zoom = 4096.0 / (float)m_ScreenWidth;
+  m_Zoom = (m_WorldWidthInPixels * 2.0) / (float)m_ScreenWidth;
 
   int velocityIterations = 32;
   int positionIterations = 32;
@@ -419,25 +424,133 @@ void SpaceShipDown::RenderSpritePhase() {
 
 }
 
-    /*
-    b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
-    float angle = atan2f(vel.y, vel.x);
-    float rotation = RadiansToDegrees(angle);
-    */
 
-  //b2DistanceJointDef dj;
-  //dj.Initialize(part_body, m_PlayerBody, part_body->GetPosition(), m_PlayerBody->GetPosition());
-  //dj.collideConnected = true;
-  //b2DistanceJoint *m_distanceJoint = (b2DistanceJoint*) world->CreateJoint(&dj);
+const char *SpaceShipDown::byte_to_binary(int x) {
+	static char b[5];
+	b[0] = '\0';
+	int z;
+	for (z = 16; z > 0; z >>= 1) {
+		strcat(b, ((x & z) == z) ? "1" : "0");
+	}
+	return b;
+}
 
-/*
-  if (false) {
-    b2RopeJointDef *rjd = new b2RopeJointDef();
-    rjd->bodyA = part_body;
-    rjd->bodyB = m_PlayerBody;
-    rjd->localAnchorA = b2Vec2(0.0, 0.0);
-    rjd->localAnchorB = b2Vec2(0.0, 0.0);
-    rjd->maxLength = 500.0 / PTM_RATIO;
-    b2RopeJoint *rj = (b2RopeJoint *)world->CreateJoint(rjd);
-  }
-*/
+void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
+  float limits[4];
+  limits[0] = 0.0;
+  limits[1] = 0.0;
+  limits[2] = 0.0;
+  limits[3] = 0.0;
+
+	int current[4];
+	current[0] = current[1] = current[2] = current[3] = 0;
+	char *level = (char *)malloc(sizeof(char) * m_LevelFoos->at(level_index)->len);
+
+	fseek(m_LevelFoos->at(level_index)->fp, m_LevelFoos->at(level_index)->off, SEEK_SET);
+	fread(level, sizeof(char), m_LevelFoos->at(level_index)->len, m_LevelFoos->at(level_index)->fp);
+
+	unsigned int i = 0;
+	unsigned int l = m_LevelFoos->at(level_index)->len;
+
+	char *pos = NULL;
+	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	int idx = -1;
+	int *data = (int *)malloc(sizeof(int) * l);
+	const char *code;
+	for (unsigned int j=0; j<l; j++) {
+		pos = index(dictionary, level[j]);
+		if (pos != NULL) {
+			idx = pos - dictionary;
+			data[j] = idx;
+		} else {
+			throw 666;
+		}
+	}
+
+	int t = 0;
+
+	while ( i < l ) {
+		code = byte_to_binary(data[i++]);
+		if ( code[1] == '1' ) current[0] += data[i++] - 32;
+		if ( code[2] == '1' ) current[1] += data[i++] - 32;
+		if ( code[3] == '1' ) current[2] += data[i++] - 32;
+		if ( code[4] == '1' ) current[3] += data[i++] - 32;
+		if ( code[0] == '1' ) {
+			
+			int ii = 0;
+			
+			if (current[3] == 8) {
+				ii = 1;
+			} else if (current[3] == 1) {
+				ii = 3;
+			} else if (current[3] == 2) {
+				ii = 4;
+			} else if (current[3] == 0) {
+				ii = 2;
+			} else {
+			}
+			
+      float world_x = current[0] * 50.0;
+      float world_y = current[2] * -50.0;
+
+      if (world_x < limits[0]) {
+        limits[0] = world_x;
+      }
+
+      if (world_x > limits[2]) {
+        limits[2] = world_x;
+      }
+
+      if (world_y < limits[1]) {
+        limits[1] = world_y;
+      }
+
+      if (world_y > limits[3]) {
+        limits[3] = world_y;
+      }
+
+      //LOGV("%f %f %d %d %d %d\n", world_x, world_y, current[0], current[1], current[2], current[3]);
+
+      if (cursor_index == current[3]) {
+        switch (current[3]) {
+          case 9:
+            //black
+            break;
+
+          case 8:
+            //white
+            break;
+
+          case 1:
+            //yellow
+            LOGV("part\n");
+            CreateSpaceShipPart(world_x, world_y);
+            break;
+            
+          case 2:
+            //green
+            LOGV("player\n");
+            CreatePlayer(world_x, world_y);
+            break;
+
+          case 0:
+            //red
+            LOGV("platform\n");
+            CreatePlatform(world_x, world_y, 25.0, 25.0);
+            break;
+            
+          default:
+            break;
+        }
+      }
+		}
+	}
+
+  LOGV("%f %f\n", limits[2] - limits[0], limits[3] - limits[1]);
+
+  m_WorldWidthInPixels = (limits[2] - limits[0]);
+  m_WorldHeightInPixels = (limits[3] - limits[1]);
+	
+	free(level);
+	free(data);
+}

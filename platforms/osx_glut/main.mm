@@ -272,6 +272,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
   } else {
     if (reset_down) {
     } else {
+      /*
       game_index = key - 49;
       if (game_index > 3) {
         game_index = 0;
@@ -279,6 +280,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
       if (game_index < 0) {
         game_index = 0;
       }
+      */
+      game_index = 3;
       Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
     }
     reset_down = !reset_down;

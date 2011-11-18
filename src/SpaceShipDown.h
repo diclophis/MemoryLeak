@@ -13,9 +13,13 @@ public:
 	void RenderModelPhase();
 	void RenderSpritePhase();
   void CreateWorld();
-  void CreatePlayer();
+  void CreateBorder(float width, float height);
+  void CreatePlayer(float x, float y);
   void CreateSpaceShipPart(float x, float y);
   void CreatePlatform(float x, float y, float w, float h);
+  const char *byte_to_binary(int x);
+  void LoadLevel(int level_index, int cursor_index);
+
 
   b2World *world;
   b2Body *m_PlayerBody;
@@ -39,6 +43,9 @@ public:
   GLESDebugDraw *m_DebugDraw;
 
   SpaceShipDownContactListener *m_ContactListener;
+
+  float m_WorldWidthInPixels;
+  float m_WorldHeightInPixels;
   
 
 };
