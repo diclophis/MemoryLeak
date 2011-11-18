@@ -43,17 +43,18 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_FrictionJointDef->maxForce = 1500.0;
   m_FrictionJointDef->maxTorque = 0.0;
 
-  m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
-  m_AtlasSprites[m_LandscapeIndex]->Build(0);
-  m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
-  m_SpriteCount++;
 
   CreateWorld();
   LoadLevel(0, 2);
   LoadLevel(0, 1);
   LoadLevel(0, 0);
   CreateBorder(m_WorldWidthInPixels, m_WorldHeightInPixels);
+
+  m_LandscapeIndex = m_SpriteCount;
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
+  m_AtlasSprites[m_LandscapeIndex]->Build(0);
+  m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
+  m_SpriteCount++;
 
   m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
   world->SetDebugDraw(m_DebugDraw);
@@ -224,6 +225,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
+  borderBody->SetUserData((void *)-1);
 
   x = -width;
   y = 0;
@@ -234,6 +236,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
+  borderBody->SetUserData((void *)-1);
 
   x = 0;
   y = height;
@@ -244,6 +247,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
+  borderBody->SetUserData((void *)-1);
 
   x = width;
   y = 0;
@@ -254,6 +258,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
+  borderBody->SetUserData((void *)-1);
 }
 
 
@@ -341,7 +346,7 @@ int SpaceShipDown::Simulate() {
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
     intptr_t body_index = (intptr_t) b->GetUserData();
-    if (body_index > 0) {
+    if (body_index >= 0) {
       float x = b->GetPosition().x * PTM_RATIO;
       float y = b->GetPosition().y * PTM_RATIO;
       if (body_index == m_PlayerIndex) {
@@ -535,8 +540,14 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 
   LOGV("%f %f\n", limits[2] - limits[0], limits[3] - limits[1]);
 
-  m_WorldWidthInPixels = (limits[2] - limits[0]);
-  m_WorldHeightInPixels = (limits[3] - limits[1]);
+  float max_width = (limits[2] - limits[0]);
+  float max_height = (limits[3] - limits[1]);
+
+  if (max_width > max_height) {
+    m_WorldWidthInPixels = m_WorldHeightInPixels = max_width;
+  } else {
+    m_WorldWidthInPixels = m_WorldHeightInPixels = max_height;
+  }
 	
 	free(level);
 	free(data);

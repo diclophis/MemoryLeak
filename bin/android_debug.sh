@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#rm -Rf platforms/android/build
-#rm -Rf platforms/android/obj
-#rm -Rf platforms/android/libs
+rm -Rf platforms/android/build
+rm -Rf platforms/android/obj
+rm -Rf platforms/android/libs
 
 cd platforms/android
 
