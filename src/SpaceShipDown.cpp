@@ -13,12 +13,15 @@
 #define PLAYER_VERTICAL_THRUST -GRAVITY * 10.0
 #define PLAYER_MAX_VELOCITY_X 20.0
 #define PLAYER_MAX_VELOCITY_Y 15.0
+#define BLOCK_WIDTH 100.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   m_IsPushingAudio = true;
   m_SpaceShipPartsStartIndex = -1;
   m_SpaceShipPartsStopIndex = -1;
+  m_PlatformsStartIndex = -1;
+  m_PlatformsStopIndex = -1;
   m_PickedUpPartIndex = -1;
   m_PickupTimeout = -1;
   m_ThrustLevel = 0.0;
@@ -28,7 +31,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
   rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
   rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0);
-  rope_joint_def->maxLength = 300.0 / PTM_RATIO;
+  rope_joint_def->maxLength = 200.0 / PTM_RATIO;
   m_PickupJointDefs.push_back(rope_joint_def);
 
   b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
@@ -51,8 +54,6 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   LoadLevel(0, 1);
   LoadLevel(0, 0);
   CreateBorder(m_WorldWidthInPixels, m_WorldHeightInPixels);
-  //CreatePlayer(0.0, 0.0);
-  //CreateSpaceShipPart(-200.0, -100.0);
 
   m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
   world->SetDebugDraw(m_DebugDraw);
@@ -85,7 +86,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 44, 45, 1.0, "", 11, 12, 0.125, 400.0, 400.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 5, 6, 1.0, "", 5, 6, 0.125, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
   m_AtlasSprites[m_PlayerIndex]->Build(0);
@@ -119,7 +120,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_SpaceShipPartsStartIndex = part_index;
   }
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(0), 8, 8, 1, 2, 1.0, "", 0, 1, 0.0, 256.0, 256.0));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 7, 8, 1.0, "", 7, 8, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
@@ -162,6 +163,12 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
 
 void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
+  int platform_index = m_SpriteCount;
+
+  if (m_PlatformsStartIndex == -1) {
+    m_PlatformsStartIndex = platform_index;
+  }
+
   // Define the ground body.
   // bottom-left corner
   b2BodyDef groundBodyDef;
@@ -179,6 +186,12 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // bottom
   groundBox.SetAsBox(w / PTM_RATIO, h / PTM_RATIO);
   groundBody->CreateFixture(&groundBox, 0);
+
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 2, 3, 1.0, "", 2, 3, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites[platform_index]->Build(0);
+  m_AtlasSprites[platform_index]->SetPosition(x, y);
+  m_SpriteCount++;
+  m_PlatformsStopIndex = m_SpriteCount;
 }
 
 
@@ -382,7 +395,7 @@ int SpaceShipDown::Simulate() {
     } else if (indexA == -1 || indexB == -1) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex != -1 && (indexA == m_PickedUpPartIndex || indexB == m_PickedUpPartIndex)) {
-          if (m_PickupTimeout > 1.0) {
+          if (m_PickupTimeout > 0.5) {
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
             world->DestroyJoint(m_FrictionJoint);
@@ -397,32 +410,6 @@ int SpaceShipDown::Simulate() {
 }
 
 
-void SpaceShipDown::RenderModelPhase() {
-}
-
-
-void SpaceShipDown::RenderSpritePhase() {
-
-  RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-  AtlasSprite::ReleaseBuffers();
-
-  if (true) {
-    glDisable(GL_TEXTURE_2D);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    world->DrawDebugData();
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnable(GL_TEXTURE_2D);
-  }
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
-  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-  glDisable(GL_BLEND);
-  AtlasSprite::ReleaseBuffers();
-
-}
 
 
 const char *SpaceShipDown::byte_to_binary(int x) {
@@ -553,4 +540,33 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 	
 	free(level);
 	free(data);
+}
+
+
+void SpaceShipDown::RenderModelPhase() {
+}
+
+
+void SpaceShipDown::RenderSpritePhase() {
+
+  RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+  AtlasSprite::ReleaseBuffers();
+
+  if (false) {
+    glDisable(GL_TEXTURE_2D);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    world->DrawDebugData();
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnable(GL_TEXTURE_2D);
+  }
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+  RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+  glDisable(GL_BLEND);
+  AtlasSprite::ReleaseBuffers();
+
 }

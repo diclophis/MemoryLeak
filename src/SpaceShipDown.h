@@ -32,6 +32,8 @@ public:
   int m_PlayerIndex;
   int m_SpaceShipPartsStartIndex;
   int m_SpaceShipPartsStopIndex;
+  int m_PlatformsStartIndex;
+  int m_PlatformsStopIndex;
   int m_PickedUpPartIndex;
 
   float m_PickupTimeout;
