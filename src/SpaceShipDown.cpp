@@ -5,15 +5,15 @@
 #include "SpaceShipDown.h"
 
 #define GRAVITY -100.0
-#define PART_DENSITY 4.25
-#define PART_FRICTION 0.2
-#define PLAYER_DENSITY 3.0
-#define PLAYER_FRICTION 0.2
+#define PART_DENSITY 6.25
+#define PART_FRICTION 0.5
+#define PLAYER_DENSITY 5.0
+#define PLAYER_FRICTION 0.5
 #define PLAYER_HORIZONTAL_THRUST 2000.0
 #define PLAYER_VERTICAL_THRUST -GRAVITY * 10.0
 #define PLAYER_MAX_VELOCITY_X 20.0
 #define PLAYER_MAX_VELOCITY_Y 15.0
-#define BLOCK_WIDTH 100.0
+#define BLOCK_WIDTH 64.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
@@ -25,13 +25,13 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PickedUpPartIndex = -1;
   m_PickupTimeout = -1;
   m_ThrustLevel = 0.0;
-  m_WorldWidthInPixels = 0.0; //4096
-  m_WorldHeightInPixels = 0.0; //4096
+  m_WorldWidth = 0.0;
+  m_WorldHeight = 0.0;
 
   b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
   rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
   rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0);
-  rope_joint_def->maxLength = 200.0 / PTM_RATIO;
+  rope_joint_def->maxLength = 100.0 / PTM_RATIO;
   m_PickupJointDefs.push_back(rope_joint_def);
 
   b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
@@ -48,7 +48,16 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   LoadLevel(0, 2);
   LoadLevel(0, 1);
   LoadLevel(0, 0);
-  CreateBorder(m_WorldWidthInPixels, m_WorldHeightInPixels);
+  CreateBorder(m_WorldWidth, m_WorldHeight);
+
+  m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
+
+  LOGV("wtf: %f %d %d %d %d %f %f\n", m_Zoom, m_ScreenWidth, m_ScreenHeight, w, h, m_WorldWidth / (0.5 * m_Zoom), m_WorldHeight / (0.5 * m_Zoom));
+
+  float m_WorldWidthInPixels = m_WorldWidth * 0.5 * (0.5 * m_Zoom);
+  float m_WorldHeightInPixels = m_WorldHeight * 0.5 * (0.5 * m_Zoom);
+  
+  LOGV("wtf2: %f %f\n", m_WorldWidthInPixels, m_WorldHeightInPixels);
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
@@ -65,13 +74,14 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   uint32 flags = 0;
   flags += b2Draw::e_shapeBit;
   flags += b2Draw::e_jointBit;
-  flags += b2Draw::e_aabbBit;
+  //flags += b2Draw::e_aabbBit;
   flags += b2Draw::e_pairBit;
   flags += b2Draw::e_centerOfMassBit;
   m_DebugDraw->SetFlags(flags);
 
   m_TouchedLeft = false;
   m_TouchedRight = false;
+
 
 }
 
@@ -84,7 +94,7 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreatePlayer(float x, float y) {
-  float radius = 30.0;
+  float radius = 25.0;
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 5, 6, 1.0, "", 5, 6, 0.125, BLOCK_WIDTH, BLOCK_WIDTH));
@@ -127,7 +137,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   m_SpriteCount++;
   m_SpaceShipPartsStopIndex = m_SpriteCount;
 
-  float radius = 60.0;
+  float radius = 25.0;
   MLPoint startPosition = MLPointMake(m_AtlasSprites[part_index]->m_Position[0] / PTM_RATIO, m_AtlasSprites[part_index]->m_Position[1] / PTM_RATIO);
   b2BodyDef bd;
   bd.type = b2_dynamicBody;
@@ -190,7 +200,7 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
 
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 2, 3, 1.0, "", 2, 3, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[platform_index]->Build(0);
-  m_AtlasSprites[platform_index]->SetPosition(x, y);
+  m_AtlasSprites[platform_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
   m_SpriteCount++;
   m_PlatformsStopIndex = m_SpriteCount;
 }
@@ -283,8 +293,10 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 int SpaceShipDown::Simulate() {
+
+  m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
+
   m_PickupTimeout += m_DeltaTime;
-  m_Zoom = (m_WorldWidthInPixels * 2.0) / (float)m_ScreenWidth;
 
   int velocityIterations = 32;
   int positionIterations = 32;
@@ -515,19 +527,19 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 
           case 1:
             //yellow
-            LOGV("part\n");
+            //LOGV("part\n");
             CreateSpaceShipPart(world_x, world_y);
             break;
             
           case 2:
             //green
-            LOGV("player\n");
+            //LOGV("player\n");
             CreatePlayer(world_x, world_y);
             break;
 
           case 0:
             //red
-            LOGV("platform\n");
+            //LOGV("platform\n");
             CreatePlatform(world_x, world_y, 25.0, 25.0);
             break;
             
@@ -538,15 +550,15 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 		}
 	}
 
-  LOGV("%f %f\n", limits[2] - limits[0], limits[3] - limits[1]);
+  //LOGV("%f %f\n", limits[2] - limits[0], limits[3] - limits[1]);
 
   float max_width = (limits[2] - limits[0]);
   float max_height = (limits[3] - limits[1]);
 
   if (max_width > max_height) {
-    m_WorldWidthInPixels = m_WorldHeightInPixels = max_width;
+    m_WorldWidth = m_WorldHeight = max_width;
   } else {
-    m_WorldWidthInPixels = m_WorldHeightInPixels = max_height;
+    m_WorldWidth = m_WorldHeight = max_height;
   }
 	
 	free(level);
@@ -563,7 +575,7 @@ void SpaceShipDown::RenderSpritePhase() {
   RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
   AtlasSprite::ReleaseBuffers();
 
-  if (false) {
+  if (true) {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     world->DrawDebugData();

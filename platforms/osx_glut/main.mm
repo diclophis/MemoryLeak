@@ -230,6 +230,7 @@ void draw(void) {
 
 
 void resize(int width, int height) {
+LOGV("resize %d %d\n", width, height);
   kWindowWidth = width;
   kWindowHeight = height;
   Engine::CurrentGameResizeScreen(width, height);
@@ -378,6 +379,8 @@ int main(int argc, char** argv) {
   //if (!startAudio()) {
   //  printf("cant start Audio\n");
   //}
+
+LOGV("really %d %d\n", kWindowWidth, kWindowHeight);
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 

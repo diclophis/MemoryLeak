@@ -46,8 +46,8 @@ public:
 
   SpaceShipDownContactListener *m_ContactListener;
 
-  float m_WorldWidthInPixels;
-  float m_WorldHeightInPixels;
+  float m_WorldWidth;
+  float m_WorldHeight;
   
 
 };
