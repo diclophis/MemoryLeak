@@ -41,6 +41,7 @@ public:
 
   bool m_TouchedLeft;
   bool m_TouchedRight;
+  bool m_DebugDrawToggle;
 
   GLESDebugDraw *m_DebugDraw;
 

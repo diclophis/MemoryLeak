@@ -36,12 +36,13 @@ AudioComponentInstance audioUnit;
 AudioQueueRef mAudioQueue;
 AudioQueueBufferRef *mBuffers;
 
-static int kWindowWidth = 256;
-static int kWindowHeight = 256;
+static int kWindowWidth = 728;
+static int kWindowHeight = 728;
 static int win;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
+static bool debug_down = false;
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
@@ -230,7 +231,6 @@ void draw(void) {
 
 
 void resize(int width, int height) {
-LOGV("resize %d %d\n", width, height);
   kWindowWidth = width;
   kWindowHeight = height;
   Engine::CurrentGameResizeScreen(width, height);
@@ -255,12 +255,19 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  //printf("key: %d %c\n", key, key);
-  if (key == 110) {
-    if (left_down) {
+  printf("key: %d %c\n", key, key);
+  if (key == 49) {
+    if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
     } else {
       Engine::CurrentGameHit(0, 0, 0);
+    }
+    debug_down = !debug_down;
+  } else if (key == 110) {
+    if (left_down) {
+      Engine::CurrentGameHit(0, 1024, 2);
+    } else {
+      Engine::CurrentGameHit(0, 1024, 0);
     }
     left_down = !left_down;
   } else if (key == 109) {
@@ -379,8 +386,6 @@ int main(int argc, char** argv) {
   //if (!startAudio()) {
   //  printf("cant start Audio\n");
   //}
-
-LOGV("really %d %d\n", kWindowWidth, kWindowHeight);
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 

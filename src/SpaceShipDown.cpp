@@ -27,6 +27,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
+  m_DebugDrawToggle = true;
 
   b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
   rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
@@ -52,12 +53,10 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
   m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
 
-  LOGV("wtf: %f %d %d %d %d %f %f\n", m_Zoom, m_ScreenWidth, m_ScreenHeight, w, h, m_WorldWidth / (0.5 * m_Zoom), m_WorldHeight / (0.5 * m_Zoom));
-
-  float m_WorldWidthInPixels = m_WorldWidth * 0.5 * (0.5 * m_Zoom);
-  float m_WorldHeightInPixels = m_WorldHeight * 0.5 * (0.5 * m_Zoom);
+  float m_WorldWidthInPixels = m_WorldWidth * 2.0; // * 1.0 * (0.5 * m_Zoom);
+  float m_WorldHeightInPixels = m_WorldHeight * 2.0; // * 1.0 * (0.5 * m_Zoom);
   
-  LOGV("wtf2: %f %f\n", m_WorldWidthInPixels, m_WorldHeightInPixels);
+  LOGV("wtf2: %f %f %f %f %f\n", m_Zoom, m_WorldWidth, m_WorldHeight, m_WorldWidthInPixels, m_WorldHeightInPixels);
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
@@ -276,17 +275,21 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   //LOGV("state: %d %f %f\n", hitState, x, y);
-  if (hitState != 2) {
-    if (xx > 0) {
-      m_TouchedRight = true;
-    } else {
-      m_TouchedLeft = true;
-    }
+  if (hitState == 0 && x < 20.0 && y < 20.0) {
+    m_DebugDrawToggle = !m_DebugDrawToggle;
   } else {
-    if (xx > 0) {
-      m_TouchedRight = false;
+    if (hitState != 2) {
+      if (xx > 0) {
+        m_TouchedRight = true;
+      } else {
+        m_TouchedLeft = true;
+      }
     } else {
-      m_TouchedLeft = false;
+      if (xx > 0) {
+        m_TouchedRight = false;
+      } else {
+        m_TouchedLeft = false;
+      }
     }
   }
 }
@@ -571,25 +574,22 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
-
-  RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-  AtlasSprite::ReleaseBuffers();
-
-  if (true) {
+  if (m_DebugDrawToggle) {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     world->DrawDebugData();
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_TEXTURE_2D);
+  } else {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+    AtlasSprite::ReleaseBuffers();
+    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+    glDisable(GL_BLEND);
+    AtlasSprite::ReleaseBuffers();
   }
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-  RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
-  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-  glDisable(GL_BLEND);
-  AtlasSprite::ReleaseBuffers();
-
 }
