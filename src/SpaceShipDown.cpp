@@ -28,58 +28,28 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
   m_DebugDrawToggle = true;
-
-  b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
-  rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
-  rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0);
-  rope_joint_def->maxLength = 100.0 / PTM_RATIO;
-  m_PickupJointDefs.push_back(rope_joint_def);
-
-  b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
-  distance_joint_def->length = 500.0 / PTM_RATIO;
-  distance_joint_def->dampingRatio = 0.0;
-  m_PickupJointDefs.push_back(distance_joint_def);
-
-  m_FrictionJointDef = new b2FrictionJointDef();
-  m_FrictionJointDef->maxForce = 1500.0;
-  m_FrictionJointDef->maxTorque = 0.0;
-
+  m_TouchedLeft = false;
+  m_TouchedRight = false;
 
   CreateWorld();
+  CreatePickupJoints();
+  CreateDebugDraw();
   LoadLevel(0, 2);
   LoadLevel(0, 1);
   LoadLevel(0, 0);
   CreateBorder(m_WorldWidth, m_WorldHeight);
 
-  m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
 
-  float m_WorldWidthInPixels = m_WorldWidth * 2.0; // * 1.0 * (0.5 * m_Zoom);
-  float m_WorldHeightInPixels = m_WorldHeight * 2.0; // * 1.0 * (0.5 * m_Zoom);
+  float m_WorldWidthInPixels = m_WorldWidth * 2.0;
+  float m_WorldHeightInPixels = m_WorldHeight * 2.0;
   
-  LOGV("wtf2: %f %f %f %f %f\n", m_Zoom, m_WorldWidth, m_WorldHeight, m_WorldWidthInPixels, m_WorldHeightInPixels);
+  //LOGV("wtf2: %f %f %f %f %f\n", m_Zoom, m_WorldWidth, m_WorldHeight, m_WorldWidthInPixels, m_WorldHeightInPixels);
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
   m_SpriteCount++;
-
-  m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
-  world->SetDebugDraw(m_DebugDraw);
-
-  m_ContactListener = new SpaceShipDownContactListener();
-  world->SetContactListener(m_ContactListener);
-  
-  uint32 flags = 0;
-  flags += b2Draw::e_shapeBit;
-  flags += b2Draw::e_jointBit;
-  //flags += b2Draw::e_aabbBit;
-  flags += b2Draw::e_pairBit;
-  flags += b2Draw::e_centerOfMassBit;
-  m_DebugDraw->SetFlags(flags);
-
-  m_TouchedLeft = false;
-  m_TouchedRight = false;
 
 
 }
@@ -209,6 +179,8 @@ void SpaceShipDown::CreateWorld() {
   b2Vec2 gravity;
   gravity.Set(0.0, GRAVITY);
   world = new b2World(gravity, false);
+  m_ContactListener = new SpaceShipDownContactListener();
+  world->SetContactListener(m_ContactListener);
 }
 
 
@@ -271,6 +243,24 @@ void SpaceShipDown::CreateBorder(float width, float height) {
 }
 
 
+void SpaceShipDown::CreatePickupJoints() {
+  b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
+  rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
+  rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0);
+  rope_joint_def->maxLength = 100.0 / PTM_RATIO;
+  m_PickupJointDefs.push_back(rope_joint_def);
+
+  b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
+  distance_joint_def->length = 500.0 / PTM_RATIO;
+  distance_joint_def->dampingRatio = 0.0;
+  m_PickupJointDefs.push_back(distance_joint_def);
+
+  m_FrictionJointDef = new b2FrictionJointDef();
+  m_FrictionJointDef->maxForce = 1500.0;
+  m_FrictionJointDef->maxTorque = 0.0;
+}
+
+
 void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
@@ -295,9 +285,14 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 }
 
 
+void SpaceShipDown::AdjustZoom() {
+  m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
+}
+
+
 int SpaceShipDown::Simulate() {
 
-  m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
+  AdjustZoom();
 
   m_PickupTimeout += m_DeltaTime;
 
@@ -430,8 +425,6 @@ int SpaceShipDown::Simulate() {
 }
 
 
-
-
 const char *SpaceShipDown::byte_to_binary(int x) {
 	static char b[5];
 	b[0] = '\0';
@@ -441,6 +434,7 @@ const char *SpaceShipDown::byte_to_binary(int x) {
 	}
 	return b;
 }
+
 
 void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
   float limits[4];
@@ -566,6 +560,19 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 	
 	free(level);
 	free(data);
+}
+
+
+void SpaceShipDown::CreateDebugDraw() {
+  m_DebugDraw = new GLESDebugDraw(PTM_RATIO);
+  world->SetDebugDraw(m_DebugDraw);
+  uint32 flags = 0;
+  flags += b2Draw::e_shapeBit;
+  flags += b2Draw::e_jointBit;
+  //flags += b2Draw::e_aabbBit;
+  flags += b2Draw::e_pairBit;
+  flags += b2Draw::e_centerOfMassBit;
+  m_DebugDraw->SetFlags(flags);
 }
 
 

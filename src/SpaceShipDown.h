@@ -17,6 +17,9 @@ public:
   void CreatePlayer(float x, float y);
   void CreateSpaceShipPart(float x, float y);
   void CreatePlatform(float x, float y, float w, float h);
+  void CreatePickupJoints();
+  void CreateDebugDraw();
+  void AdjustZoom();
   const char *byte_to_binary(int x);
   void LoadLevel(int level_index, int cursor_index);
 

@@ -255,7 +255,7 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  printf("key: %d %c\n", key, key);
+  //LOGV("key: %d %c\n", key, key);
   if (key == 49) {
     if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
