@@ -102,7 +102,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_SpaceShipPartsStartIndex = part_index;
   }
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 7, 8, 1.0, "", 7, 8, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 6 + (part_index % 3), 7 + (part_index % 3), 1.0, "", 7, 8, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[part_index]->Build(0);
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
@@ -173,7 +173,7 @@ void SpaceShipDown::CreateDropZone(float x, float y, float w, float h) {
   
   groundBody->CreateFixture(&fd);
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 2, 3, 1.0, "", 2, 3, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 0, 1, 2, 3, 1.0, "", 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[drop_zone_index]->Build(0);
   m_AtlasSprites[drop_zone_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
   m_SpriteCount++;
@@ -443,7 +443,7 @@ int SpaceShipDown::Simulate() {
           //if (m_AtlasSprites[m_PlayerIndex]->m_Position[0] == m_AtlasSprites[m_]->m_Position[0]
           float x1 = bodyA->GetPosition().x;
           float x2 = bodyB->GetPosition().x;
-          if ((fastAbs(x1 - x2) < 0.01) && m_PickupTimeout > 1.0) {
+          if ((fastAbs(x1 - x2) < 0.1) && m_PickupTimeout > 1.0) {
             b2Vec2 player_velocity;
             if (indexA == -1) {
               //player_velocity= bodyB->GetLinearVelocity();
