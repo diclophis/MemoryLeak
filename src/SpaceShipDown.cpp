@@ -5,9 +5,9 @@
 #include "SpaceShipDown.h"
 
 #define GRAVITY -100.0
-#define PART_DENSITY 6.25
+#define PART_DENSITY 5.25
 #define PART_FRICTION 0.5
-#define PLAYER_DENSITY 5.0
+#define PLAYER_DENSITY 6.5
 #define PLAYER_FRICTION 0.5
 //#define PLAYER_HORIZONTAL_THRUST 1000.0
 //#define PLAYER_VERTICAL_THRUST -GRAVITY * 5.0
@@ -34,9 +34,9 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   CreateWorld();
   CreatePickupJoints();
   CreateDebugDraw();
-  LoadLevel(0, 2);
-  LoadLevel(0, 1);
-  LoadLevel(0, 0);
+  LoadLevel(1, 2);
+  LoadLevel(1, 1);
+  LoadLevel(1, 0);
   CreateBorder(m_WorldWidth, m_WorldHeight);
 
 
@@ -247,7 +247,7 @@ void SpaceShipDown::CreatePickupJoints() {
   b2RopeJointDef *rope_joint_def = new b2RopeJointDef();
   rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
   rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0);
-  rope_joint_def->maxLength = 100.0 / PTM_RATIO;
+  rope_joint_def->maxLength = 75.0 / PTM_RATIO;
   m_PickupJointDefs.push_back(rope_joint_def);
 
   b2DistanceJointDef *distance_joint_def = new b2DistanceJointDef();
@@ -256,7 +256,7 @@ void SpaceShipDown::CreatePickupJoints() {
   m_PickupJointDefs.push_back(distance_joint_def);
 
   m_FrictionJointDef = new b2FrictionJointDef();
-  m_FrictionJointDef->maxForce = 50.0;
+  m_FrictionJointDef->maxForce = 30.0;
   m_FrictionJointDef->maxTorque = 0.0;
 }
 
@@ -306,25 +306,26 @@ int SpaceShipDown::Simulate() {
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
 
-  float thrust_x = 200.0;
-  float thrust_y = 600.0;
+  float thrust_x = 300.0;
+  float thrust_y = 700.0;
 
   if (m_TouchedLeft) {
     //thrust_x += -PLAYER_HORIZONTAL_THRUST;
     thrust_x = -thrust_x;
   }
 
-  if (m_TouchedRight) {
+  if (m_TouchedLeft && m_TouchedRight) {
     //thrust_x += PLAYER_HORIZONTAL_THRUST;
-    //thrust_x = 100.0;
+    thrust_x = 0.0;
+    //thrust_y *= 1.1;
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
-    thrust_y *= 2.25;
+    thrust_y *= 2.0;
     if (m_PickedUpPartIndex != -1) {
       //thrust_x *= 2.0;
       //thrust_y = 1.0;
-      thrust_y *= 3.0;
+      thrust_y *= 2.5;
     }
     if (player_velocity.y < PLAYER_MAX_VELOCITY_Y) {
       //m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
@@ -498,8 +499,6 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
         limits[3] = world_y;
       }
 
-      //LOGV("%f %f %d %d %d %d\n", world_x, world_y, current[0], current[1], current[2], current[3]);
-
       if (cursor_index == current[3]) {
         switch (current[3]) {
           case 9:
@@ -545,6 +544,11 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
   } else {
     m_WorldWidth = m_WorldHeight = max_height;
   }
+
+  m_WorldWidth *= 0.6;
+  m_WorldHeight *= 0.6;
+  m_WorldWidth += 100.0;
+  m_WorldHeight += 100.0;
 	
 	free(level);
 	free(data);
