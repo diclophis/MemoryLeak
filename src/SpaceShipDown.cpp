@@ -65,7 +65,7 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreatePlayer(float x, float y) {
-  float radius = 25.0;
+  float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 5, 6, 1.0, "", 5, 6, 0.125, BLOCK_WIDTH, BLOCK_WIDTH));
@@ -197,7 +197,8 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // from a pool and creates the ground box shape (also from a pool).
   // The body is also added to the world.
   b2Body* groundBody = world->CreateBody(&groundBodyDef);
-  groundBody->SetUserData((void *)-1);
+  groundBody->SetActive(true);
+  groundBody->SetUserData((void *)-2);
   
   // Define the ground box shape.
   b2PolygonShape groundBox;
@@ -346,7 +347,7 @@ int SpaceShipDown::Simulate() {
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
 
   float thrust_x = 300.0;
-  float thrust_y = 700.0;
+  float thrust_y = 800.0;
 
   if (m_TouchedLeft) {
     //thrust_x += -PLAYER_HORIZONTAL_THRUST;
@@ -360,11 +361,11 @@ int SpaceShipDown::Simulate() {
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
-    thrust_y *= 2.25;
+    thrust_y *= 2.5;
     if (m_PickedUpPartIndex != -1) {
       //thrust_x *= 2.0;
       //thrust_y = 1.0;
-      thrust_y *= 1.75;
+      thrust_y *= 2.0;
     }
     if (player_velocity.y < PLAYER_MAX_VELOCITY_Y) {
       //m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
@@ -384,7 +385,8 @@ int SpaceShipDown::Simulate() {
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
     intptr_t body_index = (intptr_t) b->GetUserData();
-    if (body_index >= 0) {
+    //if (body_index >= 0 || (body_index < -1)) {
+      body_index = fastAbs(body_index);
       float x = b->GetPosition().x * PTM_RATIO;
       float y = b->GetPosition().y * PTM_RATIO;
       if (body_index == m_PlayerIndex) {
@@ -406,7 +408,7 @@ int SpaceShipDown::Simulate() {
       }
       //m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
       m_AtlasSprites[body_index]->SetPosition(x, y);
-    }
+    //}
   }
 
   std::vector<MLContact>::iterator pos;
@@ -419,7 +421,6 @@ int SpaceShipDown::Simulate() {
     if (indexA == m_PlayerIndex || indexB == m_PlayerIndex) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex == -1) {
-          m_PickupTimeout = 0.0;
           if (bodyA == m_PlayerBody) {
             m_PickedUpPartIndex = indexB;
             m_FrictionJointDef->bodyA = bodyB;
@@ -427,6 +428,7 @@ int SpaceShipDown::Simulate() {
             m_PickedUpPartIndex = indexA;
             m_FrictionJointDef->bodyA = bodyA;
           }
+          m_PickupTimeout = 0.0;
           b2JointDef *pickup_joint_def = m_PickupJointDefs.at(0);
           pickup_joint_def->bodyA = bodyA;
           pickup_joint_def->bodyB = bodyB;
@@ -438,7 +440,31 @@ int SpaceShipDown::Simulate() {
     } else if (indexA == -1 || indexB == -1) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex != -1 && (indexA == m_PickedUpPartIndex || indexB == m_PickedUpPartIndex)) {
-          if (m_PickupTimeout > 1.0) {
+          //if (m_AtlasSprites[m_PlayerIndex]->m_Position[0] == m_AtlasSprites[m_]->m_Position[0]
+          float x1 = bodyA->GetPosition().x;
+          float x2 = bodyB->GetPosition().x;
+          if ((fastAbs(x1 - x2) < 0.01) && m_PickupTimeout > 1.0) {
+            b2Vec2 player_velocity;
+            if (indexA == -1) {
+              //player_velocity= bodyB->GetLinearVelocity();
+              //player_velocity.x = 0;
+              //bodyB->SetLinearVelocity(player_velocity);
+              //bodyB->SetActive(false);
+              bodyB->SetUserData((void *)-indexB);
+            } else {
+              //player_velocity= bodyA->GetLinearVelocity();
+              //player_velocity.x = 0;
+              bodyA->SetUserData((void *)-indexA);
+              //bodyA->SetLinearVelocity(player_velocity);
+              //bodyA->SetActive(false);
+            }
+            b2PrismaticJointDef *joint_def = new b2PrismaticJointDef();
+            joint_def->bodyA = bodyA;
+            joint_def->bodyB = bodyB;
+            joint_def->localAxisA.Set(0.0f, 1.0f);
+            //rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
+            //rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0 i);
+            (b2PrismaticJointDef *)world->CreateJoint(joint_def);
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
             world->DestroyJoint(m_FrictionJoint);
