@@ -9,10 +9,10 @@
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 5.0
 #define PLAYER_FRICTION 0.5
-#define PLAYER_HORIZONTAL_THRUST 2000.0
-#define PLAYER_VERTICAL_THRUST -GRAVITY * 10.0
-#define PLAYER_MAX_VELOCITY_X 20.0
-#define PLAYER_MAX_VELOCITY_Y 15.0
+//#define PLAYER_HORIZONTAL_THRUST 1000.0
+//#define PLAYER_VERTICAL_THRUST -GRAVITY * 5.0
+#define PLAYER_MAX_VELOCITY_X 5.0
+#define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 64.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
@@ -256,7 +256,7 @@ void SpaceShipDown::CreatePickupJoints() {
   m_PickupJointDefs.push_back(distance_joint_def);
 
   m_FrictionJointDef = new b2FrictionJointDef();
-  m_FrictionJointDef->maxForce = 1500.0;
+  m_FrictionJointDef->maxForce = 50.0;
   m_FrictionJointDef->maxTorque = 0.0;
 }
 
@@ -306,49 +306,37 @@ int SpaceShipDown::Simulate() {
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
 
-  float thrust_x = 0.0;
-  float thrust_y = 1.0;
+  float thrust_x = 200.0;
+  float thrust_y = 600.0;
 
   if (m_TouchedLeft) {
-    thrust_x += -PLAYER_HORIZONTAL_THRUST;
+    //thrust_x += -PLAYER_HORIZONTAL_THRUST;
+    thrust_x = -thrust_x;
   }
 
   if (m_TouchedRight) {
-    thrust_x += PLAYER_HORIZONTAL_THRUST;
+    //thrust_x += PLAYER_HORIZONTAL_THRUST;
+    //thrust_x = 100.0;
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
+    thrust_y *= 2.25;
     if (m_PickedUpPartIndex != -1) {
-      /*
-      float pl_x = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-      //float pl_y = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-      float pa_x = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[0];
-      //float pa_y = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[1];
-      if (m_TouchedRight) {
-        if (pl_x > pa_x) {
-          thrust_x *= 12;
-        } else {
-          thrust_x *= 0.1;
-        }
-      } else if (m_TouchedLeft) {
-        if (pl_x < pa_x) {
-          thrust_x *= 12;
-        } else {
-          thrust_x *= 0.1;
-        }
-      }
-      */
-      
-      thrust_x *= 2.0;
-      thrust_y = 1.0;
+      //thrust_x *= 2.0;
+      //thrust_y = 1.0;
+      thrust_y *= 3.0;
     }
     if (player_velocity.y < PLAYER_MAX_VELOCITY_Y) {
-      m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
+      //m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
     }
-    m_PlayerBody->ApplyForce(b2Vec2(thrust_x, m_ThrustLevel), forcePosition);
+    m_PlayerBody->ApplyForce(b2Vec2(thrust_x, thrust_y), forcePosition);
     m_AtlasSprites[m_PlayerIndex]->Fire();
   } else {
     m_ThrustLevel = 0.0;
+    if (m_PickedUpPartIndex != -1) {
+      thrust_y *= 2.0;
+    }
+    m_PlayerBody->ApplyForce(b2Vec2(0.0, thrust_y), forcePosition);
     //m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
   }
   
@@ -410,7 +398,7 @@ int SpaceShipDown::Simulate() {
     } else if (indexA == -1 || indexB == -1) {
       if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex != -1 && (indexA == m_PickedUpPartIndex || indexB == m_PickedUpPartIndex)) {
-          if (m_PickupTimeout > 0.5) {
+          if (m_PickupTimeout > 1.0) {
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
             world->DestroyJoint(m_FrictionJoint);
@@ -600,3 +588,22 @@ void SpaceShipDown::RenderSpritePhase() {
     AtlasSprite::ReleaseBuffers();
   }
 }
+      /*
+      float pl_x = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+      //float pl_y = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+      float pa_x = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[0];
+      //float pa_y = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[1];
+      if (m_TouchedRight) {
+        if (pl_x > pa_x) {
+          thrust_x *= 12;
+        } else {
+          thrust_x *= 0.1;
+        }
+      } else if (m_TouchedLeft) {
+        if (pl_x < pa_x) {
+          thrust_x *= 12;
+        } else {
+          thrust_x *= 0.1;
+        }
+      }
+      */
