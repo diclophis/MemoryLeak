@@ -5,7 +5,7 @@
 #include "SpaceShipDown.h"
 
 #define GRAVITY -100.0
-#define PART_DENSITY 5.25
+#define PART_DENSITY 5.75
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 6.5
 #define PLAYER_FRICTION 0.25
@@ -13,7 +13,7 @@
 //#define PLAYER_VERTICAL_THRUST -GRAVITY * 5.0
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
-#define BLOCK_WIDTH 64.0
+#define BLOCK_WIDTH 54.0
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
@@ -68,7 +68,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 5, 6, 1.0, "", 5, 6, 0.125, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 5, 6, 1.0, "", 5, 6, 0.125, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
   m_AtlasSprites[m_PlayerIndex]->Build(0);
@@ -246,7 +246,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
-  borderBody->SetUserData((void *)-1);
+  borderBody->SetUserData((void *)-2);
 
   x = -width;
   y = 0;
@@ -257,7 +257,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
-  borderBody->SetUserData((void *)-1);
+  borderBody->SetUserData((void *)-2);
 
   x = 0;
   y = height;
@@ -268,7 +268,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
-  borderBody->SetUserData((void *)-1);
+  borderBody->SetUserData((void *)-2);
 
   x = width;
   y = 0;
@@ -279,7 +279,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
   borderBody = world->CreateBody(&borderBodyDef);
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&borderBox, 0);
-  borderBody->SetUserData((void *)-1);
+  borderBody->SetUserData((void *)-2);
 }
 
 
@@ -443,7 +443,7 @@ int SpaceShipDown::Simulate() {
           //if (m_AtlasSprites[m_PlayerIndex]->m_Position[0] == m_AtlasSprites[m_]->m_Position[0]
           float x1 = bodyA->GetPosition().x;
           float x2 = bodyB->GetPosition().x;
-          if ((fastAbs(x1 - x2) < 0.1) && m_PickupTimeout > 1.0) {
+          if ((fastAbs(x1 - x2) < 1.0) && m_PickupTimeout > 1.0) {
             b2Vec2 player_velocity;
             if (indexA == -1) {
               //player_velocity= bodyB->GetLinearVelocity();
