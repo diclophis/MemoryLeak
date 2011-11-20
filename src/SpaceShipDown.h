@@ -2,6 +2,49 @@
 
 #include "SpaceShipDownContactListener.h"
 
+class BaseVehicle : public SimpleVehicle {
+public:
+  BaseVehicle();
+  void reset (void);
+  void identify();
+  void randomizeStartingPositionAndHeading (void);
+  enum seekerState {running, tagged, atGoal};
+  bool avoiding;
+  static void initializeObstacles (void);
+  static void addOneObstacle (void);
+  static void removeOneObstacle (void);
+  float minDistanceToObstacle (const Vec3 point);
+  static int obstacleCount;
+  static SOG allObstacles;
+};
+
+class EnemyVehicle : public BaseVehicle {
+public:
+  EnemyVehicle();
+  void identify();
+  void reset (void);
+  void update (const float currentTime, const float elapsedTime);
+  Vec3 steerToEvadeAllOtherEnemies (void);
+};
+
+class PlayerVehicle : public BaseVehicle {
+public:
+  PlayerVehicle();
+  void reset (void);
+  void identify();
+  void update (const float currentTime, const float elapsedTime);
+  void updateX (const float currentTime, const float elapsedTime, Vec3 inputSteering);
+  bool clearPathToGoal (void);
+  Vec3 steeringForSeeker (void);
+  void updateState (const float currentTime);
+  Vec3 steerToEvadeAllDefenders (void);
+  Vec3 XXXsteerToEvadeAllDefenders (void);
+  void adjustObstacleAvoidanceLookAhead (const bool clearPath);
+  seekerState state;
+  bool evading;
+  float lastRunningTime;
+};
+
 class SpaceShipDown : public Engine {
 
 public:
@@ -23,6 +66,7 @@ public:
   void AdjustZoom();
   const char *byte_to_binary(int x);
   void LoadLevel(int level_index, int cursor_index);
+  void CreateLandscape();
 
 
   b2World *world;

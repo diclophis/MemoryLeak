@@ -469,6 +469,7 @@ void Engine::LoadSound(int i) {
     m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
   }
   free(buffer);
+  m_IsPushingAudio = true;
 }
 
 

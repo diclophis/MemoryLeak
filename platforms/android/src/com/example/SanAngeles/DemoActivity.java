@@ -131,121 +131,34 @@ class DemoGLSurfaceView extends GLSurfaceView {
     setRenderer(mRenderer);
   }
 
-  void printSamples(MotionEvent ev) {
-    final int historySize = ev.getHistorySize();
-    final int pointerCount = ev.getPointerCount();
-    for (int h = 0; h < historySize; h++) {
-      for (int p = 0; p < pointerCount; p++) {
-        Log.v(this.toString(), String.format("pointer %d: (%f,%f)",
-        ev.getPointerId(p), ev.getHistoricalX(p, h), ev.getHistoricalY(p, h)));
-      }
-    }
-
-    for (int p = 0; p < pointerCount; p++) {
-      Log.v(this.toString(), String.format("pointer %d: (%f,%f)",
-      ev.getPointerId(p), ev.getX(p), ev.getY(p)));
-    }
-  }
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    //queueEvent(new Runnable() {
-    //  public void run() {
-/*
-        for (int i=0; i<e.getPointerCount(); i++) {
-          boolean masked = false;
-          switch(e.getActionMasked()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-            case MotionEvent.ACTION_POINTER_UP:
-              masked = true;
-            break;
-          }
-          if (masked && i != e.getActionIndex()) { continue; }
-          float x = e.getX(i); float y = e.getY(i);
-          int pid = e.getPointerId(i);
-          int type = 0;
-          switch (e.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN: type=0; break;
-            case MotionEvent.ACTION_MOVE: type=1; break;
-            case MotionEvent.ACTION_OUTSIDE: type=1; break;
-            case MotionEvent.ACTION_POINTER_DOWN: type=0; break;
-            case MotionEvent.ACTION_POINTER_UP: type=2; break;
-            case MotionEvent.ACTION_UP: type=2; break;
-            case MotionEvent.ACTION_CANCEL: type=2; break;
-          }
-          nativeTouch(x, y, type);
-          if (masked) { break; }
-        }
-*/
-
-        float x = 0;
-        float y = 0;
-        int type = -1;
-
-
-        for (int i = 0; i < event.getPointerCount(); i++) {
-          switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_POINTER_DOWN:
-              //Log.d(TAG,"down "+ ev.getPointerId(i));
-              x = event.getX(i);
-              y = event.getY(i);
-              nativeTouch(x, y, 0);
-              break;
-            case MotionEvent.ACTION_MOVE:
-              //Log.d(TAG,"move "+ ev.getPointerId(i));
-              x = event.getX(i);
-              y = event.getY(i);
-              nativeTouch(x, y, 1);
-              break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_POINTER_UP:
-              //Log.d(TAG,"up "+ ev.getPointerId(i));
-              x = event.getX(i);
-              y = event.getY(i);
-              nativeTouch(x, y, 2);
-              break;  
-          }
-        }
-
-/*
-        int action = event.getAction() & MotionEvent.ACTION_MASK;
-
-        if (action == MotionEvent.ACTION_DOWN) {
-          x = event.getX();
-          y = event.getY();
-          type = 0;
-        } else if (action == MotionEvent.ACTION_UP) {
-          x = event.getX();
-          y = event.getY();
-          type = 2;
-        } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
-          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-          x = event.getX(pointer);
-          y = event.getY(pointer);
-          type = 0;
-        } else if (action == MotionEvent.ACTION_POINTER_UP) {
-          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-          x = event.getX(pointer);
-          y = event.getY(pointer);
-          type = 2;
-        } else if (action == MotionEvent.ACTION_MOVE) {
-          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-          x = event.getX(pointer);
-          y = event.getY(pointer);
-          type = 1;
-        } else if (action == MotionEvent.ACTION_CANCEL) {
-          int pointer = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-          x = event.getX(pointer);
-          y = event.getY(pointer);
-          type = 2;
-        }
-        nativeTouch(x, y, type);
-*/
-      //}
-    //});
-
+    float x = 0;
+    float y = 0;
+    int type = -1;
+    for (int i = 0; i < event.getPointerCount(); i++) {
+      switch (event.getAction() & MotionEvent.ACTION_MASK) {
+        case MotionEvent.ACTION_DOWN:
+        case MotionEvent.ACTION_POINTER_DOWN:
+          x = event.getX(i);
+          y = event.getY(i);
+          nativeTouch(x, y, 0);
+          break;
+        case MotionEvent.ACTION_MOVE:
+          x = event.getX(i);
+          y = event.getY(i);
+          nativeTouch(x, y, 1);
+          break;
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_CANCEL:
+        case MotionEvent.ACTION_POINTER_UP:
+          x = event.getX(i);
+          y = event.getY(i);
+          nativeTouch(x, y, 2);
+          break;  
+      }
+    }
     return true;
   }
 

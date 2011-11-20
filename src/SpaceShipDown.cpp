@@ -15,9 +15,12 @@
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
 
+//point to seeker
+//array of pointers to enemies
+//array of obstacales
+//array of pointers to all
+
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-  LoadSound(0);
-  m_IsPushingAudio = true;
   m_SpaceShipPartsStartIndex = -1;
   m_SpaceShipPartsStopIndex = -1;
   m_PlatformsStartIndex = -1;
@@ -34,7 +37,9 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_TouchedRight = false;
   m_StackCount = 0;
   m_TakeoffTimeout = -1;
-
+  m_CameraOffsetX = 0;
+  m_CameraOffsetY = 0;
+  LoadSound(0);
   CreateWorld();
   CreatePickupJoints();
   CreateDebugDraw();
@@ -43,18 +48,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   LoadLevel(1, 0);
   LoadLevel(1, 3);
   CreateBorder(m_WorldWidth, m_WorldHeight);
-
-
-  float m_WorldWidthInPixels = m_WorldWidth * 2.0;
-  float m_WorldHeightInPixels = m_WorldHeight * 2.0;
- 
-
-  m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 0.0, "", 0, 0, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
-  m_AtlasSprites[m_LandscapeIndex]->Build(0);
-  m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
-  m_SpriteCount++;
-
+  CreateLandscape();
 }
 
 
@@ -66,7 +60,6 @@ SpaceShipDown::~SpaceShipDown() {
   for (std::vector<b2JointDef*>::iterator i = m_PickupJointDefs.begin(); i != m_PickupJointDefs.end(); ++i) {
     delete *i;
   }
-
 }
 
 
@@ -153,9 +146,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.friction = 0.0;
   fd.isSensor = true;
   part_body->CreateFixture(&fd);
-
   part_body->SetActive(true);
-
 }
 
 
@@ -319,11 +310,23 @@ void SpaceShipDown::CreatePickupJoints() {
 }
 
 
+void SpaceShipDown::CreateLandscape() {
+  float m_WorldWidthInPixels = m_WorldWidth * 2.0;
+  float m_WorldHeightInPixels = m_WorldHeight * 2.0;
+
+  m_LandscapeIndex = m_SpriteCount;
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 0.0, "", 0, 0, 0.0, m_WorldWidthInPixels * 1.5, m_WorldHeightInPixels * 1.5));
+  m_AtlasSprites[m_LandscapeIndex]->Build(0);
+  m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
+  m_SpriteCount++;
+}
+
+
 void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	//float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   //LOGV("state: %d %f %f\n", hitState, x, y);
-  if (hitState == 0 && x < 20.0 && y < 20.0) {
+  if (hitState == 0 && x < 50.0 && y < 50.0) {
     m_DebugDrawToggle = !m_DebugDrawToggle;
   } else {
     if (hitState != 2) {
@@ -365,7 +368,7 @@ int SpaceShipDown::Simulate() {
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
 
   float thrust_x = 400.0;
-  float thrust_y = 1000.0;
+  float thrust_y = 1200.0;
 
   if (m_TouchedLeft) {
     //thrust_x += -PLAYER_HORIZONTAL_THRUST;
@@ -379,7 +382,7 @@ int SpaceShipDown::Simulate() {
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
-    thrust_y *= 2.25;
+    thrust_y *= 2.0;
     if (m_PickedUpPartIndex != -1) {
       //thrust_x *= 2.0;
       //thrust_y = 1.0;
@@ -647,8 +650,8 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
     m_WorldWidth = m_WorldHeight = max_height;
   }
 
-  m_WorldWidth *= 0.6;
-  m_WorldHeight *= 0.6;
+  //m_WorldWidth *= 0.6;
+  //m_WorldHeight *= 0.6;
   m_WorldWidth += 100.0;
   m_WorldHeight += 100.0;
 	
@@ -675,7 +678,6 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
-
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
   if (m_DebugDrawToggle) {
     glDisable(GL_TEXTURE_2D);
