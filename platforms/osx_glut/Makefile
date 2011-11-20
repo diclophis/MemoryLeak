@@ -3,7 +3,7 @@
 build=build
 
 CXXFLAGS=\
--m32 \
+-m64 \
 -Wall \
 -g \
 -pg \
@@ -19,7 +19,7 @@ CXXFLAGS=\
 -I../../src/Box2D
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-m32 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
+LDFLAGS=-m64 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))

@@ -104,7 +104,7 @@ void SpriteGun::Render() {
       }
     }
   } else {
-    int i=0;
+    unsigned int i=0;
     while (i++ < (m_NumParticles - 1)) {
       if (m_AtlasSprites[i]->m_IsAlive) {
         m_AtlasSprites[i]->Render();

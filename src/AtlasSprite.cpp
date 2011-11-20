@@ -24,9 +24,6 @@ void AtlasSprite::Scrub() {
 }
 
 AtlasSprite::~AtlasSprite() {
-  free(vertices);
-  free(texture);
-  free(indices);
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
@@ -154,6 +151,10 @@ AtlasSprite::AtlasSprite(GLuint t, int spr, int rows, int s, int e, float m, flo
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    free(vertices);
+    free(texture);
+    free(indices);
   }
 
   glFlush();
