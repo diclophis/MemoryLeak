@@ -76,7 +76,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, 1, 2, 0.0, "", 12, 17, 0.1, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-  m_AtlasSprites[m_PlayerIndex]->Build(4);
+  m_AtlasSprites[m_PlayerIndex]->Build(1);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -111,7 +111,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = 6 + (part_index % 3);
   if (sprite_index == 8) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, sprite_index, sprite_index + 1, 0.0, "", 12, 17, 0.1, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2));
-    m_AtlasSprites[part_index]->Build(4);
+    m_AtlasSprites[part_index]->Build(1);
   } else {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, sprite_index, sprite_index + 1, 0.0, "", 0, 0, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
     m_AtlasSprites[part_index]->Build(0);
@@ -494,6 +494,24 @@ int SpaceShipDown::Simulate() {
     }
   }
 
+  float tx = -m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  float ty = -m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  if (tx > m_WorldWidth * 0.25) {
+    tx = m_WorldWidth * 0.25;
+  }
+  if (tx < -m_WorldWidth * 0.25) {
+    tx = -m_WorldWidth * 0.25;
+  }
+  if (ty > m_WorldWidth * 0.25) {
+    ty = m_WorldWidth * 0.25;
+  }
+  if (ty < -m_WorldWidth * 0.25) {
+    ty = -m_WorldWidth * 0.25;
+  }
+
+  m_CameraOffsetX += -(0.5 * m_DeltaTime * (-tx + m_CameraOffsetX));
+  m_CameraOffsetY += -(0.5 * m_DeltaTime * (-ty + m_CameraOffsetY));
+
   return 1;
 }
 
@@ -657,22 +675,8 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
-  float tx = -m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  float ty = -m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-  if (tx > m_WorldWidth * 0.25) {
-    tx = m_WorldWidth * 0.25;
-  }
-  if (tx < -m_WorldWidth * 0.25) {
-    tx = -m_WorldWidth * 0.25;
-  }
-  if (ty > m_WorldWidth * 0.25) {
-    ty = m_WorldWidth * 0.25;
-  }
-  if (ty < -m_WorldWidth * 0.25) {
-    ty = -m_WorldWidth * 0.25;
-  }
 
-  glTranslatef(tx, ty, 0);
+  glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
   if (m_DebugDrawToggle) {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);

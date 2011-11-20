@@ -58,6 +58,9 @@ public:
 
   float m_WorldWidth;
   float m_WorldHeight;
+
+  float m_CameraOffsetX;
+  float m_CameraOffsetY;
   
 
 };
