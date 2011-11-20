@@ -17,19 +17,22 @@ namespace ModPlug
 {
 	ModPlug_Settings gSettings =
 	{
-    MODPLUG_ENABLE_OVERSAMPLING | MODPLUG_ENABLE_NOISE_REDUCTION,
-		2,
-		16,
-		44100,
-		//MODPLUG_RESAMPLE_FIR,
-		MODPLUG_RESAMPLE_NEAREST,
+		MODPLUG_ENABLE_OVERSAMPLING | MODPLUG_ENABLE_NOISE_REDUCTION,
+
+		2, // mChannels
+		16, // mBits
+		44100, // mFrequency
+		MODPLUG_RESAMPLE_LINEAR, //mResamplingMode
+
+		128, // mStereoSeparation
+		32, // mMaxMixChannels
 		0,
 		0,
 		0,
 		0,
 		0,
 		0,
-		-1
+		0
 	};
 
 	int gSampleSize;
@@ -59,8 +62,10 @@ namespace ModPlug
 		if(updateBasicConfig)
 		{
 			CSoundFile::SetWaveConfig(gSettings.mFrequency,
-			                          gSettings.mBits,
+                                                  gSettings.mBits,
 			                          gSettings.mChannels);
+			CSoundFile::SetMixConfig(gSettings.mStereoSeparation,
+                                                 gSettings.mMaxMixChannels);
 
 			gSampleSize = gSettings.mBits / 8 * gSettings.mChannels;
 		}
@@ -90,11 +95,6 @@ ModPlugFile* ModPlug_Load(const void* data, int size)
 		delete result;
 		return NULL;
 	}
-}
-
-void ModPlug_SetTempo(ModPlugFile* file, UINT t)
-{
-	file->mSoundFile.SetTempo(t);
 }
 
 void ModPlug_Unload(ModPlugFile* file)
@@ -261,11 +261,6 @@ void ModPlug_Seek(ModPlugFile* file, int millisecond)
 	postime = (float)maxpos / (float)maxtime;
 
 	file->mSoundFile.SetCurrentPos((int)(millisecond * postime));
-}
-
-int ModPlug_GetCurrentPosition(ModPlugFile* file)
-{
-  return file->mSoundFile.GetCurrentPos();
 }
 
 void ModPlug_GetSettings(ModPlug_Settings* settings)

@@ -18,10 +18,10 @@
 // VU-Meter
 #define VUMETER_DECAY		4
 
-// SNDMIX: These are global flags for playback control
+// SNDMIX: These are global flags for playback control (first two configurable via SetMixConfig)
 UINT CSoundFile::m_nStereoSeparation = 128;
-LONG CSoundFile::m_nStreamVolume = 0x8000;
 UINT CSoundFile::m_nMaxMixChannels = 32;
+LONG CSoundFile::m_nStreamVolume = 0x8000;
 // Mixing Configuration (SetWaveConfig)
 DWORD CSoundFile::gdwSysInfo = 0;
 DWORD CSoundFile::gnChannels = 1;
@@ -119,7 +119,7 @@ rneg:
 	}
 	return result;
 #else
-	return ((unsigned long long) a * (unsigned long long) b ) / c;
+	return ((uint64_t) a * (uint64_t) b ) / c;
 #endif
 }
 
@@ -170,7 +170,7 @@ rneg:
 	}
 	return result;
 #else
-	return ((unsigned long long) a * (unsigned long long) b + (c >> 1)) / c;
+	return ((uint64_t) a * (uint64_t) b + (c >> 1)) / c;
 #endif
 }
 
@@ -324,7 +324,6 @@ UINT CSoundFile::Read(LPVOID lpDestBuffer, UINT cbBuffer)
 #endif
 		// Perform clipping + VU-Meter
 		lpBuffer += pCvt(lpBuffer, MixSoundBuffer, lTotalSampleCount, &nVUMeterMin, &nVUMeterMax);
-		//pCvt(lpBuffer, MixSoundBuffer, lTotalSampleCount, &nVUMeterMin, &nVUMeterMax);
 		// Buffer ready
 		lRead -= lCount;
 		m_nBufferCount -= lCount;
@@ -366,8 +365,7 @@ BOOL CSoundFile::ProcessRow()
 				// End of song ?
 				if ((m_nPattern == 0xFF) || (m_nCurrentPattern >= MAX_ORDERS))
 				{
-					//FUUUUUCK
-					if (m_nRepeatCount == 0)
+					//if (!m_nRepeatCount)
 						return FALSE;     //never repeat entire song
 					if (!m_nRestartPos)
 					{
@@ -400,7 +398,7 @@ BOOL CSoundFile::ProcessRow()
 							}
 						}
 					}
-					if (m_nRepeatCount > 0) m_nRepeatCount--;
+//					if (m_nRepeatCount > 0) m_nRepeatCount--;
 					m_nCurrentPattern = m_nRestartPos;
 					m_nRow = 0;
 					if ((Order[m_nCurrentPattern] >= MAX_PATTERNS) || (!Patterns[Order[m_nCurrentPattern]])) return FALSE;

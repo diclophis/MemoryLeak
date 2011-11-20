@@ -285,12 +285,12 @@ BOOL CSoundFile::Destroy()
 	m_nPatternNames = 0;
 	if (m_lpszPatternNames)
 	{
-		delete m_lpszPatternNames;
+		delete [] m_lpszPatternNames;
 		m_lpszPatternNames = NULL;
 	}
 	if (m_lpszSongComments)
 	{
-		delete m_lpszSongComments;
+		delete [] m_lpszSongComments;
 		m_lpszSongComments = NULL;
 	}
 	for (i=1; i<MAX_SAMPLES; i++)
@@ -477,6 +477,16 @@ BOOL CSoundFile::SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
 	gdwMixingFreq = nRate;
 	gnBitsPerSample = nBits;
 	InitPlayer(bReset);
+	return TRUE;
+}
+
+BOOL CSoundFile::SetMixConfig(UINT nStereoSeparation, UINT nMaxMixChannels)
+//-------------------------------------------------------------------------
+{
+	if (nMaxMixChannels < 2) return FALSE;
+
+	m_nMaxMixChannels = nMaxMixChannels;
+	m_nStereoSeparation = nStereoSeparation;
 	return TRUE;
 }
 
@@ -1540,7 +1550,9 @@ void CSoundFile::AdjustSampleLoop(MODINSTRUMENT *pIns)
 //----------------------------------------------------
 {
 	if (!pIns->pSample) return;
+	if (pIns->nLength > MAX_SAMPLE_LENGTH) pIns->nLength = MAX_SAMPLE_LENGTH;
 	if (pIns->nLoopEnd > pIns->nLength) pIns->nLoopEnd = pIns->nLength;
+	if (pIns->nLoopStart > pIns->nLength+2) pIns->nLoopStart = pIns->nLength+2;
 	if (pIns->nLoopStart+2 >= pIns->nLoopEnd)
 	{
 		pIns->nLoopStart = pIns->nLoopEnd = 0;
@@ -1634,8 +1646,6 @@ void CSoundFile::AdjustSampleLoop(MODINSTRUMENT *pIns)
 DWORD CSoundFile::TransposeToFrequency(int transp, int ftune)
 //-----------------------------------------------------------
 {
-	//---GCCFIX:  Removed assembly.
-	return (DWORD)(8363*pow(2, (transp*128+ftune)/(1536)));
 
 #ifdef MSC_VER
 	const float _fbase = 8363;
@@ -1666,6 +1676,9 @@ DWORD CSoundFile::TransposeToFrequency(int transp, int ftune)
 	if (derr <= 5) freq -= derr;
 	if (derr >= 995) freq += 1000-derr;
 	return freq;
+#else
+	//---GCCFIX:  Removed assembly.
+	return (DWORD)(8363*pow(2, (double)(transp*128+ftune)/(1536)));
 #endif
 }
 
@@ -1674,8 +1687,6 @@ DWORD CSoundFile::TransposeToFrequency(int transp, int ftune)
 int CSoundFile::FrequencyToTranspose(DWORD freq)
 //----------------------------------------------
 {
-	//---GCCFIX:  Removed assembly.
-	return int(1536*(log(freq/8363)/log(2)));
 
 #ifdef MSC_VER
 	const float _f1_8363 = 1.0f / 8363.0f;
@@ -1692,6 +1703,9 @@ int CSoundFile::FrequencyToTranspose(DWORD freq)
 	fistp result
 	}
 	return result;
+#else
+	//---GCCFIX: Removed assembly.
+	return int(1536*(log(freq/8363.0)/log(2.0)));
 #endif
 }
 
@@ -1762,7 +1776,7 @@ BOOL CSoundFile::SetPatternName(UINT nPat, LPCSTR lpszName)
 		if (m_lpszPatternNames)
 		{
 			memcpy(p, m_lpszPatternNames, m_nPatternNames * MAX_PATTERNNAME);
-			delete m_lpszPatternNames;
+			delete [] m_lpszPatternNames;
 			m_lpszPatternNames = NULL;
 		}
 		m_lpszPatternNames = p;
@@ -1808,7 +1822,7 @@ UINT CSoundFile::DetectUnusedSamples(BOOL *pbIns)
 				UINT jmax = PatternSize[ipat] * m_nChannels;
 				for (UINT j=0; j<jmax; j++, p++)
 				{
-					if ((p->note) && (p->note <= 120))
+					if ((p->note) && (p->note <= NOTE_MAX))
 					{
 						if ((p->instr) && (p->instr < MAX_INSTRUMENTS))
 						{

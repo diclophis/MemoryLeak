@@ -45,7 +45,7 @@ BOOL CSoundFile::ITInstrToMPT(const void *p, INSTRUMENTHEADER *penv, UINT trkver
 		memcpy(penv->filename, pis->filename, 12);
 		penv->nFadeOut = bswapLE16(pis->fadeout) << 6;
 		penv->nGlobalVol = 64;
-		for (UINT j=0; j<120; j++)
+		for (UINT j=0; j<NOTE_MAX; j++)
 		{
 			UINT note = pis->keyboard[j*2];
 			UINT ins = pis->keyboard[j*2+1];
@@ -84,7 +84,7 @@ BOOL CSoundFile::ITInstrToMPT(const void *p, INSTRUMENTHEADER *penv, UINT trkver
 		penv->nFadeOut = bswapLE16(pis->fadeout) << 5;
 		penv->nGlobalVol = pis->gbv >> 1;
 		if (penv->nGlobalVol > 64) penv->nGlobalVol = 64;
-		for (UINT j=0; j<120; j++)
+		for (UINT j=0; j<NOTE_MAX; j++)
 		{
 			UINT note = pis->keyboard[j*2];
 			UINT ins = pis->keyboard[j*2+1];
@@ -159,13 +159,15 @@ BOOL CSoundFile::ITInstrToMPT(const void *p, INSTRUMENTHEADER *penv, UINT trkver
 BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 //--------------------------------------------------------------
 {
-	ITFILEHEADER pifh = *(ITFILEHEADER *)lpStream;
 	DWORD dwMemPos = sizeof(ITFILEHEADER);
 	DWORD inspos[MAX_INSTRUMENTS];
 	DWORD smppos[MAX_SAMPLES];
 	DWORD patpos[MAX_PATTERNS];
 	BYTE chnmask[64], channels_used[64];
 	MODCOMMAND lastvalue[64];
+
+	if ((!lpStream) || (dwMemLength < sizeof(ITFILEHEADER))) return FALSE;
+	ITFILEHEADER pifh = *(ITFILEHEADER *)lpStream;
 
 	pifh.id = bswapLE32(pifh.id);
 	pifh.reserved1 = bswapLE16(pifh.reserved1);
@@ -181,7 +183,6 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 	pifh.msgoffset = bswapLE32(pifh.msgoffset);
 	pifh.reserved2 = bswapLE32(pifh.reserved2);
 
-	if ((!lpStream) || (dwMemLength < 0x100)) return FALSE;
 	if ((pifh.id != 0x4D504D49) || (pifh.insnum >= MAX_INSTRUMENTS)
 	 || (!pifh.smpnum) || (pifh.smpnum >= MAX_INSTRUMENTS) || (!pifh.ordnum)) return FALSE;
 	if (dwMemPos + pifh.ordnum + pifh.insnum*4
@@ -216,7 +217,7 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 	}
 	if (m_nChannels < 4) m_nChannels = 4;
 	// Reading Song Message
-	if ((pifh.special & 0x01) && (pifh.msglength) && (pifh.msgoffset + pifh.msglength < dwMemLength))
+	if ((pifh.special & 0x01) && (pifh.msglength) && (pifh.msglength <= dwMemLength) && (pifh.msgoffset < dwMemLength - pifh.msglength))
 	{
 		m_lpszSongComments = new char[pifh.msglength+1];
 		if (m_lpszSongComments)
@@ -325,11 +326,11 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 	for (UINT patchk=0; patchk<npatterns; patchk++)
 	{
 		memset(chnmask, 0, sizeof(chnmask));
-		if ((!patpos[patchk]) || ((DWORD)patpos[patchk] + 4 >= dwMemLength)) continue;
+		if ((!patpos[patchk]) || ((DWORD)patpos[patchk] >= dwMemLength - 4)) continue;
 		UINT len = bswapLE16(*((WORD *)(lpStream+patpos[patchk])));
 		UINT rows = bswapLE16(*((WORD *)(lpStream+patpos[patchk]+2)));
 		if ((rows < 4) || (rows > 256)) continue;
-		if (patpos[patchk]+8+len > dwMemLength) continue;
+		if (8+len > dwMemLength || patpos[patchk] > dwMemLength - (8+len)) continue;
 		UINT i = 0;
 		const BYTE *p = lpStream+patpos[patchk]+8;
 		UINT nrow = 0;
@@ -383,7 +384,7 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 	// Reading Samples
 	m_nSamples = pifh.smpnum;
 	if (m_nSamples >= MAX_SAMPLES) m_nSamples = MAX_SAMPLES-1;
-	for (UINT nsmp=0; nsmp<pifh.smpnum; nsmp++) if ((smppos[nsmp]) && (smppos[nsmp] + sizeof(ITSAMPLESTRUCT) <= dwMemLength))
+	for (UINT nsmp=0; nsmp<pifh.smpnum; nsmp++) if ((smppos[nsmp]) && (smppos[nsmp] <= dwMemLength - sizeof(ITSAMPLESTRUCT)))
 	{
 		ITSAMPLESTRUCT pis = *(ITSAMPLESTRUCT *)(lpStream+smppos[nsmp]);
 		pis.id = bswapLE32(pis.id);
@@ -450,7 +451,7 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 	// Reading Patterns
 	for (UINT npat=0; npat<npatterns; npat++)
 	{
-		if ((!patpos[npat]) || ((DWORD)patpos[npat] + 4 >= dwMemLength))
+		if ((!patpos[npat]) || ((DWORD)patpos[npat] >= dwMemLength - 4))
 		{
 			PatternSize[npat] = 64;
 			Patterns[npat] = AllocatePattern(64, m_nChannels);
@@ -460,7 +461,7 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 		UINT len = bswapLE16(*((WORD *)(lpStream+patpos[npat])));
 		UINT rows = bswapLE16(*((WORD *)(lpStream+patpos[npat]+2)));
 		if ((rows < 4) || (rows > 256)) continue;
-		if (patpos[npat]+8+len > dwMemLength) continue;
+		if (8+len > dwMemLength || patpos[npat] > dwMemLength - (8+len)) continue;
 		PatternSize[npat] = rows;
 		if ((Patterns[npat] = AllocatePattern(rows, m_nChannels)) == NULL) continue;
 		memset(lastvalue, 0, sizeof(lastvalue));
@@ -799,7 +800,7 @@ BOOL CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
 			iti.ifc = penv->nIFC;
 			iti.ifr = penv->nIFR;
 			iti.nos = 0;
-			for (UINT i=0; i<120; i++) if (penv->Keyboard[i] < MAX_SAMPLES)
+			for (UINT i=0; i<NOTE_MAX; i++) if (penv->Keyboard[i] < MAX_SAMPLES)
 			{
 				UINT smp = penv->Keyboard[i];
 				if ((smp) && (!smpcount[smp]))
@@ -857,7 +858,7 @@ BOOL CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
 		} else
 		// Save Empty Instrument
 		{
-			for (UINT i=0; i<120; i++) iti.keyboard[i*2] = i;
+			for (UINT i=0; i<NOTE_MAX; i++) iti.keyboard[i*2] = i;
 			iti.ppc = 5*12;
 			iti.gbv = 128;
 			iti.dfp = 0x20;

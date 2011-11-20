@@ -4,6 +4,7 @@
  * Authors: Olivier Lapicque <olivierl@jps.net>
  *          Markus Fick <webmaster@mark-f.de> spline + fir-resampler
 */
+
 #include <stdint.h>
 #include "stdafx.h"
 #include "sndfile.h"
@@ -129,7 +130,7 @@ CzCUBICSPLINE::CzCUBICSPLINE( )
 			if( lut[_LIdx+1]>lut[_LMax] ) _LMax = _LIdx+1;
 			if( lut[_LIdx+2]>lut[_LMax] ) _LMax = _LIdx+2;
 			if( lut[_LIdx+3]>lut[_LMax] ) _LMax = _LIdx+3;
-			lut[_LMax] += (SPLINE_QUANTSCALE-_LSum);
+			lut[_LMax] += ((signed short)SPLINE_QUANTSCALE-_LSum);
 		}
 #endif
 	}
@@ -1777,7 +1778,6 @@ DWORD MPPASMCALL X86_Convert32To16(LPVOID lp16, int *pBuffer, DWORD lSampleCount
 	signed short *p = (signed short *)lp16;
 	for (UINT i=0; i<lSampleCount; i++)
 	{
-		//printf("wtf--- %d / %d\n", i, lSampleCount);
 		int n = pBuffer[i];
 		if (n < MIXING_CLIPMIN)
 			n = MIXING_CLIPMIN;
@@ -1888,13 +1888,13 @@ DWORD MPPASMCALL X86_Convert32To24(LPVOID lp16, int *pBuffer, DWORD lSampleCount
 			vumax = n;
 		p = n >> (8-MIXING_ATTENUATION) ; // 24-bit signed
 #ifdef WORDS_BIGENDIAN
-		buf[i*3+0] = p & 0xFF0000 ;
-		buf[i*3+1] = p & 0x00FF00 ;
+		buf[i*3+0] = p & 0xFF0000 >> 24;
+		buf[i*3+1] = p & 0x00FF00 >> 16 ;
 		buf[i*3+2] = p & 0x0000FF ;
 #else
 		buf[i*3+0] = p & 0x0000FF ;
-		buf[i*3+1] = p & 0x00FF00 ;
-		buf[i*3+2] = p & 0xFF0000 ;
+		buf[i*3+1] = p & 0x00FF00 >> 16;
+		buf[i*3+2] = p & 0xFF0000 >> 24;
 #endif
 	}
 	*lpMin = vumin;
@@ -1971,7 +1971,7 @@ DWORD MPPASMCALL X86_Convert32To32(LPVOID lp16, int *pBuffer, DWORD lSampleCount
 {
 	UINT i ;
 	int vumin = *lpMin, vumax = *lpMax;
-	signed long *p = (signed long *)lp16;
+	int32_t *p = (int32_t *)lp16;
 	
 	for ( i=0; i<lSampleCount; i++)
 	{
@@ -2338,7 +2338,7 @@ UINT MPPASMCALL X86_AGC(int *pBuffer, UINT nSamples, UINT nAGC)
 
 	while(nSamples)
 	{
-		x = ((long long int)(*pBuffer) * nAGC) >> AGC_PRECISION;
+		x = ((int64_t)(*pBuffer) * nAGC) >> AGC_PRECISION;
 
 		if((x < MIXING_LIMITMIN) || (x > MIXING_LIMITMAX))
 		nAGC--;

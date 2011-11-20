@@ -528,6 +528,7 @@ typedef struct MODMIDICFG
         char szMidiZXXExt[128*32]; // changed from CHAR
 } MODMIDICFG, *LPMODMIDICFG;
 
+#define NOTE_MAX                        120 //Defines maximum notevalue as well as maximum number of notes.
 
 typedef VOID (* LPSNDMIXHOOKPROC)(int *, unsigned long, unsigned long); // buffer, samples, channels
 
@@ -677,6 +678,7 @@ public:
 public:
 	// Mixer Config
 	static BOOL InitPlayer(BOOL bReset=FALSE);
+	static BOOL SetMixConfig(UINT nStereoSeparation, UINT nMaxMixChannels);
 	static BOOL SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
 	static BOOL SetResamplingMode(UINT nMode); // SRCMODE_XXXX
 	static BOOL IsStereo() { return (gnChannels > 1) ? TRUE : FALSE; }
@@ -919,7 +921,7 @@ typedef struct WAVEEXTRAHEADER
 ///////////////////////////////////////////////////////////
 // Low-level Mixing functions
 
-#define MIXBUFFERSIZE		32
+#define MIXBUFFERSIZE		512
 #define MIXING_ATTENUATION	4
 #define MIXING_CLIPMIN		(-0x08000000)
 #define MIXING_CLIPMAX		(0x07FFFFFF)
@@ -1000,7 +1002,7 @@ ARM_get32(const void *data)
 #define bswapBE32(X) bswap_32(ARM_get32(&X))
 
 // From libsdl
-#elif WORDS_BIGENDIAN
+#elif defined(WORDS_BIGENDIAN) && WORDS_BIGENDIAN
 #define bswapLE16(X) bswap_16(X)
 #define bswapLE32(X) bswap_32(X)
 #define bswapBE16(X) (X)

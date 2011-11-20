@@ -29,7 +29,9 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#ifndef _WIN32
 #include <unistd.h> // for sleep
+#endif
 
 #ifdef NEWMIKMOD
 #include "mikmod.h"
@@ -105,21 +107,25 @@ typedef struct _MIDTRACK
 
 #define MMFILE						MMSTREAM
 #define mmfseek(f,p,w)		_mm_fseek(f,p,w)
-#define mmftell(x)				_mm_ftell(x)
+#define mmftell(x)		_mm_ftell(x)
 #define mmreadUBYTE(f)	_mm_read_UBYTE(f)
 #define mmreadSBYTES(buf,sz,f)	_mm_read_SBYTES(buf,sz,f)
 #define mmreadUBYTES(buf,sz,f)	_mm_read_UBYTES(buf,sz,f)
 
 #else
 
+#if defined(WIN32) && defined(_mm_free)
+#undef _mm_free
+#endif
+
 #define MMSTREAM										FILE
 #define _mm_fseek(f,pos,whence)			fseek(f,pos,whence)
 #define _mm_read_UBYTES(buf,sz,f)		fread(buf,sz,1,f)
 #define _mm_read_SBYTES(buf,sz,f)		fread(buf,sz,1,f)
-#define DupStr(h,buf,sz)						strdup(buf)
-#define _mm_calloc(h,n,sz)					calloc(n,sz)
+#define DupStr(h,buf,sz)			strdup(buf)
+#define _mm_calloc(h,n,sz)			calloc(n,sz)
 #define _mm_recalloc(h,buf,sz,elsz)	realloc(buf,sz)
-#define _mm_free(h,p)								free(p)
+#define _mm_free(h,p)				free(p)
 
 typedef struct {
 	char *mm;
@@ -1157,7 +1163,7 @@ static int MID_ReadPatterns(MODCOMMAND *pattern[], WORD psize[], MIDHANDLE *h, i
 						n   = pat_modnote(e->note);
 						ins = e->smpno;
 						if( e->volume == 0 ) {
-							m->param = modticks(h, e->tracktick - tt1);
+							m->param = (BYTE)modticks(h, e->tracktick - tt1);
 							if( m->param ) { // note cut
 								m->command = CMD_S3MCMDEX;
 								m->param  |= 0xC0;
@@ -1171,14 +1177,14 @@ static int MID_ReadPatterns(MODCOMMAND *pattern[], WORD psize[], MIDHANDLE *h, i
 						else {
 							vol = e->volume/2;
 							if( el->volume == 0 ) {
-								m->param = modticks(h, el->tracktick - tt1);
+								m->param = (BYTE)modticks(h, el->tracktick - tt1);
 								if( m->param ) { // note cut
 									m->command = CMD_S3MCMDEX;
 									m->param  |= 0xC0;
 								}
 							}
 							else {
-								m->param = modticks(h, e->tracktick - tt1);
+								m->param = (BYTE)modticks(h, e->tracktick - tt1);
 								if( m->param ) { // note delay
 									m->command = CMD_S3MCMDEX;
 									m->param  |= 0xD0;
@@ -1211,7 +1217,7 @@ static int MID_ReadPatterns(MODCOMMAND *pattern[], WORD psize[], MIDHANDLE *h, i
 							}
 							else {	// retrigger same note...
 								m->command = CMD_RETRIG;
-								m->param = modticks(h, el->tracktick - tt1);
+								m->param = (BYTE)modticks(h, el->tracktick - tt1);
 							}
 						}
 						else

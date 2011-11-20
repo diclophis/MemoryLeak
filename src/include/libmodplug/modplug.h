@@ -52,7 +52,6 @@ int ModPlug_GetLength(ModPlugFile* file);
  * note that seeking is not very exact in some mods -- especially those for which
  * ModPlug_GetLength() does not report the full length. */
 void ModPlug_Seek(ModPlugFile* file, int millisecond);
-int ModPlug_GetCurrentPosition(ModPlugFile* file);
 
 enum _ModPlug_Flags
 {
@@ -81,6 +80,9 @@ typedef struct _ModPlug_Settings
 	int mBits;           /* Bits per sample - 8, 16, or 32 */
 	int mFrequency;      /* Sampling rate - 11025, 22050, or 44100 */
 	int mResamplingMode; /* One of MODPLUG_RESAMPLE_*, above */
+
+	int mStereoSeparation; /* Stereo separation, 1 - 256 */
+	int mMaxMixChannels; /* Maximum number of mixing channels (polyphony), 32 - 256 */
 	
 	int mReverbDepth;    /* Reverb level 0(quiet)-100(loud)      */
 	int mReverbDelay;    /* Reverb delay in ms, usually 40-200ms */
@@ -102,8 +104,7 @@ void ModPlug_SetSettings(const ModPlug_Settings* settings);
 /* NOTE: Master Volume (1-512) */
 unsigned int ModPlug_GetMasterVolume(ModPlugFile* file) ;
 void ModPlug_SetMasterVolume(ModPlugFile* file,unsigned int cvol) ;
-void ModPlug_SetTempo(ModPlugFile* file, unsigned int t);
-	
+
 int ModPlug_GetCurrentSpeed(ModPlugFile* file);
 int ModPlug_GetCurrentTempo(ModPlugFile* file);
 int ModPlug_GetCurrentOrder(ModPlugFile* file);

@@ -33,7 +33,13 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#ifndef _WIN32
+#include <limits.h> // for PATH_MAX
 #include <unistd.h> // for sleep
+#endif
+#ifndef PATH_MAX
+#define PATH_MAX 256
+#endif
 
 #ifdef NEWMIKMOD
 #include "mikmod.h"
@@ -61,7 +67,7 @@ typedef UWORD WORD;
 
 // 128 gm and 63 drum
 #define MAXSMP				191
-static char midipat[MAXSMP][40];
+static char midipat[MAXSMP][128];
 static char pathforpat[128];
 static char timiditycfg[128];
 
@@ -134,9 +140,9 @@ typedef struct {
 
 #define C4SPD	8363
 #define C4mHz	523251
-#define C4	  523.251
-#define PI 	  3.141592653589793
-#define OMEGA	((2.0 * PI * C4)/(float)C4SPD)
+#define C4	  523.251f
+#define PI 	  3.141592653589793f
+#define OMEGA	((2.0f * PI * C4)/(float)C4SPD)
 
 /**************************************************************************
 **************************************************************************/
@@ -157,6 +163,13 @@ typedef struct _PATHANDLE
 	char patname[16];
 	int samples;
 } PATHANDLE;
+
+#ifndef HAVE_SINF
+static inline float sinf(float x) {
+/* default to double version */
+	return((float)sin((double)x));
+}
+#endif
 
 // local prototypes
 static int pat_getopt(const char *s, const char *o, int dflt);
@@ -252,9 +265,9 @@ static float pat_sinus(int i)
 
 static float pat_square(int i)
 {
-	float res = 30.0 * sinf(OMEGA * (float)i);
-	if( res > 0.99 ) return 0.99;
-	if( res < -0.99 ) return -0.99;
+	float res = 30.0f * sinf(OMEGA * (float)i);
+	if( res > 0.99f ) return 0.99f;
+	if( res < -0.99f ) return -0.99f;
 	return res;
 }
 
@@ -269,8 +282,8 @@ static float pat_sawtooth(int i)
 		i = -2;
 	}
 	res = (float)i * res / PI;
-	if( res > 0.9 ) return 1.0 - res;
-	if( res < -0.9 ) return 1.0 + res;
+	if( res > 0.9f ) return 1.0f - res;
+	if( res < -0.9f ) return 1.0f + res;
 	return res;
 }
 
@@ -287,24 +300,29 @@ static PAT_SAMPLE_FUN pat_fun[] = { pat_sinus, pat_square, pat_sawtooth };
 
 #else
 
-#define MMSTREAM										FILE
-#define _mm_fopen(name,mode)				fopen(name,mode)
-#define _mm_fgets(f,buf,sz)					fgets(buf,sz,f)
+#if defined(WIN32) && defined(_mm_free)
+#undef _mm_free
+#endif
+
+#define MMSTREAM				FILE
+#define _mm_fopen(name,mode)			fopen(name,mode)
+#define _mm_fgets(f,buf,sz)			fgets(buf,sz,f)
 #define _mm_fseek(f,pos,whence)			fseek(f,pos,whence)
-#define _mm_ftell(f)								ftell(f)
+#define _mm_ftell(f)				ftell(f)
 #define _mm_read_UBYTES(buf,sz,f)		fread(buf,sz,1,f)
 #define _mm_read_SBYTES(buf,sz,f)		fread(buf,sz,1,f)
-#define _mm_feof(f)									feof(f)
-#define _mm_fclose(f)								fclose(f)
-#define DupStr(h,buf,sz)						strdup(buf)
-#define _mm_calloc(h,n,sz)					calloc(n,sz)
+#define _mm_feof(f)				feof(f)
+#define _mm_fclose(f)				fclose(f)
+#define DupStr(h,buf,sz)			strdup(buf)
+#define _mm_calloc(h,n,sz)			calloc(n,sz)
 #define _mm_recalloc(h,buf,sz,elsz)	realloc(buf,sz)
-#define _mm_free(h,p)								free(p)
+#define _mm_free(h,p)				free(p)
 
 typedef struct {
 	char *mm;
 	int sz;
 	int pos;
+	int error;
 } MMFILE;
 
 static long mmftell(MMFILE *mmfile)
@@ -314,38 +332,60 @@ static long mmftell(MMFILE *mmfile)
 
 static void mmfseek(MMFILE *mmfile, long p, int whence)
 {
+	int newpos = mmfile->pos;
 	switch(whence) {
 		case SEEK_SET:
-			mmfile->pos = p;
+			newpos = p;
 			break;
 		case SEEK_CUR:
-			mmfile->pos += p;
+			newpos += p;
 			break;
 		case SEEK_END:
-			mmfile->pos = mmfile->sz + p;
+			newpos = mmfile->sz + p;
 			break;
+	}
+	if (newpos < mmfile->sz)
+		mmfile->pos = newpos;
+	else {
+		mmfile->error = 1;
+//		printf("WARNING: seeking too far\n");
 	}
 }
 
 static void mmreadUBYTES(BYTE *buf, long sz, MMFILE *mmfile)
 {
+	// do not overread.
+	if (sz > mmfile->sz - mmfile->pos)
+		sz = mmfile->sz - mmfile->pos;
 	memcpy(buf, &mmfile->mm[mmfile->pos], sz);
 	mmfile->pos += sz;
 }
 
 static void mmreadSBYTES(char *buf, long sz, MMFILE *mmfile)
 {
+	// do not overread.
+	if (sz > mmfile->sz - mmfile->pos)
+		sz = mmfile->sz - mmfile->pos;
 	memcpy(buf, &mmfile->mm[mmfile->pos], sz);
 	mmfile->pos += sz;
 }
 
 #endif
 
+long _mm_getfsize(MMSTREAM *mmpat) {
+	long fsize;
+	_mm_fseek(mmpat, 0L, SEEK_END);
+	fsize = _mm_ftell(mmpat);
+	_mm_fseek(mmpat, 0L, SEEK_SET);
+	return(fsize);
+}
+
 void pat_init_patnames(void)
 {
-	int i,j;
+	int z, i, nsources, isdrumset, nskip, pfnlen;
 	char *p, *q;
-	char line[80];
+	char line[PATH_MAX];
+	char cfgsources[5][PATH_MAX] = {{0}, {0}, {0}, {0}, {0}};
 	MMSTREAM *mmcfg;
 	strcpy(pathforpat, PATHFORPAT);
 	strcpy(timiditycfg, TIMIDITYCFG);
@@ -356,54 +396,88 @@ void pat_init_patnames(void)
 		strcat(timiditycfg,"/timidity.cfg");
 		strcat(pathforpat,"/instruments");
 	}
-	mmcfg = _mm_fopen(timiditycfg,"r");
+	strncpy(cfgsources[0], timiditycfg, PATH_MAX);
+	nsources = 1;
+
 	for( i=0; i<MAXSMP; i++ )	midipat[i][0] = '\0';
-	if( !mmcfg ) {
-		pat_message("can not open %s, use environment variable " PAT_ENV_PATH2CFG " for the directory", timiditycfg);
-	}
-	else {
-		// read in bank 0 and drum patches
-		j = 0;
-		_mm_fgets(mmcfg, line, 80);
-		while( !_mm_feof(mmcfg) ) {
-			if( isdigit(line[0]) ) {
-				i = atoi(line);
-				if( i < MAXSMP && i >= 0 ) {
-					p = strchr(line,'/')+1;
-					if(j) 
-						q = midipat[pat_gm_drumnr(i)-1];
-					else
-						q = midipat[i];
-					while( *p && !isspace(*p) )	*q++ = *p++;
-					if( isspace(*p) ) {
-						*q++ = ':';
+
+	for ( z=0; z<5; z++ ) {
+		if (cfgsources[z][0] == 0) continue;
+		mmcfg = _mm_fopen(cfgsources[z],"r");
+		if( !mmcfg ) {
+			pat_message("can not open %s, use environment variable " PAT_ENV_PATH2CFG " for the directory", cfgsources[z]);
+		}
+		else {
+			// read in bank 0 and drum patches
+			isdrumset = 0;
+			_mm_fgets(mmcfg, line, PATH_MAX);
+			while( !_mm_feof(mmcfg) ) {
+			if( isdigit(line[0]) || (isblank(line[0]) && isdigit(line[1])) ) {
+				p = line;
+				// get pat number
+				while ( isspace(*p) ) p ++;
+				i = atoi(p);
+				while ( isdigit(*p) ) p ++;
+				while ( isspace(*p) ) p ++;
+				// get pat file name
+				if( *p && i < MAXSMP && i >= 0 && *p != '#' ) {
+					q = isdrumset ? midipat[pat_gm_drumnr(i)-1] : midipat[i];
+					pfnlen = 0;
+					while( *p && !isspace(*p) && *p != '#' && pfnlen < 128 ) {
+						pfnlen ++;
+						*q++ = *p++;
+					}
+					if( isblank(*p) && *(p+1) != '#' && pfnlen < 128 ) {
+						*q++ = ':'; pfnlen ++;
 						while( isspace(*p) ) {
 							while( isspace(*p) ) p++;
-							while( *p && !isspace(*p) ) *q++ = *p++;
-							if( isspace(*p) ) *q++ = ' ';
+							if ( *p == '#' ) { // comment
+
+							} else while( *p && !isspace(*p) && pfnlen < 128 ) {
+								pfnlen ++;
+								*q++ = *p++;
+							}
+							if( isspace(*p) ) { *q++ = ' '; pfnlen++; }
 						}
 					}
 					*q++ = '\0';
 				}
 			}
-			if( !strncmp(line,"drumset",7) ) j = 1;
-			_mm_fgets(mmcfg, line, 80);
+			if( !strncmp(line,"drumset",7) ) isdrumset = 1;
+			if( !strncmp(line,"source",6) && nsources < 5 ) {
+				q = cfgsources[nsources];
+				p = &line[7];
+				while ( isspace(*p) ) p ++;
+				pfnlen = 0;
+				while ( *p && *p != '#' && !isspace(*p) && pfnlen < 128 ) {
+					pfnlen ++;
+					*q++ = *p++;
+				}
+				*q = 0; // null termination
+				nsources++;
+			}
+			_mm_fgets(mmcfg, line, PATH_MAX);
+
+			} /* end file parsing */
+			_mm_fclose(mmcfg);
 		}
-		_mm_fclose(mmcfg);
 	}
 	q = midipat[0];
-	j = 0;
+	nskip = 0;
+	// make all empty patches duplicates the previous valid one.
 	for( i=0; i<MAXSMP; i++ )	{
 		if( midipat[i][0] ) q = midipat[i];
 		else {
-			strcpy(midipat[i],q);
-			if( midipat[i][0] == '\0' ) j++;
+			if( midipat[i] != q)
+				strcpy(midipat[i], q);
+			if( midipat[i][0] == '\0' ) nskip++;
 		}
 	}
-	if( j ) {
+	if( nskip ) {
 		for( i=MAXSMP; i-- > 0; )	{
 			if( midipat[i][0] ) q = midipat[i];
-			else strcpy(midipat[i],q);
+			else if( midipat[i] != q )
+				strcpy(midipat[i], q);
 		}
 	}
 }
@@ -411,13 +485,16 @@ void pat_init_patnames(void)
 static char *pat_build_path(char *fname, int pat)
 {
 	char *ps;
-	ps = strrchr(midipat[pat], ':');
+	char *patfile = midipat[pat];
+	int isabspath = (patfile[0] == '/');
+	if ( isabspath ) patfile ++;
+	ps = strrchr(patfile, ':');
 	if( ps ) {
-		sprintf(fname, "%s%c%s", pathforpat, DIRDELIM, midipat[pat]);
+		sprintf(fname, "%s%c%s", isabspath ? "" : pathforpat, DIRDELIM, patfile);
 		strcpy(strrchr(fname, ':'), ".pat");
 		return ps;
 	}
-	sprintf(fname, "%s%c%s.pat", pathforpat, DIRDELIM, midipat[pat]);
+	sprintf(fname, "%s%c%s.pat", isabspath ? "" : pathforpat, DIRDELIM, patfile);
 	return 0;
 }
 
@@ -510,6 +587,10 @@ static void pat_get_waveheader(MMFILE *mmpat, WaveHeader *hw, int layer)
 			for( i=1; i<layer; i++ ) {
 				mmreadUBYTES((BYTE *)hw, sizeof(WaveHeader), mmpat);
 				mmfseek(mmpat, hw->wave_size, SEEK_CUR);
+				if ( mmpat->error ) {
+					hw->wave_size = 0;
+					return;
+				}
 			}
 		}
 		else {
@@ -544,13 +625,17 @@ static void pat_get_waveheader(MMFILE *mmpat, WaveHeader *hw, int layer)
 static int pat_readpat_attr(int pat, WaveHeader *hw, int layer)
 {
 	char fname[128];
+	int fsize;
 	MMSTREAM *mmpat;
 	pat_build_path(fname, pat);
 	mmpat = _mm_fopen(fname, "r");
 	if( !mmpat )
 		return 0;
+	fsize = _mm_getfsize(mmpat);
 	pat_read_waveheader(mmpat, hw, layer);
 	_mm_fclose(mmpat);
+	if (hw->wave_size > fsize)
+		return 0;
 	return 1;
 }
 
@@ -569,7 +654,7 @@ static void pat_amplify(char *b, int num, int amp, int m)
 			for( i=0; i<n; i++ ) {
 				v = (((int)(*pw) - 0x8000) * amp) / 100;
 				if( v < -0x8000 ) v = -0x8000;
-				if( v >  0x7fff ) v =  0x7fff; 
+				if( v >  0x7fff ) v =  0x7fff;
 				*pw++ = v + 0x8000;
 			}
 		}
@@ -578,7 +663,7 @@ static void pat_amplify(char *b, int num, int amp, int m)
 			for( i=0; i<n; i++ ) {
 				v = ((*pi) * amp) / 100;
 				if( v < -0x8000 ) v = -0x8000;
-				if( v >  0x7fff ) v =  0x7fff; 
+				if( v >  0x7fff ) v =  0x7fff;
 				*pi++ = v;
 			}
 		}
@@ -763,7 +848,7 @@ static PATHANDLE *PAT_Init(void)
     PATHANDLE   *retval;
 #ifdef NEWMIKMOD
     MM_ALLOC     *allochandle;
-    
+
 		allochandle = _mmalloc_create("Load_PAT", NULL);
     retval = (PATHANDLE *)_mm_calloc(allochandle, 1,sizeof(PATHANDLE));
 		if( !retval ) return NULL;
@@ -1023,7 +1108,7 @@ static void pat_setpat_inst(WaveHeader *hw, INSTRUMENT *d, int smp)
 {
 	int u, inuse;
 	int envpoint[6], envvolume[6];
-	for(u=0; u<120; u++) {        
+	for(u=0; u<120; u++) {
 		d->samplenumber[u] = smp;
 		d->samplenote[u] = smp;
 	}
@@ -1144,7 +1229,7 @@ static void PATinst(INSTRUMENTHEADER *d, int smp, int gm)
 		hw.envelope_offset[3] = 0;
 		hw.envelope_offset[4] = 0;
 		hw.envelope_offset[5] = 0;
-		strncpy(hw.reserved, midipat[gm-1], 36);
+		strncpy(hw.reserved, midipat[gm-1], sizeof(hw.reserved));
 		pat_setpat_inst(&hw, d, smp);
 	}
 	if( hw.reserved[0] )
@@ -1217,7 +1302,7 @@ static void PATsample(CSoundFile *cs, MODINSTRUMENT *q, int smp, int gm)
 #endif
 {
 	WaveHeader hw;
-	char s[32];
+	char s[256];
 	sprintf(s, "%d:%s", smp-1, midipat[gm-1]);
 #ifdef NEWMIKMOD
 	q->samplename = DupStr(of->allochandle, s,28);
@@ -1235,7 +1320,7 @@ static void PATsample(CSoundFile *cs, MODINSTRUMENT *q, int smp, int gm)
 
 		// Enable aggressive declicking for songs that do not loop and that
 		// are long enough that they won't be adversely affected.
-		
+
 		q->flags  |= SL_LOOP;
 		q->format |= SF_16BITS;
 		q->format |= SF_SIGNED;
@@ -1361,6 +1446,7 @@ BOOL CSoundFile::ReadPAT(const BYTE *lpStream, DWORD dwMemLength)
 	mm.mm = (char *)lpStream;
 	mm.sz = dwMemLength;
 	mm.pos = 0;
+	mm.error = 0;
 #endif
 	while( avoid_reentry ) sleep(1);
 	avoid_reentry = 1;
@@ -1441,7 +1527,7 @@ BOOL CSoundFile::ReadPAT(const BYTE *lpStream, DWORD dwMemLength)
 	m_nDefaultSpeed = 6;
 	m_nChannels     = h->samples;
 	numpat          = t;
-	
+
 	m_dwSongFlags   = SONG_LINEARSLIDES;
 	m_nMinPeriod    = 28 << 2;
 	m_nMaxPeriod    = 1712 << 3;

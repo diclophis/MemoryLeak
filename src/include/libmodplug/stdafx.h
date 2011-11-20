@@ -106,6 +106,7 @@ inline void ProcessPlugins(int n) {}
 
 #define strnicmp(a,b,c)		strncasecmp(a,b,c)
 #define wsprintf			sprintf
+#define HAVE_SINF 1
 
 #ifndef FALSE
 #define FALSE	false
