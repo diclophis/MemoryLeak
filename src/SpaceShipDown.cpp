@@ -682,11 +682,9 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnable(GL_TEXTURE_2D);
   } else {
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     AtlasSprite::ReleaseBuffers();
     RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-    //RenderSpriteRange(m_DropZonesStartIndex, m_DropZonesStopIndex);
     RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     glDisable(GL_BLEND);
