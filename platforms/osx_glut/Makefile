@@ -16,7 +16,8 @@ CXXFLAGS=\
 -I../../src/include/libmodplug \
 -I../../src/octree \
 -I../../src/assimp/BoostWorkaround \
--I../../src/Box2D
+-I../../src/Box2D \
+-I../../src/OpenSteer
 
 CFLAGS=$(CXXFLAGS)
 LDFLAGS=-m64 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
@@ -36,6 +37,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Contacts/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/OpenSteer/*.cpp)))
 
 raptor_island: $(build) $(objects)
 	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
@@ -65,6 +67,7 @@ $(build):
 	mkdir -p $(build)/Box2D/Dynamics/Contacts
 	mkdir -p $(build)/Box2D/Dynamics/Joints
 	mkdir -p $(build)/Box2D/Dynamics/Rope
+	mkdir -p $(build)/OpenSteer
 
 clean:
 	touch $(build) && rm -R $(build)

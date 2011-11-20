@@ -119,11 +119,14 @@
 
 
 #include "OpenGLCommon.h"
+
 #include "assimp.hpp"
+#include "aiScene.h"
 #include "aiPostProcess.h"
 #include <include/IOStream.h>
 #include <include/IOSystem.h>
 #include "foo.h"
+
 #include "modplug.h"
 
 #define DPRINT(x...) LOGV(x)
@@ -132,7 +135,10 @@
 
 #include "Box2D.h"
 
-#include "aiScene.h"
+#include <iomanip>
+#include <sstream>
+#include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/Color.h"
 
 #include "stdarg.h"
 #include "octree.h"

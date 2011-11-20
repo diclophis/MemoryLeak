@@ -17,6 +17,11 @@ static std::vector<Game *> games;
 static Engine *m_CurrentGame;
 static pthread_mutex_t m_GameSwitchLock;
 
+namespace OpenSteer {
+	bool updatePhaseActive = false;
+	bool drawPhaseActive = false;
+}
+
 
 Engine::~Engine() {
 

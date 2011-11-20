@@ -2,7 +2,10 @@
 
 #include "SpaceShipDownContactListener.h"
 
-class BaseVehicle : public SimpleVehicle {
+typedef std::vector<OpenSteer::SphereObstacle*> SOG; // SphereObstacle group
+typedef SOG::const_iterator SOI; // SphereObstacle iterator
+
+class BaseVehicle : public OpenSteer::SimpleVehicle {
 public:
   BaseVehicle();
   void reset (void);
@@ -13,7 +16,7 @@ public:
   static void initializeObstacles (void);
   static void addOneObstacle (void);
   static void removeOneObstacle (void);
-  float minDistanceToObstacle (const Vec3 point);
+  float minDistanceToObstacle (const OpenSteer::Vec3 point);
   static int obstacleCount;
   static SOG allObstacles;
 };
@@ -24,7 +27,7 @@ public:
   void identify();
   void reset (void);
   void update (const float currentTime, const float elapsedTime);
-  Vec3 steerToEvadeAllOtherEnemies (void);
+  OpenSteer::Vec3 steerToEvadeAllOtherEnemies (void);
 };
 
 class PlayerVehicle : public BaseVehicle {
@@ -33,12 +36,12 @@ public:
   void reset (void);
   void identify();
   void update (const float currentTime, const float elapsedTime);
-  void updateX (const float currentTime, const float elapsedTime, Vec3 inputSteering);
+  void updateX (const float currentTime, const float elapsedTime, OpenSteer::Vec3 inputSteering);
   bool clearPathToGoal (void);
-  Vec3 steeringForSeeker (void);
+  OpenSteer::Vec3 steeringForSeeker (void);
   void updateState (const float currentTime);
-  Vec3 steerToEvadeAllDefenders (void);
-  Vec3 XXXsteerToEvadeAllDefenders (void);
+  OpenSteer::Vec3 steerToEvadeAllDefenders (void);
+  OpenSteer::Vec3 XXXsteerToEvadeAllDefenders (void);
   void adjustObstacleAvoidanceLookAhead (const bool clearPath);
   seekerState state;
   bool evading;
