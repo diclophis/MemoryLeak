@@ -248,6 +248,9 @@ void AtlasSprite::Simulate(float deltaTime) {
       }
     } else {
       m_Frame = fastAbs((((m_Life) / m_AnimationDuration) * m_AnimationLength));
+      if (m_Frame >= m_AnimationLength) {
+        m_Frame = m_AnimationLength - 1;
+      }
     }
   }
 }

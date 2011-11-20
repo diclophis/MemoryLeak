@@ -32,6 +32,8 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_DebugDrawToggle = true;
   m_TouchedLeft = false;
   m_TouchedRight = false;
+  m_StackCount = 0;
+  m_TakeoffTimeout = -1;
 
   CreateWorld();
   CreatePickupJoints();
@@ -48,11 +50,10 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
  
 
   m_LandscapeIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 0.0, "", 0, 0, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
   m_AtlasSprites[m_LandscapeIndex]->Build(0);
   m_AtlasSprites[m_LandscapeIndex]->SetPosition(0.0, 0.0);
   m_SpriteCount++;
-
 
 }
 
@@ -68,10 +69,9 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   float radius = 30.0;
 
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 5, 6, 1.0, "", 5, 6, 0.125, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2));
-  m_AtlasSprites[m_PlayerIndex]->m_Fps = 15.0;
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, 1, 2, 0.0, "", 12, 17, 0.125, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-  m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_AtlasSprites[m_PlayerIndex]->Build(4);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -102,8 +102,13 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_SpaceShipPartsStartIndex = part_index;
   }
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 6 + (part_index % 3), 7 + (part_index % 3), 1.0, "", 7, 8, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
-  m_AtlasSprites[part_index]->Build(0);
+  int sprite_index = 6 + (part_index % 3);
+  if (sprite_index == 8) {
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, sprite_index, sprite_index + 1, 0.0, "", 12, 17, 0.125, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2));
+    m_AtlasSprites[part_index]->Build(4);
+  } else {
+    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, sprite_index, sprite_index + 1, 0.0, "", 0, 0, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  }
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
   m_SpaceShipPartsStopIndex = m_SpriteCount;
@@ -119,6 +124,10 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   //part
   b2Body *part_body;
   part_body = world->CreateBody(&bd);
+  if (sprite_index == 8) {
+    LOGV("base\n");
+    m_SpaceShipBaseBody = part_body;
+  }
   part_body->SetUserData((void *)part_index);
   b2CircleShape shape;
   shape.m_radius = radius / PTM_RATIO;
@@ -173,7 +182,7 @@ void SpaceShipDown::CreateDropZone(float x, float y, float w, float h) {
   
   groundBody->CreateFixture(&fd);
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 0, 1, 2, 3, 1.0, "", 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 0, 1, 2, 3, 0.0, "", 0, 0, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[drop_zone_index]->Build(0);
   m_AtlasSprites[drop_zone_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
   m_SpriteCount++;
@@ -207,7 +216,7 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   groundBox.SetAsBox(w / PTM_RATIO, h / PTM_RATIO);
   groundBody->CreateFixture(&groundBox, 0);
 
-  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 2, 3, 1.0, "", 2, 3, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 4, 4, 0, 1, 0.0, "", 0, 0, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
   m_AtlasSprites[platform_index]->Build(0);
   m_AtlasSprites[platform_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
   m_SpriteCount++;
@@ -326,7 +335,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 void SpaceShipDown::AdjustZoom() {
-  m_Zoom = (m_WorldWidth * 2.0) / (float)m_ScreenWidth;
+  m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.5;
 }
 
 
@@ -346,8 +355,8 @@ int SpaceShipDown::Simulate() {
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
 
-  float thrust_x = 300.0;
-  float thrust_y = 800.0;
+  float thrust_x = 400.0;
+  float thrust_y = 900.0;
 
   if (m_TouchedLeft) {
     //thrust_x += -PLAYER_HORIZONTAL_THRUST;
@@ -361,7 +370,7 @@ int SpaceShipDown::Simulate() {
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
-    thrust_y *= 2.5;
+    thrust_y *= 2.25;
     if (m_PickedUpPartIndex != -1) {
       //thrust_x *= 2.0;
       //thrust_y = 1.0;
@@ -371,7 +380,6 @@ int SpaceShipDown::Simulate() {
       //m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
     }
     m_PlayerBody->ApplyForce(b2Vec2(thrust_x, thrust_y), forcePosition);
-    m_AtlasSprites[m_PlayerIndex]->Fire();
   } else {
     m_ThrustLevel = 0.0;
     if (m_PickedUpPartIndex != -1) {
@@ -381,6 +389,7 @@ int SpaceShipDown::Simulate() {
     //m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
   }
   
+  m_AtlasSprites[m_PlayerIndex]->Fire();
   m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = true;
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
@@ -403,8 +412,8 @@ int SpaceShipDown::Simulate() {
           player_velocity.y = -PLAYER_MAX_VELOCITY_Y * 2.5;
         }
         b->SetLinearVelocity(player_velocity);
-        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 100.0) * 200.0;
-        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = player_velocity.y - 1000.0 ;
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = (fastSinf(m_SimulationTime * 8.0) * 200.0);
+        m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -800.0; //player_velocity.y - 800.0 ;
       }
       //m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
       m_AtlasSprites[body_index]->SetPosition(x, y);
@@ -462,16 +471,28 @@ int SpaceShipDown::Simulate() {
             joint_def->bodyA = bodyA;
             joint_def->bodyB = bodyB;
             joint_def->localAxisA.Set(0.0f, 1.0f);
-            //rope_joint_def->localAnchorA = b2Vec2(0.0, 0.0);
-            //rope_joint_def->localAnchorB = b2Vec2(0.0, 0.0 i);
             (b2PrismaticJointDef *)world->CreateJoint(joint_def);
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
             world->DestroyJoint(m_FrictionJoint);
-            LOGV("break joint\n");
+            m_StackCount++;
+
           }
         }
       }
+    }
+  }
+
+  if (m_StackCount > 2) {
+    m_TakeoffTimeout += m_DeltaTime;
+    if (m_TakeoffTimeout > 2.0) {
+      b2Vec2 forcePosition = m_SpaceShipBaseBody->GetWorldCenter();
+      m_SpaceShipBaseBody->ApplyForce(b2Vec2(0.0, 10000.0), forcePosition);
+      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->Simulate(m_DeltaTime);
+      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->Fire();
+      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_RenderBullets = true;
+      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 8.0) * 200.0;
+      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_EmitVelocity[1] = -800.0 ;
     }
   }
 
@@ -644,6 +665,22 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
+  float tx = -m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  float ty = -m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  if (tx > m_WorldWidth * 0.5) {
+    tx = m_WorldWidth * 0.5;
+  }
+  if (tx < -m_WorldWidth * 0.5) {
+    tx = -m_WorldWidth * 0.5;
+  }
+  if (ty > m_WorldWidth * 0.5) {
+    ty = m_WorldWidth * 0.5;
+  }
+  if (ty < -m_WorldWidth * 0.5) {
+    ty = -m_WorldWidth * 0.5;
+  }
+
+  glTranslatef(tx, ty, 0);
   if (m_DebugDrawToggle) {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -664,22 +701,3 @@ void SpaceShipDown::RenderSpritePhase() {
     AtlasSprite::ReleaseBuffers();
   }
 }
-      /*
-      float pl_x = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-      //float pl_y = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-      float pa_x = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[0];
-      //float pa_y = m_AtlasSprites[m_PickedUpPartIndex]->m_Position[1];
-      if (m_TouchedRight) {
-        if (pl_x > pa_x) {
-          thrust_x *= 12;
-        } else {
-          thrust_x *= 0.1;
-        }
-      } else if (m_TouchedLeft) {
-        if (pl_x < pa_x) {
-          thrust_x *= 12;
-        } else {
-          thrust_x *= 0.1;
-        }
-      }
-      */

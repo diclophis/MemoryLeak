@@ -28,6 +28,7 @@ public:
   b2World *world;
   b2Body *m_PlayerBody;
   b2Joint *m_PickupJoint;
+  b2Body *m_SpaceShipBaseBody;
   std::vector<b2JointDef*> m_PickupJointDefs;
   b2FrictionJointDef *m_FrictionJointDef;
   b2FrictionJoint *m_FrictionJoint;
@@ -41,6 +42,8 @@ public:
   int m_DropZonesStartIndex;
   int m_DropZonesStopIndex;
   int m_PickedUpPartIndex;
+  int m_StackCount;
+  float m_TakeoffTimeout;
 
   float m_PickupTimeout;
   float m_ThrustLevel;
