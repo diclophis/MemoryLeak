@@ -17,6 +17,7 @@ public:
   void CreatePlayer(float x, float y);
   void CreateSpaceShipPart(float x, float y);
   void CreatePlatform(float x, float y, float w, float h);
+  void CreateDropZone(float x, float y, float w, float h);
   void CreatePickupJoints();
   void CreateDebugDraw();
   void AdjustZoom();
@@ -37,6 +38,8 @@ public:
   int m_SpaceShipPartsStopIndex;
   int m_PlatformsStartIndex;
   int m_PlatformsStopIndex;
+  int m_DropZonesStartIndex;
+  int m_DropZonesStopIndex;
   int m_PickedUpPartIndex;
 
   float m_PickupTimeout;

@@ -8,7 +8,7 @@
 #define PART_DENSITY 5.25
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 6.5
-#define PLAYER_FRICTION 0.5
+#define PLAYER_FRICTION 0.25
 //#define PLAYER_HORIZONTAL_THRUST 1000.0
 //#define PLAYER_VERTICAL_THRUST -GRAVITY * 5.0
 #define PLAYER_MAX_VELOCITY_X 5.0
@@ -22,6 +22,8 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_SpaceShipPartsStopIndex = -1;
   m_PlatformsStartIndex = -1;
   m_PlatformsStopIndex = -1;
+  m_DropZonesStartIndex = -1;
+  m_DropZonesStopIndex = -1;
   m_PickedUpPartIndex = -1;
   m_PickupTimeout = -1;
   m_ThrustLevel = 0.0;
@@ -37,13 +39,13 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   LoadLevel(1, 2);
   LoadLevel(1, 1);
   LoadLevel(1, 0);
+  LoadLevel(1, 3);
   CreateBorder(m_WorldWidth, m_WorldHeight);
 
 
   float m_WorldWidthInPixels = m_WorldWidth * 2.0;
   float m_WorldHeightInPixels = m_WorldHeight * 2.0;
-  
-  //LOGV("wtf2: %f %f %f %f %f\n", m_Zoom, m_WorldWidth, m_WorldHeight, m_WorldWidthInPixels, m_WorldHeightInPixels);
+ 
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(2), 1, 1, 0, 1, 1.0, "", 0, 1, 0.0, m_WorldWidthInPixels, m_WorldHeightInPixels));
@@ -139,6 +141,43 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   part_body->SetActive(true);
 
+}
+
+
+void SpaceShipDown::CreateDropZone(float x, float y, float w, float h) {
+  int drop_zone_index = m_SpriteCount;
+
+  if (m_DropZonesStartIndex == -1) {
+    m_DropZonesStartIndex = drop_zone_index;
+  }
+
+  // Define the ground body.
+  // bottom-left corner
+  b2BodyDef groundBodyDef;
+  groundBodyDef.position.Set(x / PTM_RATIO, ((y - h) / PTM_RATIO));
+  
+  // Call the body factory which allocates memory for the ground body
+  // from a pool and creates the ground box shape (also from a pool).
+  // The body is also added to the world.
+  b2Body* groundBody = world->CreateBody(&groundBodyDef);
+  groundBody->SetUserData((void *)-1);
+  
+
+  // Define the ground box shape.
+  b2PolygonShape groundBox;
+  groundBox.SetAsBox(w / PTM_RATIO, h / PTM_RATIO);
+
+  b2FixtureDef fd;
+  fd.shape = &groundBox;
+  fd.isSensor = true;
+  
+  groundBody->CreateFixture(&fd);
+
+  m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 3, 3, 2, 3, 1.0, "", 2, 3, 0.0, BLOCK_WIDTH, BLOCK_WIDTH));
+  m_AtlasSprites[drop_zone_index]->Build(0);
+  m_AtlasSprites[drop_zone_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
+  m_SpriteCount++;
+  m_DropZonesStopIndex = m_SpriteCount;
 }
 
 
@@ -321,11 +360,11 @@ int SpaceShipDown::Simulate() {
   }
 
   if (m_TouchedLeft || m_TouchedRight) {
-    thrust_y *= 2.0;
+    thrust_y *= 2.25;
     if (m_PickedUpPartIndex != -1) {
       //thrust_x *= 2.0;
       //thrust_y = 1.0;
-      thrust_y *= 2.5;
+      thrust_y *= 1.75;
     }
     if (player_velocity.y < PLAYER_MAX_VELOCITY_Y) {
       //m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
@@ -453,6 +492,7 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 			idx = pos - dictionary;
 			data[j] = idx;
 		} else {
+      LOGV("wtf\n");
 			throw 666;
 		}
 	}
@@ -521,6 +561,11 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
             CreatePlayer(world_x, world_y);
             break;
 
+          case 3:
+            //green
+            CreateDropZone(world_x, world_y, 25.0, 25.0);
+            break;
+
           case 0:
             //red
             //LOGV("platform\n");
@@ -586,6 +631,7 @@ void SpaceShipDown::RenderSpritePhase() {
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     AtlasSprite::ReleaseBuffers();
     RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+    RenderSpriteRange(m_DropZonesStartIndex, m_DropZonesStopIndex);
     RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     glDisable(GL_BLEND);
