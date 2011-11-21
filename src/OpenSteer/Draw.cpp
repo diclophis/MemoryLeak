@@ -1068,9 +1068,11 @@ OpenSteer::drawCameraLookAt (const Vec3& cameraPosition,
 
     // use LookAt from OpenGL Utilities
     glLoadIdentity ();
+    /*
     gluLookAt (cameraPosition.x, cameraPosition.y, cameraPosition.z,
                pointToLookAt.x,  pointToLookAt.y,  pointToLookAt.z,
                up.x,             up.y,             up.z);
+    */
 }
 
 
