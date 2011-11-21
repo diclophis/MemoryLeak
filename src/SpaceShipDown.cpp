@@ -3,6 +3,7 @@
 
 
 #include "MemoryLeak.h"
+#include "OpenSteer/Draw.h"
 #include "SpaceShipDown.h"
 
 #define GRAVITY -100.0
@@ -20,10 +21,11 @@ using namespace OpenSteer;
 //point to seeker
 PlayerVehicle *g_PlayerVehicle;
 std::vector<EnemyVehicle*> g_EnemyVehicles;
+std::vector<BaseVehicle*> g_AllVehicles;
 SOG BaseVehicle::allObstacles;
 int BaseVehicle::obstacleCount = 0;
 const Vec3 g_HomeBaseCenter(0, 0, 0);
-const float g_HomeBaseRadius = 10.0;
+const float g_HomeBaseRadius = 1.0;
 const float g_ObstacleRadius = 5.0;
 const float g_MinStartRadius = 50;
 const float g_MaxStartRadius = 100;
@@ -44,7 +46,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
-  m_DebugDrawToggle = false;
+  m_DebugDrawToggle = true;
   m_TouchedLeft = false;
   m_TouchedRight = false;
   m_StackCount = 0;
@@ -61,6 +63,19 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   LoadLevel(1, 3);
   CreateBorder(m_WorldWidth, m_WorldHeight);
   CreateLandscape();
+
+  g_PlayerVehicle = new PlayerVehicle;
+  g_AllVehicles.push_back(g_PlayerVehicle);
+
+  for (int i = 0; i<10; i++) {
+    EnemyVehicle *enemy = new EnemyVehicle;
+    g_EnemyVehicles.push_back(enemy);
+    g_AllVehicles.push_back(g_EnemyVehicles[i]);
+  }
+
+  BaseVehicle::initializeObstacles();
+
+
 }
 
 
@@ -359,7 +374,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 void SpaceShipDown::AdjustZoom() {
-  m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.75;
+  //m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.75;
 }
 
 
@@ -368,6 +383,22 @@ int SpaceShipDown::Simulate() {
   AdjustZoom();
 
   m_PickupTimeout += m_DeltaTime;
+
+
+  //g_PlayerVehicle->updateX(mySimulationTime, myDeltaTime, steeringFromInput);
+  
+  // update each enemy
+  for (unsigned int i = 0; i < g_EnemyVehicles.size(); i++) {
+    g_EnemyVehicles[i]->update(m_SimulationTime, m_DeltaTime);
+    //pos1a = ctfEnemies[i]->position();
+    //vel1a = ctfEnemies[i]->velocity();
+    //if (vel1a.x != 0.0) {
+    //  rot1a = atan2(vel1a.z, vel1a.x);
+    //}
+    //myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a), 0.0);
+    //myRaptors[i]->SetPosition(pos1a.x, myRaptorHeight, pos1a.z);
+  }
+
 
   int velocityIterations = 8;
   int positionIterations = 3;
@@ -690,11 +721,31 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
-  glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
+  //glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
   if (m_DebugDrawToggle) {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    world->DrawDebugData();
+    //world->DrawDebugData();
+    //m_Zoom = 0.125; 
+    glRotatef(90.0, 1.0, 0.0, 0.0);
+    Color bodyColor;
+    bodyColor.set (1.0f, 1.0f, 1.0f);
+    drawBasic2dCircularVehicle(*g_PlayerVehicle, bodyColor);
+    //drawTrail ();
+	  for (unsigned int i=0; i<g_EnemyVehicles.size(); i++) {
+      drawBasic2dCircularVehicle(*g_EnemyVehicles[i], bodyColor);
+    }
+
+    const Vec3 up (0, 0.01f, 0);
+    const Color atColor (0.3f, 0.3f, 0.5f);
+    const Color noColor = gGray50;
+    const bool reached = false; //>state == CtfSeeker::atGoal;
+    const Color baseColor = (reached ? atColor : noColor);
+    drawXZDisk (g_HomeBaseRadius, g_HomeBaseCenter, baseColor, 40);
+    drawXZDisk (g_HomeBaseRadius / 15, g_HomeBaseCenter+up, gBlack, 20);
+
+    //g_PlayerVehicle->setRadius(m_SimulationTime * 5.0);
+
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_TEXTURE_2D);
@@ -709,9 +760,6 @@ void SpaceShipDown::RenderSpritePhase() {
     AtlasSprite::ReleaseBuffers();
   }
 }
-
-
-
 
 
 BaseVehicle::BaseVehicle() {
@@ -742,7 +790,6 @@ void BaseVehicle::reset (void) {
 void PlayerVehicle::reset (void) {
 	BaseVehicle::reset();
 	setPosition(g_HomeBaseCenter);
-	//setPosition(Vec3(0.0, 0.0, 0.0));
 	setRadius(5.0);
 	setSpeed(0);             // speed along Forward direction.
 	setMaxSpeed(0.0);        // velocity is clipped to this magnitude
@@ -766,7 +813,7 @@ void EnemyVehicle::reset (void) {
 	rx = (rx * 200.0) + 50;
 
 	setPosition(rx, 0.0, rz);
-	setRadius(4.0);
+	setRadius(5.0);
 	setSpeed(35.0);
 	setMaxSpeed(40.0);
 	setMaxForce(1000.0);
