@@ -726,12 +726,11 @@ void SpaceShipDown::RenderSpritePhase() {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     //world->DrawDebugData();
-    //m_Zoom = 0.125; 
     glRotatef(90.0, 1.0, 0.0, 0.0);
     Color bodyColor;
     bodyColor.set (1.0f, 1.0f, 1.0f);
     drawBasic2dCircularVehicle(*g_PlayerVehicle, bodyColor);
-    //drawTrail ();
+    drawTrail();
 	  for (unsigned int i=0; i<g_EnemyVehicles.size(); i++) {
       drawBasic2dCircularVehicle(*g_EnemyVehicles[i], bodyColor);
     }
