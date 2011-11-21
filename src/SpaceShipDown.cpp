@@ -28,8 +28,8 @@ const Vec3 g_HomeBaseCenter(0, 0, 0);
 const Vec3 g_PlayerVehicleCenter(100, 0, 100);
 const float g_HomeBaseRadius = 1.0;
 const float g_ObstacleRadius = 5.0;
-const float g_MinStartRadius = 200;
-const float g_MaxStartRadius = 300;
+const float g_MinStartRadius = 500;
+const float g_MaxStartRadius = 1000;
 const float g_BrakingRate = 0.5;
 const float g_AvoidancePredictTimeMin  = 0.1f;
 const float g_AvoidancePredictTimeMax  = 0.5;
@@ -68,14 +68,13 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   g_PlayerVehicle = new PlayerVehicle;
   g_AllVehicles.push_back(g_PlayerVehicle);
 
-  for (int i = 0; i<10; i++) {
+  for (int i = 0; i<20; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
     g_AllVehicles.push_back(g_EnemyVehicles[i]);
   }
 
-  BaseVehicle::initializeObstacles();
-
+  //BaseVehicle::initializeObstacles();
 
 }
 
@@ -385,8 +384,7 @@ int SpaceShipDown::Simulate() {
 
   m_PickupTimeout += m_DeltaTime;
 
-
-  //g_PlayerVehicle->updateX(mySimulationTime, myDeltaTime, steeringFromInput);
+  //g_PlayerVehicle->update(m_SimulationTime, m_DeltaTime);
   
   // update each enemy
   for (unsigned int i = 0; i < g_EnemyVehicles.size(); i++) {
@@ -730,21 +728,22 @@ void SpaceShipDown::RenderSpritePhase() {
     glRotatef(90.0, 1.0, 0.0, 0.0);
     Color bodyColor;
     bodyColor.set (1.0f, 1.0f, 1.0f);
-    drawBasic2dCircularVehicle(*g_PlayerVehicle, bodyColor);
+    //drawBasic2dCircularVehicle(*g_PlayerVehicle, bodyColor);
     //drawTrail();
+    drawXZDisk (g_PlayerVehicle->radius(), g_PlayerVehicle->position(), bodyColor, 40);
 	  for (unsigned int i=0; i<g_EnemyVehicles.size(); i++) {
-      drawBasic2dCircularVehicle(*g_EnemyVehicles[i], bodyColor);
+      //drawBasic2dCircularVehicle(*g_EnemyVehicles[i], bodyColor);
+      drawXZDisk (g_EnemyVehicles[i]->radius(), g_EnemyVehicles[i]->position(), bodyColor, 40);
     }
 
-    //const Vec3 up (0, 0.01f, 0);
-    //const Color atColor (0.3f, 0.3f, 0.5f);
-    //const Color noColor = gGray50;
-    //const bool reached = false; //>state == CtfSeeker::atGoal;
-    //const Color baseColor = (reached ? atColor : noColor);
-    //drawXZDisk (g_HomeBaseRadius, g_HomeBaseCenter, baseColor, 40);
+    const Vec3 up (0, 0.01f, 0);
+    const Color atColor (0.3f, 0.3f, 0.5f);
+    const Color noColor = gGray50;
+    const bool reached = false; //>state == CtfSeeker::atGoal;
+    const Color baseColor = (reached ? atColor : noColor);
+    //drawXZDisk (m_SimulationTime * 5.0, g_HomeBaseCenter, baseColor, 40);
     //drawXZDisk (g_HomeBaseRadius / 15, g_HomeBaseCenter+up, gBlack, 20);
-
-    g_PlayerVehicle->setRadius(m_SimulationTime * 5.0);
+    //g_PlayerVehicle->setRadius(m_SimulationTime * 5.0);
 
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -791,7 +790,7 @@ void PlayerVehicle::reset (void) {
 	BaseVehicle::reset();
 	setPosition(g_HomeBaseCenter);
 	setPosition(g_PlayerVehicleCenter);
-	setRadius(5.0);
+	setRadius(32.0);
 	setSpeed(0);             // speed along Forward direction.
 	setMaxSpeed(0.0);        // velocity is clipped to this magnitude
 	setMaxForce(0.0);        // steering force is clipped to this magnitude
@@ -812,9 +811,9 @@ void EnemyVehicle::reset (void) {
 	//rx = (rx * 200.0) + 50;
 	//setPosition(rx, 0.0, rz);
 
-	setRadius(5.0);
+	setRadius(32.0);
 	setSpeed(35.0);
-	setMaxSpeed(40.0);
+	setMaxSpeed(100.0);
 	setMaxForce(1000.0);
 }
 
@@ -902,7 +901,7 @@ void BaseVehicle::randomizeStartingPositionAndHeading (void) {
 	setPosition (g_HomeBaseCenter + randomOnRing);
 	
 	// are we are too close to an obstacle?
-	if (minDistanceToObstacle (position()) < radius() * 5) {
+	if (minDistanceToObstacle (position()) < radius() * 10) {
 		// if so, retry the randomization (this recursive call may not return
 		// if there is too little free space)
 		randomizeStartingPositionAndHeading ();
@@ -919,16 +918,13 @@ void EnemyVehicle::update (const float currentTime, const float elapsedTime)
 	//const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter, gSeeker->position());
 	//const float adjustedDistance = seekerToGoalDist - radius() - gHomeBaseRadius;
 	//const float seekerToGoalTime = ((adjustedDistance < 0 ) ? 0 : (adjustedDistance/gSeeker->speed()));
-	const float maxPredictionTime = 2.75; //seekerToGoalTime * 0.9f;
+	const float maxPredictionTime = 0.5; //seekerToGoalTime * 0.9f;
 	
 	// determine steering (pursuit, obstacle avoidance, or braking)
 	Vec3 steer (0, 0, 0);
 	if (g_PlayerVehicle->state == running) {
 		Vec3 avoidance = steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) allObstacles);
-
-		// saved for annotation
-		//avoiding = (avoidance == Vec3::zero);
-		
+		//Vec3 avoidance2 = steerToEvadeAllOtherEnemies();
 		//if (avoiding) {
 		//	steer += steerForPursuit(*gSeeker, maxPredictionTime);
 		//} else {
@@ -946,8 +942,6 @@ void EnemyVehicle::update (const float currentTime, const float elapsedTime)
 	
 	if (seekerToMeDist < sumOfRadii) {
 		if (g_PlayerVehicle->state == running) {
-			//gSeeker->state = tagged;
-			//printf("hit");
 			reset();
 		}
 	}
@@ -972,11 +966,10 @@ Vec3 EnemyVehicle::steerToEvadeAllOtherEnemies (void) {
 			const Vec3 flee = xxxsteerForFlee (eFuture);
 			
 			const float eForwardDistance = forward().dot (eOffset);
-			const float behindThreshold = radius() * -2;
+			const float behindThreshold = radius() * -50;
 			
 			const float distanceWeight = 4 / eDistance;
-			const float forwardWeight = ((eForwardDistance > behindThreshold) ?
-										 1.0f : 0.5f);
+			const float forwardWeight = ((eForwardDistance > behindThreshold) ? 1.0f : 0.5f);
 			
 			const Vec3 adjustedFlee = flee * distanceWeight * forwardWeight;
 			
@@ -1170,17 +1163,14 @@ Vec3 PlayerVehicle::steeringForSeeker (void) {
 // from the goal and heading directly towards it, make it small otherwise.
 void PlayerVehicle::adjustObstacleAvoidanceLookAhead (const bool clearPath)
 {
-	if (clearPath)
-	{
+	if (clearPath) {
 		evading = false;
 		const float goalDistance = Vec3::distance (g_HomeBaseCenter,position());
 		const bool headingTowardGoal = isAhead (g_HomeBaseCenter, 0.98f);
 		const bool isNear = (goalDistance/speed()) < g_AvoidancePredictTimeMax;
 		const bool useMax = headingTowardGoal && !isNear;
 		g_AvoidancePredictTime = (useMax ? g_AvoidancePredictTimeMax : g_AvoidancePredictTimeMin);
-	}
-	else
-	{
+	} else {
 		evading = true;
 		g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 	}
@@ -1189,6 +1179,7 @@ void PlayerVehicle::adjustObstacleAvoidanceLookAhead (const bool clearPath)
 
 void PlayerVehicle::updateState (const float currentTime)
 {
+  /*
 	// if we reach the goal before being tagged, switch to atGoal state
 	if (state == running)
 	{
@@ -1213,6 +1204,7 @@ void PlayerVehicle::updateState (const float currentTime)
 			//OpenSteerDemo::queueDelayedResetPlugInXXX ();
 		}
 	}
+  */
 }
 
 
@@ -1223,7 +1215,7 @@ void PlayerVehicle::update (const float currentTime, const float elapsedTime) {
 
 void PlayerVehicle::updateX (const float currentTime, const float elapsedTime, Vec3 inputSteering) {
 	// do behavioral state transitions, as needed
-	updateState (currentTime);
+	//updateState (currentTime);
 	
 	// determine and apply steering/braking forces
 	Vec3 steer (0, 0, 0);
