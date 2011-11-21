@@ -25,10 +25,11 @@ std::vector<BaseVehicle*> g_AllVehicles;
 SOG BaseVehicle::allObstacles;
 int BaseVehicle::obstacleCount = 0;
 const Vec3 g_HomeBaseCenter(0, 0, 0);
+const Vec3 g_PlayerVehicleCenter(100, 0, 100);
 const float g_HomeBaseRadius = 1.0;
 const float g_ObstacleRadius = 5.0;
-const float g_MinStartRadius = 50;
-const float g_MaxStartRadius = 100;
+const float g_MinStartRadius = 200;
+const float g_MaxStartRadius = 300;
 const float g_BrakingRate = 0.5;
 const float g_AvoidancePredictTimeMin  = 0.1f;
 const float g_AvoidancePredictTimeMax  = 0.5;
@@ -730,20 +731,20 @@ void SpaceShipDown::RenderSpritePhase() {
     Color bodyColor;
     bodyColor.set (1.0f, 1.0f, 1.0f);
     drawBasic2dCircularVehicle(*g_PlayerVehicle, bodyColor);
-    drawTrail();
+    //drawTrail();
 	  for (unsigned int i=0; i<g_EnemyVehicles.size(); i++) {
       drawBasic2dCircularVehicle(*g_EnemyVehicles[i], bodyColor);
     }
 
-    const Vec3 up (0, 0.01f, 0);
-    const Color atColor (0.3f, 0.3f, 0.5f);
-    const Color noColor = gGray50;
-    const bool reached = false; //>state == CtfSeeker::atGoal;
-    const Color baseColor = (reached ? atColor : noColor);
-    drawXZDisk (g_HomeBaseRadius, g_HomeBaseCenter, baseColor, 40);
-    drawXZDisk (g_HomeBaseRadius / 15, g_HomeBaseCenter+up, gBlack, 20);
+    //const Vec3 up (0, 0.01f, 0);
+    //const Color atColor (0.3f, 0.3f, 0.5f);
+    //const Color noColor = gGray50;
+    //const bool reached = false; //>state == CtfSeeker::atGoal;
+    //const Color baseColor = (reached ? atColor : noColor);
+    //drawXZDisk (g_HomeBaseRadius, g_HomeBaseCenter, baseColor, 40);
+    //drawXZDisk (g_HomeBaseRadius / 15, g_HomeBaseCenter+up, gBlack, 20);
 
-    //g_PlayerVehicle->setRadius(m_SimulationTime * 5.0);
+    g_PlayerVehicle->setRadius(m_SimulationTime * 5.0);
 
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -789,6 +790,7 @@ void BaseVehicle::reset (void) {
 void PlayerVehicle::reset (void) {
 	BaseVehicle::reset();
 	setPosition(g_HomeBaseCenter);
+	setPosition(g_PlayerVehicleCenter);
 	setRadius(5.0);
 	setSpeed(0);             // speed along Forward direction.
 	setMaxSpeed(0.0);        // velocity is clipped to this magnitude
@@ -801,17 +803,15 @@ void PlayerVehicle::reset (void) {
 
 void EnemyVehicle::reset (void) {
 	BaseVehicle::reset();
-	//randomizeStartingPositionAndHeading();
+	randomizeStartingPositionAndHeading();
 	//setPosition(0.0, 0.0, 0.0);
 	
-	//printf("hit");
-	float rz = (lrand48() % 255) / 255.f;
-	float rx = (lrand48() % 255) / 255.f;
-	rz = (rz * 20.0) - 10.0;
-	//rz = 0.0;
-	rx = (rx * 200.0) + 50;
+	//float rz = (lrand48() % 255) / 255.f;
+	//float rx = (lrand48() % 255) / 255.f;
+	//rz = (rz * 20.0) - 10.0;
+	//rx = (rx * 200.0) + 50;
+	//setPosition(rx, 0.0, rz);
 
-	setPosition(rx, 0.0, rz);
 	setRadius(5.0);
 	setSpeed(35.0);
 	setMaxSpeed(40.0);
