@@ -539,17 +539,18 @@ int SpaceShipDown::Simulate() {
 
   float tx = -m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   float ty = -m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-  if (tx > m_WorldWidth * 0.25) {
-    tx = m_WorldWidth * 0.25;
+
+  if (tx > m_WorldWidth * 0.75) {
+    tx = m_WorldWidth * 0.75;
   }
-  if (tx < -m_WorldWidth * 0.25) {
-    tx = -m_WorldWidth * 0.25;
+  if (tx < -m_WorldWidth * 0.75) {
+    tx = -m_WorldWidth * 0.75;
   }
-  if (ty > m_WorldWidth * 0.25) {
-    ty = m_WorldWidth * 0.25;
+  if (ty > m_WorldWidth * 0.75) {
+    ty = m_WorldWidth * 0.75;
   }
-  if (ty < -m_WorldWidth * 0.25) {
-    ty = -m_WorldWidth * 0.25;
+  if (ty < -m_WorldWidth * 0.75) {
+    ty = -m_WorldWidth * 0.75;
   }
 
   m_CameraOffsetX += -(0.75 * m_DeltaTime * (-tx + m_CameraOffsetX));
@@ -666,7 +667,7 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 
           case 3:
             //green
-            CreateDropZone(world_x, world_y, 25.0, 25.0);
+            CreateDropZone(world_x, world_y, 5.0, 25.0);
             break;
 
           case 0:
@@ -695,8 +696,6 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
     m_WorldWidth = m_WorldHeight = max_height;
   }
 
-  //m_WorldWidth *= 0.6;
-  //m_WorldHeight *= 0.6;
   m_WorldWidth += 100.0;
   m_WorldHeight += 100.0;
 	
