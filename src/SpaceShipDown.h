@@ -13,9 +13,6 @@ public:
   void randomizeStartingPositionAndHeading (void);
   enum seekerState {running, tagged, atGoal};
   bool avoiding;
-  static void initializeObstacles (void);
-  static void addOneObstacle (void);
-  static void removeOneObstacle (void);
   float minDistanceToObstacle (const OpenSteer::Vec3 point);
   static int obstacleCount;
   static SOG allObstacles;
@@ -39,7 +36,6 @@ public:
   void updateX (const float currentTime, const float elapsedTime, OpenSteer::Vec3 inputSteering);
   bool clearPathToGoal (void);
   OpenSteer::Vec3 steeringForSeeker (void);
-  void updateState (const float currentTime);
   OpenSteer::Vec3 steerToEvadeAllDefenders (void);
   OpenSteer::Vec3 XXXsteerToEvadeAllDefenders (void);
   void adjustObstacleAvoidanceLookAhead (const bool clearPath);
