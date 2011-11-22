@@ -536,17 +536,17 @@ int SpaceShipDown::Simulate() {
   float tx = -m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   float ty = -m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
-  if (tx > m_WorldWidth * 0.75) {
-    tx = m_WorldWidth * 0.75;
+  if (tx > m_WorldWidth * 0.5) {
+    tx = m_WorldWidth * 0.5;
   }
-  if (tx < -m_WorldWidth * 0.75) {
-    tx = -m_WorldWidth * 0.75;
+  if (tx < -m_WorldWidth * 0.5) {
+    tx = -m_WorldWidth * 0.5;
   }
-  if (ty > m_WorldWidth * 0.75) {
-    ty = m_WorldWidth * 0.75;
+  if (ty > m_WorldWidth * 0.5) {
+    ty = m_WorldWidth * 0.5;
   }
-  if (ty < -m_WorldWidth * 0.75) {
-    ty = -m_WorldWidth * 0.75;
+  if (ty < -m_WorldWidth * 0.5) {
+    ty = -m_WorldWidth * 0.5;
   }
 
   m_CameraOffsetX += -(0.75 * m_DeltaTime * (-tx + m_CameraOffsetX));
