@@ -157,17 +157,15 @@ int Engine::RunThread() {
     if (m_GameState > 1) {
       LOGV("paused\n");
     } else {
-      //for (unsigned int i=0; i<interp; i++) {
-        m_DeltaTime = averageWait; //(averageWait / interp);
-        m_SimulationTime += (m_DeltaTime);
-        if (Active()) {
-          Simulate();
-        }
-      //}
+      m_DeltaTime = averageWait;
+      m_SimulationTime += (m_DeltaTime);
+      if (Active()) {
+        Simulate();
+      }
     }
     m_IsSceneBuilt = true;
-    //pthread_mutex_unlock(&m_Mutex);
     WaitVsync();
+    //pthread_mutex_unlock(&m_Mutex);
 	}
   m_GameState = -3;
   m_SimulationThreadCleanup();

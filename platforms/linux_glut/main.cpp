@@ -179,7 +179,6 @@ int main(int argc, char** argv) {
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);
-  //glutIdleFunc(draw);
   glutReshapeFunc(resize);
 
   struct dirent *dp;
