@@ -3,11 +3,13 @@
 
 #include "MemoryLeak.h"
 
+
 SpriteGun::~SpriteGun() {
   delete m_EmitVelocity;
   for (std::vector<AtlasSprite *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
     delete *i;
   }
+  m_AtlasSprites.clear();
 }
 
 
@@ -16,10 +18,11 @@ SpriteGun::SpriteGun(foofoo *first_ff, foofoo *second_ff) : AtlasSprite(first_ff
   m_IsFlags = 0;
   m_ShotFooFoo = second_ff;
   m_IsReady = false;
-  m_RenderBullets = false;
+  m_RenderBullets = true;
   m_EmitVelocity = new float[2];
   m_EmitVelocity[0] = 0;
   m_EmitVelocity[1] = 0;
+	m_TimeSinceLastShot = 0.0;
 };
 
 void SpriteGun::Build(int n) {
@@ -45,7 +48,6 @@ void SpriteGun::Reset() {
 
 void SpriteGun::ResetParticle(int idx) {
 	m_AtlasSprites[idx]->SetLife(0.0);
-	m_AtlasSprites[idx]->SetScale(m_Scale[0], m_Scale[1]);
 	m_AtlasSprites[idx]->m_Frame = 0;
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
 	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
@@ -82,7 +84,6 @@ void SpriteGun::Simulate(float deltaTime) {
       ResetParticle(i);
     }
     
-    m_AtlasSprites[i]->SetScale((m_AtlasSprites[i]->m_Life * 3.0) + 1.0, (m_AtlasSprites[i]->m_Life * 3.0) + 1.0);
     m_AtlasSprites[i]->Simulate(deltaTime);
   }
   AtlasSprite::Simulate(deltaTime);

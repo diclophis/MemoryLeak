@@ -16,7 +16,7 @@
 #define BLOCK_WIDTH 54.0
 
 using namespace OpenSteer;
-//point to seeker
+
 PlayerVehicle *g_PlayerVehicle;
 std::vector<EnemyVehicle*> g_EnemyVehicles;
 std::vector<BaseVehicle*> g_AllVehicles;
@@ -36,7 +36,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.2, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
@@ -59,7 +59,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
-  m_DebugDrawToggle = true;
+  m_DebugDrawToggle = false;
   m_TouchedLeft = false;
   m_TouchedRight = false;
   m_StackCount = 0;
@@ -70,7 +70,6 @@ void SpaceShipDown::StartLevel(int level_index) {
   CreateWorld();
   CreatePickupJoints();
   CreateDebugDraw();
-  LOGV("level_index: %d\n", level_index);
   LoadLevel(level_index, 2);
   LoadLevel(level_index, 1);
   LoadLevel(level_index, 0);
@@ -131,7 +130,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, m_PlayerAfterburnerFoo));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-  m_AtlasSprites[m_PlayerIndex]->Build(1);
+  m_AtlasSprites[m_PlayerIndex]->Build(10);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -166,7 +165,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = 6 + (part_index % 3);
   if (sprite_index == 8) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartFoo, m_SpaceShipPartAfterburnerFoo));
-    m_AtlasSprites[part_index]->Build(1);
+    m_AtlasSprites[part_index]->Build(0);
   } else {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
@@ -470,17 +469,18 @@ int SpaceShipDown::Simulate() {
       //m_ThrustLevel += 40000.0 * thrust_y * m_DeltaTime;
     }
     m_PlayerBody->ApplyForce(b2Vec2(thrust_x, thrust_y), forcePosition);
-    m_AtlasSprites[m_PlayerIndex]->Fire();
-    m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = true;
+    //m_AtlasSprites[m_PlayerIndex]->Fire();
+    //m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = true;
   } else {
     m_ThrustLevel = 0.0;
     if (m_PickedUpPartIndex != -1) {
       thrust_y *= 2.0;
     }
     m_PlayerBody->ApplyForce(b2Vec2(0.0, thrust_y), forcePosition);
-    m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
+    //m_AtlasSprites[m_PlayerIndex]->m_RenderBullets = false;
   }
-  
+
+  m_AtlasSprites[m_PlayerIndex]->Fire();
 
   for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
     intptr_t body_index = (intptr_t) b->GetUserData();

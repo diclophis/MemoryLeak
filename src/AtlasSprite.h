@@ -71,7 +71,6 @@ public:
 	
 	float *m_Scale;
 
-  void SetScale(float, float);
   static void Scrub();
 
   GLuint m_IndexBuffer;

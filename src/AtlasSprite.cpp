@@ -8,7 +8,6 @@ static GLuint g_lastTexture = 0;
 static GLuint g_lastVertexBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
-static int g_lastFrame = -1;
 static int g_BufferCount = 0;
 
 
@@ -23,7 +22,6 @@ void AtlasSprite::ReleaseBuffers() {
 
 void AtlasSprite::Scrub() {
 	g_lastTexture = -1;
-  g_lastFrame = -1;
 }
 
 
@@ -94,19 +92,12 @@ void AtlasSprite::Render() {
     glDisable(GL_TEXTURE_2D);
     glPointSize(1.0);
     glColor4f(0.0, 1.0, 0.0, 1.0);
-    glDrawElements(GL_LINES, 2 * 2, GL_UNSIGNED_BYTE, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_LINES, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
 
   glTranslatef(-m_Position[0], -m_Position[1], 0.0);
-}
-
-
-void AtlasSprite::SetScale(float x, float y) {
-  int i = (m_Frame % m_FooFoo->m_numFrames);
-  //m_Sprites[i].dx = (100.0 * x);
-  //m_Sprites[i].dy = (100.0 * y);
 }
 
 
