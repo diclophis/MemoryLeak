@@ -5,7 +5,6 @@
 
 SpriteGun::~SpriteGun() {
   delete m_EmitVelocity;
-  delete m_ShotFooFoo;
   for (std::vector<AtlasSprite *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
     delete *i;
   }

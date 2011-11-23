@@ -31,7 +31,6 @@ AtlasSprite::~AtlasSprite() {
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
-  delete m_FooFoo;
 }
 
 

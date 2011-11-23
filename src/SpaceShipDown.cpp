@@ -98,6 +98,13 @@ void SpaceShipDown::StopLevel() {
 
 SpaceShipDown::~SpaceShipDown() {
   StopLevel();
+  delete m_PlayerFoo;
+  delete m_PlayerAfterburnerFoo;
+  delete m_SpaceShipPartFoo;
+  delete m_SpaceShipPartAfterburnerFoo;
+  delete m_DropZoneFoo;
+  delete m_PlatformFoo;
+  delete m_LandscapeFoo;
 }
 
 
