@@ -34,6 +34,7 @@ const float g_AvoidancePredictTimeMax  = 0.5;
 float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+  m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -41,7 +42,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 1024, 1024);
-  StartLevel(1);
+  StartLevel(m_LevelIndex);
 }
 
 
@@ -69,6 +70,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   CreateWorld();
   CreatePickupJoints();
   CreateDebugDraw();
+  LOGV("level_index: %d\n", level_index);
   LoadLevel(level_index, 2);
   LoadLevel(level_index, 1);
   LoadLevel(level_index, 0);
@@ -91,6 +93,10 @@ void SpaceShipDown::StopLevel() {
   for (std::vector<BaseVehicle*>::iterator i = g_AllVehicles.begin(); i != g_AllVehicles.end(); ++i) {
     delete *i;
   }
+  for (std::vector<SphereObstacle*>::iterator i = BaseVehicle::allObstacles.begin(); i != BaseVehicle::allObstacles.end(); ++i) {
+    delete *i;
+  }
+  BaseVehicle::allObstacles.clear();
   g_EnemyVehicles.clear();
   g_AllVehicles.clear();
 }
@@ -588,8 +594,12 @@ int SpaceShipDown::Simulate() {
 
   float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
   if (space_ship_height > m_WorldHeight) {
+    m_LevelIndex++;
+    if (m_LevelIndex > m_LevelFoos->size() - 1) {
+      m_LevelIndex = 0;
+    }
     StopLevel();
-    StartLevel(1);
+    StartLevel(m_LevelIndex);
   }
 
   return 1;
@@ -711,7 +721,7 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
             CreatePlatform(world_x, world_y, 25.0, 25.0);
             r = 32.0;
             c = Vec3(world_x, 0, -world_y + 25.0);
-            BaseVehicle::allObstacles.push_back (new SphereObstacle (r, c));
+            BaseVehicle::allObstacles.push_back(new SphereObstacle (r, c));
             break;
             
           default:

@@ -89,6 +89,7 @@ public:
   int m_DropZonesStopIndex;
   int m_PickedUpPartIndex;
   int m_StackCount;
+  int m_LevelIndex;
   float m_TakeoffTimeout;
 
   float m_PickupTimeout;
