@@ -93,5 +93,8 @@ public:
   int m_ModelCount;
   bool m_IsThreeD;
 
+  int m_LastDraw;
+  int m_CurrentDraw;
+
 
 };

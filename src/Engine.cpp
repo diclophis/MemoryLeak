@@ -93,6 +93,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
   m_IsThreeD = false;
 
+  m_LastDraw = 0;
+  m_CurrentDraw = 0;
+
 }
 
 
@@ -121,16 +124,19 @@ bool Engine::WaitVsync() {
 void Engine::DrawScreen(float rotation) {
   //pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    if (m_IsThreeD) {
-      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-      RenderModelPhase();
-    } else {
-      glMatrixMode(GL_PROJECTION);
+    if (m_CurrentDraw > m_LastDraw) {
+      glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
       glLoadIdentity();
-      glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-      RenderSpritePhase();
+      if (m_IsThreeD) {
+        glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+        RenderModelPhase();
+      } else {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+        RenderSpritePhase();
+      }
+      m_LastDraw = m_CurrentDraw;
     }
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
@@ -164,6 +170,7 @@ int Engine::RunThread() {
       }
     }
     m_IsSceneBuilt = true;
+    m_CurrentDraw++;
     WaitVsync();
     //pthread_mutex_unlock(&m_Mutex);
 	}
