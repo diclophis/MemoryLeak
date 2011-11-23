@@ -33,11 +33,14 @@ const float g_AvoidancePredictTimeMin  = 0.1f;
 const float g_AvoidancePredictTimeMax  = 0.5;
 float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
+
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.2, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_SpaceShipPartFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
@@ -55,6 +58,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_DropZonesStartIndex = -1;
   m_DropZonesStopIndex = -1;
   m_PickedUpPartIndex = -1;
+  m_RequiredPartIndex = 0;
   m_PickupTimeout = -1;
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
@@ -105,7 +109,9 @@ SpaceShipDown::~SpaceShipDown() {
   StopLevel();
   delete m_PlayerFoo;
   delete m_PlayerAfterburnerFoo;
-  delete m_SpaceShipPartFoo;
+  delete m_SpaceShipPartBaseFoo;
+  delete m_SpaceShipPartTopFoo;
+  delete m_SpaceShipPartMiddleFoo;
   delete m_SpaceShipPartAfterburnerFoo;
   delete m_DropZoneFoo;
   delete m_PlatformFoo;
@@ -160,16 +166,21 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   if (m_SpaceShipPartsStartIndex == -1) {
     m_SpaceShipPartsStartIndex = part_index;
+    m_SpaceShipPartsStopIndex = m_SpaceShipPartsStartIndex;
   }
 
-  int sprite_index = 6 + (part_index % 3);
-  if (sprite_index == 8) {
-    m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartFoo, m_SpaceShipPartAfterburnerFoo));
+  int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
+  if (sprite_index == 0) {
+    m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
+    m_AtlasSprites[part_index]->Build(0);
+  } else if (sprite_index == 1) {
+    m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
   } else {
-    m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartFoo, NULL));
+    m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartMiddleFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
   }
+
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_SpriteCount++;
   m_SpaceShipPartsStopIndex = m_SpriteCount;
@@ -185,8 +196,9 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   //part
   b2Body *part_body;
   part_body = world->CreateBody(&bd);
-  if (sprite_index == 8) {
+  if (sprite_index == 0) {
     m_SpaceShipBaseBody = part_body;
+    m_RequiredPartIndex = part_index;
   }
   part_body->SetUserData((void *)part_index);
   b2CircleShape shape;
@@ -525,12 +537,16 @@ int SpaceShipDown::Simulate() {
             m_PickedUpPartIndex = indexA;
             m_FrictionJointDef->bodyA = bodyA;
           }
-          m_PickupTimeout = 0.0;
-          b2JointDef *pickup_joint_def = m_PickupJointDefs.at(0);
-          pickup_joint_def->bodyA = bodyA;
-          pickup_joint_def->bodyB = bodyB;
-          m_PickupJoint = (b2RopeJoint *)world->CreateJoint(pickup_joint_def);
-          m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
+          if (m_PickedUpPartIndex == m_RequiredPartIndex) {
+            m_PickupTimeout = 0.0;
+            b2JointDef *pickup_joint_def = m_PickupJointDefs.at(0);
+            pickup_joint_def->bodyA = bodyA;
+            pickup_joint_def->bodyB = bodyB;
+            m_PickupJoint = (b2RopeJoint *)world->CreateJoint(pickup_joint_def);
+            m_FrictionJoint = (b2FrictionJoint *)world->CreateJoint(m_FrictionJointDef);
+          } else {
+            m_PickedUpPartIndex = -1;
+          }
         }
       }
     } else if (indexA == -1 || indexB == -1) {
@@ -550,6 +566,13 @@ int SpaceShipDown::Simulate() {
             joint_def->bodyB = bodyB;
             joint_def->localAxisA.Set(0.0f, 1.0f);
             (b2PrismaticJointDef *)world->CreateJoint(joint_def);
+            if (m_RequiredPartIndex == m_SpaceShipPartsStartIndex) {
+              m_RequiredPartIndex += 2;
+            } else if (m_RequiredPartIndex == m_SpaceShipPartsStopIndex - 1) {
+              m_RequiredPartIndex = m_SpaceShipPartsStartIndex + 1;
+            } else {
+              m_RequiredPartIndex++;
+            }
             m_PickedUpPartIndex = -1;
             world->DestroyJoint(m_PickupJoint);
             world->DestroyJoint(m_FrictionJoint);
@@ -560,7 +583,7 @@ int SpaceShipDown::Simulate() {
     }
   }
 
-  if (m_StackCount > 2) {
+  if (m_StackCount == (m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex)) {
     m_TakeoffTimeout += m_DeltaTime;
     if (m_TakeoffTimeout > 2.0) {
       b2Vec2 forcePosition = m_SpaceShipBaseBody->GetWorldCenter();
@@ -593,7 +616,7 @@ int SpaceShipDown::Simulate() {
   m_CameraOffsetY += -(0.75 * m_DeltaTime * (-ty + m_CameraOffsetY));
 
   float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
-  if (space_ship_height > m_WorldHeight) {
+  if (space_ship_height > m_WorldHeight * 1.5) {
     m_LevelIndex++;
     if (m_LevelIndex > m_LevelFoos->size() - 1) {
       m_LevelIndex = 0;

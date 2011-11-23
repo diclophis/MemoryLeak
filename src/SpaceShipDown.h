@@ -88,6 +88,7 @@ public:
   int m_DropZonesStartIndex;
   int m_DropZonesStopIndex;
   int m_PickedUpPartIndex;
+  int m_RequiredPartIndex;
   int m_StackCount;
   int m_LevelIndex;
   float m_TakeoffTimeout;
@@ -111,7 +112,9 @@ public:
 
   foofoo *m_PlayerFoo;
   foofoo *m_PlayerAfterburnerFoo;
-  foofoo *m_SpaceShipPartFoo;
+  foofoo *m_SpaceShipPartBaseFoo;
+  foofoo *m_SpaceShipPartTopFoo;
+  foofoo *m_SpaceShipPartMiddleFoo;
   foofoo *m_SpaceShipPartAfterburnerFoo;
   foofoo *m_DropZoneFoo;
   foofoo *m_PlatformFoo;
