@@ -586,7 +586,8 @@ int SpaceShipDown::Simulate() {
   m_CameraOffsetX += -(0.75 * m_DeltaTime * (-tx + m_CameraOffsetX));
   m_CameraOffsetY += -(0.75 * m_DeltaTime * (-ty + m_CameraOffsetY));
 
-  if (m_SimulationTime > 30.0) {
+  float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
+  if (space_ship_height > m_WorldHeight) {
     StopLevel();
     StartLevel(1);
   }
@@ -624,7 +625,7 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 	unsigned int l = m_LevelFoos->at(level_index)->len;
 
 	char *pos = NULL;
-	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	int idx = -1;
 	int *data = (int *)malloc(sizeof(int) * l);
 	const char *code;

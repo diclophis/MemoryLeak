@@ -46,6 +46,8 @@ static int game_index = 0;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
+static bool debug_down = false;
+
 
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
@@ -107,12 +109,19 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  //printf("key: %d %c\n", key, key);
-  if (key == 110) {
-    if (left_down) {
+  //LOGV("key: %d %c\n", key, key);
+  if (key == 49) {
+    if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
     } else {
       Engine::CurrentGameHit(0, 0, 0);
+    }
+    debug_down = !debug_down;
+  } else if (key == 110) {
+    if (left_down) {
+      Engine::CurrentGameHit(0, 1024, 2);
+    } else {
+      Engine::CurrentGameHit(0, 1024, 0);
     }
     left_down = !left_down;
   } else if (key == 109) {
@@ -122,11 +131,10 @@ void processNormalKeys(unsigned char key, int x, int y) {
       Engine::CurrentGameHit(1024, 1024, 0);
     }
     right_down = !right_down;
-  } else if (key == 27 || key == 113) {
-    exit(0);
   } else {
     if (reset_down) {
     } else {
+      /*
       game_index = key - 49;
       if (game_index > 3) {
         game_index = 0;
@@ -134,11 +142,14 @@ void processNormalKeys(unsigned char key, int x, int y) {
       if (game_index < 0) {
         game_index = 0;
       }
+      */
+      game_index = 3;
       Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
     }
     reset_down = !reset_down;
   }
 }
+
 
 char *path_cat (const char *str1, char *str2) {
 	size_t str1_len = strlen(str1);

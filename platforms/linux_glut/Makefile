@@ -2,14 +2,15 @@
 
 build=build
 CXXFLAGS=\
--m64 -g -pg -DDESKTOP -DHAVE_SETENV \
+-m64 -g -pg -DDESKTOP -DHAVE_SETENV -D_iPhoneVersion \
 -I/usr/include \
 -I../../src \
 -I../../src/include \
 -I../../src/include/libmodplug \
 -I../../src/octree \
 -I../../src/assimp/BoostWorkaround \
--I../../src/Box2D
+-I../../src/Box2D \
+-I../../src/OpenSteer
 
 #CC=gcc
 
@@ -49,6 +50,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Contacts/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/OpenSteer/*.cpp)))
 
 raptor_island: $(build) $(objects)
 	$(CXX) -o $(build)/raptor_island $(objects) $(LDFLAGS)
@@ -80,6 +82,7 @@ $(build):
 	mkdir -p $(build)/Box2D/Dynamics/Contacts
 	mkdir -p $(build)/Box2D/Dynamics/Joints
 	mkdir -p $(build)/Box2D/Dynamics/Rope
+	mkdir -p $(build)/OpenSteer
 
 clean:
 	rm -Rf $(build)
