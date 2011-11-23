@@ -66,6 +66,9 @@ public:
   const char *byte_to_binary(int x);
   void LoadLevel(int level_index, int cursor_index);
   void CreateLandscape();
+  void CreateVehicles();
+  void StartLevel(int level_index);
+  void StopLevel();
 
 
   b2World *world;
@@ -104,6 +107,14 @@ public:
 
   float m_CameraOffsetX;
   float m_CameraOffsetY;
+
+  foofoo *m_PlayerFoo;
+  foofoo *m_PlayerAfterburnerFoo;
+  foofoo *m_SpaceShipPartFoo;
+  foofoo *m_SpaceShipPartAfterburnerFoo;
+  foofoo *m_DropZoneFoo;
+  foofoo *m_PlatformFoo;
+  foofoo *m_LandscapeFoo;
   
 
 };

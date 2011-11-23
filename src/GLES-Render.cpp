@@ -36,7 +36,7 @@ GLESDebugDraw::GLESDebugDraw() : mRatio( 1.0f ) {
 GLESDebugDraw::GLESDebugDraw( float32 ratio )
 	: mRatio( ratio )
 {
-  glLineWidth(1.0);
+  //glLineWidth(1.0);
 }
 
 

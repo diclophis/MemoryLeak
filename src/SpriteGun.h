@@ -6,7 +6,7 @@ class SpriteGun : public AtlasSprite {
 public:
 
   ~SpriteGun();
-	SpriteGun(GLuint t, int spr, int rows, int s, int e, float m, const std::string &str2, int s2, int e2, float m2, float w, float h);
+	SpriteGun(foofoo *first_ff, foofoo *second_ff);
 
 	void Build(int n);
 	void ResetParticle(int idx);
@@ -36,5 +36,7 @@ public:
 	bool m_IsReady;
   bool m_RenderBullets;
   int m_IsFlags;
+
+  foofoo *m_ShotFooFoo;
 	
 };

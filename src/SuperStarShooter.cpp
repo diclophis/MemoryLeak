@@ -48,7 +48,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridStartIndex = m_SpriteCount;
 
   for (unsigned int i=0; i<m_GridCount; i++) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
+    //m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
+    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_GridPositions[(i * 2)] = xx;
     m_GridPositions[(i * 2) + 1] = yy;
@@ -174,12 +175,21 @@ void SuperStarShooter::CreateCollider(float x, float y, float r, int flag) {
   int sx = 0;
   int sy = 0;
   float l = 120 * (1.0 / 60.0);
+  /*
   if (flag & BARREL) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 1, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & STAR) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 63, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & MIRROR) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 100.0, 100.0));
+  }
+  */
+  if (flag & BARREL) {
+    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
+  } else if (flag & STAR) {
+    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
+  } else if (flag & MIRROR) {
+    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
   }
   m_AtlasSprites[m_SpriteCount]->m_IsFlags = flag;
   m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);

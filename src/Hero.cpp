@@ -6,7 +6,8 @@
 
 Hero::Hero(b2World *w, GLuint t) {
 
-  sprite = new SpriteGun(t, 8, 8, 0, 1, 1.0, "", 0, 1, 1.0, 100.0, 100.0);
+  //sprite = new SpriteGun(t, 8, 8, 0, 1, 1.0, "", 0, 1, 1.0, 100.0, 100.0);
+  sprite = new SpriteGun(NULL, NULL);
   sprite->m_IsAlive = false;
   sprite->Build(0);
         

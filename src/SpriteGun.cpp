@@ -5,19 +5,17 @@
 
 SpriteGun::~SpriteGun() {
   delete m_EmitVelocity;
+  delete m_ShotFooFoo;
   for (std::vector<AtlasSprite *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
     delete *i;
   }
 }
 
 
-SpriteGun::SpriteGun(GLuint t, int spr, int rows, int s, int e, float m, const std::string &str2, int s2, int e2, float m2, float w, float h) : AtlasSprite(t, spr, rows, s, e, m, w, h) {
+SpriteGun::SpriteGun(foofoo *first_ff, foofoo *second_ff) : AtlasSprite(first_ff) {
   m_IsAlive =false;
   m_IsFlags = 0;
-  m_ShotAnimation = str2;
-  m_ShotStart = s2;
-  m_ShotEnd = e2;
-  m_ShotMaxLife = m2;
+  m_ShotFooFoo = second_ff;
   m_IsReady = false;
   m_RenderBullets = false;
   m_EmitVelocity = new float[2];
@@ -30,7 +28,7 @@ void SpriteGun::Build(int n) {
 	m_ShootInterval = 1.0;
 	m_FrameCounter = 0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
-		m_AtlasSprites.push_back(new AtlasSprite(m_Texture, m_SpritesPerRow, m_Rows, m_ShotStart, m_ShotEnd, m_ShotMaxLife, 40.0, 40.0));
+		m_AtlasSprites.push_back(new AtlasSprite(m_ShotFooFoo));
 		ResetParticle(idx);
 	}
 }
@@ -79,11 +77,9 @@ void SpriteGun::Fire() {
 
 void SpriteGun::Simulate(float deltaTime) {	
   m_TimeSinceLastShot += deltaTime;
-  //int shot_this_tick = 0;
-  //int not_shot_this_tick = 0;
   for (unsigned int i=0; i<m_NumParticles; i++) {
     m_AtlasSprites[i]->m_Rotation = m_Rotation;
-    if ((m_AtlasSprites[i]->m_Life > m_ShotMaxLife)) {
+    if ((m_AtlasSprites[i]->m_Life > m_ShotFooFoo->m_AnimationDuration)) {
       ResetParticle(i);
     }
     

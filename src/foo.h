@@ -49,6 +49,8 @@ struct foofoo {
 	GLuint *m_NormalBuffers;
 	GLuint *m_IndexBuffers;
 	GLuint *m_TextureBuffer;
+	GLuint m_Texture;
+  float m_AnimationDuration;
 	int m_numFaces;
 	int m_numFrames;
   int m_numTextureBuffers;
