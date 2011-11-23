@@ -227,6 +227,7 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 void draw(void) {
   Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
+  glutPostRedisplay();
 }
 
 
@@ -310,7 +311,7 @@ int main(int argc, char** argv) {
   glutIgnoreKeyRepeat(true);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
-  glutIdleFunc(draw);
+  //glutIdleFunc(draw);
   glutReshapeFunc(resize);
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];

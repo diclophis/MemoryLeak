@@ -119,7 +119,7 @@ bool Engine::WaitVsync() {
 
 
 void Engine::DrawScreen(float rotation) {
-  pthread_mutex_lock(&m_Mutex);
+  //pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
@@ -135,7 +135,7 @@ void Engine::DrawScreen(float rotation) {
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
 }
 
@@ -148,7 +148,7 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   StartSimulation();
 	while (m_GameState > 0) {
-    pthread_mutex_lock(&m_Mutex);
+    //pthread_mutex_lock(&m_Mutex);
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
     averageWait = t2 - t1;
@@ -166,7 +166,7 @@ int Engine::RunThread() {
       //}
     }
     m_IsSceneBuilt = true;
-    pthread_mutex_unlock(&m_Mutex);
+    //pthread_mutex_unlock(&m_Mutex);
     WaitVsync();
 	}
   m_GameState = -3;
@@ -431,7 +431,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
     } else {
       //LOGV("foooo man chuuu\n");
     }
-    pthread_mutex_unlock(&m_GameSwitchLock);
+    //pthread_mutex_unlock(&m_GameSwitchLock);
   //}
 }
 
