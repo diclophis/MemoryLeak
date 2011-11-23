@@ -37,11 +37,11 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.2, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.15, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.15, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 1024, 1024);
@@ -172,7 +172,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
-    m_AtlasSprites[part_index]->Build(0);
+    m_AtlasSprites[part_index]->Build(10);
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
@@ -445,8 +445,8 @@ int SpaceShipDown::Simulate() {
   }
 
 
-  int velocityIterations = 1;
-  int positionIterations = 1;
+  int velocityIterations = 16;
+  int positionIterations = 6;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -587,12 +587,12 @@ int SpaceShipDown::Simulate() {
     m_TakeoffTimeout += m_DeltaTime;
     if (m_TakeoffTimeout > 2.0) {
       b2Vec2 forcePosition = m_SpaceShipBaseBody->GetWorldCenter();
-      m_SpaceShipBaseBody->ApplyForce(b2Vec2(0.0, 5500.0), forcePosition);
-      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->Simulate(m_DeltaTime);
-      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->Fire();
-      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_RenderBullets = true;
-      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 8.0) * 200.0;
-      m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_EmitVelocity[1] = -800.0 ;
+      m_SpaceShipBaseBody->ApplyForce(b2Vec2(0.0, 1500.0 * m_StackCount), forcePosition);
+      m_AtlasSprites[m_SpaceShipPartsStartIndex]->Simulate(m_DeltaTime);
+      m_AtlasSprites[m_SpaceShipPartsStartIndex]->Fire();
+      m_AtlasSprites[m_SpaceShipPartsStartIndex]->m_RenderBullets = true;
+      m_AtlasSprites[m_SpaceShipPartsStartIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 8.0) * 200.0;
+      m_AtlasSprites[m_SpaceShipPartsStartIndex]->m_EmitVelocity[1] = -100.0 * m_StackCount;
     }
   }
 

@@ -122,9 +122,9 @@ bool Engine::WaitVsync() {
 
 
 void Engine::DrawScreen(float rotation) {
-  //pthread_mutex_lock(&m_Mutex);
+  pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
-    if (m_CurrentDraw > m_LastDraw) {
+    //if (m_CurrentDraw > m_LastDraw) {
       glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
       glLoadIdentity();
       if (m_IsThreeD) {
@@ -136,12 +136,12 @@ void Engine::DrawScreen(float rotation) {
         glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
         RenderSpritePhase();
       }
-      m_LastDraw = m_CurrentDraw;
-    }
+      //m_LastDraw = m_CurrentDraw;
+    //}
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  //pthread_mutex_unlock(&m_Mutex);
+  pthread_mutex_unlock(&m_Mutex);
   pthread_cond_signal(&m_VsyncCond);
 }
 
@@ -154,7 +154,7 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   StartSimulation();
 	while (m_GameState > 0) {
-    //pthread_mutex_lock(&m_Mutex);
+    pthread_mutex_lock(&m_Mutex);
     gettimeofday(&tim, NULL);
     t2=tim.tv_sec+(tim.tv_usec/1000000.0);
     averageWait = t2 - t1;
@@ -170,9 +170,9 @@ int Engine::RunThread() {
       }
     }
     m_IsSceneBuilt = true;
-    m_CurrentDraw++;
+    //m_CurrentDraw++;
+    pthread_mutex_unlock(&m_Mutex);
     WaitVsync();
-    //pthread_mutex_unlock(&m_Mutex);
 	}
   m_GameState = -3;
   m_SimulationThreadCleanup();
