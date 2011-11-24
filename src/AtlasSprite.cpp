@@ -64,10 +64,10 @@ void AtlasSprite::Render() {
 
   glTranslatef(m_Position[0], m_Position[1], 0.0);
   
-  if (m_LastRotation != m_Rotation) {
+  //if (m_LastRotation != m_Rotation) {
     glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-    m_LastRotation = m_Rotation;
-  }
+    //m_LastRotation = m_Rotation;
+  //}
 
   if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
     g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
@@ -97,6 +97,7 @@ void AtlasSprite::Render() {
     glEnable(GL_TEXTURE_2D);
   }
 
+  glRotatef(-m_Rotation, 0.0, 0.0, 1.0);
   glTranslatef(-m_Position[0], -m_Position[1], 0.0);
 }
 

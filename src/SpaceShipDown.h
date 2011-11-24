@@ -89,6 +89,8 @@ public:
   int m_DropZonesStopIndex;
   int m_PickedUpPartIndex;
   int m_RequiredPartIndex;
+  int m_EnemiesStartIndex;
+  int m_EnemiesStopIndex;
   int m_StackCount;
   int m_LevelIndex;
   float m_TakeoffTimeout;
@@ -119,6 +121,7 @@ public:
   foofoo *m_DropZoneFoo;
   foofoo *m_PlatformFoo;
   foofoo *m_LandscapeFoo;
+  foofoo *m_EnemyFoo;
   
 
 };

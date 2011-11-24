@@ -45,6 +45,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 1024, 1024);
+  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   StartLevel(m_LevelIndex);
 }
 
@@ -59,6 +60,8 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_DropZonesStopIndex = -1;
   m_PickedUpPartIndex = -1;
   m_RequiredPartIndex = 0;
+  m_EnemiesStartIndex = -1;
+  m_EnemiesStopIndex = -1;
   m_PickupTimeout = -1;
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
@@ -116,16 +119,25 @@ SpaceShipDown::~SpaceShipDown() {
   delete m_DropZoneFoo;
   delete m_PlatformFoo;
   delete m_LandscapeFoo;
+  delete m_EnemyFoo;
 }
 
 
 void SpaceShipDown::CreateVehicles() {
   g_PlayerVehicle = new PlayerVehicle;
   g_AllVehicles.push_back(g_PlayerVehicle);
-  for (int i = 0; i<40; i++) {
+  for (int i = 0; i<50; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
     g_AllVehicles.push_back(g_EnemyVehicles[i]);
+    int enemy_index = m_SpriteCount;
+    if (m_EnemiesStartIndex == -1) {
+      m_EnemiesStartIndex = enemy_index;
+    }
+    m_AtlasSprites.push_back(new SpriteGun(m_EnemyFoo, NULL));
+    m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_SpriteCount++;
+    m_EnemiesStopIndex = m_SpriteCount;
   }
 }
 
@@ -435,13 +447,15 @@ int SpaceShipDown::Simulate() {
   // update each enemy
   for (unsigned int i = 0; i < g_EnemyVehicles.size(); i++) {
     g_EnemyVehicles[i]->update(m_SimulationTime, m_DeltaTime);
-    //pos1a = ctfEnemies[i]->position();
-    //vel1a = ctfEnemies[i]->velocity();
-    //if (vel1a.x != 0.0) {
-    //  rot1a = atan2(vel1a.z, vel1a.x);
-    //}
-    //myRaptors[i]->SetRotation(-RadiansToDegrees(rot1a), 0.0);
-    //myRaptors[i]->SetPosition(pos1a.x, myRaptorHeight, pos1a.z);
+    float rot1a = 0.0;
+    Vec3 pos1a = g_EnemyVehicles[i]->position();
+    Vec3 vel1a = g_EnemyVehicles[i]->velocity();
+    if (vel1a.x != 0.0) {
+      rot1a = atan2(vel1a.z, vel1a.x);
+    }
+    m_AtlasSprites[m_EnemiesStartIndex + i]->m_Rotation = -RadiansToDegrees(rot1a);
+    m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[0] = pos1a.x;
+    m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
   }
 
 
@@ -823,6 +837,7 @@ void SpaceShipDown::RenderSpritePhase() {
     RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
     RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     glDisable(GL_BLEND);
     AtlasSprite::ReleaseBuffers();
   }
@@ -872,7 +887,7 @@ void EnemyVehicle::reset (void) {
 	randomizeStartingPositionAndHeading();
 	setRadius(20.0);
 	setSpeed(35.0);
-	setMaxSpeed(120.0);
+	setMaxSpeed(200.0);
 	setMaxForce(5000.0);
 }
 
