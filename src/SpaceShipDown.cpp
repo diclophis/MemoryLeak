@@ -887,8 +887,8 @@ void EnemyVehicle::reset (void) {
 	randomizeStartingPositionAndHeading();
 	setRadius(20.0);
 	setSpeed(35.0);
-	setMaxSpeed(200.0);
-	setMaxForce(5000.0);
+	setMaxSpeed(300.0);
+	setMaxForce(10000.0);
 }
 
 
@@ -922,8 +922,8 @@ void EnemyVehicle::update (const float currentTime, const float elapsedTime)
 	// determine steering (pursuit, obstacle avoidance, or braking)
 	Vec3 steer (0, 0, 0);
 	if (g_PlayerVehicle->state == running) {
-		//Vec3 avoidance = steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) allObstacles);
-		steer = steerForPursuit(*g_PlayerVehicle, maxPredictionTime);
+		Vec3 avoidance = steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) allObstacles);
+		steer = avoidance + steerForPursuit(*g_PlayerVehicle, maxPredictionTime);
 	} else {
 		applyBrakingForce (g_BrakingRate, elapsedTime);
 	}
