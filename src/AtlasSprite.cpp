@@ -194,17 +194,17 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 	ff->m_numBuffers = ff->m_numFrames;
   ff->m_numTextureBuffers = ff->m_numFrames;
   ff->m_numNormalBuffers = 0;
-	ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
+	//ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
+	//ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-	ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_AnimationStart = start;
 	ff->m_AnimationEnd = end;
   ff->m_AnimationDuration = duration;
 
-	glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
+	//glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
+	//glGenBuffers(ff->m_numBuffers, ff->m_TextureBuffer);
 	glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
-	glGenBuffers(ff->m_numBuffers, ff->m_TextureBuffer);
 	glGenBuffers(ff->m_numBuffers, ff->m_InterleavedBuffers);
 
   for (unsigned int i=0; i<length; i++) {
@@ -261,7 +261,6 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[i]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
-
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
