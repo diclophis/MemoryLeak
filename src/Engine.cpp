@@ -88,8 +88,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  //glMatrixMode(GL_MODELVIEW);
+  //glLoadIdentity();
 
   m_IsThreeD = false;
 
@@ -131,8 +131,8 @@ void Engine::DrawScreen(float rotation) {
         glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
         RenderModelPhase();
       } else {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
+        //glMatrixMode(GL_PROJECTION);
+        //glLoadIdentity();
         glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
         RenderSpritePhase();
       }
@@ -245,11 +245,11 @@ void Engine::ResizeScreen(int width, int height) {
     glLoadIdentity();
     GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
   } else {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
   }
-  glMatrixMode(GL_MODELVIEW);
+  //glMatrixMode(GL_MODELVIEW);
 }
 
 

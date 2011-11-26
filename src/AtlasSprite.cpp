@@ -87,8 +87,8 @@ void AtlasSprite::Render() {
   if (m_FooFoo->m_InterleavedBuffers[m_Frame] != g_lastInterleavedBuffer) {
     g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[m_Frame];
     glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
-    glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
-    glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL) + 8 * sizeof(GLshort));
+    glVertexPointer(2, GL_SHORT, 0, (char *)NULL + (0));
+    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (8 * sizeof(GLshort)));
   }
 
   if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
@@ -96,8 +96,8 @@ void AtlasSprite::Render() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
   }
 
-  //glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-  glDrawRangeElements(GL_TRIANGLE_STRIP, 0, 4, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+  //glDrawRangeElements(GL_TRIANGLE_STRIP, 0, 4, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   if (false) {
     glDisable(GL_TEXTURE_2D);
@@ -272,8 +272,8 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 
   delete m_Sprites;
 
-  glFlush();
-  glFinish();
+  //glFlush();
+  //glFinish();
 
   return ff;
 }
