@@ -34,12 +34,14 @@ struct foofoo {
     glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
     glDeleteBuffers(m_numFrames, m_IndexBuffers);
     glDeleteBuffers(m_numTextureBuffers, m_TextureBuffer);
+    glDeleteBuffers(m_numFrames, m_InterleavedBuffers);
     free(m_VerticeBuffers);
     if (m_numNormalBuffers > 0) {
       free(m_NormalBuffers);
     }
     free(m_IndexBuffers);
     free(m_TextureBuffer);
+    free(m_InterleavedBuffers);
 	}
 
 #endif
@@ -49,6 +51,7 @@ struct foofoo {
 	GLuint *m_NormalBuffers;
 	GLuint *m_IndexBuffers;
 	GLuint *m_TextureBuffer;
+	GLuint *m_InterleavedBuffers;
 	GLuint m_Texture;
   float m_AnimationDuration;
 	int m_numFaces;
@@ -57,6 +60,7 @@ struct foofoo {
   int m_numNormalBuffers;
 	int m_AnimationStart;
 	int m_AnimationEnd;
+  size_t m_Stride;
 };
 
 #ifdef __cplusplus
