@@ -23,7 +23,6 @@ struct foofoo {
 
 #ifdef __cplusplus
 
-	//! Default constructor
 	foofoo()
 	{
     m_AnimationDuration = 0;
@@ -56,7 +55,6 @@ struct foofoo {
     }
 	}
 
-	//! Default destructor. Delete the index array
 	~foofoo()
 	{
     glDeleteBuffers(m_numBuffers, m_VerticeBuffers);
@@ -79,9 +77,17 @@ struct foofoo {
     if (m_numInterleavedBuffers > 0) {
       free(m_InterleavedBuffers);
     }
+
+#ifdef HAS_VAO
+    glDeleteVertexArrays(m_numVertexArrayObjects, m_VertexArrayObjects);
+    if (m_numVertexArrayObjects > 0) {
+      free(m_VertexArrayObjects);
+    }
+#endif
 	}
 
 #endif
+
 
 	int m_numBuffers;
 	GLuint *m_VerticeBuffers;

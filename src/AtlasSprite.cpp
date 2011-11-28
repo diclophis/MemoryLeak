@@ -10,12 +10,15 @@ static GLuint g_lastInterleavedBuffer = -1;
 static GLuint g_lastVertexArrayObject = -1;
 
 void AtlasSprite::ReleaseBuffers() {
+  g_lastInterleavedBuffer = -1;
+  g_lastElementBuffer = -1;
+#ifdef HAS_VAO
   g_lastVertexArrayObject = -1;
   glBindVertexArrayOES(0);
-  //g_lastInterleavedBuffer = -1;
-  //g_lastElementBuffer = -1;
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#else
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#endif
 }
 
 
@@ -62,27 +65,17 @@ void AtlasSprite::Render() {
     glTranslatef(m_Position[0], m_Position[1], 0.0);
     glRotatef(m_Rotation, 0.0, 0.0, 1.0);
 
-    //if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
-    //  g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
-    //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-    //}
-
+#ifdef HAS_VAO
     if (m_FooFoo->m_VertexArrayObjects[m_Frame] == 0) {
-      LOGV("no vertex array object\n");
-      
       glGenVertexArraysOES(1, &m_FooFoo->m_VertexArrayObjects[m_Frame]);
       g_lastVertexArrayObject = m_FooFoo->m_VertexArrayObjects[m_Frame];
       glBindVertexArrayOES(g_lastVertexArrayObject);
-
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glEnableClientState(GL_VERTEX_ARRAY);
-    
       g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
       glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
-
       g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-
       glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0) + (m_Frame * 4 * m_FooFoo->m_Stride));
       glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)) + (m_Frame * 4 * m_FooFoo->m_Stride));
     } else {
@@ -90,18 +83,19 @@ void AtlasSprite::Render() {
         g_lastVertexArrayObject = m_FooFoo->m_VertexArrayObjects[m_Frame];
         glBindVertexArrayOES(g_lastVertexArrayObject);
       }
-
-      //g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
-      //glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
-
-      //g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
-      //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
     }
-
-    //if (m_FooFoo->m_InterleavedBuffers[0] != g_lastInterleavedBuffer) {
-    //  g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
-    //  glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
-    //}
+#else
+    if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
+      g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+    }
+    if (m_FooFoo->m_InterleavedBuffers[0] != g_lastInterleavedBuffer) {
+      g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
+      glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
+    }
+    glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0) + (m_Frame * 4 * m_FooFoo->m_Stride));
+    glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)) + (m_Frame * 4 * m_FooFoo->m_Stride));
+#endif
     
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     
@@ -113,7 +107,6 @@ void AtlasSprite::Render() {
       glColor4f(1.0, 1.0, 1.0, 1.0);
       glEnable(GL_TEXTURE_2D);
     }
-
 
     glRotatef(-m_Rotation, 0.0, 0.0, 1.0);
     glTranslatef(-m_Position[0], -m_Position[1], 0.0);
