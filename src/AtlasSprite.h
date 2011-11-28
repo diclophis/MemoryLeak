@@ -14,6 +14,12 @@ typedef struct
   float tx2, ty2;
 } Sprite;
 
+typedef struct
+{
+  GLshort vertex[2];
+  GLfloat texture[2];
+} SpriteFoo;
+
 class AtlasSprite {
 	
 public:

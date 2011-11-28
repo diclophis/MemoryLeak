@@ -9,16 +9,15 @@ static GLuint g_lastVertexBuffer = 0;
 static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
 static GLuint g_lastInterleavedBuffer = 0;
-static GLuint g_vertexArrayObject = 0;
 static int g_BufferCount = 0;
 
 
 void AtlasSprite::ReleaseBuffers() {
   //g_lastVertexBuffer = -1;
-  //g_lastTexcoordBuffer = -1;
-  //g_lastElementBuffer = -1;
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  g_lastInterleavedBuffer = -1;
+  g_lastElementBuffer = -1;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 
@@ -71,52 +70,19 @@ void AtlasSprite::Render() {
     //m_LastRotation = m_Rotation;
   //}
 
-  //without interleave
-  /*
-  if (m_FooFoo->m_VerticeBuffers[m_Frame] != g_lastVertexBuffer) {
-    g_lastVertexBuffer = m_FooFoo->m_VerticeBuffers[m_Frame];
-    glBindBuffer(GL_ARRAY_BUFFER, g_lastVertexBuffer);
-    glVertexPointer(2, GL_SHORT, 0, (GLvoid*)((char*)NULL));
-  }
-
-  if (m_FooFoo->m_TextureBuffer[m_Frame] != g_lastTexcoordBuffer) {
-    g_lastTexcoordBuffer = m_FooFoo->m_TextureBuffer[m_Frame];
-    glBindBuffer(GL_ARRAY_BUFFER, g_lastTexcoordBuffer);
-    glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)((char*)NULL));
-  }
-  */
-
-  //with interleave
-  
-  if (g_vertexArrayObject == 0) {
-    glGenVertexArraysOES(1, &g_vertexArrayObject);
-    glBindVertexArrayOES(g_vertexArrayObject);
-    glVertexPointer(2, GL_SHORT, 0, (char *)NULL + (0));
-    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (8 * sizeof(GLshort)));
-    glBindVertexArrayOES(0);
-  }
-  
-  //glBindVertexArrayOES(g_vertexArrayObject);
-  
-  if (true) {
-  //if (m_FooFoo->m_InterleavedBuffers[m_Frame] != g_lastInterleavedBuffer) {
-    g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[m_Frame];
+  if (m_FooFoo->m_InterleavedBuffers[0] != g_lastInterleavedBuffer) {
+    g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
     glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
-    glVertexPointer(2, GL_SHORT, 0, (char *)NULL + (0));
-    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (8 * sizeof(GLshort)));
-  //}
+    glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0));
+    glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
   }
   
-  if (true) {
-  //if (m_FooFoo->m_IndexBuffers[m_Frame] != g_lastElementBuffer) {
-    g_lastElementBuffer = m_FooFoo->m_IndexBuffers[m_Frame];
+  if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
+    g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-  //}
   }
   
   glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-  //glDrawRangeElements(GL_TRIANGLE_STRIP, 0, 4, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-  //glDrawArrays(GL_TRIANGLES, 0, 5);
   
   if (false) {
     glDisable(GL_TEXTURE_2D);
@@ -166,7 +132,6 @@ void AtlasSprite::Simulate(float deltaTime) {
 foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows, int start, int end, float life, float width, float height) {
   GLshort *vertices;
   GLfloat *texture;
-  GLushort *indices;
 	int *m_Frames;
 	float duration = life + 0.1;
   int length = end - start;
@@ -210,23 +175,18 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 	foofoo *ff = new foofoo;
   ff->m_Texture = texture_index;
   ff->m_numFrames = length;
-	ff->m_numBuffers = ff->m_numFrames;
-  ff->m_numTextureBuffers = ff->m_numFrames;
-  ff->m_numNormalBuffers = 0;
-	//ff->m_VerticeBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-	//ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-	ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
-	ff->m_VertexArrays = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numBuffers));
 	ff->m_AnimationStart = start;
 	ff->m_AnimationEnd = end;
   ff->m_AnimationDuration = duration;
 
-	//glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
-	//glGenBuffers(ff->m_numBuffers, ff->m_TextureBuffer);
-	glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
-	glGenBuffers(ff->m_numBuffers, ff->m_InterleavedBuffers);
-	//glGenVertexArraysOES(ff->m_numBuffers, ff->m_VertexArrays);
+  ff->m_numInterleavedBuffers = 1;
+
+	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
+
+  int sprite_foo_offset = 0;
+  SpriteFoo *sprite_foos = (SpriteFoo *)malloc(length * 4 * sizeof(SpriteFoo));
+
+	glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
 
   for (unsigned int i=0; i<length; i++) {
     GLshort w = m_Sprites[i].dx; 
@@ -256,70 +216,30 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
     texture[6] = tx;
     texture[7] = ty;
 
-    indices = (GLushort *) malloc(4 * sizeof(GLushort));
-    indices[0] = 1;
-    indices[1] = 2;
-    indices[2] = 0;
-    indices[3] = 3;
-
-
-    size_t interleaved_buffer_size = (8 * sizeof(GLshort)) + (8 * sizeof(GLfloat));
-	  ff->m_Stride = interleaved_buffer_size;
-
-    //glBindVertexArrayOES(ff->m_VertexArrays[i]);
-
-    //glVertexAttribPointerOES(ATT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(staticFmt), (void*)offsetof(staticFmt,position));
-    //glEnableVertexAttribArray(ATT_POSITION);
-    //glVertexAttribPointer(ATT_TEXCOORD, 2, GL_UNSIGNED_SHORT, GL_TRUE, sizeof(staticFmt), (void*)offsetof(staticFmt,texcoord));
-    //glEnableVertexAttribArray(ATT_TEXCOORD);
-    
-    /*
-    glVertexPointer(2,			// Data type count
-                    GL_SHORT,		// Data type
-                    sizeof(GLshort) * 2,	// Stride to the next vertex
-                    0 );			// Vertex Buffer starting offset
- 
-    
-    glTexCoordPointer(2,			// Data type count
-                      GL_FLOAT,		// Data type
-                      sizeof(GLfloat) * 2,	// Stride to the next vertex
-                      0 );			// Vertex Buffer starting offset
-    */
-    
-    glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[i]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[i]);
-
-    
-    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
-    
-    glBufferSubData(GL_ARRAY_BUFFER, 0, (8 * sizeof(GLshort)), vertices);
-    glBufferSubData(GL_ARRAY_BUFFER, (8 * sizeof(GLshort)), (8 * sizeof(GLfloat)), texture);
-
-    //glVertexPointer(2, GL_SHORT, 0, (char *)NULL + (0));
-    //glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (8 * sizeof(GLshort)));
-
-    /*
-    glBindBuffer(GL_ARRAY_BUFFER, ff->m_VerticeBuffers[i]);
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLshort), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, ff->m_TextureBuffer[i]);
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), texture, GL_STATIC_DRAW);
-    */
-
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    //glBindVertexArrayOES(0);
+    for (unsigned int j=0; j<4; j++) {
+      sprite_foos[sprite_foo_offset].vertex[0] = vertices[(j * 2) + 0]; 
+      sprite_foos[sprite_foo_offset].vertex[1] = vertices[(j * 2) + 1];
+      sprite_foos[sprite_foo_offset].texture[0] = texture[(j * 2) + 0]; 
+      sprite_foos[sprite_foo_offset].texture[1] = texture[(j * 2) + 1];
+      sprite_foo_offset++;
+    }
 
     free(vertices);
     free(texture);
-    free(indices);
+
   }
 
   delete m_Sprites;
 
-  //glFlush();
-  //glFinish();
+  size_t size_of_sprite_foo = sizeof(SpriteFoo);
+  size_t interleaved_buffer_size = (ff->m_numFrames * 4 * size_of_sprite_foo);
+  ff->m_Stride = size_of_sprite_foo; 
+  glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
+  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, sprite_foos);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  free(sprite_foos);
 
   return ff;
 }
