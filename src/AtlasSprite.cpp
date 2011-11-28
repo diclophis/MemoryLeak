@@ -5,11 +5,8 @@
 
 
 static GLuint g_lastTexture = 0;
-static GLuint g_lastVertexBuffer = 0;
-static GLuint g_lastTexcoordBuffer = 0;
 static GLuint g_lastElementBuffer = 0;
 static GLuint g_lastInterleavedBuffer = 0;
-static int g_BufferCount = 0;
 
 
 void AtlasSprite::ReleaseBuffers() {
@@ -63,38 +60,48 @@ void AtlasSprite::Render() {
 		g_lastTexture = m_FooFoo->m_Texture;
 	}
 
-  glTranslatef(m_Position[0], m_Position[1], 0.0);
-  
-  //if (m_LastRotation != m_Rotation) {
-    glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-    //m_LastRotation = m_Rotation;
-  //}
+  bool rotated = false;
+  //glPushMatrix();
+  {
 
-  if (m_FooFoo->m_InterleavedBuffers[0] != g_lastInterleavedBuffer) {
-    g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
-    glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
-    glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0));
-    glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
-  }
-  
-  if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
-    g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-  }
-  
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-  
-  if (false) {
-    glDisable(GL_TEXTURE_2D);
-    glPointSize(1.0);
-    glColor4f(0.0, 1.0, 0.0, 1.0);
-    glDrawElements(GL_LINES, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    glEnable(GL_TEXTURE_2D);
-  }
+    glTranslatef(m_Position[0], m_Position[1], 0.0);
+    
+    if (m_LastRotation != m_Rotation) {
+      glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+      m_LastRotation = m_Rotation;
+      rotated = true;
+    }
 
-  glRotatef(-m_Rotation, 0.0, 0.0, 1.0);
-  glTranslatef(-m_Position[0], -m_Position[1], 0.0);
+    if (m_FooFoo->m_InterleavedBuffers[0] != g_lastInterleavedBuffer) {
+      g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
+      glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
+    }
+    
+    if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
+      g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
+    }
+    
+    glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0) + (m_Frame * m_FooFoo->m_Stride));
+    glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)) + (m_Frame * m_FooFoo->m_Stride));
+    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    
+    if (false) {
+      glDisable(GL_TEXTURE_2D);
+      glPointSize(1.0);
+      glColor4f(0.0, 1.0, 0.0, 1.0);
+      glDrawElements(GL_LINES, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+      glColor4f(1.0, 1.0, 1.0, 1.0);
+      glEnable(GL_TEXTURE_2D);
+    }
+
+    if (rotated) {
+      glRotatef(-m_Rotation, 0.0, 0.0, 1.0);
+    }
+
+    glTranslatef(-m_Position[0], -m_Position[1], 0.0);
+  }
+  //glPopMatrix();
 }
 
 
