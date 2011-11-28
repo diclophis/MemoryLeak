@@ -121,6 +121,36 @@ bool Engine::WaitVsync() {
 }
 
 
+
+int isExtensionSupported(const char *extension) {
+  const GLubyte *extensions = NULL;
+  const GLubyte *start;
+  GLubyte *where, *terminator;
+
+  /* Extension names should not have spaces. */
+  where = (GLubyte *) strchr(extension, ' ');
+  if (where || *extension == '\0')
+    return 0;
+  extensions = glGetString(GL_EXTENSIONS);
+  //LOGV("%s\n", extensions);
+  /* It takes a bit of care to be fool-proof about parsing the
+     OpenGL extensions string. Don't be fooled by sub-strings,
+     etc. */
+  start = extensions;
+  for (;;) {
+    where = (GLubyte *) strstr((const char *) start, extension);
+    if (!where)
+      break;
+    terminator = where + strlen(extension);
+    if (where == start || *(where - 1) == ' ')
+      if (*terminator == ' ' || *terminator == '\0')
+        return 1;
+    start = terminator;
+  }
+  return 0;
+}
+
+
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {

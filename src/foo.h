@@ -35,7 +35,7 @@ struct foofoo {
     m_AnimationStart = 0;
     m_AnimationEnd = 0;
     m_Stride = 0;
-
+    m_numVertexArrayObjects = 0;
     m_numIndexBuffers = 1;
 	  m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (m_numIndexBuffers));
     if (g_AtlasSpriteIndexBuffer == 0) {
@@ -89,6 +89,7 @@ struct foofoo {
 	GLuint *m_IndexBuffers;
 	GLuint *m_TextureBuffer;
 	GLuint *m_InterleavedBuffers;
+	GLuint *m_VertexArrayObjects;
 	GLuint m_Texture;
   float m_AnimationDuration;
 	int m_numFaces;
@@ -97,6 +98,7 @@ struct foofoo {
   int m_numTextureBuffers;
   int m_numNormalBuffers;
   int m_numIndexBuffers;
+  int m_numVertexArrayObjects;
 	int m_AnimationStart;
 	int m_AnimationEnd;
   size_t m_Stride;
