@@ -18,6 +18,7 @@ typedef struct
 {
   GLshort vertex[2];
   GLfloat texture[2];
+  int padding;
 } SpriteFoo;
 
 class AtlasSprite {
@@ -76,8 +77,6 @@ public:
 	void Simulate(float deltaTime);
 	
 	float *m_Scale;
-
-  static void Scrub();
 
   GLuint m_IndexBuffer;
 	foofoo *m_FooFoo;

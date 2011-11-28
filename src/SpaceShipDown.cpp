@@ -37,7 +37,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.15, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.33, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -126,7 +126,7 @@ SpaceShipDown::~SpaceShipDown() {
 void SpaceShipDown::CreateVehicles() {
   g_PlayerVehicle = new PlayerVehicle;
   g_AllVehicles.push_back(g_PlayerVehicle);
-  for (int i = 0; i<50; i++) {
+  for (int i = 0; i<5; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
     g_AllVehicles.push_back(g_EnemyVehicles[i]);
@@ -148,7 +148,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, m_PlayerAfterburnerFoo));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-  m_AtlasSprites[m_PlayerIndex]->Build(10);
+  m_AtlasSprites[m_PlayerIndex]->Build(20);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -184,7 +184,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
-    m_AtlasSprites[part_index]->Build(10);
+    m_AtlasSprites[part_index]->Build(1);
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);

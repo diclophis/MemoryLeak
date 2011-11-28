@@ -4,22 +4,15 @@
 #include "MemoryLeak.h"
 
 
-static GLuint g_lastTexture = 0;
-static GLuint g_lastElementBuffer = 0;
-static GLuint g_lastInterleavedBuffer = 0;
-
+static GLuint g_lastTexture = -1;
+static GLuint g_lastElementBuffer = -1;
+static GLuint g_lastInterleavedBuffer = -1;
 
 void AtlasSprite::ReleaseBuffers() {
-  //g_lastVertexBuffer = -1;
   g_lastInterleavedBuffer = -1;
   g_lastElementBuffer = -1;
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-
-void AtlasSprite::Scrub() {
-	//g_lastTexture = -1;
 }
 
 
@@ -60,30 +53,25 @@ void AtlasSprite::Render() {
 		g_lastTexture = m_FooFoo->m_Texture;
 	}
 
-  bool rotated = false;
   //glPushMatrix();
   {
 
     glTranslatef(m_Position[0], m_Position[1], 0.0);
-    
-    if (m_LastRotation != m_Rotation) {
-      glRotatef(m_Rotation, 0.0, 0.0, 1.0);
-      m_LastRotation = m_Rotation;
-      rotated = true;
+    glRotatef(m_Rotation, 0.0, 0.0, 1.0);
+
+    if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
+      g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
     }
 
     if (m_FooFoo->m_InterleavedBuffers[0] != g_lastInterleavedBuffer) {
       g_lastInterleavedBuffer = m_FooFoo->m_InterleavedBuffers[0];
       glBindBuffer(GL_ARRAY_BUFFER, g_lastInterleavedBuffer);
     }
+
+    glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0) + (m_Frame * 4 * m_FooFoo->m_Stride));
+    glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)) + (m_Frame * 4 * m_FooFoo->m_Stride));
     
-    if (m_FooFoo->m_IndexBuffers[0] != g_lastElementBuffer) {
-      g_lastElementBuffer = m_FooFoo->m_IndexBuffers[0];
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_lastElementBuffer);
-    }
-    
-    glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0) + (m_Frame * m_FooFoo->m_Stride));
-    glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)) + (m_Frame * m_FooFoo->m_Stride));
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     
     if (false) {
@@ -95,10 +83,7 @@ void AtlasSprite::Render() {
       glEnable(GL_TEXTURE_2D);
     }
 
-    if (rotated) {
-      glRotatef(-m_Rotation, 0.0, 0.0, 1.0);
-    }
-
+    glRotatef(-m_Rotation, 0.0, 0.0, 1.0);
     glTranslatef(-m_Position[0], -m_Position[1], 0.0);
   }
   //glPopMatrix();
@@ -123,7 +108,7 @@ void AtlasSprite::Simulate(float deltaTime) {
         m_Frame = m_FooFoo->m_numFrames - 1;
       }
       
-      if (m_Frame >= m_FooFoo->m_numFrames) {
+      if (m_Frame > m_FooFoo->m_numFrames) {
         m_Frame = 0;
       }
     } else {
