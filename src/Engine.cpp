@@ -132,7 +132,7 @@ int isExtensionSupported(const char *extension) {
   if (where || *extension == '\0')
     return 0;
   extensions = glGetString(GL_EXTENSIONS);
-  //LOGV("%s\n", extensions);
+  LOGV("%s\n", extensions);
   /* It takes a bit of care to be fool-proof about parsing the
      OpenGL extensions string. Don't be fooled by sub-strings,
      etc. */
@@ -155,6 +155,7 @@ void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     //if (m_CurrentDraw > m_LastDraw) {
+      //isExtensionSupported("foo");
       glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
       glLoadIdentity();
       if (m_IsThreeD) {

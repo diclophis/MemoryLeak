@@ -44,7 +44,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.15, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
-  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 1024, 1024);
+  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   StartLevel(m_LevelIndex);
 }
@@ -184,7 +184,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
-    m_AtlasSprites[part_index]->Build(1);
+    m_AtlasSprites[part_index]->Build(20);
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
