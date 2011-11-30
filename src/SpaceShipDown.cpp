@@ -11,7 +11,7 @@
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 6.5
 #define PLAYER_FRICTION 0.25
-#define ENEMY_DENSITY 1.0
+#define ENEMY_DENSITY 0.0
 #define ENEMY_FRICTION 0.0
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
@@ -144,6 +144,7 @@ void SpaceShipDown::CreateEnemy() {
   bd.type = b2_dynamicBody;
   bd.linearDamping = 0.0;
   bd.fixedRotation = true;
+  bd.gravityScale = 0.0;
   bd.position.Set(0, 0);
   b2Body *enemy_body = world->CreateBody(&bd);
   enemy_body->SetUserData((void *)enemy_index);
@@ -154,7 +155,8 @@ void SpaceShipDown::CreateEnemy() {
   fd.density = ENEMY_DENSITY;
   fd.restitution = 0.0;
   fd.friction = ENEMY_FRICTION;
-  //fd.filter.categoryBits = 0x0002;
+  fd.filter.categoryBits = 0x0004;
+  fd.filter.maskBits = 0x0002 | 0x0004;
   enemy_body->CreateFixture(&fd);
   enemy_body->SetActive(true);
 
@@ -162,6 +164,7 @@ void SpaceShipDown::CreateEnemy() {
   mouse_joint_def.bodyA = m_GroundBody;
   mouse_joint_def.bodyB = enemy_body;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
+  LOGV("wtf %f\n", enemy_body->GetMass());
   mouse_joint_def.maxForce = 5000.0f * enemy_body->GetMass();
   mouse_joint_def.dampingRatio = 100.0;
   mouse_joint_def.frequencyHz = 100.0;
@@ -253,6 +256,8 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.restitution = 0.0;
   fd.friction = PART_FRICTION;
   fd.isSensor = false;
+  //fd.filter.maskBits = 0x0004;
+  //fd.filter.categoryBits = 0x0002;
   part_body->CreateFixture(&fd);
 
   //part pickup sensor
@@ -480,8 +485,8 @@ int SpaceShipDown::Simulate() {
     g_EnemyVehicles[i]->update(m_SimulationTime, m_DeltaTime);
 
     Vec3 steer (0, 0, 0);
-    //Vec3 avoidance = g_EnemyVehicles[i]->steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) BaseVehicle::allObstacles);
-    steer = g_EnemyVehicles[i]->steerForSeek(Vec3(m_AtlasSprites[m_PlayerIndex]->m_Position[0], 0, -m_AtlasSprites[m_PlayerIndex]->m_Position[1]));
+    Vec3 avoidance = g_EnemyVehicles[i]->steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) BaseVehicle::allObstacles);
+    steer = avoidance + g_EnemyVehicles[i]->steerForSeek(Vec3(m_AtlasSprites[m_PlayerIndex]->m_Position[0], 0, -m_AtlasSprites[m_PlayerIndex]->m_Position[1]));
     g_EnemyVehicles[i]->applySteeringForce(steer, m_DeltaTime);
   }
 
