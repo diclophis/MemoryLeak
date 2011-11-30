@@ -67,17 +67,20 @@ public:
   void LoadLevel(int level_index, int cursor_index);
   void CreateLandscape();
   void CreateVehicles();
+  void CreateEnemy();
   void StartLevel(int level_index);
   void StopLevel();
 
 
   b2World *world;
   b2Body *m_PlayerBody;
+  b2Body *m_GroundBody;
   b2Joint *m_PickupJoint;
   b2Body *m_SpaceShipBaseBody;
   std::vector<b2JointDef*> m_PickupJointDefs;
   b2FrictionJointDef *m_FrictionJointDef;
   b2FrictionJoint *m_FrictionJoint;
+  std::vector<b2MouseJoint*> m_EnemyMouseJoints;
 
   int m_LandscapeIndex;
   int m_PlayerIndex;

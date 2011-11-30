@@ -11,6 +11,8 @@
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 6.5
 #define PLAYER_FRICTION 0.25
+#define ENEMY_DENSITY 0 
+#define ENEMY_FRICTION 0
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
@@ -66,7 +68,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
-  m_DebugDrawToggle = false;
+  m_DebugDrawToggle = true;
   m_TouchedLeft = false;
   m_TouchedRight = false;
   m_StackCount = 0;
@@ -126,19 +128,54 @@ SpaceShipDown::~SpaceShipDown() {
 void SpaceShipDown::CreateVehicles() {
   g_PlayerVehicle = new PlayerVehicle;
   g_AllVehicles.push_back(g_PlayerVehicle);
-  for (int i = 0; i<5; i++) {
+  for (int i = 0; i<10; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
     g_AllVehicles.push_back(g_EnemyVehicles[i]);
-    int enemy_index = m_SpriteCount;
-    if (m_EnemiesStartIndex == -1) {
-      m_EnemiesStartIndex = enemy_index;
-    }
-    m_AtlasSprites.push_back(new SpriteGun(m_EnemyFoo, NULL));
-    m_AtlasSprites[m_SpriteCount]->Build(0);
-    m_SpriteCount++;
-    m_EnemiesStopIndex = m_SpriteCount;
+    CreateEnemy();
   }
+}
+
+
+void SpaceShipDown::CreateEnemy() {
+  float radius = 30.0;
+
+  int enemy_index = m_SpriteCount;
+  if (m_EnemiesStartIndex == -1) {
+    m_EnemiesStartIndex = enemy_index;
+  }
+  m_AtlasSprites.push_back(new SpriteGun(m_EnemyFoo, NULL));
+  m_AtlasSprites[enemy_index]->Build(0);
+
+  b2BodyDef bd;
+  bd.type = b2_dynamicBody;
+  bd.linearDamping = 0.0;
+  bd.fixedRotation = true;
+  bd.position.Set(0, 0);
+  b2Body *enemy_body = world->CreateBody(&bd);
+  enemy_body->SetUserData((void *)enemy_index);
+  b2CircleShape shape;
+  shape.m_radius = radius / PTM_RATIO;
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.density = ENEMY_DENSITY;
+  fd.restitution = 0.0;
+  fd.friction = ENEMY_FRICTION;
+  //fd.filter.categoryBits = 0x0002;
+  enemy_body->CreateFixture(&fd);
+  enemy_body->SetActive(true);
+
+  b2MouseJointDef mouse_joint_def;
+  mouse_joint_def.bodyA = m_GroundBody;
+  mouse_joint_def.bodyB = enemy_body;
+  mouse_joint_def.target = b2Vec2(0.0, 0.0);
+  mouse_joint_def.maxForce = 1000.0f * enemy_body->GetMass();
+  mouse_joint_def.dampingRatio = 100.0;
+  mouse_joint_def.frequencyHz = 100.0;
+  m_EnemyMouseJoints.push_back((b2MouseJoint *)world->CreateJoint(&mouse_joint_def));
+
+  m_SpriteCount++;
+  m_EnemiesStopIndex = m_SpriteCount;
 }
 
 
@@ -338,6 +375,7 @@ void SpaceShipDown::CreateBorder(float width, float height) {
 
   borderBodyDef.position.Set(x / PTM_RATIO, y / PTM_RATIO);
   borderBody = world->CreateBody(&borderBodyDef);
+  m_GroundBody = borderBody;
   borderBox.SetAsBox(hs / PTM_RATIO, vs / PTM_RATIO);
   borderBody->CreateFixture(&fd);
   borderBody->SetUserData((void *)-2);
@@ -447,15 +485,15 @@ int SpaceShipDown::Simulate() {
   // update each enemy
   for (unsigned int i = 0; i < g_EnemyVehicles.size(); i++) {
     g_EnemyVehicles[i]->update(m_SimulationTime, m_DeltaTime);
-    float rot1a = 0.0;
-    Vec3 pos1a = g_EnemyVehicles[i]->position();
-    Vec3 vel1a = g_EnemyVehicles[i]->velocity();
-    if (vel1a.x != 0.0) {
-      rot1a = atan2(vel1a.z, vel1a.x);
-    }
-    m_AtlasSprites[m_EnemiesStartIndex + i]->m_Rotation = -RadiansToDegrees(rot1a);
-    m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[0] = pos1a.x;
-    m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
+    //float rot1a = 0.0;
+    //Vec3 pos1a = g_EnemyVehicles[i]->position();
+    //Vec3 vel1a = g_EnemyVehicles[i]->velocity();
+    //if (vel1a.x != 0.0) {
+    //  rot1a = atan2(vel1a.z, vel1a.x);
+    //}
+    //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Rotation = -RadiansToDegrees(rot1a);
+    //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[0] = pos1a.x;
+    //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
   }
 
 
@@ -529,6 +567,20 @@ int SpaceShipDown::Simulate() {
       b->SetLinearVelocity(player_velocity);
       m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0; //(fastSinf(m_SimulationTime * 8.0) * 200.0);
       m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -900.0; //player_velocity.y - 800.0 ;
+    } else if (body_index >= m_EnemiesStartIndex && body_index <= m_EnemiesStopIndex) {
+      int mouse_joint_index = (m_EnemiesStopIndex - 1) - body_index;
+      float rot1a = 0.0;
+      Vec3 pos1a = g_EnemyVehicles[mouse_joint_index]->position();
+      Vec3 vel1a = g_EnemyVehicles[mouse_joint_index]->velocity();
+      if (vel1a.x != 0.0) {
+        rot1a = atan2(vel1a.z, vel1a.x);
+      }
+      //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Rotation = -RadiansToDegrees(rot1a);
+      //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[0] = pos1a.x;
+      //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
+      //LOGV("enemy: %d %d %d %d\n", mouse_joint_index, body_index, m_EnemiesStartIndex, m_EnemiesStopIndex);
+      m_EnemyMouseJoints.at(mouse_joint_index)->SetTarget(b2Vec2(pos1a.x / PTM_RATIO, -pos1a.z / PTM_RATIO));
+
     }
     //m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
     m_AtlasSprites[body_index]->SetPosition(x, y);
@@ -887,7 +939,7 @@ void EnemyVehicle::reset (void) {
 	randomizeStartingPositionAndHeading();
 	setRadius(20.0);
 	setSpeed(35.0);
-	setMaxSpeed(300.0);
+	setMaxSpeed(100.0);
 	setMaxForce(10000.0);
 }
 
@@ -935,7 +987,7 @@ void EnemyVehicle::update (const float currentTime, const float elapsedTime)
 	
 	if (seekerToMeDist < sumOfRadii) {
 		if (g_PlayerVehicle->state == running) {
-			reset();
+			//reset();
 		}
 	}
 }
