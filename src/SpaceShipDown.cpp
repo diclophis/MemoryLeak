@@ -11,21 +11,18 @@
 #define PART_FRICTION 0.5
 #define PLAYER_DENSITY 6.5
 #define PLAYER_FRICTION 0.25
-#define ENEMY_DENSITY 0 
-#define ENEMY_FRICTION 0
+#define ENEMY_DENSITY 1.0
+#define ENEMY_FRICTION 0.0
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
 
 using namespace OpenSteer;
 
-PlayerVehicle *g_PlayerVehicle;
 std::vector<EnemyVehicle*> g_EnemyVehicles;
-std::vector<BaseVehicle*> g_AllVehicles;
 SOG BaseVehicle::allObstacles;
 int BaseVehicle::obstacleCount = 0;
 const Vec3 g_HomeBaseCenter(0, 0, 0);
-const Vec3 g_PlayerVehicleCenter(100, 0, 100);
 const float g_HomeBaseRadius = 1.0;
 const float g_ObstacleRadius = 5.0;
 const float g_MinStartRadius = 1000;
@@ -98,7 +95,7 @@ void SpaceShipDown::StopLevel() {
     delete *i;
   }
   m_PickupJointDefs.clear();
-  for (std::vector<BaseVehicle*>::iterator i = g_AllVehicles.begin(); i != g_AllVehicles.end(); ++i) {
+  for (std::vector<EnemyVehicle*>::iterator i = g_EnemyVehicles.begin(); i != g_EnemyVehicles.end(); ++i) {
     delete *i;
   }
   for (std::vector<SphereObstacle*>::iterator i = BaseVehicle::allObstacles.begin(); i != BaseVehicle::allObstacles.end(); ++i) {
@@ -106,7 +103,6 @@ void SpaceShipDown::StopLevel() {
   }
   BaseVehicle::allObstacles.clear();
   g_EnemyVehicles.clear();
-  g_AllVehicles.clear();
 }
 
 
@@ -126,12 +122,9 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreateVehicles() {
-  g_PlayerVehicle = new PlayerVehicle;
-  g_AllVehicles.push_back(g_PlayerVehicle);
   for (int i = 0; i<10; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
-    g_AllVehicles.push_back(g_EnemyVehicles[i]);
     CreateEnemy();
   }
 }
@@ -169,10 +162,12 @@ void SpaceShipDown::CreateEnemy() {
   mouse_joint_def.bodyA = m_GroundBody;
   mouse_joint_def.bodyB = enemy_body;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
-  mouse_joint_def.maxForce = 1000.0f * enemy_body->GetMass();
+  mouse_joint_def.maxForce = 5000.0f * enemy_body->GetMass();
   mouse_joint_def.dampingRatio = 100.0;
   mouse_joint_def.frequencyHz = 100.0;
   m_EnemyMouseJoints.push_back((b2MouseJoint *)world->CreateJoint(&mouse_joint_def));
+  bd.position.Set(1000, 1000);
+  
 
   m_SpriteCount++;
   m_EnemiesStopIndex = m_SpriteCount;
@@ -480,20 +475,14 @@ int SpaceShipDown::Simulate() {
 
   m_PickupTimeout += m_DeltaTime;
 
-  //g_PlayerVehicle->update(m_SimulationTime, m_DeltaTime);
-  
   // update each enemy
   for (unsigned int i = 0; i < g_EnemyVehicles.size(); i++) {
     g_EnemyVehicles[i]->update(m_SimulationTime, m_DeltaTime);
-    //float rot1a = 0.0;
-    //Vec3 pos1a = g_EnemyVehicles[i]->position();
-    //Vec3 vel1a = g_EnemyVehicles[i]->velocity();
-    //if (vel1a.x != 0.0) {
-    //  rot1a = atan2(vel1a.z, vel1a.x);
-    //}
-    //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Rotation = -RadiansToDegrees(rot1a);
-    //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[0] = pos1a.x;
-    //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
+
+    Vec3 steer (0, 0, 0);
+    //Vec3 avoidance = g_EnemyVehicles[i]->steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) BaseVehicle::allObstacles);
+    steer = g_EnemyVehicles[i]->steerForSeek(Vec3(m_AtlasSprites[m_PlayerIndex]->m_Position[0], 0, -m_AtlasSprites[m_PlayerIndex]->m_Position[1]));
+    g_EnemyVehicles[i]->applySteeringForce(steer, m_DeltaTime);
   }
 
 
@@ -503,7 +492,6 @@ int SpaceShipDown::Simulate() {
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
   m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
-  g_PlayerVehicle->setPosition(Vec3(m_AtlasSprites[m_PlayerIndex]->m_Position[0], 0, -m_AtlasSprites[m_PlayerIndex]->m_Position[1]));
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
@@ -865,7 +853,7 @@ void SpaceShipDown::RenderSpritePhase() {
     glRotatef(90.0, 1.0, 0.0, 0.0);
     Color bodyColor;
     bodyColor.set (1.0f, 1.0f, 1.0f);
-    drawXZDisk (g_PlayerVehicle->radius(), g_PlayerVehicle->position(), bodyColor, 40);
+    //drawXZDisk (g_PlayerVehicle->radius(), g_PlayerVehicle->position(), bodyColor, 40);
 	  for (unsigned int i=0; i<g_EnemyVehicles.size(); i++) {
       drawXZDisk (g_EnemyVehicles[i]->radius(), g_EnemyVehicles[i]->position(), bodyColor, 40);
     }
@@ -902,35 +890,36 @@ BaseVehicle::BaseVehicle() {
 
 
 EnemyVehicle::EnemyVehicle() {
-	reset();
+  reset();
 }
 
 
-PlayerVehicle::PlayerVehicle() {
-	reset();
+void EnemyVehicle::update(const float currentTime, const float elapsedTime)
+{
+  // determine upper bound for pursuit prediction time
+  //const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter, gSeeker->position());
+  //const float adjustedDistance = seekerToGoalDist - radius() - gHomeBaseRadius;
+  //const float seekerToGoalTime = ((adjustedDistance < 0 ) ? 0 : (adjustedDistance/gSeeker->speed()));
+  //const float maxPredictionTime = 10.0; //seekerToGoalTime * 0.9f;
+ 
+  // determine steering (pursuit, obstacle avoidance, or braking)
+  Vec3 steer (0, 0, 0);
+  //if (g_PlayerVehicle->state == running) {
+    //Vec3 avoidance = steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) allObstacles);
+    //steer = avoidance + steerForPursuit(*g_PlayerVehicle, maxPredictionTime);
+  //} else {
+  //  applyBrakingForce (g_BrakingRate, elapsedTime);
+  //}
+  applySteeringForce (steer, elapsedTime);
 }
 
 
 void BaseVehicle::reset (void) {
-	SimpleVehicle::reset ();  // reset the vehicle 
+	SimpleVehicle::reset();  // reset the vehicle 
 	setSpeed(0);             // speed along Forward direction.
 	setMaxForce(0.0);        // steering force is clipped to this magnitude
 	setMaxSpeed(0.0);        // velocity is clipped to this magnitude
 	avoiding = false;         // not actively avoiding
-}
-
-
-void PlayerVehicle::reset (void) {
-	BaseVehicle::reset();
-	setPosition(g_HomeBaseCenter);
-	setPosition(g_PlayerVehicleCenter);
-	setRadius(32.0);
-	setSpeed(0);             // speed along Forward direction.
-	setMaxSpeed(0.0);        // velocity is clipped to this magnitude
-	setMaxForce(0.0);        // steering force is clipped to this magnitude
-	g_PlayerVehicle = this;
-	state = running;
-	evading = false;
 }
 
 
@@ -959,36 +948,6 @@ void BaseVehicle::randomizeStartingPositionAndHeading (void) {
 	} else {
 		// otherwise, if the position is OK, randomize 2D heading
 		randomizeHeadingOnXZPlane ();
-	}
-}
-
-
-void EnemyVehicle::update (const float currentTime, const float elapsedTime)
-{
-	// determine upper bound for pursuit prediction time
-	//const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter, gSeeker->position());
-	//const float adjustedDistance = seekerToGoalDist - radius() - gHomeBaseRadius;
-	//const float seekerToGoalTime = ((adjustedDistance < 0 ) ? 0 : (adjustedDistance/gSeeker->speed()));
-	const float maxPredictionTime = 10.0; //seekerToGoalTime * 0.9f;
-	
-	// determine steering (pursuit, obstacle avoidance, or braking)
-	Vec3 steer (0, 0, 0);
-	if (g_PlayerVehicle->state == running) {
-		Vec3 avoidance = steerToAvoidObstacles(g_AvoidancePredictTimeMin, (ObstacleGroup&) allObstacles);
-		steer = avoidance + steerForPursuit(*g_PlayerVehicle, maxPredictionTime);
-	} else {
-		applyBrakingForce (g_BrakingRate, elapsedTime);
-	}
-	applySteeringForce (steer, elapsedTime);
-	
-	// detect and record interceptions ("tags") of seeker
-	const float seekerToMeDist = Vec3::distance (position(), g_PlayerVehicle->position());
-	const float sumOfRadii = radius() + g_PlayerVehicle->radius();
-	
-	if (seekerToMeDist < sumOfRadii) {
-		if (g_PlayerVehicle->state == running) {
-			//reset();
-		}
 	}
 }
 
@@ -1022,192 +981,6 @@ Vec3 EnemyVehicle::steerToEvadeAllOtherEnemies (void) {
 		}
 	}
 	return evade;
-}
-
-
-// are there any enemies along the corridor between us and the goal?
-bool PlayerVehicle::clearPathToGoal (void) {
-	const float sideThreshold = radius() * 8.0f;
-	const float behindThreshold = radius() * 2.0f;
-	
-	const Vec3 goalOffset = g_HomeBaseCenter - position();
-	const float goalDistance = goalOffset.length ();
-	const Vec3 goalDirection = goalOffset / goalDistance;
-	
-	const bool goalIsAside = isAside (g_HomeBaseCenter, 0.5);
-	
-	// for annotation: loop over all and save result, instead of early return 
-	bool xxxReturn = true;
-	
-	// loop over enemies
-	for (int i = 0; i < g_EnemyVehicles.size(); i++) {
-		// short name for this enemy
-		const EnemyVehicle& e = *g_EnemyVehicles[i];
-		const float eDistance = Vec3::distance (position(), e.position());
-		const float timeEstimate = 0.3f * eDistance / e.speed(); //xxx
-		const Vec3 eFuture = e.predictFuturePosition (timeEstimate);
-		const Vec3 eOffset = eFuture - position();
-		const float alongCorridor = goalDirection.dot (eOffset);
-		const bool inCorridor = ((alongCorridor > -behindThreshold) && (alongCorridor < goalDistance));
-		const float eForwardDistance = forward().dot (eOffset);
-		
-		// consider as potential blocker if within the corridor
-		if (inCorridor) {
-			const Vec3 perp = eOffset - (goalDirection * alongCorridor);
-			const float acrossCorridor = perp.length();
-			if (acrossCorridor < sideThreshold) {
-				// not a blocker if behind us and we are perp to corridor
-				const float eFront = eForwardDistance + e.radius ();
-				
-				const bool eIsBehind = eFront < -behindThreshold;
-				const bool eIsWayBehind = eFront < (-2 * behindThreshold);
-				const bool safeToTurnTowardsGoal =
-				((eIsBehind && goalIsAside) || eIsWayBehind);
-				
-				if (!safeToTurnTowardsGoal) {
-					// this enemy blocks the path to the goal, so return false
-					xxxReturn = false;
-				}
-			}
-		}
-	}
-	
-	return xxxReturn;
-}
-
-
-Vec3 PlayerVehicle::steerToEvadeAllDefenders (void) {
-	Vec3 evade (0, 0, 0);
-	const float goalDistance = Vec3::distance (g_HomeBaseCenter, position());
-	
-	// sum up weighted evasion
-	for (int i = 0; i < g_EnemyVehicles.size(); i++)
-	{
-		const EnemyVehicle& e = *g_EnemyVehicles[i];
-		const Vec3 eOffset = e.position() - position();
-		const float eDistance = eOffset.length();
-		
-		const float eForwardDistance = forward().dot (eOffset);
-		const float behindThreshold = radius() * 2;
-		const bool behind = eForwardDistance < behindThreshold;
-		if ((!behind) || (eDistance < 5))
-		{
-			if (eDistance < (goalDistance * 1.2)) //xxx
-			{
-				// const float timeEstimate = 0.5f * eDistance / e.speed;//xxx
-				const float timeEstimate = 0.15f * eDistance / e.speed();//xxx
-				const Vec3 future =
-				e.predictFuturePosition (timeEstimate);
-				
-				const Vec3 offset = future - position();
-				const Vec3 lateral = offset.perpendicularComponent (forward());
-				const float d = lateral.length();
-				const float weight = -1000 / (d * d);
-				evade += (lateral / d) * weight;
-			}
-		}
-	}
-	return evade;
-}
-
-
-Vec3 PlayerVehicle::XXXsteerToEvadeAllDefenders (void) {
-	// sum up weighted evasion
-	Vec3 evade (0, 0, 0);
-	for (int i = 0; i < g_EnemyVehicles.size(); i++)
-	{
-		const EnemyVehicle& e = *g_EnemyVehicles[i];
-		const Vec3 eOffset = e.position() - position();
-		const float eDistance = eOffset.length();
-		
-		// xxx maybe this should take into account e's heading? xxx
-		const float timeEstimate = 0.5f * eDistance / e.speed(); //xxx
-		const Vec3 eFuture = e.predictFuturePosition (timeEstimate);
-		
-		// steering to flee from eFuture (enemy's future position)
-		const Vec3 flee = xxxsteerForFlee (eFuture);
-		
-		const float eForwardDistance = forward().dot (eOffset);
-		const float behindThreshold = radius() * -2;
-		
-		const float distanceWeight = 4 / eDistance;
-		const float forwardWeight = ((eForwardDistance > behindThreshold) ? 1.0f : 0.5f);
-		
-		const Vec3 adjustedFlee = flee * distanceWeight * forwardWeight;
-		
-		evade += adjustedFlee;
-	}
-	return evade;
-}
-
-
-Vec3 PlayerVehicle::steeringForSeeker (void) {
-	// determine if obstacle avodiance is needed
-	const bool clearPath = clearPathToGoal();
-	adjustObstacleAvoidanceLookAhead (clearPath);
-	const Vec3 obstacleAvoidance = steerToAvoidObstacles(g_AvoidancePredictTime, (ObstacleGroup&) allObstacles);
-	
-	// saved for annotation
-	avoiding = (obstacleAvoidance != Vec3::zero);
-	
-	if (avoiding) {
-		// use pure obstacle avoidance if needed
-		return obstacleAvoidance;
-	} else {
-		// otherwise seek home base and perhaps evade defenders
-		const Vec3 seek = xxxsteerForSeek (g_HomeBaseCenter);
-		if (clearPath) {
-			Vec3 s = limitMaxDeviationAngle(seek, 0.707f, forward());
-			return s;
-		} else {
-      //alternate evade code
-			if (0) {
-				// combine seek and (forward facing portion of) evasion
-				const Vec3 evade = steerToEvadeAllDefenders ();
-				const Vec3 steer = seek + limitMaxDeviationAngle (evade, 0.5f, forward());
-				return steer;
-			} else {
-				const Vec3 evade = XXXsteerToEvadeAllDefenders ();
-				const Vec3 steer = limitMaxDeviationAngle (seek + evade, 0.707f, forward());
-				return steer;
-			}
-		}
-	}
-}
-
-
-// adjust obstacle avoidance look ahead time: make it large when we are far
-// from the goal and heading directly towards it, make it small otherwise.
-void PlayerVehicle::adjustObstacleAvoidanceLookAhead (const bool clearPath)
-{
-	if (clearPath) {
-		evading = false;
-		const float goalDistance = Vec3::distance (g_HomeBaseCenter,position());
-		const bool headingTowardGoal = isAhead (g_HomeBaseCenter, 0.98f);
-		const bool isNear = (goalDistance/speed()) < g_AvoidancePredictTimeMax;
-		const bool useMax = headingTowardGoal && !isNear;
-		g_AvoidancePredictTime = (useMax ? g_AvoidancePredictTimeMax : g_AvoidancePredictTimeMin);
-	} else {
-		evading = true;
-		g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
-	}
-}
-
-
-void PlayerVehicle::update (const float currentTime, const float elapsedTime) {
-	updateX(currentTime, elapsedTime, Vec3::zero);
-}
-
-
-void PlayerVehicle::updateX (const float currentTime, const float elapsedTime, Vec3 inputSteering) {
-	// determine and apply steering/braking forces
-	Vec3 steer (0, 0, 0);
-	if (state == running) {
-		steer = steeringForSeeker();
-	} else {
-		applyBrakingForce (g_BrakingRate, elapsedTime);
-	}
-	applySteeringForce (steer, elapsedTime);
 }
 
 

@@ -21,27 +21,10 @@ public:
 class EnemyVehicle : public BaseVehicle {
 public:
   EnemyVehicle();
+  void update (const float currentTime, const float elapsedTime);
   void identify();
   void reset (void);
-  void update (const float currentTime, const float elapsedTime);
   OpenSteer::Vec3 steerToEvadeAllOtherEnemies (void);
-};
-
-class PlayerVehicle : public BaseVehicle {
-public:
-  PlayerVehicle();
-  void reset (void);
-  void identify();
-  void update (const float currentTime, const float elapsedTime);
-  void updateX (const float currentTime, const float elapsedTime, OpenSteer::Vec3 inputSteering);
-  bool clearPathToGoal (void);
-  OpenSteer::Vec3 steeringForSeeker (void);
-  OpenSteer::Vec3 steerToEvadeAllDefenders (void);
-  OpenSteer::Vec3 XXXsteerToEvadeAllDefenders (void);
-  void adjustObstacleAvoidanceLookAhead (const bool clearPath);
-  seekerState state;
-  bool evading;
-  float lastRunningTime;
 };
 
 class SpaceShipDown : public Engine {
