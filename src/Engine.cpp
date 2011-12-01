@@ -255,9 +255,9 @@ void Engine::RenderModelRange(unsigned int s, unsigned int e) {
 }
 
 
-void Engine::RenderSpriteRange(unsigned int s, unsigned int e) {
+void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
 	for (unsigned int i=s; i<e; i++) {
-		m_AtlasSprites[i]->Render();
+		m_AtlasSprites[i]->Render(batch_foo);
 	}
 }
 

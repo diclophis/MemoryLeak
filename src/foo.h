@@ -15,6 +15,13 @@ struct foo {
 	unsigned int len;
 };
 
+typedef struct
+{
+  GLshort vertex[2];
+  GLfloat texture[2];
+  int padding;
+} SpriteFoo;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,6 +43,8 @@ struct foofoo {
     m_Stride = 0;
     m_numVertexArrayObjects = 0;
     m_numIndexBuffers = 1;
+    m_numBuffers = 0;
+    m_NumBatched = 0;
 	  m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (m_numIndexBuffers));
     if (g_AtlasSpriteIndexBuffer == 0) {
       glGenBuffers(m_numIndexBuffers, m_IndexBuffers);
@@ -77,7 +86,7 @@ struct foofoo {
     if (m_numInterleavedBuffers > 0) {
       free(m_InterleavedBuffers);
     }
-
+    free(m_SpriteFoos);
 #ifdef HAS_VAO
     glDeleteVertexArrays(m_numVertexArrayObjects, m_VertexArrayObjects);
     if (m_numVertexArrayObjects > 0) {
@@ -107,7 +116,9 @@ struct foofoo {
   int m_numVertexArrayObjects;
 	int m_AnimationStart;
 	int m_AnimationEnd;
+  int m_NumBatched;
   size_t m_Stride;
+  SpriteFoo *m_SpriteFoos;
 };
 
 #ifdef __cplusplus

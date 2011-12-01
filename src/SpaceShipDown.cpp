@@ -45,6 +45,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), 1024);
   StartLevel(m_LevelIndex);
 }
 
@@ -122,6 +123,7 @@ SpaceShipDown::~SpaceShipDown() {
   delete m_PlatformFoo;
   delete m_LandscapeFoo;
   delete m_EnemyFoo;
+  delete m_BatchFoo;
 }
 
 
@@ -187,7 +189,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, m_PlayerAfterburnerFoo));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-  m_AtlasSprites[m_PlayerIndex]->Build(20);
+  m_AtlasSprites[m_PlayerIndex]->Build(1);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -893,12 +895,17 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnable(GL_TEXTURE_2D);
   } else {
     glEnable(GL_BLEND);
-    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-    AtlasSprite::ReleaseBuffers();
-    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
-    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
+    //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+    //AtlasSprite::ReleaseBuffers();
+    //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+    //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+
+    //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+
+    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+    AtlasSprite::RenderFoo(m_BatchFoo);
+
+    //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     glDisable(GL_BLEND);
     AtlasSprite::ReleaseBuffers();
   }

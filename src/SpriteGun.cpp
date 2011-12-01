@@ -90,20 +90,20 @@ void SpriteGun::Simulate(float deltaTime) {
 }
 
 
-void SpriteGun::Render() {
-  AtlasSprite::Render();
+void SpriteGun::Render(foofoo *batch_foo) {
+  AtlasSprite::Render(batch_foo);
   if (true) { //TODO: reverse render
     int i=(m_NumParticles);
     while (i-- > 0) {
       if (m_AtlasSprites[i]->m_IsAlive && m_RenderBullets) {
-        m_AtlasSprites[i]->Render();
+        m_AtlasSprites[i]->Render(batch_foo);
       }
     }
   } else {
     unsigned int i=0;
     while (i++ < (m_NumParticles - 1)) {
       if (m_AtlasSprites[i]->m_IsAlive) {
-        m_AtlasSprites[i]->Render();
+        m_AtlasSprites[i]->Render(batch_foo);
       }
     }
   }

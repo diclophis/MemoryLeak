@@ -12,7 +12,7 @@ public:
 	void ResetParticle(int idx);
 	void ShootParticle(int idx);
 	void Simulate(float deltaTime);
-	void Render();
+	void Render(foofoo *batch_foo = NULL);
 	void Reset();
 	void Fire();
 	

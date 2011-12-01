@@ -14,12 +14,6 @@ typedef struct
   float tx2, ty2;
 } Sprite;
 
-typedef struct
-{
-  GLshort vertex[2];
-  GLfloat texture[2];
-  int padding;
-} SpriteFoo;
 
 class AtlasSprite {
 	
@@ -49,7 +43,8 @@ public:
 	
   ~AtlasSprite();
 	AtlasSprite(foofoo *ff);
-	void Render();
+	void Render(foofoo *batch_foo = NULL);
+	static void RenderFoo(foofoo *foo);
 	
 	unsigned int m_Count;
 		
@@ -82,5 +77,6 @@ public:
 	foofoo *m_FooFoo;
 
   static foofoo *GetFoo(GLuint t, int spr, int rows, int s, int e, float m, float w, float h);
+  static foofoo *GetBatchFoo(GLuint t, int m);
 
 };
