@@ -87,10 +87,6 @@ void SpaceShipDown::StartLevel(int level_index) {
 
 
 void SpaceShipDown::StopLevel() {
-  delete m_DebugDraw;
-  delete m_ContactListener;
-  delete world;
-  delete m_FrictionJointDef;
   for (std::vector<b2JointDef*>::iterator i = m_PickupJointDefs.begin(); i != m_PickupJointDefs.end(); ++i) {
     delete *i;
   }
@@ -98,11 +94,19 @@ void SpaceShipDown::StopLevel() {
   for (std::vector<EnemyVehicle*>::iterator i = g_EnemyVehicles.begin(); i != g_EnemyVehicles.end(); ++i) {
     delete *i;
   }
+  g_EnemyVehicles.clear();
   for (std::vector<SphereObstacle*>::iterator i = BaseVehicle::allObstacles.begin(); i != BaseVehicle::allObstacles.end(); ++i) {
     delete *i;
   }
   BaseVehicle::allObstacles.clear();
-  g_EnemyVehicles.clear();
+  for (std::vector<b2MouseJoint*>::iterator i = m_EnemyMouseJoints.begin(); i != m_EnemyMouseJoints.end(); ++i) {
+    world->DestroyJoint(*i);
+  }
+  m_EnemyMouseJoints.clear();
+  delete m_DebugDraw;
+  delete m_ContactListener;
+  delete world;
+  delete m_FrictionJointDef;
 }
 
 
@@ -122,10 +126,9 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreateVehicles() {
-  for (int i = 0; i<2; i++) {
+  for (int i = 0; i<200; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
-    LOGV("vehicle %d is ", i);
     CreateEnemy();
   }
 }
@@ -145,14 +148,13 @@ void SpaceShipDown::CreateEnemy() {
   m_EnemiesStopIndex = m_SpriteCount;
 
   int enemy_vehicle_index = enemy_index - m_EnemiesStartIndex;
-  LOGV("an enemy indexed %d  range (%d %d) transform %d\n", enemy_index, m_EnemiesStartIndex, m_EnemiesStopIndex, enemy_vehicle_index);
 
   b2BodyDef bd;
   bd.type = b2_dynamicBody;
   bd.linearDamping = 0.0;
   bd.fixedRotation = true;
   bd.gravityScale = 0.0;
-  bd.position.Set(0, 0); // = b2Vec2(g_EnemyVehicles[enemy_vehicle_index]->position().x / PTM_RATIO, -g_EnemyVehicles[enemy_vehicle_index]->position().z / PTM_RATIO); //.Set(0, 0);
+  bd.position.Set(0, 0);
   b2Body *enemy_body = world->CreateBody(&bd);
   enemy_body->SetUserData((void *)enemy_index);
   b2CircleShape shape;
@@ -166,19 +168,16 @@ void SpaceShipDown::CreateEnemy() {
   fd.filter.maskBits = 0x0002 | 0x0004;
   enemy_body->CreateFixture(&fd);
   enemy_body->SetActive(true);
-  //enemy_body->SetTransform(b2Vec2(g_EnemyVehicles[enemy_vehicle_index]->position().x / PTM_RATIO, -g_EnemyVehicles[enemy_vehicle_index]->position().z / PTM_RATIO), 0);
 
   b2MouseJointDef mouse_joint_def;
   mouse_joint_def.bodyA = m_GroundBody;
   mouse_joint_def.bodyB = enemy_body;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
-  mouse_joint_def.maxForce = 5000.0f * enemy_body->GetMass();
+  mouse_joint_def.maxForce = 500.0f * enemy_body->GetMass();
   mouse_joint_def.dampingRatio = 100.0;
   mouse_joint_def.frequencyHz = 100.0;
   m_EnemyMouseJoints.push_back((b2MouseJoint *)world->CreateJoint(&mouse_joint_def));
   enemy_body->SetTransform(b2Vec2(g_EnemyVehicles[enemy_vehicle_index]->position().x / PTM_RATIO, -g_EnemyVehicles[enemy_vehicle_index]->position().z / PTM_RATIO), 0);
-  //bd.position.Set(1000, 1000);
-
 }
 
 
@@ -273,7 +272,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   fd.friction = 0.0;
   fd.isSensor = true;
   part_body->CreateFixture(&fd);
-  part_body->SetActive(false);
+  part_body->SetActive(true);
 }
 
 
@@ -330,7 +329,7 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   // from a pool and creates the ground box shape (also from a pool).
   // The body is also added to the world.
   b2Body* groundBody = world->CreateBody(&groundBodyDef);
-  groundBody->SetActive(false);
+  groundBody->SetActive(true);
   groundBody->SetUserData((void *)-2);
   
   // Define the ground box shape.
@@ -475,8 +474,8 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 void SpaceShipDown::AdjustZoom() {
-  //m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.75;
-  m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 2.75;
+  m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.75;
+  //m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 2.75;
 }
 
 
@@ -578,7 +577,6 @@ int SpaceShipDown::Simulate() {
       //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
       //LOGV("enemy: %d %d %d %d\n", mouse_joint_index, body_index, m_EnemiesStartIndex, m_EnemiesStopIndex);
       m_EnemyMouseJoints.at(mouse_joint_index)->SetTarget(b2Vec2(pos1a.x / PTM_RATIO, -pos1a.z / PTM_RATIO));
-
     }
     //m_AtlasSprites[body_index]->m_Rotation = RadiansToDegrees(b->GetAngle());
     m_AtlasSprites[body_index]->SetPosition(x, y);
@@ -592,7 +590,7 @@ int SpaceShipDown::Simulate() {
     intptr_t indexA = (intptr_t)bodyA->GetUserData();
     intptr_t indexB = (intptr_t)bodyB->GetUserData();
     if (indexA == m_PlayerIndex || indexB == m_PlayerIndex) {
-      if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
+      if ((indexA >= m_SpaceShipPartsStartIndex && indexA < m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB < m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex == -1) {
           if (bodyA == m_PlayerBody) {
             m_PickedUpPartIndex = indexB;
@@ -616,21 +614,18 @@ int SpaceShipDown::Simulate() {
         int enemy_index = -1;
         b2Body *enemy_body = NULL;
         if (bodyA == m_PlayerBody) {
-          //LOGV("bodyA is player\n");
           enemy_index = indexB;
           enemy_body = bodyB;
         } else {
-          //LOGV("bodyB is player\n");
           enemy_index = indexA;
           enemy_body = bodyA;
         }
-        int enemy_vehicle_index = enemy_index - m_EnemiesStartIndex; //(m_EnemiesStopIndex - 1) - enemy_index;
-        LOGV("enemy index: %d vehicle index: %d touched player\n", enemy_index, enemy_vehicle_index);
+        int enemy_vehicle_index = enemy_index - m_EnemiesStartIndex;
         g_EnemyVehicles[enemy_vehicle_index]->reset();
         enemy_body->SetTransform(b2Vec2(g_EnemyVehicles[enemy_vehicle_index]->position().x / PTM_RATIO, -g_EnemyVehicles[enemy_vehicle_index]->position().z / PTM_RATIO), 0);
       }
     } else if (indexA == -1 || indexB == -1) {
-      if ((indexA >= m_SpaceShipPartsStartIndex && indexA <= m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB <= m_SpaceShipPartsStopIndex)) {
+      if ((indexA >= m_SpaceShipPartsStartIndex && indexA < m_SpaceShipPartsStopIndex) || (indexB >= m_SpaceShipPartsStartIndex && indexB < m_SpaceShipPartsStopIndex)) {
         if (m_PickedUpPartIndex != -1 && (indexA == m_PickedUpPartIndex || indexB == m_PickedUpPartIndex)) {
           float x1 = bodyA->GetPosition().x;
           float x2 = bodyB->GetPosition().x;
@@ -953,7 +948,7 @@ void EnemyVehicle::reset (void) {
 	BaseVehicle::reset();
 	randomizeStartingPositionAndHeading();
 	setRadius(20.0);
-	setSpeed(35.0);
+	setSpeed(200.0);
 	setMaxSpeed(100.0);
 	setMaxForce(10000.0);
 }
