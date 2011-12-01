@@ -65,7 +65,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
-  m_DebugDrawToggle = true;
+  m_DebugDrawToggle = false;
   m_TouchedLeft = false;
   m_TouchedRight = false;
   m_StackCount = 0;
@@ -126,7 +126,7 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreateVehicles() {
-  for (int i = 0; i<200; i++) {
+  for (int i = 0; i<10; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
     CreateEnemy();
