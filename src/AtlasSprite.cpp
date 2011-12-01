@@ -239,23 +239,17 @@ foofoo *AtlasSprite::GetBatchFoo(GLuint texture_index, int max_frame_count) {
   GLushort *indices;
   indices = (GLushort *) malloc(max_frame_count * 6 * sizeof(GLushort));
   for (unsigned int i=0; i<max_frame_count; i++) {
-    indices[(i * 6) + 0] = (i * 4) + 1; //5
-    indices[(i * 6) + 1] = (i * 4) + 2; //6
-    indices[(i * 6) + 2] = (i * 4) + 0; //4
-
-    indices[(i * 6) + 3] = (i * 4) + 0; //4
-    indices[(i * 6) + 4] = (i * 4) + 2; //6
-    indices[(i * 6) + 5] = (i * 4) + 3; //7
+    indices[(i * 6) + 0] = (i * 4) + 1;
+    indices[(i * 6) + 1] = (i * 4) + 2;
+    indices[(i * 6) + 2] = (i * 4) + 0;
+    indices[(i * 6) + 3] = (i * 4) + 0;
+    indices[(i * 6) + 4] = (i * 4) + 2;
+    indices[(i * 6) + 5] = (i * 4) + 3;
   }
-
-  //for (unsigned int i=0; i<(max_frame_count * 6); i++) {
-  //  LOGV("120-023: %d = %d\n", i, indices[i]);
-  //}
 
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_frame_count * 6 * sizeof(GLshort), indices, GL_STATIC_DRAW);
   free(indices);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  //g_AtlasSpriteIndexBuffer = m_IndexBuffers[0];
   
   return ff;
 }

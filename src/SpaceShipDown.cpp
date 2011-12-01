@@ -499,8 +499,8 @@ int SpaceShipDown::Simulate() {
   }
 
 
-  int velocityIterations = 1;
-  int positionIterations = 1;
+  int velocityIterations = 64;
+  int positionIterations = 64;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
