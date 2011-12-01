@@ -16,7 +16,7 @@
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
-#define AFTERBURNER_COUNT 100
+#define AFTERBURNER_COUNT 30
 
 using namespace OpenSteer;
 
@@ -37,7 +37,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.5, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -46,8 +46,8 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), 1 + AFTERBURNER_COUNT);
   StartLevel(m_LevelIndex);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), m_SpriteCount + (AFTERBURNER_COUNT * 2));
 }
 
 
@@ -226,7 +226,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
-    m_AtlasSprites[part_index]->Build(20);
+    m_AtlasSprites[part_index]->Build(AFTERBURNER_COUNT);
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
@@ -896,15 +896,20 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnable(GL_TEXTURE_2D);
   } else {
     glEnable(GL_BLEND);
-    //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-    //AtlasSprite::ReleaseBuffers();
-    //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-    //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+
+    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+    AtlasSprite::ReleaseBuffers();
 
     if (m_DebugDrawToggle) {
+      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
       RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     } else {
+      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
+      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
       RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
       AtlasSprite::RenderFoo(m_BatchFoo);
     }
 

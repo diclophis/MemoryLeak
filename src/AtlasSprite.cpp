@@ -54,10 +54,6 @@ void AtlasSprite::Render(foofoo *batch_foo) {
     return;
   }
 
-	if (m_FooFoo->m_Texture != g_lastTexture) {
-		glBindTexture(GL_TEXTURE_2D, m_FooFoo->m_Texture);
-		g_lastTexture = m_FooFoo->m_Texture;
-	}
 
   if (batch_foo == NULL) {
     //glPushMatrix();
@@ -97,6 +93,11 @@ void AtlasSprite::Render(foofoo *batch_foo) {
       glVertexPointer(2, GL_SHORT, m_FooFoo->m_Stride, (char *)NULL + (0) + (m_Frame * 4 * m_FooFoo->m_Stride));
       glTexCoordPointer(2, GL_FLOAT, m_FooFoo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)) + (m_Frame * 4 * m_FooFoo->m_Stride));
   #endif
+
+      if (m_FooFoo->m_Texture != g_lastTexture) {
+        glBindTexture(GL_TEXTURE_2D, m_FooFoo->m_Texture);
+        g_lastTexture = m_FooFoo->m_Texture;
+      }
       
       glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
       
