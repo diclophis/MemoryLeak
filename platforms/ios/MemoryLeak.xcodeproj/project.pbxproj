@@ -1844,7 +1844,10 @@
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-D_iPhoneVersion";
+				OTHER_CFLAGS = (
+					"-D_iPhoneVersion",
+					"-DHAS_VAO",
+				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1885,7 +1888,10 @@
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "-D_iPhoneVersion";
+				OTHER_CFLAGS = (
+					"-D_iPhoneVersion",
+					"-DHAS_VAO",
+				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1970,7 +1976,10 @@
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				OTHER_CFLAGS = "-D_iPhoneVersion";
+				OTHER_CFLAGS = (
+					"-D_iPhoneVersion",
+					"-DHAS_VAO",
+				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

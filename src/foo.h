@@ -88,7 +88,7 @@ struct foofoo {
     }
     free(m_SpriteFoos);
 #ifdef HAS_VAO
-    glDeleteVertexArrays(m_numVertexArrayObjects, m_VertexArrayObjects);
+    glDeleteVertexArraysOES(m_numVertexArrayObjects, m_VertexArrayObjects);
     if (m_numVertexArrayObjects > 0) {
       free(m_VertexArrayObjects);
     }

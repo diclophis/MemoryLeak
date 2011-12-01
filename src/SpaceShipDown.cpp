@@ -16,7 +16,8 @@
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
-#define AFTERBURNER_COUNT 30
+#define PLAYER_AFTERBURNER_COUNT 30
+#define ROCKET_AFTERBURNER_COUNT 60
 
 using namespace OpenSteer;
 
@@ -47,7 +48,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   StartLevel(m_LevelIndex);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), m_SpriteCount + (AFTERBURNER_COUNT * 2));
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), m_SpriteCount + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
 }
 
 
@@ -129,7 +130,7 @@ SpaceShipDown::~SpaceShipDown() {
 
 
 void SpaceShipDown::CreateVehicles() {
-  for (int i = 0; i<10; i++) {
+  for (int i = 0; i<5; i++) {
     EnemyVehicle *enemy = new EnemyVehicle;
     g_EnemyVehicles.push_back(enemy);
     CreateEnemy();
@@ -176,7 +177,7 @@ void SpaceShipDown::CreateEnemy() {
   mouse_joint_def.bodyA = m_GroundBody;
   mouse_joint_def.bodyB = enemy_body;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
-  mouse_joint_def.maxForce = 500.0f * enemy_body->GetMass();
+  mouse_joint_def.maxForce = 50.0f * enemy_body->GetMass();
   mouse_joint_def.dampingRatio = 100.0;
   mouse_joint_def.frequencyHz = 100.0;
   m_EnemyMouseJoints.push_back((b2MouseJoint *)world->CreateJoint(&mouse_joint_def));
@@ -190,7 +191,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, m_PlayerAfterburnerFoo));
   m_AtlasSprites[m_PlayerIndex]->SetPosition(x, y);
-  m_AtlasSprites[m_PlayerIndex]->Build(AFTERBURNER_COUNT);
+  m_AtlasSprites[m_PlayerIndex]->Build(PLAYER_AFTERBURNER_COUNT);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -226,7 +227,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
-    m_AtlasSprites[part_index]->Build(AFTERBURNER_COUNT);
+    m_AtlasSprites[part_index]->Build(ROCKET_AFTERBURNER_COUNT);
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     m_AtlasSprites[part_index]->Build(0);
@@ -498,8 +499,8 @@ int SpaceShipDown::Simulate() {
   }
 
 
-  int velocityIterations = 16;
-  int positionIterations = 6;
+  int velocityIterations = 1;
+  int positionIterations = 1;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -870,7 +871,7 @@ void SpaceShipDown::RenderModelPhase() {
 
 void SpaceShipDown::RenderSpritePhase() {
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
-  if (false) {
+  if (m_DebugDrawToggle) {
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     world->DrawDebugData();
@@ -900,18 +901,16 @@ void SpaceShipDown::RenderSpritePhase() {
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     AtlasSprite::ReleaseBuffers();
 
-    if (m_DebugDrawToggle) {
-      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
-      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
-    } else {
-      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
-      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
-      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
-      AtlasSprite::RenderFoo(m_BatchFoo);
-    }
+    //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+    //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+    //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+    //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
+
+    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
+    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
+    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
+    AtlasSprite::RenderFoo(m_BatchFoo);
 
     //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     glDisable(GL_BLEND);
