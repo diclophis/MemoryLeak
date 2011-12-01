@@ -128,12 +128,13 @@ const char *popMessageFromWebView() {
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
 	glGenFramebuffersOES(1, &defaultFramebuffer);
 	glGenRenderbuffersOES(1, &colorRenderbuffer);
+  g_LastFrameBuffer = defaultFramebuffer;
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer);
 	
 	//Bind framebuffers to the context and this layer
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+	//glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 	[context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:eaglLayer];
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
@@ -307,7 +308,7 @@ const char *popMessageFromWebView() {
 GLuint loadTexture(UIImage *image) {
 	GLuint text = 0;
 	glEnable(GL_TEXTURE_2D);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 	glGenTextures(1, &text);
 	glBindTexture(GL_TEXTURE_2D, text);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
