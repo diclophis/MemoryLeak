@@ -499,8 +499,8 @@ int SpaceShipDown::Simulate() {
   }
 
 
-  int velocityIterations = 64;
-  int positionIterations = 64;
+  int velocityIterations = 8;
+  int positionIterations = 3;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -898,9 +898,9 @@ void SpaceShipDown::RenderSpritePhase() {
   } else {
     glEnable(GL_BLEND);
 
-    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-    AtlasSprite::ReleaseBuffers();
-
+    //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+    
+    //AtlasSprite::ReleaseBuffers();
     //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
     //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);

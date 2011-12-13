@@ -173,7 +173,7 @@ void Engine::DrawScreen(float rotation) {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
   pthread_mutex_unlock(&m_Mutex);
-  pthread_cond_signal(&m_VsyncCond);
+  //pthread_cond_signal(&m_VsyncCond);
 }
 
 
@@ -203,7 +203,7 @@ int Engine::RunThread() {
     m_IsSceneBuilt = true;
     //m_CurrentDraw++;
     pthread_mutex_unlock(&m_Mutex);
-    WaitVsync();
+    //WaitVsync();
 	}
   m_GameState = -3;
   m_SimulationThreadCleanup();

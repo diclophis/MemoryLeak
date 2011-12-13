@@ -297,8 +297,8 @@ const char *popMessageFromWebView() {
       glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
     }
 
-    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES};
-    glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards);
+    //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES};
+    //glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards);
     
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
   }
