@@ -53,6 +53,8 @@ public:
   void CreateEnemy();
   void StartLevel(int level_index);
   void StopLevel();
+  void CreateFoos();
+  void DestroyFoos();
 
 
   b2World *world;

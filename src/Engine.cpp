@@ -165,20 +165,17 @@ int isExtensionSupported(const char *extension) {
 void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
-    //if (m_CurrentDraw > m_LastDraw) {
-      //isExtensionSupported("foo");
-      glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-      glLoadIdentity();
-      if (m_IsThreeD) {
-        glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-        RenderModelPhase();
-      } else {
-        //glMatrixMode(GL_PROJECTION);
-        //glLoadIdentity();
-        glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-        RenderSpritePhase();
-      }
-    //}
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    if (m_IsThreeD) {
+      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+      RenderModelPhase();
+    } else {
+      //glMatrixMode(GL_PROJECTION);
+      //glLoadIdentity();
+      glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+      RenderSpritePhase();
+    }
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }

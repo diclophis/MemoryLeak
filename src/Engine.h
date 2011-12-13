@@ -22,6 +22,8 @@ public:
   virtual void Hit(float x, float y, int hitState) = 0;
   virtual void RenderModelPhase() = 0;
   virtual void RenderSpritePhase() = 0;
+  virtual void CreateFoos() = 0;
+  virtual void DestroyFoos() = 0;
   bool WaitVsync();
   void DoAudio(short buffer[], int bytes);
   void RenderModelRange(unsigned int s, unsigned int e);

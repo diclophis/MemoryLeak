@@ -16,8 +16,8 @@
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
-#define PLAYER_AFTERBURNER_COUNT 2048
-#define ROCKET_AFTERBURNER_COUNT 60
+#define PLAYER_AFTERBURNER_COUNT 4096
+#define ROCKET_AFTERBURNER_COUNT 128
 
 using namespace OpenSteer;
 
@@ -36,9 +36,14 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-  m_LevelIndex = 0;
+  CreateFoos();
+  StartLevel(0);
+}
+
+
+void SpaceShipDown::CreateFoos() {
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 25.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 30.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -47,12 +52,30 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  StartLevel(0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), m_SpriteCount + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+}
+
+
+void SpaceShipDown::DestroyFoos() {
+  delete m_PlayerFoo;
+  delete m_PlayerAfterburnerFoo;
+  delete m_SpaceShipPartBaseFoo;
+  delete m_SpaceShipPartTopFoo;
+  delete m_SpaceShipPartMiddleFoo;
+  delete m_SpaceShipPartAfterburnerFoo;
+  delete m_DropZoneFoo;
+  delete m_PlatformFoo;
+  delete m_LandscapeFoo;
+  delete m_EnemyFoo;
+  delete m_BatchFoo;
 }
 
 
 void SpaceShipDown::StartLevel(int level_index) {
+  m_LevelIndex = level_index;
+  if (m_LevelIndex > m_LevelFoos->size() - 1) {
+    m_LevelIndex = 0;
+  }
   m_SimulationTime = 0.0;
   m_SpaceShipPartsStartIndex = -1;
   m_SpaceShipPartsStopIndex = -1;
@@ -79,10 +102,10 @@ void SpaceShipDown::StartLevel(int level_index) {
   CreateWorld();
   CreatePickupJoints();
   CreateDebugDraw();
-  LoadLevel(level_index, 2);
-  LoadLevel(level_index, 1);
-  LoadLevel(level_index, 0);
-  LoadLevel(level_index, 3);
+  LoadLevel(m_LevelIndex, 2);
+  LoadLevel(m_LevelIndex, 1);
+  LoadLevel(m_LevelIndex, 0);
+  LoadLevel(m_LevelIndex, 3);
   CreateBorder(m_WorldWidth, m_WorldHeight);
   CreateLandscape();
   CreateVehicles();
@@ -116,17 +139,7 @@ void SpaceShipDown::StopLevel() {
 
 SpaceShipDown::~SpaceShipDown() {
   StopLevel();
-  delete m_PlayerFoo;
-  delete m_PlayerAfterburnerFoo;
-  delete m_SpaceShipPartBaseFoo;
-  delete m_SpaceShipPartTopFoo;
-  delete m_SpaceShipPartMiddleFoo;
-  delete m_SpaceShipPartAfterburnerFoo;
-  delete m_DropZoneFoo;
-  delete m_PlatformFoo;
-  delete m_LandscapeFoo;
-  delete m_EnemyFoo;
-  delete m_BatchFoo;
+  DestroyFoos();
 }
 
 
@@ -703,12 +716,8 @@ int SpaceShipDown::Simulate() {
 
   float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
   if (space_ship_height > m_WorldHeight * 1.5) {
-    m_LevelIndex++;
-    if (m_LevelIndex > m_LevelFoos->size() - 1) {
-      m_LevelIndex = 0;
-    }
     StopLevel();
-    StartLevel(m_LevelIndex);
+    StartLevel(m_LevelIndex + 1);
   }
 
   return 1;

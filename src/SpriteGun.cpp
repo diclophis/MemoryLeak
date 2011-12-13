@@ -91,7 +91,6 @@ void SpriteGun::Simulate(float deltaTime) {
 
 
 void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
-  AtlasSprite::Render(sf, batch_foo);
   if (true) { //TODO: reverse render
     int i=(m_NumParticles);
     while (i-- > 0) {
@@ -107,4 +106,5 @@ void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
       }
     }
   }
+  AtlasSprite::Render(sf, batch_foo);
 }
