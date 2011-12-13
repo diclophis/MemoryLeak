@@ -76,10 +76,10 @@ struct foofoo {
     free(m_SpriteFoos);
 #ifdef HAS_VAO
     glDeleteVertexArraysOES(m_numVertexArrayObjects, m_VertexArrayObjects);
+#endif
     if (m_numVertexArrayObjects > 0) {
       free(m_VertexArrayObjects);
     }
-#endif
 	}
 
 #endif

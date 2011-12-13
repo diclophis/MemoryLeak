@@ -53,6 +53,8 @@ Engine::~Engine() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
 
+  free(m_StateFoo);
+
   LOGV("dealloc Engine\n");
 }
 
@@ -213,7 +215,7 @@ int Engine::RunThread() {
     pthread_mutex_unlock(&m_Mutex);
     //WaitVsync();
 	}
-  m_GameState = -3;
+  //m_GameState = -3;
   m_SimulationThreadCleanup();
 	return m_GameState;
 }
@@ -228,10 +230,10 @@ void Engine::StopSimulation() {
   pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
   m_GameState = -1;
-  while (m_GameState != -3) {
-    pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
-  }
-  pthread_join(m_CurrentGame->m_Thread, NULL);
+  //while (m_GameState != -3) {
+    //pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
+  //}
+  //pthread_join(m_CurrentGame->m_Thread, NULL);
   pthread_mutex_unlock(&m_Mutex);
 }
 

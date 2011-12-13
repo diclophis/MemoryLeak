@@ -64,6 +64,7 @@ public:
   b2FrictionJointDef *m_FrictionJointDef;
   b2FrictionJoint *m_FrictionJoint;
   std::vector<b2MouseJoint*> m_EnemyMouseJoints;
+  b2PrismaticJointDef *m_PollJointDef;
 
   int m_LandscapeIndex;
   int m_PlayerIndex;

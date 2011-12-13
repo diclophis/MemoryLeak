@@ -36,6 +36,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+LOGV("alloc\n");
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.5, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -110,6 +111,7 @@ void SpaceShipDown::StopLevel() {
   delete m_ContactListener;
   delete world;
   delete m_FrictionJointDef;
+  delete m_PollJointDef;
 }
 
 
@@ -438,6 +440,8 @@ void SpaceShipDown::CreatePickupJoints() {
   m_FrictionJointDef = new b2FrictionJointDef();
   m_FrictionJointDef->maxForce = 30.0;
   m_FrictionJointDef->maxTorque = 0.0;
+
+  m_PollJointDef = new b2PrismaticJointDef();
 }
 
 
@@ -640,11 +644,10 @@ int SpaceShipDown::Simulate() {
             } else {
               bodyA->SetUserData((void *)-indexA);
             }
-            b2PrismaticJointDef *joint_def = new b2PrismaticJointDef();
-            joint_def->bodyA = bodyA;
-            joint_def->bodyB = bodyB;
-            joint_def->localAxisA.Set(0.0f, 1.0f);
-            (b2PrismaticJointDef *)world->CreateJoint(joint_def);
+            m_PollJointDef->bodyA = bodyA;
+            m_PollJointDef->bodyB = bodyB;
+            m_PollJointDef->localAxisA.Set(0.0f, 1.0f);
+            (b2PrismaticJointDef *)world->CreateJoint(m_PollJointDef);
             if (m_RequiredPartIndex == m_SpaceShipPartsStartIndex) {
               m_RequiredPartIndex += 2;
             } else if (m_RequiredPartIndex == m_SpaceShipPartsStopIndex - 1) {
@@ -872,6 +875,7 @@ void SpaceShipDown::RenderModelPhase() {
 void SpaceShipDown::RenderSpritePhase() {
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
   if (m_DebugDrawToggle) {
+    AtlasSprite::ReleaseBuffers();
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     world->DrawDebugData();
@@ -900,7 +904,6 @@ void SpaceShipDown::RenderSpritePhase() {
 
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     
-    //AtlasSprite::ReleaseBuffers();
     //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
     //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
