@@ -69,6 +69,7 @@ public:
   float m_CameraTarget[3];
   pthread_cond_t m_VsyncCond;
   pthread_cond_t m_AudioSyncCond;
+  pthread_cond_t m_ResumeCond;
   pthread_mutex_t m_Mutex;
   pthread_mutex_t m_Mutex2;
   pthread_t m_Thread;

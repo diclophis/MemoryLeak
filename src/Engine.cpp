@@ -68,6 +68,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	
 	pthread_cond_init(&m_VsyncCond, NULL);
 	pthread_cond_init(&m_AudioSyncCond, NULL);
+	pthread_cond_init(&m_ResumeCond, NULL);
   pthread_mutex_init(&m_Mutex, NULL);
   pthread_mutex_init(&m_Mutex2, NULL);
 
@@ -177,45 +178,50 @@ void Engine::DrawScreen(float rotation) {
         glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
         RenderSpritePhase();
       }
-      //m_LastDraw = m_CurrentDraw;
     //}
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
+  m_CurrentDraw++;
   pthread_mutex_unlock(&m_Mutex);
+  sched_yield();
   //pthread_cond_signal(&m_VsyncCond);
 }
 
 
 int Engine::RunThread() {
-	double t1, t2, averageWait;
+	double t1, t2;
 	timeval tim;
-	gettimeofday(&tim, NULL);
 	gettimeofday(&tim, NULL);
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   StartSimulation();
+  int drawn = 0;
 	while (m_GameState > 0) {
-    pthread_mutex_lock(&m_Mutex);
-    gettimeofday(&tim, NULL);
-    t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-    averageWait = t2 - t1;
-    gettimeofday(&tim, NULL);
-    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-    if (m_GameState > 1) {
-      LOGV("paused\n");
-    } else {
-      m_DeltaTime = averageWait;
-      m_SimulationTime += (m_DeltaTime);
-      if (Active()) {
-        Simulate();
+    drawn = (m_CurrentDraw - m_LastDraw);
+    if (drawn > 0) {
+      pthread_mutex_lock(&m_Mutex);
+      gettimeofday(&tim, NULL);
+      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+      m_DeltaTime = t2 - t1;
+      gettimeofday(&tim, NULL);
+      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+      m_LastDraw = m_CurrentDraw;
+      if (m_GameState > 1) {
+        LOGV("paused\n");
+        pthread_mutex_unlock(&m_Mutex);
+        pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
+        gettimeofday(&tim, NULL);
+        t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+      } else {
+        m_SimulationTime += (m_DeltaTime);
+        if (Active()) {
+          Simulate();
+        }
+        pthread_mutex_unlock(&m_Mutex);
       }
+      m_IsSceneBuilt = true;
     }
-    m_IsSceneBuilt = true;
-    //m_CurrentDraw++;
-    pthread_mutex_unlock(&m_Mutex);
-    //WaitVsync();
 	}
-  //m_GameState = -3;
   m_SimulationThreadCleanup();
 	return m_GameState;
 }
@@ -241,7 +247,9 @@ void Engine::StopSimulation() {
 void Engine::StartSimulation() {
   if (m_GameState == 2) {
     pthread_mutex_lock(&m_Mutex);
+    LOGV("start sim\n");
     m_GameState = 1;
+    pthread_cond_signal(&m_CurrentGame->m_ResumeCond);
     pthread_mutex_unlock(&m_Mutex);
   }
 }

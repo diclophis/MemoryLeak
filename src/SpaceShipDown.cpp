@@ -16,7 +16,7 @@
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
-#define PLAYER_AFTERBURNER_COUNT 1
+#define PLAYER_AFTERBURNER_COUNT 2048
 #define ROCKET_AFTERBURNER_COUNT 60
 
 using namespace OpenSteer;
@@ -38,7 +38,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.5, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 25.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -460,7 +460,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	//float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   //LOGV("state: %d %f %f\n", hitState, x, y);
-  if (hitState == 0 && x < 50.0 && y < 50.0) {
+  if (hitState == 0 && x < 150.0 && y < 150.0) {
     m_DebugDrawToggle = !m_DebugDrawToggle;
     LOGV("m_DebugDrawToggle is now: %d\n", m_DebugDrawToggle);
   } else {
@@ -503,8 +503,8 @@ int SpaceShipDown::Simulate() {
   }
 
 
-  int velocityIterations = 8;
-  int positionIterations = 3;
+  int velocityIterations = 32;
+  int positionIterations = 32;
 
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -570,8 +570,12 @@ int SpaceShipDown::Simulate() {
         player_velocity.y = -PLAYER_MAX_VELOCITY_Y * 2.5;
       }
       b->SetLinearVelocity(player_velocity);
-      m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0.0; //(fastSinf(m_SimulationTime * 8.0) * 200.0);
-      m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -900.0; //player_velocity.y - 800.0 ;
+      //m_AtlasSprites[m_SpaceShipPartsStartIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 8.0) * 200.0;
+      //m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = fastSinf(m_SimulationTime * 4.0) * 1000.0; 
+      //m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = -100.0; //player_velocity.y - 800.0 ;
+      m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[0] = 0;
+      m_AtlasSprites[m_PlayerIndex]->m_EmitVelocity[1] = 0;
+
     } else if (body_index >= m_EnemiesStartIndex && body_index <= m_EnemiesStopIndex) {
       int mouse_joint_index = (m_EnemiesStopIndex - 1) - body_index;
       float rot1a = 0.0;

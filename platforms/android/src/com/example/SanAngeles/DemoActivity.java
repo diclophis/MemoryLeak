@@ -206,8 +206,6 @@ public class DemoActivity extends Activity {
 		super.onCreate(savedInstanceState);
     setRequestedOrientation(getResources().getConfiguration().orientation);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
-    final Context myApp = this;
-    final Activity MyActivity = this;
 		mGLView = new DemoGLSurfaceView(this);
 		setContentView(mGLView);
     AssetManager am = getAssets();
@@ -247,9 +245,9 @@ public class DemoActivity extends Activity {
       for (int i=0; i<model_count; i++) {
         afd1 = getAssets().openFd(path + "/" + files[i]);
         if (afd1 != null) {
-            fd1[i] = afd1.getFileDescriptor();
-            off1[i] = (int)afd1.getStartOffset();
-            len1[i] = (int)afd1.getLength();
+          fd1[i] = afd1.getFileDescriptor();
+          off1[i] = (int)afd1.getStartOffset();
+          len1[i] = (int)afd1.getLength();
         }
       }
       
@@ -263,9 +261,9 @@ public class DemoActivity extends Activity {
       for (int i=0; i<level_count; i++) {
         afd2 = getAssets().openFd(path + "/" + files[i]);
         if (afd2 != null) {
-            fd2[i] = afd2.getFileDescriptor();
-            off2[i] = (int)afd2.getStartOffset();
-            len2[i] = (int)afd2.getLength();
+          fd2[i] = afd2.getFileDescriptor();
+          off2[i] = (int)afd2.getStartOffset();
+          len2[i] = (int)afd2.getLength();
         }
       }
 
@@ -279,7 +277,6 @@ public class DemoActivity extends Activity {
       len3 = new int[sound_count];
       for (int i=0; i<sound_count; i++) {
         if (!files[i].contains("raw")) {
-          System.out.println(path + "/" + files[i]);
           afd3 = getAssets().openFd(path + "/" + files[i]);
           if (afd3 != null) {
               fd3[i] = afd3.getFileDescriptor();
@@ -290,6 +287,7 @@ public class DemoActivity extends Activity {
         }
       }
 
+      Log.v(this.toString(), "onCreate???? WTF!@#!@#!@#");
       int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
     } catch (java.io.IOException e) {

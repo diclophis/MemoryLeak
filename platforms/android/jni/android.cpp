@@ -196,7 +196,6 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 	}
 
   if (Engine::CurrentGame()) {
-    LOGV("Engine::start 3\n");
     Engine::CurrentGameStart();
   } else {
     Engine::Start(3, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
