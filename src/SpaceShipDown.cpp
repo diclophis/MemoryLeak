@@ -16,7 +16,7 @@
 #define PLAYER_MAX_VELOCITY_X 5.0
 #define PLAYER_MAX_VELOCITY_Y 5.0
 #define BLOCK_WIDTH 54.0
-#define PLAYER_AFTERBURNER_COUNT 30
+#define PLAYER_AFTERBURNER_COUNT 1
 #define ROCKET_AFTERBURNER_COUNT 60
 
 using namespace OpenSteer;
@@ -36,7 +36,6 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-LOGV("alloc\n");
   m_LevelIndex = 0;
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 0.5, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -463,6 +462,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
   //LOGV("state: %d %f %f\n", hitState, x, y);
   if (hitState == 0 && x < 50.0 && y < 50.0) {
     m_DebugDrawToggle = !m_DebugDrawToggle;
+    LOGV("m_DebugDrawToggle is now: %d\n", m_DebugDrawToggle);
   } else {
     if (hitState != 2) {
       if (xx > 0) {
@@ -740,7 +740,7 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 	unsigned int l = m_LevelFoos->at(level_index)->len;
 
 	char *pos = NULL;
-	char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	int idx = -1;
 	int *data = (int *)malloc(sizeof(int) * l);
 	const char *code;
@@ -874,7 +874,7 @@ void SpaceShipDown::RenderModelPhase() {
 
 void SpaceShipDown::RenderSpritePhase() {
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
-  if (m_DebugDrawToggle) {
+  if (false) {
     AtlasSprite::ReleaseBuffers();
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -902,21 +902,21 @@ void SpaceShipDown::RenderSpritePhase() {
   } else {
     glEnable(GL_BLEND);
 
-    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-    
-    //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-    //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
-    //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-    //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
-    //AtlasSprite::ReleaseBuffers();
+    if (m_DebugDrawToggle) { 
+      RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
+      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
+      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
+      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
+    } else {
+      RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
+      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
+      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
+      AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
+    }
 
-    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
-    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
-    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
-    AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
-
-    //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     glDisable(GL_BLEND);
   }
 }

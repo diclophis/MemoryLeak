@@ -164,7 +164,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #endif
 
   size_t interleaved_buffer_size = (foo->m_NumBatched * 4 * foo->m_Stride);
-  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
@@ -245,7 +245,7 @@ foofoo *AtlasSprite::GetBatchFoo(GLuint texture_index, int max_frame_count) {
     indices[(i * 6) + 5] = (i * 4) + 3;
   }
 
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_frame_count * 6 * sizeof(GLshort), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_frame_count * 6 * sizeof(GLshort), indices, GL_DYNAMIC_DRAW);
   free(indices);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   
