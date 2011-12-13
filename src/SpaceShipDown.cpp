@@ -47,7 +47,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  StartLevel(m_LevelIndex);
+  StartLevel(0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), m_SpriteCount + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
 }
 
@@ -905,6 +905,7 @@ void SpaceShipDown::RenderSpritePhase() {
     //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
+    AtlasSprite::ReleaseBuffers();
 
     RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
     RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
@@ -914,7 +915,6 @@ void SpaceShipDown::RenderSpritePhase() {
 
     //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     glDisable(GL_BLEND);
-    AtlasSprite::ReleaseBuffers();
   }
 }
 
