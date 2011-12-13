@@ -96,6 +96,14 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_LastDraw = 0;
   m_CurrentDraw = 0;
 
+  m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
+
+  m_StateFoo->g_lastTexture = -1;
+  m_StateFoo->g_lastElementBuffer = -1;
+  m_StateFoo->g_lastInterleavedBuffer = -1;
+  m_StateFoo->g_lastVertexArrayObject = -1;
+
+
 }
 
 
@@ -257,7 +265,7 @@ void Engine::RenderModelRange(unsigned int s, unsigned int e) {
 
 void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
 	for (unsigned int i=s; i<e; i++) {
-		m_AtlasSprites[i]->Render(batch_foo);
+		m_AtlasSprites[i]->Render(m_StateFoo, batch_foo);
 	}
 }
 

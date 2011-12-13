@@ -898,20 +898,20 @@ void SpaceShipDown::RenderSpritePhase() {
   } else {
     glEnable(GL_BLEND);
 
-    //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
     
     //AtlasSprite::ReleaseBuffers();
     //RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
     //RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
     //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
     //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
-    AtlasSprite::ReleaseBuffers();
+    //AtlasSprite::ReleaseBuffers();
 
     RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
     RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
     RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
-    AtlasSprite::RenderFoo(m_BatchFoo);
+    AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 
     //RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     glDisable(GL_BLEND);

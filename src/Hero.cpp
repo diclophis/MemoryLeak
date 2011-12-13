@@ -109,5 +109,5 @@ void Hero::CreateBox2DBody() {
 
 
 void Hero::Render() {
-  sprite->Render();
+  //sprite->Render();
 }

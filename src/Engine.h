@@ -96,5 +96,7 @@ public:
   int m_LastDraw;
   int m_CurrentDraw;
 
+  StateFoo *m_StateFoo;
+
 
 };

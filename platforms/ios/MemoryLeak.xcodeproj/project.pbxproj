@@ -1846,7 +1846,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
-					"-DHAS_VAO",
+					"-DHAS_VAOX",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1890,7 +1890,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
-					"-DHAS_VAO",
+					"-DHAS_VAOX",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1978,7 +1978,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
-					"-DHAS_VAO",
+					"-DHAS_VAOX",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";

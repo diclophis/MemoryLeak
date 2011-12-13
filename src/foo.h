@@ -7,8 +7,6 @@
  *
  */
 
-static GLuint g_AtlasSpriteIndexBuffer = 0;
-
 struct foo {
 	FILE *fp;
 	unsigned int off;
@@ -21,6 +19,13 @@ typedef struct
   GLfloat texture[2];
   int padding;
 } SpriteFoo;
+
+typedef struct {
+  GLuint g_lastTexture;
+  GLuint g_lastElementBuffer;
+  GLuint g_lastInterleavedBuffer;
+  GLuint g_lastVertexArrayObject;
+} StateFoo;
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,26 +47,8 @@ struct foofoo {
     m_AnimationEnd = 0;
     m_Stride = 0;
     m_numVertexArrayObjects = 0;
-    m_numIndexBuffers = 1;
     m_numBuffers = 0;
     m_NumBatched = 0;
-	  m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (m_numIndexBuffers));
-    if (g_AtlasSpriteIndexBuffer == 0) {
-      glGenBuffers(m_numIndexBuffers, m_IndexBuffers);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffers[0]);
-      GLushort *indices;
-      indices = (GLushort *) malloc(4 * sizeof(GLushort));
-      indices[0] = 1;
-      indices[1] = 2;
-      indices[2] = 0;
-      indices[3] = 3;
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
-      free(indices);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-      g_AtlasSpriteIndexBuffer = m_IndexBuffers[0];
-    } else {
-      m_IndexBuffers[0] = g_AtlasSpriteIndexBuffer;
-    }
 	}
 
 	~foofoo()
