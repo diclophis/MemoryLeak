@@ -13,6 +13,7 @@ public:
 
   Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   virtual ~Engine();
+  void SetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   void ResizeScreen(int width, int height);
   void DrawScreen(float rotation);
   int RunThread();
@@ -47,6 +48,7 @@ public:
   void LoadModel(int i, int s, int e);
 
   static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, bool (const char *), const char *(*)(), void ());
+  static void CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   static void CurrentGamePause();
   static void CurrentGameHit(float x, float y, int hitState);
   static void CurrentGameResizeScreen(int width, int height);

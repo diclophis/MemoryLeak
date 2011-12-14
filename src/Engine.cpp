@@ -119,6 +119,14 @@ void Engine::CreateThread(void (theCleanup)()) {
 }
 
 
+void Engine::SetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
+  m_Textures = &t;
+  m_ModelFoos = &m;
+  m_LevelFoos = &l;
+  m_SoundFoos = &s;
+}
+
+
 void *Engine::EnterThread(void *obj) {
   //TODO: figure out how to fucking name a thread
   reinterpret_cast<Engine *>(obj)->RunThread();
@@ -448,6 +456,15 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   
   pthread_mutex_unlock(&m_GameSwitchLock);
 
+}
+
+
+void Engine::CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->SetAssets(t, m, l, s);
+  } else {
+    LOGV("current game is not active\n");
+  }
 }
 
 
