@@ -73,6 +73,14 @@ SuperStarShooter::~SuperStarShooter() {
 }
 
 
+void SuperStarShooter::CreateFoos() {
+}
+
+
+void SuperStarShooter::DestroyFoos() {
+}
+
+
 void SuperStarShooter::Hit(float x, float y, int hitState) {
 	float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;

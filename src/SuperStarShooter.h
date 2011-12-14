@@ -10,6 +10,9 @@ public:
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();
+  void CreateFoos();
+  void DestroyFoos();
+
   void CreateCollider(float x, float y, float r, int f);
   void IndexToXY(int index, int *x, int *y);
   int XYToIndex(int x, int y);

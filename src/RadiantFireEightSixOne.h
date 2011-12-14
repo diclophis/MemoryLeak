@@ -10,6 +10,8 @@ public:
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();
+  void CreateFoos();
+  void DestroyFoos();
 
   void CreateBox2DWorld();
 

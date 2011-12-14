@@ -32,6 +32,14 @@ MainMenu::~MainMenu() {
 }
 
 
+void MainMenu::CreateFoos() {
+}
+
+
+void MainMenu::DestroyFoos() {
+}
+
+
 void MainMenu::Hit(float x, float y, int hitState) {
   if (hitState == 1) {
     PushMessageToWebView(CreateWebViewFunction("fullscreen()"));

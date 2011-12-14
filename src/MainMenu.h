@@ -10,6 +10,8 @@ public:
 	int Simulate();
 	void RenderModelPhase();
 	void RenderSpritePhase();
+  void CreateFoos();
+  void DestroyFoos();
   bool m_RequestedFullscreen;
   float m_CameraX;
   float m_CameraY;

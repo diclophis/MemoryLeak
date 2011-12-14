@@ -32,6 +32,21 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
 }
 
 
+RadiantFireEightSixOne::~RadiantFireEightSixOne() {
+  delete terrain;
+  delete hero;
+  delete world;
+}
+
+
+void RadiantFireEightSixOne::CreateFoos() {
+}
+
+
+void RadiantFireEightSixOne::DestroyFoos() {
+}
+
+
 void RadiantFireEightSixOne::CreateBox2DWorld() {
   b2Vec2 gravity;
   gravity.Set(0.0f, -9.8f);
@@ -39,11 +54,6 @@ void RadiantFireEightSixOne::CreateBox2DWorld() {
 }
 
 
-RadiantFireEightSixOne::~RadiantFireEightSixOne() {
-  delete terrain;
-  delete hero;
-  delete world;
-}
 
 
 void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
