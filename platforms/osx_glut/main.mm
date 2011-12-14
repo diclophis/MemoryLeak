@@ -7,38 +7,8 @@
 
 #include "MemoryLeak.h"
 
-void checkStatus(OSStatus status) {
-  if(status == 0)
-    NSLog(@"success");
-  else if(status == errSecNotAvailable)
-    NSLog(@"no trust results available");
-  else if(status == errSecItemNotFound)
-    NSLog(@"the item cannot be found");
-  else if(status == errSecParam)
-    NSLog(@"parameter error");
-  else if(status == errSecAllocate)
-    NSLog(@"memory allocation error");
-  else if(status == errSecInteractionNotAllowed)
-    NSLog(@"user interaction not allowd");
-  else if(status == errSecUnimplemented)
-    NSLog(@"not implemented");
-  else if(status == errSecDuplicateItem)
-    NSLog(@"item already exists");
-  else if(status == errSecDecode)
-    NSLog(@"unable to decode data");
-  else
-    NSLog(@"unknown: %d", status);
-  
-}
-
-OSStatus status;
-AudioComponentInstance audioUnit;
-AudioQueueRef mAudioQueue;
-AudioQueueBufferRef *mBuffers;
-
 static int kWindowWidth = 256;
 static int kWindowHeight = 256;
-static int win;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
@@ -50,136 +20,6 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
 static int game_index = 3;
-
-AudioDeviceID device;
-UInt32 deviceBufferSize;
-AudioStreamBasicDescription deviceFormat;
-
-OSStatus appIOProc (AudioDeviceID  inDevice, const AudioTimeStamp*  inNow, const AudioBufferList*   inInputData, const AudioTimeStamp*  inInputTime, AudioBufferList*  outOutputData, const AudioTimeStamp* inOutputTime, void* defptr) {    
-  int numSamples = deviceBufferSize / deviceFormat.mBytesPerFrame;
-
-	if (outOutputData->mNumberBuffers != 1) {
-		LOGV("the fuck\n");
-	}
-  
-	AudioBuffer *ioData = &outOutputData->mBuffers[0];
-  memset(ioData->mData, 0, ioData->mDataByteSize);
-
-LOGV("wtf %d\n", ioData->mDataByteSize);
-  Engine::CurrentGameDoAudio((short int*)ioData->mData, ioData->mDataByteSize);
-
-  return kAudioHardwareNoError;
-}
-
-
-bool startAudio() {
-  OSStatus		err = kAudioHardwareNoError;
-  void *def;
-
-  AudioDeviceIOProcID theIOProcID = NULL;
-  err = AudioDeviceCreateIOProcID(device, appIOProc, (void *)def, &theIOProcID);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "AudioDeviceAddIOProc failed\n");
-    return false;
-  }
-
-  err = AudioDeviceStart(device, theIOProcID);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "AudioDeviceStart failed\n");
-    return false;
-  }
-
-
-  return true;
-}
-
-
-bool setupAudio() {
-  OSStatus				err = kAudioHardwareNoError;
-  UInt32				count;    
-  device = kAudioDeviceUnknown;
-  // get the default output device for the HAL
-  count = sizeof(device);		// it is required to pass the size of the data to be returned
-  err = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &count, (void *) &device);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "get kAudioHardwarePropertyDefaultOutputDevice error %ld\n", err);
-    return false;
-  }
-
-  // get the buffersize that the default device uses for IO
-  count = sizeof(deviceBufferSize);	// it is required to pass the size of the data to be returned
-  err = AudioDeviceGetProperty(device, 0, false, kAudioDevicePropertyBufferSize, &count, &deviceBufferSize);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "get kAudioDevicePropertyBufferSize error %ld\n", err);
-      return false;
-  }
-  fprintf(stderr, "deviceBufferSize = %ld\n", deviceBufferSize);
-
-  count = sizeof(AudioStreamBasicDescription);
-  AudioObjectPropertyAddress property = { kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
-  property.mScope = kAudioDevicePropertyScopeOutput;
-
-  property.mSelector = kAudioStreamPropertyPhysicalFormat;
-  err = AudioObjectGetPropertyData(device, &property, 0, NULL,  &count, &deviceFormat);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "get kAudioDevicePropertyStreamFormat error %ld\n", err);
-    checkStatus(err);
-  }
-  fprintf(stderr, "mSampleRate = %g\n", deviceFormat.mSampleRate);
-  fprintf(stderr, "mFormatFlags = %08lX\n", deviceFormat.mFormatFlags);
-  fprintf(stderr, "mBytesPerPacket = %ld\n", deviceFormat.mBytesPerPacket);
-  fprintf(stderr, "mFramesPerPacket = %ld\n", deviceFormat.mFramesPerPacket);
-  fprintf(stderr, "mChannelsPerFrame = %ld\n", deviceFormat.mChannelsPerFrame);
-  fprintf(stderr, "mBytesPerFrame = %ld\n", deviceFormat.mBytesPerFrame);
-  fprintf(stderr, "mBitsPerChannel = %ld\n", deviceFormat.mBitsPerChannel);
-
-  fprintf(stderr, "\n\n\n");
-
-  deviceFormat.mSampleRate = 44100;
-  deviceFormat.mFormatID = kAudioFormatLinearPCM;
-  deviceFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
-  deviceFormat.mFramesPerPacket = 1;
-  deviceFormat.mChannelsPerFrame = 2;
-  deviceFormat.mBitsPerChannel = 16;
-  deviceFormat.mBytesPerFrame =  deviceFormat.mBitsPerChannel / 8 * deviceFormat.mChannelsPerFrame;
-  deviceFormat.mBytesPerPacket = deviceFormat.mBytesPerFrame * deviceFormat.mFramesPerPacket;
-
-  fprintf(stderr, "mSampleRate = %g\n", deviceFormat.mSampleRate);
-  fprintf(stderr, "mFormatFlags = %08lX\n", deviceFormat.mFormatFlags);
-  fprintf(stderr, "mBytesPerPacket = %ld\n", deviceFormat.mBytesPerPacket);
-  fprintf(stderr, "mFramesPerPacket = %ld\n", deviceFormat.mFramesPerPacket);
-  fprintf(stderr, "mChannelsPerFrame = %ld\n", deviceFormat.mChannelsPerFrame);
-  fprintf(stderr, "mBytesPerFrame = %ld\n", deviceFormat.mBytesPerFrame);
-  fprintf(stderr, "mBitsPerChannel = %ld\n", deviceFormat.mBitsPerChannel);
-
-  property.mSelector = kAudioStreamPropertyPhysicalFormat;
-  err = AudioObjectSetPropertyData(device, &property, 0, NULL, count, &deviceFormat);
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "set kAudioDevicePropertyStreamFormat error %ld\n", err);
-    checkStatus(err);
-    exit(1);
-    return false;
-  }
-
-
-  /*
-  float newVolume = 0.5;
-
-  property.mSelector = kAudioHardwareServiceDeviceProperty_VirtualMasterVolume;
-
-  UInt32 propertySize;
-  propertySize = sizeof(Float32);
-  err = AudioHardwareServiceSetPropertyData(device, &property, 0, NULL, propertySize, &newVolume); 
-  if (err != kAudioHardwareNoError) {
-    fprintf(stderr, "set volume error %ld\n", err);
-    checkStatus(err);
-    exit(1);
-    return false;
-  }
-  */
-
-  return true;
-}
 
 
 bool pushMessageToWebView(const char *theMessage) {
@@ -305,14 +145,13 @@ int main(int argc, char** argv) {
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
-  win = glutCreateWindow("main");
+  glutCreateWindow("main");
   glutDisplayFunc(draw);
   glutKeyboardFunc(processNormalKeys);
   glutKeyboardUpFunc(processNormalKeys);
   glutIgnoreKeyRepeat(true);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
-  //glutIdleFunc(draw);
   glutReshapeFunc(resize);
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];
@@ -381,17 +220,11 @@ int main(int argc, char** argv) {
   [sounds_path release];
   [mainBundle release];
 
-  //if (!setupAudio()) {
-  //  printf("cant setup Audio\n");
-  //}
-
-  //if (!startAudio()) {
-  //  printf("cant start Audio\n");
-  //}
-
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
 
   glutMainLoop();
+
+  [pool release];
 
   return 0;
 }
