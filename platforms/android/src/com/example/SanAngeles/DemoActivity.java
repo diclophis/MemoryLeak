@@ -38,159 +38,28 @@ import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
-import android.view.animation.AnimationSet;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 
-
-class DemoRenderer implements GLSurfaceView.Renderer {
-
-
-  Context mContext;
-
-
-  public DemoRenderer(Context context) {
-    mContext = context;
-  }
-
-
-  public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-    try {
-      AssetManager am = mContext.getAssets();
-      String path = "textures";
-      String[] texture_file_names = am.list(path);
-      int[] textures = new int[texture_file_names.length];
-      int[] tmp_tex = new int[texture_file_names.length];
-      gl.glGenTextures(texture_file_names.length, tmp_tex, 0);
-      int glError;
-      if ((glError = gl.glGetError()) != 0) {
-        Log.v(this.toString(), "unable to glGenTextures");
-      }
-
-      textures = tmp_tex; 
-      for (int i=0; i<texture_file_names.length; i++) {
-        InputStream stream = am.open(path + "/" + texture_file_names[i]);
-        Bitmap bitmap = BitmapFactory.decodeStream(stream);
-        int t = textures[i];
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, t);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-        if ((glError = gl.glGetError()) != 0) {
-          Log.v(this.toString(), "unable to GLUtils.texImage2D");
-        }
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
-      }
-      nativeOnSurfaceCreated(texture_file_names.length, textures);
-    } catch(IOException e) {
-      Log.v(this.toString(), e.toString());
-    }
-  }
-
-
-  public void onSurfaceChanged(GL10 gl, int w, int h) {
-    nativeResize(w, h);
-  }
-
-
-  public void onDrawFrame(GL10 gl) {
-    nativeRender();
-  }
-
-
-  private native void nativeOnSurfaceCreated(int count, int[] textures);
-  private static native void nativeResize(int w, int h);
-  private static native void nativeRender();
-
-
-}
-
-
-class DemoGLSurfaceView extends GLSurfaceView {
-
-
-  private DemoRenderer mRenderer;
-
-
-  public DemoGLSurfaceView(Context context) {
-    super(context);
-    mRenderer = new DemoRenderer(context);
-    setRenderer(mRenderer);
-  }
-
-
-  @Override
-  public boolean onTouchEvent(final MotionEvent event) {
-    float x = 0;
-    float y = 0;
-    int type = -1;
-    for (int i = 0; i < event.getPointerCount(); i++) {
-      switch (event.getAction() & MotionEvent.ACTION_MASK) {
-        case MotionEvent.ACTION_DOWN:
-        case MotionEvent.ACTION_POINTER_DOWN:
-          x = event.getX(i);
-          y = event.getY(i);
-          nativeTouch(x, y, 0);
-          break;
-        case MotionEvent.ACTION_MOVE:
-          x = event.getX(i);
-          y = event.getY(i);
-          nativeTouch(x, y, 1);
-          break;
-        case MotionEvent.ACTION_UP:
-        case MotionEvent.ACTION_CANCEL:
-        case MotionEvent.ACTION_POINTER_UP:
-          x = event.getX(i);
-          y = event.getY(i);
-          nativeTouch(x, y, 2);
-          break;  
-      }
-    }
-    return true;
-  }
-
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    nativePause();
-  }
-
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    nativeResume();
-  }
-
-
-  private static native void nativePause();
-  private static native void nativeResume();
-  private static native void nativeTouch(float x, float y, int hitState);
-  private static native void nativeStartGame(int i);
-
-
-}
+import com.example.SanAngeles.DemoRenderer;
+import com.example.SanAngeles.DemoGLSurfaceView;
 
 
 public class DemoActivity extends Activity {
 
-
   protected static AudioTrack at1;
 	private DemoGLSurfaceView mGLView;
+
+	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
+  private static native void setMinBuffer(int size);
+
+  static {
+    System.loadLibrary("sanangeles");
+  }
 
 
   public static void writeAudio(short[] bytes, int offset, int size) {
@@ -287,7 +156,6 @@ public class DemoActivity extends Activity {
         }
       }
 
-      Log.v(this.toString(), "onCreate???? WTF!@#!@#!@#");
       int res = initNative(model_count, fd1, off1, len1, level_count, fd2, off2, len2, sound_count_actual, fd3, off3, len3);
 
     } catch (java.io.IOException e) {
@@ -324,14 +192,6 @@ public class DemoActivity extends Activity {
     mGLView.onResume();
   }
 
-
-	private native int initNative(int model_count, java.io.FileDescriptor[] fd1, int[] off1, int[] len1, int level_count, java.io.FileDescriptor[] fd2, int[] off2, int[] len2, int sound_count, java.io.FileDescriptor[] fd3, int[] off3, int[] len3);
-  private static native void setMinBuffer(int size);
-
-
-  static {
-    System.loadLibrary("sanangeles");
-  }
 
 
 }
