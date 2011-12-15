@@ -120,19 +120,20 @@ void processNormalKeys(unsigned char key, int x, int y) {
     right_down = !right_down;
   } else {
     if (reset_down) {
+
     } else {
-      /*
-      game_index = key - 49;
-      if (game_index > 3) {
-        game_index = 0;
+      if (key == 50) {
+        Engine::CurrentGamePause();
+      } else if (key == 51) {
+        Engine::CurrentGameDestroyFoos();
+        Engine::CurrentGameSetAssets(textures, models, levels, sounds);
+        Engine::CurrentGameCreateFoos();
+        Engine::CurrentGameStart();
+      } else {
+        game_index = 3;
+        LOGV("do restart\n");
+        Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
       }
-      if (game_index < 0) {
-        game_index = 0;
-      }
-      */
-      game_index = 3;
-      LOGV("do restart\n");
-      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
     }
     reset_down = !reset_down;
   }

@@ -53,11 +53,13 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   public DemoRenderer(Context context) {
+    Log.v(this.toString(), "DemoRenderer::construct");
     mContext = context;
   }
 
 
   public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    Log.v(this.toString(), "DemoRenderer::onSurfaceCreated");
     try {
       AssetManager am = mContext.getAssets();
       String path = "textures";
@@ -84,6 +86,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
         }
         gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
       }
+      Log.v(this.toString(), "DOES THIS HAPPEN TWICE??");
       nativeOnSurfaceCreated(texture_file_names.length, textures);
     } catch(IOException e) {
       Log.v(this.toString(), e.toString());
@@ -92,6 +95,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   public void onSurfaceChanged(GL10 gl, int w, int h) {
+    Log.v(this.toString(), "RESIZEEEEEEEEEEEEEEE");
     nativeResize(w, h);
   }
 

@@ -54,6 +54,8 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   public DemoGLSurfaceView(Context context) {
     super(context);
+    setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
+    Log.v(this.toString(), "DemoGLSurfaceView::onSurfaceCreated");
     mRenderer = new DemoRenderer(context);
     setRenderer(mRenderer);
   }
@@ -61,6 +63,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
+    Log.v(this.toString(), "onTouchEvent!!!!!!!!!!!!!!!!");
     float x = 0;
     float y = 0;
     int type = -1;
@@ -92,6 +95,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public void onPause() {
+    Log.v(this.toString(), "DemoGLSurfaceView::onPause");
     super.onPause();
     nativePause();
   }
@@ -99,6 +103,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public void onResume() {
+    Log.v(this.toString(), "DemoGLSurfaceView::onResume");
     super.onResume();
     nativeResume();
   }

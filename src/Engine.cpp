@@ -81,15 +81,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_IsPushingAudio = false;
   m_WebViewTimeout = 0.0;
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_TEXTURE_2D);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
 
   //glMatrixMode(GL_MODELVIEW);
   //glLoadIdentity();
@@ -101,12 +92,27 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
+
+
+}
+
+
+void Engine::ResetStateFoo() {
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_TEXTURE_2D);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
   m_StateFoo->g_lastInterleavedBuffer = -1;
   m_StateFoo->g_lastVertexArrayObject = -1;
-
-
 }
 
 
@@ -463,7 +469,25 @@ void Engine::CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, 
   if (m_CurrentGame != NULL) {
     m_CurrentGame->SetAssets(t, m, l, s);
   } else {
-    LOGV("current game is not active\n");
+    LOGV("current game is not to set assets\n");
+  }
+}
+
+
+void Engine::CurrentGameDestroyFoos() {
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->DestroyFoos();
+  } else {
+    LOGV("current game is not set to destroy foos\n\n");
+  }
+}
+
+
+void Engine::CurrentGameCreateFoos() {
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->CreateFoos();
+  } else {
+    LOGV("current game is not set to create foos\n\n");
   }
 }
 

@@ -38,5 +38,7 @@ public:
   int m_IsFlags;
 
   foofoo *m_ShotFooFoo;
+
+  void ResetFoo(foofoo *ff, foofoo *sff);
 	
 };

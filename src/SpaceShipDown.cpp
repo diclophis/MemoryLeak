@@ -42,6 +42,8 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
 
 void SpaceShipDown::CreateFoos() {
+  ResetStateFoo();
+  LOGV("wtf: %d %d %d\n", m_Textures->at(0), m_Textures->at(1), m_Textures->at(2));
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 30.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -53,6 +55,21 @@ void SpaceShipDown::CreateFoos() {
   m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+  if (m_SimulationTime > 0.0) {
+    for (unsigned int i=0; i<m_SpriteCount; i++) {
+      if (i == m_PlayerIndex) {
+        m_AtlasSprites[i]->ResetFoo(m_PlayerFoo, m_PlayerAfterburnerFoo);
+      } else if (i == m_LandscapeIndex) {
+        m_AtlasSprites[i]->ResetFoo(m_LandscapeFoo, NULL);
+      } else if (i >= m_SpaceShipPartsStartIndex && i <= m_SpaceShipPartsStopIndex) {
+        m_AtlasSprites[i]->ResetFoo(m_PlatformFoo, NULL);
+      } else if (i >= m_PlatformsStartIndex && i <= m_PlatformsStopIndex) {
+        m_AtlasSprites[i]->ResetFoo(m_PlatformFoo, NULL);
+      } else if (i >= m_EnemiesStartIndex && i <= m_EnemiesStopIndex) {
+        m_AtlasSprites[i]->ResetFoo(m_EnemyFoo, NULL);
+      }
+    }
+  }
 }
 
 

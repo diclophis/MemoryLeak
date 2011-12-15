@@ -139,10 +139,7 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-  //playing_audio = false;
-  //pthread_join(audio_thread, NULL);
   Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
-  //create_audio_thread();
 }
 
 
@@ -152,6 +149,23 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
   int level_count, jobjectArray fd_sys2, jintArray off2, jintArray len2,
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3
 ) {
+  if (Engine::CurrentGame()) {
+    for (std::vector<foo *>::iterator i = models.begin(); i != models.end(); ++i) {
+      delete *i;
+    }
+    models.clear();
+
+    for (std::vector<foo *>::iterator i = levels.begin(); i != levels.end(); ++i) {
+      delete *i;
+    }
+    levels.clear();
+
+    for (std::vector<foo *>::iterator i = sounds.begin(); i != sounds.end(); ++i) {
+      delete *i;
+    }
+    sounds.clear();
+  }
+
   activity = (jobject)env->NewGlobalRef(thiz);
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
@@ -191,11 +205,20 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz, int count, jintArray arr) {
+  if (Engine::CurrentGame()) {
+    textures.clear();
+  }
+
 	for (int i=0; i<count; i++) {
+  LOGV("texture :%d\n", env->GetIntArrayElements(arr, 0)[i]);
 		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
 	}
 
   if (Engine::CurrentGame()) {
+    LOGV("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n");
+    Engine::CurrentGameDestroyFoos();
+    Engine::CurrentGameSetAssets(textures, models, levels, sounds);
+    Engine::CurrentGameCreateFoos();
     Engine::CurrentGameStart();
   } else {
     Engine::Start(3, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
@@ -217,6 +240,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume( JNIEnv*  env ) {
+  LOGV("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
 }
 
 

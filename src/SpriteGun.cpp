@@ -108,3 +108,12 @@ void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
   }
   AtlasSprite::Render(sf, batch_foo);
 }
+
+
+void SpriteGun::ResetFoo(foofoo *ff, foofoo *sff) {
+  m_FooFoo = ff;
+  m_ShotFooFoo = sff;
+  for (unsigned int i=0; i<m_NumParticles; i++) {
+    m_AtlasSprites[i]->m_FooFoo = m_ShotFooFoo;
+  }
+}
