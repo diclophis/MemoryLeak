@@ -54,8 +54,6 @@ Engine::~Engine() {
   glDisable(GL_TEXTURE_2D);
 
   free(m_StateFoo);
-
-  LOGV("dealloc Engine\n");
 }
 
 
@@ -89,6 +87,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
   m_LastDraw = 0;
   m_CurrentDraw = 0;
+  m_IsDrawReadyAfterResume = true;
 
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
@@ -193,6 +192,9 @@ void Engine::DrawScreen(float rotation) {
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
+  //if (m_GameState == 1) {
+  //  m_IsDrawReadyAfterResume = true;
+  //}
   m_CurrentDraw++;
   pthread_mutex_unlock(&m_Mutex);
   sched_yield();
@@ -207,22 +209,33 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   StartSimulation();
   int drawn = 0;
+  //bool was_draw_ready = m_IsDrawReadyAfterResume;
 	while (m_GameState > 0) {
     drawn = (m_CurrentDraw - m_LastDraw);
     if (drawn > 0) {
       pthread_mutex_lock(&m_Mutex);
+      //if (m_IsDrawReadyAfterResume == true && was_draw_ready == false) {
+      //LOGV("foo\n");
+      //  gettimeofday(&tim, NULL);
+      //  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+      //}
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
       m_DeltaTime = t2 - t1;
       gettimeofday(&tim, NULL);
       t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+      if (m_DeltaTime > 1.0) {
+        LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
+        pthread_mutex_unlock(&m_Mutex);
+        continue;
+      }
       m_LastDraw = m_CurrentDraw;
       if (m_GameState > 1) {
-        LOGV("paused\n");
+        //m_IsDrawReadyAfterResume = false;
+        //LOGV("wtf before: %d\n", m_GameState);
         pthread_mutex_unlock(&m_Mutex);
         pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
-        gettimeofday(&tim, NULL);
-        t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+        //LOGV("wtf after: %d\n", m_GameState);
       } else {
         m_SimulationTime += (m_DeltaTime);
         if (Active()) {
@@ -231,6 +244,7 @@ int Engine::RunThread() {
         pthread_mutex_unlock(&m_Mutex);
       }
       m_IsSceneBuilt = true;
+      //was_draw_ready = m_IsDrawReadyAfterResume;
     }
 	}
   m_SimulationThreadCleanup();
@@ -258,7 +272,6 @@ void Engine::StopSimulation() {
 void Engine::StartSimulation() {
   if (m_GameState == 2) {
     pthread_mutex_lock(&m_Mutex);
-    LOGV("start sim\n");
     m_GameState = 1;
     pthread_cond_signal(&m_CurrentGame->m_ResumeCond);
     pthread_mutex_unlock(&m_Mutex);
@@ -496,7 +509,7 @@ void Engine::CurrentGamePause() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->PauseSimulation();
   } else {
-    LOGV("wtsdfasdasdasdasdasdasd\n\n");
+    LOGV("current game is not set to pause\n\n");
   }
 }
 
@@ -505,7 +518,7 @@ void Engine::CurrentGameHit(float x, float y, int hitState) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->Hit(x, y, hitState);
   } else {
-    //LOGV("\n\nFOOOOOOOOOOOOOOOOO\n\n\n");
+    LOGV("\n\nFOOOOOOOOOOOOOOOOO\n\n\n");
   }
 }
 
@@ -514,26 +527,25 @@ void Engine::CurrentGameResizeScreen(int width, int height) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->ResizeScreen(width, height);
   } else {
-    //LOGV("\n really??\n");
+    LOGV("really??\n\n");
   }
 }
 
 
 void Engine::CurrentGameDrawScreen(float rotation) {
-  //if (pthread_mutex_trylock(&m_GameSwitchLock) == 0) {
-    if (m_CurrentGame != NULL) {
-      m_CurrentGame->DrawScreen(rotation);
-    } else {
-      //LOGV("foooo man chuuu\n");
-    }
-    //pthread_mutex_unlock(&m_GameSwitchLock);
-  //}
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->DrawScreen(rotation);
+  } else {
+    LOGV("foooo man chuuu\n");
+  }
 }
 
 
 void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
+  } else {
+    LOGV("foooo man chuuu\n");
   }
 }
 
@@ -551,7 +563,7 @@ void Engine::CurrentGameStart() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->StartSimulation();
   } else {
-    //LOGV("WTF!!!!!!!\n");
+    LOGV("WTF!!!!!!!\n");
   }
 }
 

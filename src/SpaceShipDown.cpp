@@ -43,7 +43,6 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
 void SpaceShipDown::CreateFoos() {
   ResetStateFoo();
-  LOGV("wtf: %d %d %d\n", m_Textures->at(0), m_Textures->at(1), m_Textures->at(2));
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 1, 2, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 30.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -61,12 +60,22 @@ void SpaceShipDown::CreateFoos() {
         m_AtlasSprites[i]->ResetFoo(m_PlayerFoo, m_PlayerAfterburnerFoo);
       } else if (i == m_LandscapeIndex) {
         m_AtlasSprites[i]->ResetFoo(m_LandscapeFoo, NULL);
-      } else if (i >= m_SpaceShipPartsStartIndex && i <= m_SpaceShipPartsStopIndex) {
+      } else if (i >= m_SpaceShipPartsStartIndex && i < m_SpaceShipPartsStopIndex) {
+        int sprite_index = i - (m_SpaceShipPartsStartIndex);
+        if (sprite_index == 0) {
+          m_AtlasSprites[i]->ResetFoo(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo);
+        } else if (sprite_index == 1) {
+          m_AtlasSprites[i]->ResetFoo(m_SpaceShipPartTopFoo, NULL);
+        } else {
+          m_AtlasSprites[i]->ResetFoo(m_SpaceShipPartMiddleFoo, NULL);
+        }
+      } else if (i >= m_PlatformsStartIndex && i < m_PlatformsStopIndex) {
         m_AtlasSprites[i]->ResetFoo(m_PlatformFoo, NULL);
-      } else if (i >= m_PlatformsStartIndex && i <= m_PlatformsStopIndex) {
-        m_AtlasSprites[i]->ResetFoo(m_PlatformFoo, NULL);
-      } else if (i >= m_EnemiesStartIndex && i <= m_EnemiesStopIndex) {
+      } else if (i >= m_EnemiesStartIndex && i < m_EnemiesStopIndex) {
         m_AtlasSprites[i]->ResetFoo(m_EnemyFoo, NULL);
+      } else if (i >= m_DropZonesStartIndex && i < m_DropZonesStopIndex) {
+      } else {
+        LOGV("wtf %d %d %d %d %d %d %d %d %d %d\n", i, m_PlayerIndex, m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_PlatformsStartIndex, m_PlatformsStopIndex, m_EnemiesStartIndex, m_EnemiesStopIndex, m_DropZonesStartIndex, m_DropZonesStopIndex);
       }
     }
   }

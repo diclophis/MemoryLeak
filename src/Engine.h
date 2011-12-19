@@ -103,6 +103,7 @@ public:
 
   int m_LastDraw;
   int m_CurrentDraw;
+  bool m_IsDrawReadyAfterResume;
 
   StateFoo *m_StateFoo;
 
