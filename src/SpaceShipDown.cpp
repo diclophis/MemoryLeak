@@ -948,7 +948,7 @@ void SpaceShipDown::RenderSpritePhase() {
       RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
       RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
     } else {
-      RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
+      //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
       RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
       RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
       RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);

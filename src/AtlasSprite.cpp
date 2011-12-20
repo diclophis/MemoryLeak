@@ -303,17 +303,19 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 	ff->m_AnimationEnd = end;
   ff->m_AnimationDuration = duration;
 
+  /*
   ff->m_numVertexArrayObjects = length;
 	ff->m_VertexArrayObjects = (GLuint*)calloc((ff->m_numVertexArrayObjects), sizeof(GLuint));
 
   ff->m_numInterleavedBuffers = 1;
 
 	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
+  */
 
   int sprite_foo_offset = 0;
   SpriteFoo *sprite_foos = (SpriteFoo *)malloc(length * 4 * sizeof(SpriteFoo));
 
-	glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
+	//glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
 
   for (unsigned int i=0; i<length; i++) {
     GLshort w = m_Sprites[i].dx; 
@@ -358,28 +360,28 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 
   delete m_Sprites;
 
-  ff->m_numIndexBuffers = 1;
-  ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
-  glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
-  GLushort *indices;
-  indices = (GLushort *) malloc(4 * sizeof(GLushort));
-  indices[0] = 1;
-  indices[1] = 2;
-  indices[2] = 0;
-  indices[3] = 3;
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
-  free(indices);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  //ff->m_numIndexBuffers = 1;
+  //ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
+  //glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
+  //GLushort *indices;
+  //indices = (GLushort *) malloc(4 * sizeof(GLushort));
+  //indices[0] = 1;
+  //indices[1] = 2;
+  //indices[2] = 0;
+  //indices[3] = 3;
+  //glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLshort), indices, GL_STATIC_DRAW);
+  //free(indices);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   size_t size_of_sprite_foo = sizeof(SpriteFoo);
-  size_t interleaved_buffer_size = (ff->m_numFrames * 4 * size_of_sprite_foo);
+  //size_t interleaved_buffer_size = (ff->m_numFrames * 4 * size_of_sprite_foo);
   ff->m_Stride = size_of_sprite_foo; 
   ff->m_SpriteFoos = sprite_foos;
-  glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
-  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, sprite_foos);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
+  //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+  //glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, sprite_foos);
+  //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   //free(sprite_foos);
 

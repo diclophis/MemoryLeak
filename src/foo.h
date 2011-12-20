@@ -43,6 +43,7 @@ struct foofoo {
     m_numInterleavedBuffers = 0;
     m_numTextureBuffers = 0;
     m_numNormalBuffers = 0;
+    m_numIndexBuffers = 0;
     m_AnimationStart = 0;
     m_AnimationEnd = 0;
     m_Stride = 0;
