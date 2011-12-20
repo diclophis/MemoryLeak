@@ -128,7 +128,6 @@
 		FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6A13C1AB6F00FECDEA /* RenderTexture.cpp */; };
 		FC32AB0214594448007FCB03 /* GLES-Render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC32AAFE14594448007FCB03 /* GLES-Render.cpp */; };
 		FC32AB0314594448007FCB03 /* SpaceShipDown.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC32AB0014594448007FCB03 /* SpaceShipDown.cpp */; };
-		FC419526147DB07700A63C6B /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC4194F6147DB07700A63C6B /* Camera.cpp */; };
 		FC419527147DB07700A63C6B /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC4194F8147DB07700A63C6B /* Clock.cpp */; };
 		FC419528147DB07700A63C6B /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC4194FA147DB07700A63C6B /* Color.cpp */; };
 		FC419529147DB07700A63C6B /* Draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC4194FC147DB07700A63C6B /* Draw.cpp */; };
@@ -591,8 +590,6 @@
 		FC32AB0114594448007FCB03 /* SpaceShipDown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpaceShipDown.h; sourceTree = "<group>"; };
 		FC4194F4147DB07700A63C6B /* AbstractVehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractVehicle.h; sourceTree = "<group>"; };
 		FC4194F5147DB07700A63C6B /* Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Annotation.h; sourceTree = "<group>"; };
-		FC4194F6147DB07700A63C6B /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
-		FC4194F7147DB07700A63C6B /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		FC4194F8147DB07700A63C6B /* Clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
 		FC4194F9147DB07700A63C6B /* Clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
 		FC4194FA147DB07700A63C6B /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
@@ -1363,8 +1360,6 @@
 			children = (
 				FC4194F4147DB07700A63C6B /* AbstractVehicle.h */,
 				FC4194F5147DB07700A63C6B /* Annotation.h */,
-				FC4194F6147DB07700A63C6B /* Camera.cpp */,
-				FC4194F7147DB07700A63C6B /* Camera.h */,
 				FC4194F8147DB07700A63C6B /* Clock.cpp */,
 				FC4194F9147DB07700A63C6B /* Clock.h */,
 				FC4194FA147DB07700A63C6B /* Color.cpp */,
@@ -1687,7 +1682,6 @@
 				FC32AB0214594448007FCB03 /* GLES-Render.cpp in Sources */,
 				FC32AB0314594448007FCB03 /* SpaceShipDown.cpp in Sources */,
 				FC710BA2146C9B6A00800C95 /* SpaceShipDownContactListener.cpp in Sources */,
-				FC419526147DB07700A63C6B /* Camera.cpp in Sources */,
 				FC419527147DB07700A63C6B /* Clock.cpp in Sources */,
 				FC419528147DB07700A63C6B /* Color.cpp in Sources */,
 				FC419529147DB07700A63C6B /* Draw.cpp in Sources */,
