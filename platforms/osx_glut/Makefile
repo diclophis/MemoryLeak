@@ -9,6 +9,7 @@ CXXFLAGS=\
 -pg \
 -DDESKTOP \
 -DHAVE_SETENV \
+-DMODPLUG_BASIC_SUPPORT \
 -D__MACOSX_CORE__ \
 -D_iPhoneVersion \
 -I/usr/include \

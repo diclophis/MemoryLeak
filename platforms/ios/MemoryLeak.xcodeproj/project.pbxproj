@@ -159,30 +159,9 @@
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
-		FCDE088F12D924A3004CE9B7 /* load_669.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086B12D924A3004CE9B7 /* load_669.cpp */; };
-		FCDE089012D924A3004CE9B7 /* load_abc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086C12D924A3004CE9B7 /* load_abc.cpp */; };
-		FCDE089112D924A3004CE9B7 /* load_amf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086D12D924A3004CE9B7 /* load_amf.cpp */; };
-		FCDE089212D924A3004CE9B7 /* load_ams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086E12D924A3004CE9B7 /* load_ams.cpp */; };
-		FCDE089312D924A3004CE9B7 /* load_dbm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE086F12D924A3004CE9B7 /* load_dbm.cpp */; };
-		FCDE089412D924A3004CE9B7 /* load_dmf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087012D924A3004CE9B7 /* load_dmf.cpp */; };
-		FCDE089512D924A3004CE9B7 /* load_dsm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087112D924A3004CE9B7 /* load_dsm.cpp */; };
-		FCDE089612D924A3004CE9B7 /* load_far.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087212D924A3004CE9B7 /* load_far.cpp */; };
 		FCDE089712D924A3004CE9B7 /* load_it.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087312D924A3004CE9B7 /* load_it.cpp */; };
-		FCDE089812D924A3004CE9B7 /* load_j2b.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087412D924A3004CE9B7 /* load_j2b.cpp */; };
-		FCDE089912D924A3004CE9B7 /* load_mdl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087512D924A3004CE9B7 /* load_mdl.cpp */; };
-		FCDE089A12D924A3004CE9B7 /* load_med.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087612D924A3004CE9B7 /* load_med.cpp */; };
-		FCDE089B12D924A3004CE9B7 /* load_mid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087712D924A3004CE9B7 /* load_mid.cpp */; };
 		FCDE089C12D924A3004CE9B7 /* load_mod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087812D924A3004CE9B7 /* load_mod.cpp */; };
-		FCDE089D12D924A3004CE9B7 /* load_mt2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087912D924A3004CE9B7 /* load_mt2.cpp */; };
-		FCDE089E12D924A3004CE9B7 /* load_mtm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087A12D924A3004CE9B7 /* load_mtm.cpp */; };
-		FCDE089F12D924A3004CE9B7 /* load_okt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087B12D924A3004CE9B7 /* load_okt.cpp */; };
-		FCDE08A012D924A3004CE9B7 /* load_pat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087C12D924A3004CE9B7 /* load_pat.cpp */; };
-		FCDE08A112D924A3004CE9B7 /* load_psm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087E12D924A3004CE9B7 /* load_psm.cpp */; };
-		FCDE08A212D924A3004CE9B7 /* load_ptm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087F12D924A3004CE9B7 /* load_ptm.cpp */; };
 		FCDE08A312D924A3004CE9B7 /* load_s3m.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088012D924A3004CE9B7 /* load_s3m.cpp */; };
-		FCDE08A412D924A3004CE9B7 /* load_stm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088112D924A3004CE9B7 /* load_stm.cpp */; };
-		FCDE08A512D924A3004CE9B7 /* load_ult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088212D924A3004CE9B7 /* load_ult.cpp */; };
-		FCDE08A612D924A3004CE9B7 /* load_umx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088312D924A3004CE9B7 /* load_umx.cpp */; };
 		FCDE08A712D924A3004CE9B7 /* load_wav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088412D924A3004CE9B7 /* load_wav.cpp */; };
 		FCDE08A812D924A3004CE9B7 /* load_xm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088512D924A3004CE9B7 /* load_xm.cpp */; };
 		FCDE08A912D924A3004CE9B7 /* mmcmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE088612D924A3004CE9B7 /* mmcmp.cpp */; };
@@ -687,31 +666,9 @@
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		FCDE086B12D924A3004CE9B7 /* load_669.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_669.cpp; sourceTree = "<group>"; };
-		FCDE086C12D924A3004CE9B7 /* load_abc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_abc.cpp; sourceTree = "<group>"; };
-		FCDE086D12D924A3004CE9B7 /* load_amf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_amf.cpp; sourceTree = "<group>"; };
-		FCDE086E12D924A3004CE9B7 /* load_ams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_ams.cpp; sourceTree = "<group>"; };
-		FCDE086F12D924A3004CE9B7 /* load_dbm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_dbm.cpp; sourceTree = "<group>"; };
-		FCDE087012D924A3004CE9B7 /* load_dmf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_dmf.cpp; sourceTree = "<group>"; };
-		FCDE087112D924A3004CE9B7 /* load_dsm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_dsm.cpp; sourceTree = "<group>"; };
-		FCDE087212D924A3004CE9B7 /* load_far.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_far.cpp; sourceTree = "<group>"; };
 		FCDE087312D924A3004CE9B7 /* load_it.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_it.cpp; sourceTree = "<group>"; };
-		FCDE087412D924A3004CE9B7 /* load_j2b.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_j2b.cpp; sourceTree = "<group>"; };
-		FCDE087512D924A3004CE9B7 /* load_mdl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mdl.cpp; sourceTree = "<group>"; };
-		FCDE087612D924A3004CE9B7 /* load_med.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_med.cpp; sourceTree = "<group>"; };
-		FCDE087712D924A3004CE9B7 /* load_mid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mid.cpp; sourceTree = "<group>"; };
 		FCDE087812D924A3004CE9B7 /* load_mod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mod.cpp; sourceTree = "<group>"; };
-		FCDE087912D924A3004CE9B7 /* load_mt2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mt2.cpp; sourceTree = "<group>"; };
-		FCDE087A12D924A3004CE9B7 /* load_mtm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mtm.cpp; sourceTree = "<group>"; };
-		FCDE087B12D924A3004CE9B7 /* load_okt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_okt.cpp; sourceTree = "<group>"; };
-		FCDE087C12D924A3004CE9B7 /* load_pat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_pat.cpp; sourceTree = "<group>"; };
-		FCDE087D12D924A3004CE9B7 /* load_pat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = load_pat.h; sourceTree = "<group>"; };
-		FCDE087E12D924A3004CE9B7 /* load_psm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_psm.cpp; sourceTree = "<group>"; };
-		FCDE087F12D924A3004CE9B7 /* load_ptm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_ptm.cpp; sourceTree = "<group>"; };
 		FCDE088012D924A3004CE9B7 /* load_s3m.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_s3m.cpp; sourceTree = "<group>"; };
-		FCDE088112D924A3004CE9B7 /* load_stm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_stm.cpp; sourceTree = "<group>"; };
-		FCDE088212D924A3004CE9B7 /* load_ult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_ult.cpp; sourceTree = "<group>"; };
-		FCDE088312D924A3004CE9B7 /* load_umx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_umx.cpp; sourceTree = "<group>"; };
 		FCDE088412D924A3004CE9B7 /* load_wav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_wav.cpp; sourceTree = "<group>"; };
 		FCDE088512D924A3004CE9B7 /* load_xm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_xm.cpp; sourceTree = "<group>"; };
 		FCDE088612D924A3004CE9B7 /* mmcmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mmcmp.cpp; sourceTree = "<group>"; };
@@ -1477,31 +1434,9 @@
 			isa = PBXGroup;
 			children = (
 				FC8BE41F13B12C5600EAA5EE /* fastmix.cpp */,
-				FCDE086B12D924A3004CE9B7 /* load_669.cpp */,
-				FCDE086C12D924A3004CE9B7 /* load_abc.cpp */,
-				FCDE086D12D924A3004CE9B7 /* load_amf.cpp */,
-				FCDE086E12D924A3004CE9B7 /* load_ams.cpp */,
-				FCDE086F12D924A3004CE9B7 /* load_dbm.cpp */,
-				FCDE087012D924A3004CE9B7 /* load_dmf.cpp */,
-				FCDE087112D924A3004CE9B7 /* load_dsm.cpp */,
-				FCDE087212D924A3004CE9B7 /* load_far.cpp */,
 				FCDE087312D924A3004CE9B7 /* load_it.cpp */,
-				FCDE087412D924A3004CE9B7 /* load_j2b.cpp */,
-				FCDE087512D924A3004CE9B7 /* load_mdl.cpp */,
-				FCDE087612D924A3004CE9B7 /* load_med.cpp */,
-				FCDE087712D924A3004CE9B7 /* load_mid.cpp */,
 				FCDE087812D924A3004CE9B7 /* load_mod.cpp */,
-				FCDE087912D924A3004CE9B7 /* load_mt2.cpp */,
-				FCDE087A12D924A3004CE9B7 /* load_mtm.cpp */,
-				FCDE087B12D924A3004CE9B7 /* load_okt.cpp */,
-				FCDE087C12D924A3004CE9B7 /* load_pat.cpp */,
-				FCDE087D12D924A3004CE9B7 /* load_pat.h */,
-				FCDE087E12D924A3004CE9B7 /* load_psm.cpp */,
-				FCDE087F12D924A3004CE9B7 /* load_ptm.cpp */,
 				FCDE088012D924A3004CE9B7 /* load_s3m.cpp */,
-				FCDE088112D924A3004CE9B7 /* load_stm.cpp */,
-				FCDE088212D924A3004CE9B7 /* load_ult.cpp */,
-				FCDE088312D924A3004CE9B7 /* load_umx.cpp */,
 				FCDE088412D924A3004CE9B7 /* load_wav.cpp */,
 				FCDE088512D924A3004CE9B7 /* load_xm.cpp */,
 				FCDE088612D924A3004CE9B7 /* mmcmp.cpp */,
@@ -1681,30 +1616,9 @@
 				FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */,
 				FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */,
 				FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */,
-				FCDE088F12D924A3004CE9B7 /* load_669.cpp in Sources */,
-				FCDE089012D924A3004CE9B7 /* load_abc.cpp in Sources */,
-				FCDE089112D924A3004CE9B7 /* load_amf.cpp in Sources */,
-				FCDE089212D924A3004CE9B7 /* load_ams.cpp in Sources */,
-				FCDE089312D924A3004CE9B7 /* load_dbm.cpp in Sources */,
-				FCDE089412D924A3004CE9B7 /* load_dmf.cpp in Sources */,
-				FCDE089512D924A3004CE9B7 /* load_dsm.cpp in Sources */,
-				FCDE089612D924A3004CE9B7 /* load_far.cpp in Sources */,
 				FCDE089712D924A3004CE9B7 /* load_it.cpp in Sources */,
-				FCDE089812D924A3004CE9B7 /* load_j2b.cpp in Sources */,
-				FCDE089912D924A3004CE9B7 /* load_mdl.cpp in Sources */,
-				FCDE089A12D924A3004CE9B7 /* load_med.cpp in Sources */,
-				FCDE089B12D924A3004CE9B7 /* load_mid.cpp in Sources */,
 				FCDE089C12D924A3004CE9B7 /* load_mod.cpp in Sources */,
-				FCDE089D12D924A3004CE9B7 /* load_mt2.cpp in Sources */,
-				FCDE089E12D924A3004CE9B7 /* load_mtm.cpp in Sources */,
-				FCDE089F12D924A3004CE9B7 /* load_okt.cpp in Sources */,
-				FCDE08A012D924A3004CE9B7 /* load_pat.cpp in Sources */,
-				FCDE08A112D924A3004CE9B7 /* load_psm.cpp in Sources */,
-				FCDE08A212D924A3004CE9B7 /* load_ptm.cpp in Sources */,
 				FCDE08A312D924A3004CE9B7 /* load_s3m.cpp in Sources */,
-				FCDE08A412D924A3004CE9B7 /* load_stm.cpp in Sources */,
-				FCDE08A512D924A3004CE9B7 /* load_ult.cpp in Sources */,
-				FCDE08A612D924A3004CE9B7 /* load_umx.cpp in Sources */,
 				FCDE08A712D924A3004CE9B7 /* load_wav.cpp in Sources */,
 				FCDE08A812D924A3004CE9B7 /* load_xm.cpp in Sources */,
 				FCDE08A912D924A3004CE9B7 /* mmcmp.cpp in Sources */,
@@ -1847,6 +1761,7 @@
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
 					"-DHAS_VAOX",
+					"-DMODPLUG_BASIC_SUPPORT",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1891,6 +1806,7 @@
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
 					"-DHAS_VAOX",
+					"-DMODPLUG_BASIC_SUPPORT",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1979,6 +1895,7 @@
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
 					"-DHAS_VAOX",
+					"-DMODPLUG_BASIC_SUPPORT",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
