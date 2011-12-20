@@ -200,9 +200,12 @@ void AtlasSprite::Simulate(float deltaTime) {
         m_Frame = m_FooFoo->m_numFrames - 1;
       }
       
-      if (m_Frame > m_FooFoo->m_numFrames) {
+      if (m_Frame > m_FooFoo->m_numFrames - 1) {
         m_Frame = 0;
       }
+      
+      //LOGV("%d %d\n", m_Frame, m_FooFoo->m_numFrames);
+
     } else {
       m_Frame = fastAbs((((m_Life) / m_FooFoo->m_AnimationDuration) * m_FooFoo->m_numFrames));
       if (m_Frame >= m_FooFoo->m_numFrames) {

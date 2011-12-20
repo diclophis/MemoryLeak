@@ -48,6 +48,8 @@ void SpriteGun::Reset() {
 
 void SpriteGun::ResetParticle(int idx) {
 	m_AtlasSprites[idx]->SetLife(0.0);
+	m_AtlasSprites[idx]->m_AnimationLife = 0.0;
+	m_AtlasSprites[idx]->m_Fps = m_Fps;
 	m_AtlasSprites[idx]->m_Frame = 0;
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
 	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
@@ -67,7 +69,7 @@ void SpriteGun::Fire() {
   m_IsAlive = true;
   int shot = 0;
   for (unsigned int i=0; i<m_NumParticles; i++) {
-    if (shot == 0 && (m_TimeSinceLastShot > (1.0 / 120.0) && !m_AtlasSprites[i]->m_IsAlive)) {
+    if (shot == 0 && (m_TimeSinceLastShot > (1.0 / 10.0) && !m_AtlasSprites[i]->m_IsAlive)) {
       ResetParticle(i);
       ShootParticle(i);
       shot++;
@@ -85,13 +87,20 @@ void SpriteGun::Simulate(float deltaTime) {
     }
     
     m_AtlasSprites[i]->Simulate(deltaTime);
+    //LOGV("m_Frame: %d\n", m_AtlasSprites[i]->m_Frame);
   }
   AtlasSprite::Simulate(deltaTime);
 }
 
 
+bool MyDataSortPredicate(const AtlasSprite* d1, const AtlasSprite* d2)
+{
+  return d1->m_Life > d2->m_Life;
+}
+
 void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
-  if (true) { //TODO: reverse render
+  /*
+  if (false) { //TODO: reverse render
     int i=(m_NumParticles);
     while (i-- > 0) {
       if (m_AtlasSprites[i]->m_IsAlive && m_RenderBullets) {
@@ -100,12 +109,24 @@ void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
     }
   } else {
     unsigned int i=0;
-    while (i++ < (m_NumParticles - 1)) {
-      if (m_AtlasSprites[i]->m_IsAlive) {
+    while (i < (m_NumParticles)) {
+      if (m_AtlasSprites[i]->m_IsAlive && m_RenderBullets) {
         m_AtlasSprites[i]->Render(sf, batch_foo);
       }
+      i++;
     }
   }
+  */
+
+  std::sort(m_AtlasSprites.begin(), m_AtlasSprites.end(), MyDataSortPredicate);
+
+  for (std::vector<AtlasSprite *>::const_iterator citer = m_AtlasSprites.begin(); citer != m_AtlasSprites.end(); ++citer) {
+    AtlasSprite *c = *citer;
+    if (c->m_IsAlive && m_RenderBullets) {
+      c->Render(sf, batch_foo);
+    }
+  }
+
   AtlasSprite::Render(sf, batch_foo);
 }
 
