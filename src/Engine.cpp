@@ -224,7 +224,7 @@ int Engine::RunThread() {
       m_DeltaTime = t2 - t1;
       gettimeofday(&tim, NULL);
       t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_DeltaTime > 1.0) {
+      if (m_DeltaTime > 0.1) {
         LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
         pthread_mutex_unlock(&m_Mutex);
         continue;

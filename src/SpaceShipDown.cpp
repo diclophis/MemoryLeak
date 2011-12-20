@@ -51,9 +51,12 @@ void SpaceShipDown::CreateFoos() {
   m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 12, 17, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
-  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(1), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(1), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+
+  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0, 4096, 4096);
+  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(2), 1);
+
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
       if (i == m_PlayerIndex) {
@@ -94,6 +97,7 @@ void SpaceShipDown::DestroyFoos() {
   delete m_LandscapeFoo;
   delete m_EnemyFoo;
   delete m_BatchFoo;
+  delete m_SecondBatchFoo;
 }
 
 
@@ -913,7 +917,7 @@ void SpaceShipDown::RenderModelPhase() {
 
 void SpaceShipDown::RenderSpritePhase() {
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
-  if (false) {
+  if (m_DebugDrawToggle) {
     AtlasSprite::ReleaseBuffers();
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -941,20 +945,14 @@ void SpaceShipDown::RenderSpritePhase() {
   } else {
     glEnable(GL_BLEND);
 
-    if (m_DebugDrawToggle) { 
-      RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex);
-      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex);
-      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1);
-      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex);
-    } else {
-      //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1);
-      RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
-      RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
-      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-      RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
-      AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
-    }
+    RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1, m_SecondBatchFoo);
+    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
+    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
+    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
+
+    AtlasSprite::RenderFoo(m_StateFoo, m_SecondBatchFoo);
+    AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 
     glDisable(GL_BLEND);
   }
