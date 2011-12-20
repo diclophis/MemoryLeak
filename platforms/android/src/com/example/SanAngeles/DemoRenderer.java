@@ -53,13 +53,13 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   public DemoRenderer(Context context) {
-    Log.v(this.toString(), "DemoRenderer::construct");
+    //Log.v(this.toString(), "DemoRenderer::construct");
     mContext = context;
   }
 
 
   public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-    Log.v(this.toString(), "DemoRenderer::onSurfaceCreated");
+    //Log.v(this.toString(), "DemoRenderer::onSurfaceCreated");
     try {
       AssetManager am = mContext.getAssets();
       String path = "textures";
@@ -78,15 +78,17 @@ class DemoRenderer implements GLSurfaceView.Renderer {
         Bitmap bitmap = BitmapFactory.decodeStream(stream);
         int t = textures[i];
         gl.glBindTexture(GL10.GL_TEXTURE_2D, t);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+        //gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+        //gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
+        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
         GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
         if ((glError = gl.glGetError()) != 0) {
           Log.v(this.toString(), "unable to GLUtils.texImage2D");
         }
         gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
       }
-      Log.v(this.toString(), "DOES THIS HAPPEN TWICE??");
+      //Log.v(this.toString(), "DOES THIS HAPPEN TWICE??");
       nativeOnSurfaceCreated(texture_file_names.length, textures);
     } catch(IOException e) {
       Log.v(this.toString(), e.toString());
@@ -95,7 +97,7 @@ class DemoRenderer implements GLSurfaceView.Renderer {
 
 
   public void onSurfaceChanged(GL10 gl, int w, int h) {
-    Log.v(this.toString(), "RESIZEEEEEEEEEEEEEEE");
+    //Log.v(this.toString(), "RESIZEEEEEEEEEEEEEEE");
     nativeResize(w, h);
   }
 

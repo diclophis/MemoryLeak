@@ -72,14 +72,14 @@ public class DemoActivity extends Activity {
 
   @Override
   protected void onDestroy() {
-    Log.v("ClearActivity", ":::::: instance" + this + " onDestroy: is called");
+    //Log.v("ClearActivity", ":::::: instance" + this + " onDestroy: is called");
     super.onDestroy();
   }
 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-    Log.v(this.toString(), "DemoActivity::onCreate!!!!!!");
+    //Log.v(this.toString(), "DemoActivity::onCreate!!!!!!");
 		super.onCreate(savedInstanceState);
     setRequestedOrientation(getResources().getConfiguration().orientation);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   
@@ -183,14 +183,14 @@ public class DemoActivity extends Activity {
 
 
   public void onConfigurationChanged(Configuration newConfig) {
-    Log.v(this.toString(), "DemoActivity::onConfigurationChange!!!!!!");
+    //Log.v(this.toString(), "DemoActivity::onConfigurationChange!!!!!!");
     super.onConfigurationChanged(newConfig);
   }
 
 
   @Override
   protected void onPause() {
-    Log.v(this.toString(), "DemoActivity::onPause!!!!!!" + mGLView);
+    //Log.v(this.toString(), "DemoActivity::onPause!!!!!!" + mGLView);
     super.onPause();
     mGLView.onPause();
   }
@@ -198,7 +198,7 @@ public class DemoActivity extends Activity {
 
   @Override
   protected void onResume() {
-    Log.v(this.toString(), "DemoActivity::onResume!!!!!!" + mGLView);
+    //Log.v(this.toString(), "DemoActivity::onResume!!!!!!" + mGLView);
     super.onResume();
     mGLView.onResume();
   }

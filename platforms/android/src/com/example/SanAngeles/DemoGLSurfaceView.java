@@ -55,7 +55,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
   public DemoGLSurfaceView(Context context) {
     super(context);
     setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
-    Log.v(this.toString(), "DemoGLSurfaceView::onSurfaceCreated");
+    //Log.v(this.toString(), "DemoGLSurfaceView::onSurfaceCreated");
     mRenderer = new DemoRenderer(context);
     setRenderer(mRenderer);
   }
@@ -63,9 +63,22 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public boolean onTouchEvent(final MotionEvent event) {
-    Log.v(this.toString(), "onTouchEvent!!!!!!!!!!!!!!!!");
+    //Log.v(this.toString(), "onTouchEvent!!!!!!!!!!!!!!!!");
+    //int index = event.getActionIndex();
+    int index = event.getActionMasked();
+    int pointerId = event.getActionIndex(); //event.getAction() >> MotionEvent.ACTION_POINTER_INDEX_SHIFT; //event.getPointerId(index);
     float x = 0;
     float y = 0;
+    x = event.getX(pointerId);
+    y = event.getY(pointerId);
+
+    if (index == MotionEvent.ACTION_POINTER_UP || index == MotionEvent.ACTION_UP || index == MotionEvent.ACTION_CANCEL) {
+      nativeTouch(x, y, 2);
+    } else if (index == MotionEvent.ACTION_POINTER_DOWN || index == MotionEvent.ACTION_DOWN) {
+      nativeTouch(x, y, 0);
+    }
+
+    /*
     int type = -1;
     for (int i = 0; i < event.getPointerCount(); i++) {
       switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -89,13 +102,14 @@ class DemoGLSurfaceView extends GLSurfaceView {
           break;  
       }
     }
+    */
     return true;
   }
 
 
   @Override
   public void onPause() {
-    Log.v(this.toString(), "DemoGLSurfaceView::onPause");
+    //Log.v(this.toString(), "DemoGLSurfaceView::onPause");
     super.onPause();
     nativePause();
   }
@@ -103,7 +117,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public void onResume() {
-    Log.v(this.toString(), "DemoGLSurfaceView::onResume");
+    //Log.v(this.toString(), "DemoGLSurfaceView::onResume");
     super.onResume();
     nativeResume();
   }
