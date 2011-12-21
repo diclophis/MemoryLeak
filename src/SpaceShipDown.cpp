@@ -36,6 +36,9 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+  LoadSound(0);
+  LoadSound(1);
+  LoadSound(2);
   CreateFoos();
   StartLevel(0);
 }
@@ -49,7 +52,7 @@ void SpaceShipDown::CreateFoos() {
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 12, 16, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
+  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 0, 16, 1.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 0, 1, 0.0, BLOCK_WIDTH, BLOCK_WIDTH);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 2, 3, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(3), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
@@ -128,7 +131,6 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_TakeoffTimeout = -1;
   m_CameraOffsetX = 0;
   m_CameraOffsetY = 0;
-  LoadSound(0);
   CreateWorld();
   CreatePickupJoints();
   CreateDebugDraw();
@@ -139,6 +141,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   CreateBorder(m_WorldWidth, m_WorldHeight);
   CreateLandscape();
   CreateVehicles();
+  m_CurrentSound = m_LevelIndex;
 }
 
 
@@ -357,6 +360,9 @@ void SpaceShipDown::CreateDropZone(float x, float y, float w, float h) {
   m_AtlasSprites.push_back(new SpriteGun(m_DropZoneFoo, NULL));
   m_AtlasSprites[drop_zone_index]->Build(0);
   m_AtlasSprites[drop_zone_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
+  m_AtlasSprites[drop_zone_index]->m_IsAlive = true;
+  m_AtlasSprites[drop_zone_index]->m_Frame = (drop_zone_index - (m_DropZonesStartIndex)) % 16;
+  m_AtlasSprites[drop_zone_index]->m_Fps = 10;
   m_SpriteCount++;
   m_DropZonesStopIndex = m_SpriteCount;
 }
@@ -526,7 +532,7 @@ void SpaceShipDown::Hit(float x, float y, int hitState) {
 
 
 void SpaceShipDown::AdjustZoom() {
-  m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.75;
+  m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 0.5;
   //m_Zoom = ((m_WorldWidth * 2.0) / (float)m_ScreenWidth) * 2.75;
 }
 
@@ -553,6 +559,9 @@ int SpaceShipDown::Simulate() {
   world->Step(m_DeltaTime, velocityIterations, positionIterations);
 
   m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+  for (unsigned int i=m_DropZonesStartIndex; i<m_DropZonesStopIndex; i++) {
+    m_AtlasSprites[i]->Simulate(m_DeltaTime);
+  }
 
   b2Vec2 forcePosition = m_PlayerBody->GetWorldCenter();
   b2Vec2 player_velocity = m_PlayerBody->GetLinearVelocity();
@@ -954,6 +963,7 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnable(GL_BLEND);
 
     RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1, m_SecondBatchFoo);
+    RenderSpriteRange(m_DropZonesStartIndex, m_DropZonesStopIndex, m_BatchFoo);
     RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
     RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
     RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);

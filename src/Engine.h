@@ -107,5 +107,7 @@ public:
 
   StateFoo *m_StateFoo;
 
+  int m_CurrentSound;
+
 
 };
