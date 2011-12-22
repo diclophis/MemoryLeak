@@ -47,7 +47,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 void SpaceShipDown::CreateFoos() {
   ResetStateFoo();
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 1, 2, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 12, 16, 10.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 12, 16, 1.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 8, 9, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 6, 7, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
   m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 7, 8, 0.0, BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2);
@@ -362,7 +362,7 @@ void SpaceShipDown::CreateDropZone(float x, float y, float w, float h) {
   m_AtlasSprites[drop_zone_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
   m_AtlasSprites[drop_zone_index]->m_IsAlive = true;
   m_AtlasSprites[drop_zone_index]->m_Frame = (drop_zone_index - (m_DropZonesStartIndex)) % 16;
-  m_AtlasSprites[drop_zone_index]->m_Fps = 10;
+  m_AtlasSprites[drop_zone_index]->m_Fps = 5;
   m_SpriteCount++;
   m_DropZonesStopIndex = m_SpriteCount;
 }
@@ -637,7 +637,7 @@ int SpaceShipDown::Simulate() {
       if (vel1a.x != 0.0) {
         rot1a = atan2(vel1a.z, vel1a.x);
       }
-      //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Rotation = -RadiansToDegrees(rot1a);
+      m_AtlasSprites[body_index]->m_Rotation = -(rot1a);
       //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[0] = pos1a.x;
       //m_AtlasSprites[m_EnemiesStartIndex + i]->m_Position[1] = -pos1a.z;
       //LOGV("enemy: %d %d %d %d\n", mouse_joint_index, body_index, m_EnemiesStartIndex, m_EnemiesStopIndex);

@@ -112,8 +112,15 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     //glPopMatrix();
   } else {
     for (unsigned int i=0; i<4; i++) {
-      batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0] + m_Position[0];
-      batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1] + m_Position[1];
+    //x' = cos(t)*x - sin(t)*y
+    //y' = sin(t)*x + cos(t)*y
+      int x = (cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) - (sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
+      int y = (sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) + (cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
+
+      //batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0] + m_Position[0];
+      //batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1] + m_Position[1];
+      batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = x + m_Position[0];
+      batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = y + m_Position[1];
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[0] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0];
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[1] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1];
     }
