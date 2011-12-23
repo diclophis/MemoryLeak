@@ -52,6 +52,11 @@ public:
 		m_Position[0] = x;
 		m_Position[1] = y;
 	}
+
+	void SetScale(float x,float y) {
+		m_Scale[0] = x;
+		m_Scale[1] = y;
+	}
 	
 	static void ReleaseBuffers();
 	
@@ -76,7 +81,7 @@ public:
   GLuint m_IndexBuffer;
 	foofoo *m_FooFoo;
 
-  static foofoo *GetFoo(GLuint t, int spr, int rows, int s, int e, float m, float w, float h);
+  static foofoo *GetFoo(GLuint t, int spr, int rows, int s, int e, float m);
   static foofoo *GetBatchFoo(GLuint t, int m);
 
 };

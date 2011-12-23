@@ -52,6 +52,7 @@ void SpriteGun::ResetParticle(int idx) {
 	m_AtlasSprites[idx]->m_Fps = m_Fps;
 	m_AtlasSprites[idx]->m_Frame = 0;
 	m_AtlasSprites[idx]->SetPosition(m_Position[0], m_Position[1]);
+	m_AtlasSprites[idx]->SetScale(m_Scale[0], m_Scale[1]);
 	m_AtlasSprites[idx]->SetVelocity(0.0, 0.0);
 	m_AtlasSprites[idx]->m_IsAlive = false;
 }
