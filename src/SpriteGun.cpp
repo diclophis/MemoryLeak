@@ -88,7 +88,6 @@ void SpriteGun::Simulate(float deltaTime) {
     }
     
     m_AtlasSprites[i]->Simulate(deltaTime);
-    //LOGV("m_Frame: %d\n", m_AtlasSprites[i]->m_Frame);
   }
   AtlasSprite::Simulate(deltaTime);
 }
@@ -100,27 +99,7 @@ bool MyDataSortPredicate(const AtlasSprite* d1, const AtlasSprite* d2)
 }
 
 void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
-  /*
-  if (false) { //TODO: reverse render
-    int i=(m_NumParticles);
-    while (i-- > 0) {
-      if (m_AtlasSprites[i]->m_IsAlive && m_RenderBullets) {
-        m_AtlasSprites[i]->Render(sf, batch_foo);
-      }
-    }
-  } else {
-    unsigned int i=0;
-    while (i < (m_NumParticles)) {
-      if (m_AtlasSprites[i]->m_IsAlive && m_RenderBullets) {
-        m_AtlasSprites[i]->Render(sf, batch_foo);
-      }
-      i++;
-    }
-  }
-  */
-
   std::sort(m_AtlasSprites.begin(), m_AtlasSprites.end(), MyDataSortPredicate);
-
   for (std::vector<AtlasSprite *>::const_iterator citer = m_AtlasSprites.begin(); citer != m_AtlasSprites.end(); ++citer) {
     AtlasSprite *c = *citer;
     if (c->m_IsAlive && m_RenderBullets) {

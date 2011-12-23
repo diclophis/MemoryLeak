@@ -53,7 +53,6 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
       int x = ((cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) - (sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1])) * m_Scale[0];
       int y = ((sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) + (cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1])) * m_Scale[1];
 
-      //LOGV("wtf: %d %d\n", x, m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = (x + m_Position[0]);
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = (y + m_Position[1]);
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[0] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0];
