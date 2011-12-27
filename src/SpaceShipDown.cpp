@@ -773,6 +773,19 @@ int SpaceShipDown::Simulate() {
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
 */
+
+/*
+  m_BatchFoo->m_NumBatched = 0;
+  m_SecondBatchFoo->m_NumBatched = 0;
+
+  RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1, m_SecondBatchFoo);
+  RenderSpriteRange(m_DropZonesStartIndex, m_DropZonesStopIndex, m_BatchFoo);
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+  RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
+  RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
+  RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
+*/
+
   return 1;
 }
 
