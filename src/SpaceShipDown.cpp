@@ -48,12 +48,12 @@ void SpaceShipDown::CreateFoos() {
   ResetStateFoo();
   //BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 1, 2, 0.0);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 12, 16, 1.0);
-  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 8, 9, 0.0);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 3, 4, 1.0);
+  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 4, 5, 0.0);
   m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 6, 7, 0.0);
-  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 7, 8, 0.0);
-  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 12, 16, 1.0);
-  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 0, 16, 1.0);
+  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 5, 6, 0.0);
+  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 7, 8, 1.0);
+  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 8, 16, 1.0);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 0, 1, 0.0);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 2, 3, 1.0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(3), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
@@ -227,7 +227,7 @@ void SpaceShipDown::CreateEnemy() {
   mouse_joint_def.bodyB = enemy_body;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
   mouse_joint_def.maxForce = 50.0f * enemy_body->GetMass();
-  mouse_joint_def.dampingRatio = 100.0;
+  mouse_joint_def.dampingRatio = 50.0;
   mouse_joint_def.frequencyHz = 100.0;
   m_EnemyMouseJoints.push_back((b2MouseJoint *)world->CreateJoint(&mouse_joint_def));
   enemy_body->SetTransform(b2Vec2(g_EnemyVehicles[enemy_vehicle_index]->position().x / PTM_RATIO, -g_EnemyVehicles[enemy_vehicle_index]->position().z / PTM_RATIO), 0);
@@ -365,7 +365,7 @@ void SpaceShipDown::CreateDropZone(float x, float y, float w, float h) {
   m_AtlasSprites[drop_zone_index]->SetPosition(x, y - BLOCK_WIDTH * 0.5);
   m_AtlasSprites[drop_zone_index]->m_IsAlive = true;
   m_AtlasSprites[drop_zone_index]->m_Frame = (drop_zone_index - (m_DropZonesStartIndex)) % 16;
-  m_AtlasSprites[drop_zone_index]->m_Fps = 5;
+  m_AtlasSprites[drop_zone_index]->m_Fps = 10;
   m_AtlasSprites[drop_zone_index]->Build(0);
   m_SpriteCount++;
   m_DropZonesStopIndex = m_SpriteCount;
@@ -805,13 +805,13 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 	unsigned int i = 0;
 	unsigned int l = m_LevelFoos->at(level_index)->len;
 
-	char *pos = NULL;
+	//char *pos = NULL;
 	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	int idx = -1;
 	int *data = (int *)malloc(sizeof(int) * l);
 	const char *code;
 	for (unsigned int j=0; j<l; j++) {
-		pos = index(dictionary, level[j]);
+		const char *pos = index(dictionary, level[j]);
 		if (pos != NULL) {
 			idx = pos - dictionary;
 			data[j] = idx;

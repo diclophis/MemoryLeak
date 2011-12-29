@@ -3,6 +3,7 @@
 build=build
 CXXFLAGS=\
 -m64 -g -pg -DDESKTOP -DHAVE_SETENV -D_iPhoneVersion \
+-DMODPLUG_BASIC_SUPPORT \
 -I/usr/include \
 -I../../src \
 -I../../src/include \

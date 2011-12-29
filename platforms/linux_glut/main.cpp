@@ -165,6 +165,18 @@ char *path_cat (const char *str1, char *str2) {
 	return result;
 }
 
+//int scandir(const char *dirp, struct dirent ***namelist,
+//int (*filter)(const struct dirent *),
+//int (*compar)(const struct dirent **, const struct dirent **));
+
+int is_not_dot_or_dot_dot(const struct dirent *dp) {
+  if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
 
 int main(int argc, char** argv) {
 
@@ -182,28 +194,40 @@ int main(int argc, char** argv) {
   glutReshapeFunc(resize);
 
   struct dirent *dp;
+  struct dirent **dps;
 
   const char *dir_path="../../assets/textures/";
-  DIR *dir = opendir(dir_path);
-  while ((dp=readdir(dir)) != NULL) {
+  DIR *dir; // = opendir(dir_path);
+  int dir_ents = scandir(dir_path, &dps, is_not_dot_or_dot_dot, alphasort);
+
+  if (dir_ents == -1) {
+    LOGV("wtf\n");
+    exit(1);
+  }
+
+  //while ((dp=readdir(dir)) != NULL) {
+  for (int i=0; i<dir_ents; i++) {
     char *tmp;
-    tmp = path_cat(dir_path, dp->d_name);
-    if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
-    } else {
+    tmp = path_cat(dir_path, dps[i]->d_name);
+    //if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+    //} else {
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       GLuint tex_2d = SOIL_load_OGL_texture(
         tmp,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
+        //SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
+        SOIL_FLAG_MULTIPLY_ALPHA
       );
       textures.push_back(tex_2d);
-    }
+    //}
 
     free(tmp);
     tmp=NULL;
   }
 
-  closedir(dir);
+  //closedir(dir);
 
   dir_path="../../assets/models/";
   dir = opendir(dir_path);
