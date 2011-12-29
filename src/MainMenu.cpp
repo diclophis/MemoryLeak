@@ -55,9 +55,9 @@ int MainMenu::Simulate() {
   m_CameraTarget[0] = 0.0;
   m_CameraTarget[1] = 0.0;
   m_CameraTarget[2] = 0.0;
-  m_CameraPosition[0] = 50.0 + m_SimulationTime * 0.75;//219.5;
-  m_CameraPosition[1] = 50.0 + m_SimulationTime * 0.75;//300.0;
-  m_CameraPosition[2] = 50.0 + m_SimulationTime * 0.75;//219.5;
+  m_CameraPosition[0] = 1.0; // + m_SimulationTime * 0.75;//219.5;
+  m_CameraPosition[1] = 1.0; // + m_SimulationTime * 0.75;//300.0;
+  m_CameraPosition[2] = 1.0; // + m_SimulationTime * 0.75;//219.5;
   
   
   //for (unsigned int i=0; i<m_ModelCount; i++) {
@@ -69,13 +69,16 @@ int MainMenu::Simulate() {
 
 
 void MainMenu::RenderModelPhase() {
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+  //glEnable(GL_DEPTH_TEST);
+  //glEnable(GL_CULL_FACE);
+  //glScalef(m_SimulationTime, m_SimulationTime, m_SimulationTime);
+
   RenderModelRange(0, 1, m_BatchFoo);
   Model::RenderFoo(m_StateFoo, m_BatchFoo);
   Model::ReleaseBuffers();
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_DEPTH_TEST);
+  
+  //glDisable(GL_CULL_FACE);
+  //glDisable(GL_DEPTH_TEST);
 }
 
 

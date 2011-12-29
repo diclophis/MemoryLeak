@@ -125,6 +125,7 @@ struct foofoo {
   size_t m_Stride;
   SpriteFoo *m_SpriteFoos;
   ModelFoo *m_ModelFoos;
+  GLshort *m_IndexFoo;
 };
 
 #ifdef __cplusplus

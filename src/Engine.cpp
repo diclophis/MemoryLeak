@@ -182,7 +182,15 @@ void Engine::DrawScreen(float rotation) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     if (m_IsThreeD) {
-      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+      //glMatrixMode(GL_PROJECTION);
+      //glLoadIdentity();
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
+      
+      //glMatrixMode(GL_MODELVIEW);
+      //glLoadIdentity();
+      //glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
       RenderModelPhase();
     } else {
       //glMatrixMode(GL_PROJECTION);
@@ -315,9 +323,9 @@ void Engine::ResizeScreen(int width, int height) {
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   m_IsScreenResized = true;
   if (m_IsThreeD) {
-		glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
+		//glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
   } else {
     //glMatrixMode(GL_PROJECTION);
     //glLoadIdentity();

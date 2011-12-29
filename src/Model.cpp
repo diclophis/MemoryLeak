@@ -98,6 +98,8 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
   glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
   
+  ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
+
   return ff;
 }
 
@@ -130,7 +132,9 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	//ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (1));
 	ff->m_AnimationStart = s;
 	ff->m_AnimationEnd = e;
-	ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFrames * sizeof(ModelFoo));
+	ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * sizeof(ModelFoo));
+  ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
+
 	//glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
 	//glGenBuffers(ff->m_numBuffers, ff->m_NormalBuffers);
 	//glGenBuffers(ff->m_numBuffers, ff->m_IndexBuffers);
@@ -152,13 +156,16 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	for (int mm=ff->m_AnimationStart; mm<ff->m_AnimationEnd; mm++) {
 		for (int iiii=0; iiii<interp; iiii++) {
 			
-			unsigned short* indices = new unsigned short[a->mMeshes[mm]->mNumFaces * 3];
+			//unsigned short* indices = new unsigned short[a->mMeshes[mm]->mNumFaces * 3];
 			float* vertices = new float[a->mMeshes[mm]->mNumVertices * 3];
 
 			for(unsigned int i=0,j=0; i<a->mMeshes[mm]->mNumFaces; ++i,j+=3) {
-				indices[j]   = a->mMeshes[mm]->mFaces[i].mIndices[0];
-				indices[j+1] = a->mMeshes[mm]->mFaces[i].mIndices[1];
-				indices[j+2] = a->mMeshes[mm]->mFaces[i].mIndices[2];
+				//indices[j]   = a->mMeshes[mm]->mFaces[i].mIndices[0];
+				//indices[j+1] = a->mMeshes[mm]->mFaces[i].mIndices[1];
+				//indices[j+2] = a->mMeshes[mm]->mFaces[i].mIndices[2];
+				ff->m_IndexFoo[j]   = a->mMeshes[mm]->mFaces[i].mIndices[0];
+				ff->m_IndexFoo[j+1] = a->mMeshes[mm]->mFaces[i].mIndices[1];
+				ff->m_IndexFoo[j+2] = a->mMeshes[mm]->mFaces[i].mIndices[2];
 			}
       
 			if (iiii == 0) {
@@ -196,7 +203,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
       //used_buffer++;
 			
 			delete vertices;
-			delete indices;
+			//delete indices;
 		}
 	}
 
@@ -213,6 +220,10 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
+  //glEnableClientState(GL_NORMAL_ARRAY);
+  //glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  
 	if (foo->m_Texture != sf->g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, foo->m_Texture);
 		sf->g_lastTexture = foo->m_Texture;
@@ -241,28 +252,58 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 */
 //#else
 
-  if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
+  //if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-  }
+  //}
 
-  if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
+  //if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-  }
+  //}
   
   glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
-	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
+	//glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
   glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (6 * sizeof(GLfloat)));
 
 //#endif
+  
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[used_buffer]);
+  size_t interleaved_element_buffer_size = foo->m_NumBatchedElements * sizeof(GLshort);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
+  Engine::CheckGL("wtfa");
+
+  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
+  Engine::CheckGL("wtfb");
+
 
   size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
   glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
-  
-  glDrawElements(GL_TRIANGLES, foo->m_NumBatchedElements, GL_FLOAT, (GLvoid*)((char*)NULL));
+  Engine::CheckGL("wtf1");
 
+  glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+  
+  Engine::CheckGL("wtf2");
+
+  //glColor4f(1.0, 0.0, 0.0, 1.0);
+  //glPointSize(10.0);
+  glDrawElements(GL_TRIANGLES, foo->m_NumBatchedElements, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
+  
+  if (true) {
+    glDisable(GL_TEXTURE_2D);
+    glPointSize(1.0);
+    glColor4f(0.0, 1.0, 0.0, 1.0);
+    glDrawElements(GL_POINTS, foo->m_NumBatchedElements, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
+  }
+
+  
+  Engine::CheckGL("wtf");
+
+  foo->m_NumBatchedElements = 0;
+  foo->m_NumBatched = 0;
 }
 
 
@@ -270,12 +311,21 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 void Model::Render(StateFoo *sf, foofoo *batch_foo) {
 
   for (int i=0; i<m_FooFoo->m_numFaces; i++) {
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[0] = m_FooFoo->m_SpriteFoos[(m_Frame) + i].vertex[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[1] = m_FooFoo->m_SpriteFoos[(m_Frame) + i].vertex[1];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[2] = m_FooFoo->m_SpriteFoos[(m_Frame) + i].vertex[2];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].texture[0] = m_FooFoo->m_SpriteFoos[(m_Frame) + i].vertex[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].texture[1] = m_FooFoo->m_SpriteFoos[(m_Frame) + i].vertex[1];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[0];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[1];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[2] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[2];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].texture[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[0];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].texture[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[1];
   }
+  
+  batch_foo->m_NumBatched += m_FooFoo->m_numFaces;
+
+  memcpy((void *)batch_foo->m_IndexFoo, (void *)m_FooFoo->m_IndexFoo, m_FooFoo->m_numFaces * 3 * sizeof(GLshort));
+  
+  batch_foo->m_NumBatchedElements += (m_FooFoo->m_numFaces * 3);
+  
+  //batch_foo->m_IndexFoo[batch_foo->m_NumBatched
+
 /*
   //glEnable(GL_TEXTURE_2D);
   //glEnableClientState(GL_VERTEX_ARRAY);
