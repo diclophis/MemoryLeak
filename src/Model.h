@@ -13,11 +13,13 @@ public:
 	
 	static void ReleaseBuffers();
 	static foofoo *GetFoo(const aiScene *a, int s, int e);
+  static foofoo *GetBatchFoo(GLuint t, int max_face_count, int max_model_count);
 	
 	
-	Model(const foofoo *a, int t, bool usesStaticBuffer = false);
+	Model(foofoo *a);
   ~Model();
-	void Render();
+	void Render(StateFoo *sf, foofoo *batch_foo = NULL);
+	static void RenderFoo(StateFoo *sf, foofoo *foo);
 	float Simulate(float dt, bool pushing = false);
 	void Die(float dt);
 	void Live(float dt);
@@ -126,7 +128,7 @@ public:
 	bool m_IsMoving;
 	bool m_IsFalling;
 	bool m_IsAlive;
-	const foofoo *m_FooFoo;
+	foofoo *m_FooFoo;
 	float m_Life;
 	GLfloat *m_Scale;
 	float *m_Position;

@@ -7,14 +7,6 @@
 
 MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LOGV("main menu alloc\n");
-  LoadSound(0);
-  m_IsPushingAudio = true;
-  m_RequestedFullscreen = false;
-  LoadModel(1, 15, 58);
-  Model *f = new Model(m_FooFoos.at(0), m_Textures->at(3));
-	m_Models.push_back(f);
-  m_Models[0 + 0]->SetPosition(0, 0, 0);
-  m_Models[0 + 0]->SetScale(1.0, 1.0, 1.0);
 
   m_CameraX = 0.0;
   m_CameraY = 0.0;
@@ -22,6 +14,10 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   m_CameraR = 0.0;
 
   m_IsThreeD = true;
+
+  LoadSound(0);
+  LoadModel(1, 0, 1);
+  CreateFoos();
 }
 
 
@@ -33,6 +29,12 @@ MainMenu::~MainMenu() {
 
 
 void MainMenu::CreateFoos() {
+  Model *f = new Model(m_FooFoos.at(0));
+	m_Models.push_back(f);
+  m_Models[0]->SetPosition(0, 0, 0);
+  m_Models[0]->SetScale(1.0, 1.0, 1.0);
+  ResetStateFoo();
+  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(3), 1024, 1);
 }
 
 
@@ -41,19 +43,14 @@ void MainMenu::DestroyFoos() {
 
 
 void MainMenu::Hit(float x, float y, int hitState) {
-  if (hitState == 1) {
-    PushMessageToWebView(CreateWebViewFunction("fullscreen()"));
-  } else if (hitState == 0) {
-    PushMessageToWebView(CreateWebViewFunction("show()"));
-  }
 }
 
 
 int MainMenu::Simulate() {
-  
-  for (unsigned int i=0; i<m_ModelCount; i++) {
-    m_Models[i]->Simulate(m_DeltaTime);
-  }
+
+  //for (unsigned int i=0; i<m_ModelCount; i++) {
+  //  m_Models[i]->Simulate(m_DeltaTime);
+  //}
 
   m_CameraTarget[0] = 0.0;
   m_CameraTarget[1] = 0.0;
@@ -63,9 +60,9 @@ int MainMenu::Simulate() {
   m_CameraPosition[2] = 50.0 + m_SimulationTime * 0.75;//219.5;
   
   
-  for (unsigned int i=0; i<m_ModelCount; i++) {
-    m_Models[i]->m_Rotation[1] += m_DeltaTime * 100.0;
-  }
+  //for (unsigned int i=0; i<m_ModelCount; i++) {
+  //  m_Models[i]->m_Rotation[1] += m_DeltaTime * 100.0;
+  //}
 
   return 1;
 }
@@ -74,7 +71,8 @@ int MainMenu::Simulate() {
 void MainMenu::RenderModelPhase() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  RenderModelRange(0, m_ModelCount);
+  RenderModelRange(0, 1, m_BatchFoo);
+  Model::RenderFoo(m_StateFoo, m_BatchFoo);
   Model::ReleaseBuffers();
   glDisable(GL_CULL_FACE);
   glDisable(GL_DEPTH_TEST);

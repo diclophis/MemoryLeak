@@ -17,5 +17,6 @@ public:
   float m_CameraY;
   float m_CameraZ;
   float m_CameraR;
+  foofoo *m_BatchFoo;
 
 };

@@ -28,7 +28,7 @@ public:
   virtual void DestroyFoos() = 0;
   bool WaitVsync();
   void DoAudio(short buffer[], int bytes);
-  void RenderModelRange(unsigned int s, unsigned int e);
+  void RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);

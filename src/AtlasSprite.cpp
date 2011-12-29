@@ -243,9 +243,10 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 	ff->m_AnimationStart = start;
 	ff->m_AnimationEnd = end;
   ff->m_AnimationDuration = duration;
+  ff->m_numSpriteFoos = length * 4;
 
   int sprite_foo_offset = 0;
-  SpriteFoo *sprite_foos = (SpriteFoo *)malloc(length * 4 * sizeof(SpriteFoo));
+  SpriteFoo *sprite_foos = (SpriteFoo *)malloc(ff->m_numSpriteFoos * sizeof(SpriteFoo));
 
   for (unsigned int i=0; i<length; i++) {
     GLshort w = m_Sprites[i].dx; 
@@ -291,7 +292,7 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
   delete m_Sprites;
 
   size_t size_of_sprite_foo = sizeof(SpriteFoo);
-  ff->m_Stride = size_of_sprite_foo; 
+  ff->m_Stride = size_of_sprite_foo;
   ff->m_SpriteFoos = sprite_foos;
 
   return ff;

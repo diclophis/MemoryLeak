@@ -21,7 +21,6 @@ static std::vector<foo*> levels;
 
 static int game_index = 3;
 
-
 bool pushMessageToWebView(const char *theMessage) {
 	return true;
 }
@@ -132,7 +131,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else {
-        game_index = 3;
+        //game_index = 3;
         Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
       }
     }

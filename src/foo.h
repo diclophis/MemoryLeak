@@ -17,8 +17,14 @@ typedef struct
 {
   GLshort vertex[2];
   GLfloat texture[2];
-  int padding;
 } SpriteFoo;
+
+typedef struct
+{
+  GLshort vertex[3];
+  GLfloat normal[3];
+  GLfloat texture[2];
+} ModelFoo;
 
 typedef struct {
   GLuint g_lastTexture;
@@ -50,6 +56,9 @@ struct foofoo {
     m_numVertexArrayObjects = 0;
     m_numBuffers = 0;
     m_NumBatched = 0;
+    m_NumBatchedElements = 0;
+    m_numSpriteFoos = 0;
+    m_numModelFoos = 0;
 	}
 
 	~foofoo()
@@ -74,7 +83,12 @@ struct foofoo {
     if (m_numInterleavedBuffers > 0) {
       free(m_InterleavedBuffers);
     }
-    free(m_SpriteFoos);
+    if (m_numSpriteFoos > 0) {
+      free(m_SpriteFoos);
+    }
+    if (m_numModelFoos > 0) {
+      free(m_ModelFoos);
+    }
 #ifdef HAS_VAO
     glDeleteVertexArraysOES(m_numVertexArrayObjects, m_VertexArrayObjects);
 #endif
@@ -102,11 +116,15 @@ struct foofoo {
   int m_numNormalBuffers;
   int m_numIndexBuffers;
   int m_numVertexArrayObjects;
+  int m_numSpriteFoos;
+  int m_numModelFoos;
 	int m_AnimationStart;
 	int m_AnimationEnd;
   int m_NumBatched;
+  int m_NumBatchedElements;
   size_t m_Stride;
   SpriteFoo *m_SpriteFoos;
+  ModelFoo *m_ModelFoos;
 };
 
 #ifdef __cplusplus

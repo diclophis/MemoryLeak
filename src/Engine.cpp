@@ -59,7 +59,7 @@ Engine::~Engine() {
 
 Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
   m_SpriteCount = 0;
-  m_ModelCount = 1;
+  m_ModelCount = 0;
 
 	m_IsSceneBuilt = false;
 	m_IsScreenResized = false;
@@ -291,9 +291,9 @@ void Engine::DoAudio(short buffer[], int size) {
 }
 
 
-void Engine::RenderModelRange(unsigned int s, unsigned int e) {
+void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
 	for (unsigned int i=s; i<e; i++) {
-		m_Models[i]->Render();
+		m_Models[i]->Render(m_StateFoo, batch_foo);
 	}
 }
 
