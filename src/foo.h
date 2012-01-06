@@ -21,7 +21,7 @@ typedef struct
 
 typedef struct
 {
-  GLshort vertex[3];
+  GLfloat vertex[3];
   GLfloat normal[3];
   GLfloat texture[2];
 } ModelFoo;

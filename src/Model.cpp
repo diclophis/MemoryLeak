@@ -66,6 +66,8 @@ Model::Model(foofoo *a) : m_FooFoo(a) {
 	m_Theta = 0.0;
 	m_IsAlive = false;
 
+  LOGV("set: %p\n", a);
+
   //SetTexture(t);
 
 	SetScale(1.0, 1.0, 1.0);
@@ -113,7 +115,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
   //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	foofoo *ff = new foofoo;
-  int interp = 5;
+  int interp = 1;
 	if (a->mNumMeshes > 1) {
 		//ff->m_numFrames = ((a->mRootNode->mNumMeshes - 1) * interp);
     ff->m_numFrames = (e - s) * interp;
@@ -132,7 +134,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	//ff->m_TextureBuffer = (GLuint*)malloc(sizeof(GLuint) * (1));
 	ff->m_AnimationStart = s;
 	ff->m_AnimationEnd = e;
-	ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * sizeof(ModelFoo));
+	ff->m_ModelFoos = (ModelFoo *)malloc((ff->m_numFaces * 3) * sizeof(ModelFoo));
   ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
 
 	//glGenBuffers(ff->m_numBuffers, ff->m_VerticeBuffers);
@@ -157,7 +159,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 		for (int iiii=0; iiii<interp; iiii++) {
 			
 			//unsigned short* indices = new unsigned short[a->mMeshes[mm]->mNumFaces * 3];
-			float* vertices = new float[a->mMeshes[mm]->mNumVertices * 3];
+			//float* vertices = new float[a->mMeshes[mm]->mNumVertices * 3];
 
 			for(unsigned int i=0,j=0; i<a->mMeshes[mm]->mNumFaces; ++i,j+=3) {
 				//indices[j]   = a->mMeshes[mm]->mFaces[i].mIndices[0];
@@ -169,25 +171,36 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 			}
       
 			if (iiii == 0) {
-				for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
-					vertices[jk] = a->mMeshes[mm]->mVertices[ik][0];
-					vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1];
-					vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2];
-          //LOGV("%f %f %f\n", vertices[jk], vertices[jk + 1], vertices[jk + 2]);
-          ff->m_ModelFoos[model_foo_offset].vertex[0] = vertices[jk+0];
-          ff->m_ModelFoos[model_foo_offset].vertex[1] = vertices[jk+1];
-          ff->m_ModelFoos[model_foo_offset].vertex[2] = vertices[jk+2];
+				for(unsigned int ik=0; ik<a->mMeshes[mm]->mNumVertices; ++ik) {
+					//vertices[jk] = a->mMeshes[mm]->mVertices[ik][0];
+					//vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1];
+					//vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2];
+          //LOGV("2 %d -- %d %f %f %f\n", model_foo_offset, jk, vertices[jk], vertices[jk + 1], vertices[jk + 2]);
+          /*
+          ff->m_ModelFoos[model_foo_offset].vertex[0] = a->mMeshes[mm]->mVertices[ik][0];
+          ff->m_ModelFoos[model_foo_offset].vertex[1] = a->mMeshes[mm]->mVertices[ik][1];
+          ff->m_ModelFoos[model_foo_offset].vertex[2] = a->mMeshes[mm]->mVertices[ik][2];
+          */
+          memcpy(&ff->m_ModelFoos[model_foo_offset].vertex[0], &a->mMeshes[mm]->mVertices[ik], 3 * sizeof(GLfloat));
+          memcpy(&ff->m_ModelFoos[model_foo_offset].normal[0], &a->mMeshes[mm]->mNormals[ik], 3 * sizeof(GLfloat));
+
           ff->m_ModelFoos[model_foo_offset].texture[0] = aimesh.mTextureCoords[0]->x;
           ff->m_ModelFoos[model_foo_offset].texture[1] = aimesh.mTextureCoords[0]->y;
+          LOGV("* %p %d %d %f %f %f\n", ff->m_ModelFoos, (ik % 3), model_foo_offset, ff->m_ModelFoos[model_foo_offset].vertex[0], ff->m_ModelFoos[model_foo_offset].vertex[1], ff->m_ModelFoos[model_foo_offset].vertex[2]);
+          LOGV("= %p %d %d %f %f %f\n", ff->m_ModelFoos, (ik % 3), model_foo_offset, a->mMeshes[mm]->mVertices[ik][0], a->mMeshes[mm]->mVertices[ik][1], a->mMeshes[mm]->mVertices[ik][2]);
+          //if (ik % 3 == 2) {
+          //  LOGV("wha\n");
+            model_foo_offset++;
+          //}
 				}
       } else {
 
       float percent_of_way = (float)iiii / (float)interp;
 
       for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
-        vertices[jk+0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
-        vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][1] - a->mMeshes[mm]->mVertices[ik][1]));
-        vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][2] - a->mMeshes[mm]->mVertices[ik][2]));
+        //vertices[jk+0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
+        //vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][1] - a->mMeshes[mm]->mVertices[ik][1]));
+        //vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][2] - a->mMeshes[mm]->mVertices[ik][2]));
       }
         
       }
@@ -202,7 +215,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
       //glBufferData(GL_ARRAY_BUFFER, a->mMeshes[mm]->mNumVertices * 3 * sizeof(float), a->mMeshes[mm]->mNormals, GL_STATIC_DRAW);
       //used_buffer++;
 			
-			delete vertices;
+			//delete vertices;
 			//delete indices;
 		}
 	}
@@ -220,14 +233,14 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
-  //glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
   //glEnableClientState(GL_VERTEX_ARRAY);
   //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   
-	if (foo->m_Texture != sf->g_lastTexture) {
-		glBindTexture(GL_TEXTURE_2D, foo->m_Texture);
+	//if (foo->m_Texture != sf->g_lastTexture) {
 		sf->g_lastTexture = foo->m_Texture;
-	}
+		glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
+	//}
 
 //#ifdef HAS_VAO
 /*
@@ -262,39 +275,52 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   //}
   
-  glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
-	//glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
-  glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (6 * sizeof(GLfloat)));
 
 //#endif
   
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[used_buffer]);
   size_t interleaved_element_buffer_size = foo->m_NumBatchedElements * sizeof(GLshort);
+  //LOGV("%d %d %d\n", sizeof(GLshort), foo->m_NumBatchedElements, interleaved_element_buffer_size);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
   Engine::CheckGL("wtfa");
 
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
   Engine::CheckGL("wtfb");
 
-
   size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
   glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
   Engine::CheckGL("wtf1");
 
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+
+  for (unsigned int i=0; i<foo->m_NumBatched; i++) {
+    //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].vertex[0], foo->m_ModelFoos[i].vertex[1], foo->m_ModelFoos[i].vertex[2]);
+    //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].normal[0], foo->m_ModelFoos[i].normal[1], foo->m_ModelFoos[i].normal[2]);
+    //LOGV("wtf2: %d %f %f\n", i, foo->m_ModelFoos[i].texture[0], foo->m_ModelFoos[i].texture[1]);
+    //LOGV("wtf2: %d\n", i, foo->m_IndexFoo[i]);
+  }
+
+  //assert(0);
   
   Engine::CheckGL("wtf2");
 
-  //glColor4f(1.0, 0.0, 0.0, 1.0);
-  //glPointSize(10.0);
+  glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
+	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
+  glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (3 + sizeof(GLfloat)) + (3 * sizeof(GLfloat)));
+  Engine::CheckGL("wtf3");
+
+  glColor4f(1.0, 0.0, 0.0, 1.0);
+  glPointSize(10.0);
+  //LOGV("%d\n", foo->m_NumBatchedElements);
+  //glEnable(GL_NORMALIZE);
   glDrawElements(GL_TRIANGLES, foo->m_NumBatchedElements, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  
   if (true) {
     glDisable(GL_TEXTURE_2D);
-    glPointSize(1.0);
-    glColor4f(0.0, 1.0, 0.0, 1.0);
+    glColor4f(1.0, 1.0, 0.0, 1.0);
+    glPointSize(5.0);
     glDrawElements(GL_POINTS, foo->m_NumBatchedElements, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glDrawElements(GL_LINES, foo->m_NumBatchedElements, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
@@ -304,26 +330,40 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   foo->m_NumBatchedElements = 0;
   foo->m_NumBatched = 0;
-}
 
+  glDisableClientState(GL_NORMAL_ARRAY);
+}
 
 
 void Model::Render(StateFoo *sf, foofoo *batch_foo) {
 
-  for (int i=0; i<m_FooFoo->m_numFaces; i++) {
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[1];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].vertex[2] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[2];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].texture[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched) + i].texture[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[1];
+  for (int i=0; i<(m_FooFoo->m_numFaces * 3); i++) {
+    float aa = batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[0];
+    float bb = batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[1];
+    float cc = batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[2] = m_FooFoo->m_ModelFoos[(m_Frame) + i].vertex[2];
+    aa = batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].normal[0];
+    bb = batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].normal[1];
+    cc = batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[2] = m_FooFoo->m_ModelFoos[(m_Frame) + i].normal[2];
+    //LOGV("%p %d %f %f %f\n", m_FooFoo->m_ModelFoos, i, aa, bb, cc);
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[0] = m_FooFoo->m_ModelFoos[(m_Frame) + i].texture[0];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].texture[1];
+    int a = batch_foo->m_IndexFoo[((batch_foo->m_NumBatched) * 3) + 0] = m_FooFoo->m_IndexFoo[(i * 3) + 0];
+    int b = batch_foo->m_IndexFoo[((batch_foo->m_NumBatched) * 3) + 1] = m_FooFoo->m_IndexFoo[(i * 3) + 1];
+    int c = batch_foo->m_IndexFoo[((batch_foo->m_NumBatched) * 3) + 2] = m_FooFoo->m_IndexFoo[(i * 3) + 2];
+    //LOGV("%d %d %d\n", ((batch_foo->m_NumBatched) * 3) + 0, ((batch_foo->m_NumBatched) * 3) + 1, ((batch_foo->m_NumBatched) * 3) + 2);
+    batch_foo->m_NumBatched++;
   }
-  
-  batch_foo->m_NumBatched += m_FooFoo->m_numFaces;
 
-  memcpy((void *)batch_foo->m_IndexFoo, (void *)m_FooFoo->m_IndexFoo, m_FooFoo->m_numFaces * 3 * sizeof(GLshort));
+  //assert(0);
+
+  //LOGV("\n\n");
+  
+  //batch_foo->m_NumBatched += m_FooFoo->m_numFaces;
+
+  //memcpy((void *)batch_foo->m_IndexFoo, (void *)m_FooFoo->m_IndexFoo, m_FooFoo->m_numFaces * 3 * sizeof(GLshort));
   
   batch_foo->m_NumBatchedElements += (m_FooFoo->m_numFaces * 3);
-  
+
   //batch_foo->m_IndexFoo[batch_foo->m_NumBatched
 
 /*

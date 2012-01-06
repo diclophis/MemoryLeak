@@ -180,17 +180,17 @@ void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     if (m_IsThreeD) {
-      //glMatrixMode(GL_PROJECTION);
-      //glLoadIdentity();
+
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
       GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
       
-      //glMatrixMode(GL_MODELVIEW);
-      //glLoadIdentity();
-      //glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
       RenderModelPhase();
     } else {
       //glMatrixMode(GL_PROJECTION);
@@ -604,7 +604,9 @@ void Engine::LoadModel(int i, int s, int e) {
 	m_Importer.ReadFile(path, m_PostProcessFlags);
 	//LOGV("%s\n", m_Importer.GetErrorString());
   const aiScene *scene = m_Importer.GetScene();
-	m_FooFoos.push_back(Model::GetFoo(scene, s, e));
+foofoo *ff = Model::GetFoo(scene, s, e);
+LOGV("after get: %p\n", ff);
+	m_FooFoos.push_back(ff);
   //delete scene;
 	m_Importer.FreeScene();	
 }

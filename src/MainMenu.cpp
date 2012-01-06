@@ -34,7 +34,7 @@ void MainMenu::CreateFoos() {
   m_Models[0]->SetPosition(0, 0, 0);
   m_Models[0]->SetScale(1.0, 1.0, 1.0);
   ResetStateFoo();
-  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(3), 1024, 1);
+  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(0), 1024, 4);
 }
 
 
@@ -52,12 +52,12 @@ int MainMenu::Simulate() {
   //  m_Models[i]->Simulate(m_DeltaTime);
   //}
 
-  m_CameraTarget[0] = 0.0;
-  m_CameraTarget[1] = 0.0;
-  m_CameraTarget[2] = 0.0;
-  m_CameraPosition[0] = 1.0; // + m_SimulationTime * 0.75;//219.5;
-  m_CameraPosition[1] = 1.0; // + m_SimulationTime * 0.75;//300.0;
-  m_CameraPosition[2] = 1.0; // + m_SimulationTime * 0.75;//219.5;
+  m_CameraTarget[0] = 50.0 + (m_SimulationTime * 0.0);
+  m_CameraTarget[1] = 50.0 + (m_SimulationTime * 0.0);
+  m_CameraTarget[2] = 50.0 + (m_SimulationTime * 0.0);
+  m_CameraPosition[0] = 100.0 + (m_SimulationTime * 0.0); //m_SimulationTime * 100.0;//219.5;
+  m_CameraPosition[1] = 100.0 + (fastSinf(m_SimulationTime * 2.0) * 50.0); //m_SimulationTime * 0.75;//300.0;
+  m_CameraPosition[2] = 100.0 + (fastSinf(m_SimulationTime * 2.0) * 50.0); //m_SimulationTime * 0.75;//219.5;
   
   
   //for (unsigned int i=0; i<m_ModelCount; i++) {
@@ -69,16 +69,16 @@ int MainMenu::Simulate() {
 
 
 void MainMenu::RenderModelPhase() {
-  //glEnable(GL_DEPTH_TEST);
-  //glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
   //glScalef(m_SimulationTime, m_SimulationTime, m_SimulationTime);
 
   RenderModelRange(0, 1, m_BatchFoo);
   Model::RenderFoo(m_StateFoo, m_BatchFoo);
   Model::ReleaseBuffers();
   
-  //glDisable(GL_CULL_FACE);
-  //glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+  glDisable(GL_DEPTH_TEST);
 }
 
 
