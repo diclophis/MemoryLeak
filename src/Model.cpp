@@ -184,8 +184,8 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
           memcpy(&ff->m_ModelFoos[model_foo_offset].vertex[0], &a->mMeshes[mm]->mVertices[ik], 3 * sizeof(GLfloat));
           memcpy(&ff->m_ModelFoos[model_foo_offset].normal[0], &a->mMeshes[mm]->mNormals[ik], 3 * sizeof(GLfloat));
 
-          ff->m_ModelFoos[model_foo_offset].texture[0] = aimesh.mTextureCoords[0]->x;
-          ff->m_ModelFoos[model_foo_offset].texture[1] = aimesh.mTextureCoords[0]->y;
+          ff->m_ModelFoos[model_foo_offset].texture[0] = aimesh.mTextureCoords[0][ik].x;
+          ff->m_ModelFoos[model_foo_offset].texture[1] = aimesh.mTextureCoords[0][ik].y;
           LOGV("* %p %d %d %f %f %f\n", ff->m_ModelFoos, (ik % 3), model_foo_offset, ff->m_ModelFoos[model_foo_offset].vertex[0], ff->m_ModelFoos[model_foo_offset].vertex[1], ff->m_ModelFoos[model_foo_offset].vertex[2]);
           LOGV("= %p %d %d %f %f %f\n", ff->m_ModelFoos, (ik % 3), model_foo_offset, a->mMeshes[mm]->mVertices[ik][0], a->mMeshes[mm]->mVertices[ik][1], a->mMeshes[mm]->mVertices[ik][2]);
           //if (ik % 3 == 2) {
