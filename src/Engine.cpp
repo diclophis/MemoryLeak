@@ -196,7 +196,7 @@ void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     if (m_IsThreeD) {
       GLU_PERSPECTIVE(60.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
