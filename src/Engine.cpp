@@ -179,7 +179,7 @@ void Engine::DrawScreen(float rotation) {
     if (m_IsThreeD) {
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
-      GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
+      GLU_PERSPECTIVE(60.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
       glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
