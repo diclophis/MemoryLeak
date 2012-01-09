@@ -66,8 +66,8 @@ Model::Model(foofoo *a) : m_FooFoo(a) {
 foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_model_count) {
 	foofoo *ff = new foofoo;
   ff->m_Texture = texture_index;
-  ff->m_numFaces = max_face_count;
-  ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * sizeof(ModelFoo));
+  ff->m_numFaces = max_face_count * max_model_count;
+  ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * 3 * sizeof(ModelFoo));
 
   ff->m_numInterleavedBuffers = 1;
 	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
@@ -216,9 +216,9 @@ void Model::Render(StateFoo *sf, foofoo *batch_foo) {
   //memcpy(&batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)], &m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + 0], (m_FooFoo->m_numFaces * 3) * sizeof(ModelFoo));
 
   for (int i=0; i<(m_FooFoo->m_numFaces * 3); i++) {
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[0] = m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].vertex[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[1] = m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].vertex[1];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[2] = m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].vertex[2];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[0] = (m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].vertex[0] * m_Scale[0]) + m_Position[0];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[1] = (m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].vertex[1] * m_Scale[1]) + m_Position[1];
+    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[2] = (m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].vertex[2] * m_Scale[2]) + m_Position[2];
     batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[0] = m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].normal[0];
     batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[1] = m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].normal[1];
     batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[2] = m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + i].normal[2];
