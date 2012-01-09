@@ -68,6 +68,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_Texture = texture_index;
   ff->m_numFaces = max_face_count * max_model_count;
   ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * 3 * sizeof(ModelFoo));
+  ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
 
   ff->m_numInterleavedBuffers = 1;
 	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
@@ -79,8 +80,16 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_numIndexBuffers = 1;
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
   glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
-  
-  ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
+
+  /*
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
+  size_t interleaved_element_buffer_size = (ff->m_numFaces * 3) * sizeof(GLshort);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
+  size_t interleaved_buffer_size = (ff->m_numFaces * 3) * sizeof(ModelFoo);
+  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+  */
 
   return ff;
 }
@@ -148,13 +157,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
 void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
-  glEnable(GL_TEXTURE_2D);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-
 	if (foo->m_Texture != sf->g_lastTexture) {
 		sf->g_lastTexture = foo->m_Texture;
 		glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
@@ -178,13 +180,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
   glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
 
-  //for (unsigned int i=0; i<foo->m_NumBatched; i++) {
-    //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].vertex[0], foo->m_ModelFoos[i].vertex[1], foo->m_ModelFoos[i].vertex[2]);
-    //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].normal[0], foo->m_ModelFoos[i].normal[1], foo->m_ModelFoos[i].normal[2]);
-    //LOGV("texture: %d %f %f %f\n", i, foo->m_ModelFoos[i].texture[0], foo->m_ModelFoos[i].texture[1], foo->m_ModelFoos[i].texture[2]);
-    //LOGV("wtf2: %d\n", i, foo->m_IndexFoo[i]);
-  //}
-
   glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
 	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
@@ -202,12 +197,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   foo->m_NumBatched = 0;
 
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_DEPTH_TEST);
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glDisable(GL_TEXTURE_2D);
 }
 
 

@@ -98,12 +98,32 @@ void Engine::ResetStateFoo() {
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
   //glEnable(GL_TEXTURE_2D);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   //glEnableClientState(GL_VERTEX_ARRAY);
   //glEnableClientState(GL_NORMAL_ARRAY);
   //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+/*
+  glDisable(GL_CULL_FACE);
+  glDisable(GL_DEPTH_TEST);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisable(GL_TEXTURE_2D);
+*/
+  
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  if (m_IsThreeD) {
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+  }
 
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;

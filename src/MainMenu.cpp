@@ -32,7 +32,6 @@ void MainMenu::CreateFoos() {
   for (unsigned int i=0; i<400; i++) {
     m_Models.push_back(new Model(m_FooFoos.at(0)));
     m_Models[i]->SetPosition(x, fastSinf((float)i * 0.5) * 100.0, y);
-    m_Models[i]->SetScale(1.0, 1.0, 1.0);
     x += 105.0;
     m_ModelCount++;
     if ((m_ModelCount % 20) == 0) {
@@ -61,12 +60,12 @@ int MainMenu::Simulate() {
   m_CameraPosition[1] = 300.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0);
   m_CameraPosition[2] = 1500.0 + ((fastSinf(m_SimulationTime * 1.0) * 900.0) - 300.0);
   m_Models[0]->Simulate(m_DeltaTime, false);
+  RenderModelRange(0, m_ModelCount, m_BatchFoo);
   return 1;
 }
 
 
 void MainMenu::RenderModelPhase() {
-  RenderModelRange(0, m_ModelCount, m_BatchFoo);
   Model::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
