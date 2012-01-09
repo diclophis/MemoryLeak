@@ -50,7 +50,7 @@ Model::Model(foofoo *a) : m_FooFoo(a) {
 	m_IsFalling = false;
 
 	m_Life = 0.0;
-	m_Fps = 1.0;
+	m_Fps = 30.0;
 	m_Theta = 0.0;
 	m_IsAlive = false;
 
@@ -87,7 +87,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
 
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	foofoo *ff = new foofoo;
-  int interp = 3;
+  int interp = 10;
 	if (a->mNumMeshes > 1) {
     ff->m_numFrames = (e - s) * interp;
 	} else {
@@ -98,7 +98,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	ff->m_numFaces = a->mMeshes[0]->mNumFaces;
 	ff->m_AnimationStart = s;
 	ff->m_AnimationEnd = e;
-	ff->m_ModelFoos = (ModelFoo *)malloc((ff->m_numFaces * 3) * sizeof(ModelFoo));
+	ff->m_ModelFoos = (ModelFoo *)malloc((ff->m_numFaces * 3 * ff->m_numFrames) * sizeof(ModelFoo));
   ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
 
 	//const aiMesh& aimesh = *a->mMeshes[0];
@@ -182,7 +182,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
 
   for (unsigned int i=0; i<foo->m_NumBatched; i++) {
-    LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].vertex[0], foo->m_ModelFoos[i].vertex[1], foo->m_ModelFoos[i].vertex[2]);
+    //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].vertex[0], foo->m_ModelFoos[i].vertex[1], foo->m_ModelFoos[i].vertex[2]);
     //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].normal[0], foo->m_ModelFoos[i].normal[1], foo->m_ModelFoos[i].normal[2]);
     //LOGV("texture: %d %f %f %f\n", i, foo->m_ModelFoos[i].texture[0], foo->m_ModelFoos[i].texture[1], foo->m_ModelFoos[i].texture[2]);
     //LOGV("wtf2: %d\n", i, foo->m_IndexFoo[i]);
