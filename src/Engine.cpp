@@ -176,30 +176,23 @@ void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
     if (m_IsThreeD) {
-
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
       GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
-      
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
       glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
       RenderModelPhase();
     } else {
-      //glMatrixMode(GL_PROJECTION);
-      //glLoadIdentity();
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
       glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
       RenderSpritePhase();
     }
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  //if (m_GameState == 1) {
-  //  m_IsDrawReadyAfterResume = true;
-  //}
   m_CurrentDraw++;
   pthread_mutex_unlock(&m_Mutex);
   sched_yield();
@@ -214,16 +207,10 @@ int Engine::RunThread() {
 	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   StartSimulation();
   int drawn = 0;
-  //bool was_draw_ready = m_IsDrawReadyAfterResume;
 	while (m_GameState > 0) {
     drawn = (m_CurrentDraw - m_LastDraw);
     if (drawn > 0) {
       pthread_mutex_lock(&m_Mutex);
-      //if (m_IsDrawReadyAfterResume == true && was_draw_ready == false) {
-      //LOGV("foo\n");
-      //  gettimeofday(&tim, NULL);
-      //  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      //}
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
       m_DeltaTime = t2 - t1;
@@ -236,11 +223,8 @@ int Engine::RunThread() {
       }
       m_LastDraw = m_CurrentDraw;
       if (m_GameState > 1) {
-        //m_IsDrawReadyAfterResume = false;
-        //LOGV("wtf before: %d\n", m_GameState);
         pthread_mutex_unlock(&m_Mutex);
         pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
-        //LOGV("wtf after: %d\n", m_GameState);
       } else {
         m_SimulationTime += (m_DeltaTime);
         if (Active()) {
@@ -249,7 +233,6 @@ int Engine::RunThread() {
         pthread_mutex_unlock(&m_Mutex);
       }
       m_IsSceneBuilt = true;
-      //was_draw_ready = m_IsDrawReadyAfterResume;
     }
 	}
   m_SimulationThreadCleanup();
@@ -266,10 +249,6 @@ void Engine::StopSimulation() {
   pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
   m_GameState = -1;
-  //while (m_GameState != -3) {
-    //pthread_cond_signal(&m_CurrentGame->m_VsyncCond);
-  //}
-  //pthread_join(m_CurrentGame->m_Thread, NULL);
   pthread_mutex_unlock(&m_Mutex);
 }
 
@@ -327,7 +306,6 @@ void Engine::ResizeScreen(int width, int height) {
     //glLoadIdentity();
     //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
   }
-  //glMatrixMode(GL_MODELVIEW);
 }
 
 
@@ -594,7 +572,7 @@ void Engine::LoadModel(int i, int s, int e) {
   //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
   Assimp::Importer m_Importer;
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
-	int m_PostProcessFlags = 0; //aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
+	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
 	char path[128];
 	snprintf(path, sizeof(s), "%d", i);
 	m_Importer.ReadFile(path, m_PostProcessFlags);

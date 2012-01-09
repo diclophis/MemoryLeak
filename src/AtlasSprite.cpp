@@ -65,6 +65,10 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
 
 void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	if (foo->m_Texture != sf->g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, foo->m_Texture);
 		sf->g_lastTexture = foo->m_Texture;
@@ -120,6 +124,10 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   }
 
   foo->m_NumBatched = 0;
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisable(GL_TEXTURE_2D);
 }
 
 

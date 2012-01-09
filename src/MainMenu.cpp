@@ -17,6 +17,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 
   LoadSound(0);
   LoadModel(3, 0, 10);
+  //LoadModel(0, 0, 30);
   CreateFoos();
 }
 
@@ -44,28 +45,22 @@ void MainMenu::Hit(float x, float y, int hitState) {
 
 
 int MainMenu::Simulate() {
-  m_CameraTarget[0] = 0.0 + ((fastSinf(m_SimulationTime * -10.0) * 10.0) - 5.0);
-  m_CameraTarget[1] = 0.0 + ((fastSinf(m_SimulationTime * -5.0) * 10.0) - 5.0);
-  m_CameraTarget[2] = 0.0 + ((fastSinf(m_SimulationTime * -2.0) * 10.0) - 5.0);
-  m_CameraPosition[0] = 50.0 + ((fastSinf(m_SimulationTime * 2.0) * 10.0) - 5.0); //m_SimulationTime * 100.0;//219.5;
-  m_CameraPosition[1] = 0.0 + ((fastSinf(m_SimulationTime * 5.0) * 10.0) - 5.0); //m_SimulationTime * 0.75;//300.0;
-  m_CameraPosition[2] = -50.0 + ((fastSinf(m_SimulationTime * 10.0) * 10.0) - 5.0); //m_SimulationTime * 0.75;//219.5;
+  m_CameraTarget[0] = 0.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
+  m_CameraTarget[1] = 0.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
+  m_CameraTarget[2] = 0.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
+  m_CameraPosition[0] = 50.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0); //m_SimulationTime * 100.0;//219.5;
+  m_CameraPosition[1] = 0.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0); //m_SimulationTime * 0.75;//300.0;
+  m_CameraPosition[2] = -50.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0); //m_SimulationTime * 0.75;//219.5;
   m_Models[0]->Simulate(m_DeltaTime, false);
   return 1;
 }
 
 
 void MainMenu::RenderModelPhase() {
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  glScalef(1.0, 1.0, 1.0);
 
   RenderModelRange(0, 1, m_BatchFoo);
   Model::RenderFoo(m_StateFoo, m_BatchFoo);
-  Model::ReleaseBuffers();
   
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_DEPTH_TEST);
 }
 
 
