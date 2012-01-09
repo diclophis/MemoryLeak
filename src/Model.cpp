@@ -50,7 +50,7 @@ Model::Model(foofoo *a) : m_FooFoo(a) {
 	m_IsFalling = false;
 
 	m_Life = 0.0;
-	m_Fps = 160.0;
+	m_Fps = 1.0;
 	m_Theta = 0.0;
 	m_IsAlive = false;
 
@@ -87,7 +87,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
 
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	foofoo *ff = new foofoo;
-  int interp = 1;
+  int interp = 3;
 	if (a->mNumMeshes > 1) {
     ff->m_numFrames = (e - s) * interp;
 	} else {
@@ -112,6 +112,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	int model_foo_offset = 0;
 	for (int mm=ff->m_AnimationStart; mm<ff->m_AnimationEnd; mm++) {
 		for (int iiii=0; iiii<interp; iiii++) {
+    LOGV("%d\n", mm);
 			
 			for(unsigned int i=0,j=0; i<a->mMeshes[mm]->mNumFaces; ++i,j+=3) {
 				ff->m_IndexFoo[j]   = a->mMeshes[mm]->mFaces[i].mIndices[0];
@@ -124,19 +125,20 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
           memcpy(&ff->m_ModelFoos[model_foo_offset].vertex[0], &a->mMeshes[mm]->mVertices[ik], 3 * sizeof(GLfloat));
           memcpy(&ff->m_ModelFoos[model_foo_offset].normal[0], &a->mMeshes[mm]->mNormals[ik], 3 * sizeof(GLfloat));
           memcpy(&ff->m_ModelFoos[model_foo_offset].texture[0], &a->mMeshes[0]->mTextureCoords[0][ik], 3 * sizeof(GLfloat));
-          
-          //LOGV("wtf2: %p %p %p\n", a->mMeshes[0], a->mMeshes[0]->mTextureCoords, &a->mMeshes[0]->mTextureCoords[0][ik]);
-          //ff->m_ModelFoos[model_foo_offset].texture[0] = a->mMeshes[0]->mTextureCoords[0][ik].x;
-          //ff->m_ModelFoos[model_foo_offset].texture[1] = a->mMeshes[0]->mTextureCoords[0][ik].y;
-          //ff->m_ModelFoos[model_foo_offset].texture[2] = a->mMeshes[0]->mTextureCoords[0][ik].z;
-
-          LOGV("A: %d %f %f %f\n", ik, ff->m_ModelFoos[model_foo_offset].texture[0], ff->m_ModelFoos[model_foo_offset].texture[1], ff->m_ModelFoos[model_foo_offset].texture[2]);
-          LOGV("B: %d %f %f %f\n", ik, a->mMeshes[mm]->mTextureCoords[0][ik].x, a->mMeshes[mm]->mTextureCoords[0][ik].y, a->mMeshes[mm]->mTextureCoords[0][ik].z);
           model_foo_offset++;
 				}
       } else {
         float percent_of_way = (float)iiii / (float)interp;
         for(unsigned int ik=0,jk=0; ik<a->mMeshes[mm]->mNumVertices; ++ik, jk+=3) {
+          ff->m_ModelFoos[model_foo_offset].vertex[0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
+          ff->m_ModelFoos[model_foo_offset].vertex[1] = a->mMeshes[mm]->mVertices[ik][1] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][1] - a->mMeshes[mm]->mVertices[ik][1]));
+          ff->m_ModelFoos[model_foo_offset].vertex[2] = a->mMeshes[mm]->mVertices[ik][2] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][2] - a->mMeshes[mm]->mVertices[ik][2]));
+          ff->m_ModelFoos[model_foo_offset].normal[0] = a->mMeshes[mm]->mNormals[ik][0];
+          ff->m_ModelFoos[model_foo_offset].normal[1] = a->mMeshes[mm]->mNormals[ik][1];
+          ff->m_ModelFoos[model_foo_offset].normal[2] = a->mMeshes[mm]->mNormals[ik][2];
+          ff->m_ModelFoos[model_foo_offset].texture[0] = a->mMeshes[0]->mTextureCoords[0][ik].x;
+          ff->m_ModelFoos[model_foo_offset].texture[1] = a->mMeshes[0]->mTextureCoords[0][ik].y;
+          model_foo_offset++;
           //vertices[jk+0] = a->mMeshes[mm]->mVertices[ik][0] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][0] - a->mMeshes[mm]->mVertices[ik][0]));
           //vertices[jk+1] = a->mMeshes[mm]->mVertices[ik][1] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][1] - a->mMeshes[mm]->mVertices[ik][1]));
           //vertices[jk+2] = a->mMeshes[mm]->mVertices[ik][2] + (percent_of_way * (a->mMeshes[mm + 1]->mVertices[ik][2] - a->mMeshes[mm]->mVertices[ik][2]));
@@ -153,7 +155,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
-  //glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	//if (foo->m_Texture != sf->g_lastTexture) {
@@ -180,7 +182,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
 
   for (unsigned int i=0; i<foo->m_NumBatched; i++) {
-    //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].vertex[0], foo->m_ModelFoos[i].vertex[1], foo->m_ModelFoos[i].vertex[2]);
+    LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].vertex[0], foo->m_ModelFoos[i].vertex[1], foo->m_ModelFoos[i].vertex[2]);
     //LOGV("wtf: %d %f %f %f\n", i, foo->m_ModelFoos[i].normal[0], foo->m_ModelFoos[i].normal[1], foo->m_ModelFoos[i].normal[2]);
     //LOGV("texture: %d %f %f %f\n", i, foo->m_ModelFoos[i].texture[0], foo->m_ModelFoos[i].texture[1], foo->m_ModelFoos[i].texture[2]);
     //LOGV("wtf2: %d\n", i, foo->m_IndexFoo[i]);
@@ -189,37 +191,38 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
   //glEnable(GL_NORMALIZE);
 
   glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
-	//glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
+	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
 
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  if (true) {
-    //glDisable(GL_TEXTURE_2D);
+  if (false) {
+    glDisable(GL_TEXTURE_2D);
     glColor4f(1.0, 1.0, 0.0, 1.0);
-    glPointSize(10.0);
-    //glDrawElements(GL_TRIANGLES, foo->m_NumBatchedElements, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glPointSize(5.0);
     glDrawElements(GL_POINTS, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
-    //glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
   }
 
   //foo->m_NumBatchedElements = 0;
   foo->m_NumBatched = 0;
 
   //glDisable(GL_NORMALIZE);
-
   //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   //glDisable(GL_TEXTURE_2D);
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  //glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
   glDisable(GL_TEXTURE_2D);
 }
 
 
 void Model::Render(StateFoo *sf, foofoo *batch_foo) {
+  //LOGV("frame: %d\n", m_Frame);
+
+  memcpy(&batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)], &m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + 0], (m_FooFoo->m_numFaces * 3) * sizeof(ModelFoo));
 
   for (int i=0; i<(m_FooFoo->m_numFaces * 3); i++) {
     /*
@@ -233,22 +236,15 @@ void Model::Render(StateFoo *sf, foofoo *batch_foo) {
     batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[1] = m_FooFoo->m_ModelFoos[(m_Frame) + i].texture[1] * 1.0;
     batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[2] = m_FooFoo->m_ModelFoos[(m_Frame) + i].texture[2] * 1.0;
     */
-
-    memcpy(&batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)], &m_FooFoo->m_ModelFoos[(m_Frame) + i], 1 * sizeof(ModelFoo));
-
     int a = batch_foo->m_IndexFoo[(batch_foo->m_NumBatched)] = batch_foo->m_NumBatched;
     //m_FooFoo->m_IndexFoo[(i * 3) + 0];
     //int a = batch_foo->m_IndexFoo[((batch_foo->m_NumBatched) * 3) + 0] = m_FooFoo->m_IndexFoo[(i * 3) + 0];
     //int b = batch_foo->m_IndexFoo[((batch_foo->m_NumBatched) * 3) + 1] = m_FooFoo->m_IndexFoo[(i * 3) + 1];
     //int c = batch_foo->m_IndexFoo[((batch_foo->m_NumBatched) * 3) + 2] = m_FooFoo->m_IndexFoo[(i * 3) + 2];
-
     //LOGV("%p %d %f %f %f\n", m_FooFoo->m_ModelFoos, i, aa, bb, cc);
     //LOGV("%d %d %d\n", ((batch_foo->m_NumBatched) * 3) + 0, ((batch_foo->m_NumBatched) * 3) + 1, ((batch_foo->m_NumBatched) * 3) + 2);
     batch_foo->m_NumBatched++;
   }
-
-  //batch_foo->m_NumBatchedElements += (m_FooFoo->m_numFaces * 3);
-
 }
 
 
@@ -295,10 +291,8 @@ bool Model::IsCollidedWith(Model *other) {
 }
 
 float Model::Simulate(float dt, bool pushing) {
-	
 	m_IsPushing = pushing;
-	
-	
+  //LOGV("f: %d\n", m_FooFoo->m_numFrames);
 	if (m_FooFoo->m_numFrames > 1) {
 		m_Life += dt;
 		if (m_Life > (1.0 / (float)m_Fps)) {
@@ -306,15 +300,17 @@ float Model::Simulate(float dt, bool pushing) {
 			m_Life = 0.0;
 		}
 		
-		if (m_Frame >= m_FramesOfAnimationCount) {
+		if (m_Frame >= m_FooFoo->m_numFrames) {
 			m_Frame = 0;
 		}
-	} else {
-		float tx = -sin(DEGREES_TO_RADIANS(m_Rotation[1]));
-		float tz = cos(DEGREES_TO_RADIANS(m_Rotation[1]));
-		m_Position[0] += tx * (m_Velocity[0] * dt);
-		m_Position[1] += (m_Velocity[1] * dt);
-		m_Position[2] += tz * (m_Velocity[0] * dt);
+	}
+  
+  {
+		//float tx = -sin(DEGREES_TO_RADIANS(m_Rotation[1]));
+		//float tz = cos(DEGREES_TO_RADIANS(m_Rotation[1]));
+		//m_Position[0] += tx * (m_Velocity[0] * dt);
+		//m_Position[1] += (m_Velocity[1] * dt);
+		//m_Position[2] += tz * (m_Velocity[0] * dt);
 	}
 	
 	return m_Life;

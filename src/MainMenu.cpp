@@ -16,7 +16,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   m_IsThreeD = true;
 
   LoadSound(0);
-  LoadModel(2, 0, 1);
+  LoadModel(3, 2, 4);
   CreateFoos();
 }
 
@@ -31,7 +31,7 @@ void MainMenu::CreateFoos() {
   m_Models[0]->SetPosition(0, 0, 0);
   m_Models[0]->SetScale(1.0, 1.0, 1.0);
   ResetStateFoo();
-  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(5), 1500, 1);
+  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(5), 2600, 1);
 }
 
 
@@ -44,12 +44,13 @@ void MainMenu::Hit(float x, float y, int hitState) {
 
 
 int MainMenu::Simulate() {
-  m_CameraTarget[0] = 0.0 + (m_SimulationTime * 0.0);
-  m_CameraTarget[1] = 0.0 + (m_SimulationTime * 0.0);
-  m_CameraTarget[2] = 0.0 + (m_SimulationTime * 0.0);
-  m_CameraPosition[0] = 10.0; //+ (fastSinf(m_SimulationTime * 1.0) * 3.0); //m_SimulationTime * 100.0;//219.5;
-  m_CameraPosition[1] = 0.0; //+ (fastSinf(m_SimulationTime * 2.0) * 2.0); //m_SimulationTime * 0.75;//300.0;
-  m_CameraPosition[2] = 0.0; //+ (fastSinf(m_SimulationTime * 3.0) * 1.0); //m_SimulationTime * 0.75;//219.5;
+  m_CameraTarget[0] = 0.0 + (fastSinf(m_SimulationTime * 1.0) * 0.0);
+  m_CameraTarget[1] = 0.0 + (fastSinf(m_SimulationTime * 1.0) * 0.0);
+  m_CameraTarget[2] = 0.0 + (fastSinf(m_SimulationTime * 1.0) * 0.0);
+  m_CameraPosition[0] = 50.0 + (fastSinf(m_SimulationTime * 1.0) * 0.0); //m_SimulationTime * 100.0;//219.5;
+  m_CameraPosition[1] = 0.0 + (fastSinf(m_SimulationTime * 1.0) * 0.0); //m_SimulationTime * 0.75;//300.0;
+  m_CameraPosition[2] = -50.0 + (fastSinf(m_SimulationTime * 1.0) * 0.0); //m_SimulationTime * 0.75;//219.5;
+  m_Models[0]->Simulate(m_DeltaTime, false);
   return 1;
 }
 
