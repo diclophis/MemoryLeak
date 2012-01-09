@@ -49,9 +49,6 @@ Engine::~Engine() {
   }
   m_Sounds.clear();
 
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisable(GL_TEXTURE_2D);
 
   free(m_StateFoo);
 }
@@ -101,13 +98,12 @@ void Engine::ResetStateFoo() {
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_TEXTURE_2D);
+  //glEnable(GL_TEXTURE_2D);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_NORMAL_ARRAY);
+  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
@@ -233,7 +229,7 @@ int Engine::RunThread() {
       m_DeltaTime = t2 - t1;
       gettimeofday(&tim, NULL);
       t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_DeltaTime > 0.1) {
+      if (m_DeltaTime > 0.5) {
         LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
         pthread_mutex_unlock(&m_Mutex);
         continue;
@@ -598,16 +594,12 @@ void Engine::LoadModel(int i, int s, int e) {
   //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
   Assimp::Importer m_Importer;
 	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
-	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
+	int m_PostProcessFlags = 0; //aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
 	char path[128];
 	snprintf(path, sizeof(s), "%d", i);
 	m_Importer.ReadFile(path, m_PostProcessFlags);
-	//LOGV("%s\n", m_Importer.GetErrorString());
   const aiScene *scene = m_Importer.GetScene();
-foofoo *ff = Model::GetFoo(scene, s, e);
-LOGV("after get: %p\n", ff);
-	m_FooFoos.push_back(ff);
-  //delete scene;
+	m_FooFoos.push_back(Model::GetFoo(scene, s, e));
 	m_Importer.FreeScene();	
 }
 

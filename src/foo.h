@@ -23,7 +23,7 @@ typedef struct
 {
   GLfloat vertex[3];
   GLfloat normal[3];
-  GLfloat texture[2];
+  GLfloat texture[3];
 } ModelFoo;
 
 typedef struct {

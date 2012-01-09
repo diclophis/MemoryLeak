@@ -345,7 +345,8 @@ void MD2Importer::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
     float fDivisorU = 1.0f,fDivisorV = 1.0f;
     if (m_pcHeader->numTexCoords)	{
       // allocate storage for texture coordinates, too
-      pcMesh->mTextureCoords[0] = new aiVector3D[pcMesh->mNumVertices];
+      pcMesh->mTextureCoords[0] = (aiVector3D *)malloc(pcMesh->mNumVertices * sizeof(aiVector3D)); //new aiVector3D[pcMesh->mNumVertices];
+      //pcMesh->mTextureCoords[0] = new aiVector3D[pcMesh->mNumVertices];
       pcMesh->mNumUVComponents[0] = 2;
 
       // check whether the skin width or height are zero (this would
@@ -401,7 +402,7 @@ void MD2Importer::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
         std::swap((float&)vec.z,(float&)vec.y);
 
         if (m_pcHeader->numTexCoords)	{
-          if (iii == 0) {
+          //if (iii == 0) {
             // validate texture coordinates
             iIndex = pcTriangles[i].textureIndices[c];
             if (iIndex >= m_pcHeader->numTexCoords)	{
@@ -409,13 +410,29 @@ void MD2Importer::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
               iIndex = m_pcHeader->numTexCoords-1;
             }
 
-            aiVector3D& pcOut = pcMesh->mTextureCoords[0][iCurrent];
+  
+            //pcMesh->mTextureCoords[0][iCurrent] = aiVector3D(1.0, 1.0, 0.0);
+            pcMesh->mTextureCoords[0][iCurrent] = aiVector3D((pcTexCoords[iIndex].s / fDivisorU), (1.f-pcTexCoords[iIndex].t / fDivisorV), 0.0);
+
+            //aiVector3D& pcOut = pcMesh->mTextureCoords[0][iCurrent];
 
             // the texture coordinates are absolute values but we
             // need relative values between 0 and 1
-            pcOut.x = pcTexCoords[iIndex].s / fDivisorU;
-            pcOut.y = 1.f-pcTexCoords[iIndex].t / fDivisorV;
-          }
+            //pcOut.x = pcTexCoords[iIndex].s / fDivisorU;
+            //pcOut.y = 1.f-pcTexCoords[iIndex].t / fDivisorV;
+            //pcOut.z = 0.0;
+
+            //pcOut.x = 1.0;
+            //pcOut.y = 1.0;
+            //pcOut.z = 1.0;
+
+            //pcMesh->mTextureCoords[0][iCurrent].x = 1.0;
+            //pcMesh->mTextureCoords[0][iCurrent].y = 1.0;
+            //pcMesh->mTextureCoords[0][iCurrent].z = 1.0;
+
+            //printf("%f %f %f\n", pcOut.x, pcOut.y, pcOut.z);
+            //printf("match: %p %p %p %d\n", pcMesh, pcMesh->mTextureCoords, &pcOut, iCurrent);
+          //}
         }
 
         pScene->mMeshes[iii]->mFaces[i].mIndices[c] = iCurrent;
