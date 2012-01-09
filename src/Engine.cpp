@@ -196,17 +196,13 @@ void Engine::DrawScreen(float rotation) {
   pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     if (m_IsThreeD) {
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
       GLU_PERSPECTIVE(60.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
       glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
       RenderModelPhase();
     } else {
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
       glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
       RenderSpritePhase();
     }
