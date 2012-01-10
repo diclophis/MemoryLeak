@@ -1754,7 +1754,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
-					"-DHAS_VAOX",
+					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
 				);
 				PRODUCT_NAME = RaptorIsland;
@@ -1799,7 +1799,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
-					"-DHAS_VAOX",
+					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
 				);
 				PRODUCT_NAME = RaptorIsland;
@@ -1888,7 +1888,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = (
 					"-D_iPhoneVersion",
-					"-DHAS_VAOX",
+					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
 				);
 				PRODUCT_NAME = RaptorIsland;
