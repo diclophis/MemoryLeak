@@ -84,16 +84,6 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
   glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
 
-  /*
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
-  size_t interleaved_element_buffer_size = (ff->m_numFaces * 3) * sizeof(GLshort);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
-  size_t interleaved_buffer_size = (ff->m_numFaces * 3) * sizeof(ModelFoo);
-  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
-  */
-
   return ff;
 }
 

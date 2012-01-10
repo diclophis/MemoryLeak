@@ -54,12 +54,12 @@ void MainMenu::Hit(float x, float y, int hitState) {
 
 
 int MainMenu::Simulate() {
-  m_CameraTarget[0] = 300.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
-  m_CameraTarget[1] = -600.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
-  m_CameraTarget[2] = 300.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
-  m_CameraPosition[0] = 2500.0 + ((fastSinf(m_SimulationTime * -1.0) * 1000.0) - 300.0);
-  m_CameraPosition[1] = 450.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0);
-  m_CameraPosition[2] = 2500.0 + ((fastSinf(m_SimulationTime * 1.0) * 1000.0) - 300.0);
+  m_CameraTarget[0] = 300.0 + ((fastSinf(m_SimulationTime * -1.0) * 200.0) - 100.0);
+  m_CameraTarget[1] = -1000.0 + ((fastSinf(m_SimulationTime * -1.0) * 200.0) - 100.0);
+  m_CameraTarget[2] = 300.0 + ((fastSinf(m_SimulationTime * -1.0) * 200.0) - 100.0);
+  m_CameraPosition[0] = 2400.0 + ((fastSinf(m_SimulationTime * -0.4) * 1000.0) - 300.0);
+  m_CameraPosition[1] = 450.0 + ((fastSinf(m_SimulationTime * 0.2) * 200.0) - 100.0);
+  m_CameraPosition[2] = 2400.0 + ((fastSinf(m_SimulationTime * 0.6) * 1000.0) - 300.0);
   for (unsigned int i=0; i<m_ModelCount; i++) {
     m_Models[i]->Simulate(m_DeltaTime, false);
   }
