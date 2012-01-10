@@ -60,6 +60,7 @@ int MainMenu::Simulate() {
   m_CameraPosition[1] = 300.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0);
   m_CameraPosition[2] = 1500.0 + ((fastSinf(m_SimulationTime * 1.0) * 900.0) - 300.0);
   m_Models[0]->Simulate(m_DeltaTime, false);
+  m_BatchFoo->m_NumBatched = 0;
   RenderModelRange(0, m_ModelCount, m_BatchFoo);
   return 1;
 }

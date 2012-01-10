@@ -195,7 +195,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
     glEnable(GL_TEXTURE_2D);
   }
 
-  foo->m_NumBatched = 0;
 
 }
 
