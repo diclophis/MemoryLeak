@@ -292,8 +292,10 @@ bool Model::IsCollidedWith(Model *other) {
 
 float Model::Simulate(float dt, bool pushing) {
 	m_IsPushing = pushing;
+	m_Life += dt;
+
+  /*
 	if (m_FooFoo->m_numFrames > 1) {
-		m_Life += dt;
 		if (m_Life > (1.0 / (float)m_Fps)) {
 			m_Frame++;
 			m_Life = 0.0;
@@ -303,6 +305,9 @@ float Model::Simulate(float dt, bool pushing) {
 			m_Frame = 0;
 		}
 	}
+  */
+
+  m_Position[1] = fastSinf(m_Life * 3.0) * 175.0;
   
   {
 		//float tx = -sin(DEGREES_TO_RADIANS(m_Rotation[1]));

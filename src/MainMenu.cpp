@@ -29,14 +29,15 @@ MainMenu::~MainMenu() {
 void MainMenu::CreateFoos() {
   float x = 0;
   float y = 0;
-  for (unsigned int i=0; i<400; i++) {
+  for (unsigned int i=0; i<625; i++) {
     m_Models.push_back(new Model(m_FooFoos.at(0)));
     m_Models[i]->SetPosition(x, fastSinf((float)i * 0.5) * 100.0, y);
-    x += 105.0;
+    m_Models[i]->m_Life = (float)i;
+    x += 110.0;
     m_ModelCount++;
-    if ((m_ModelCount % 20) == 0) {
+    if ((m_ModelCount % 25) == 0) {
       x = 0.0;
-      y += 105.0;
+      y += 110.0;
     }
   }
   m_BatchFoo = Model::GetBatchFoo(m_Textures->at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
@@ -53,13 +54,15 @@ void MainMenu::Hit(float x, float y, int hitState) {
 
 
 int MainMenu::Simulate() {
-  m_CameraTarget[0] = 200.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
-  m_CameraTarget[1] = -200.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
-  m_CameraTarget[2] = 200.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
-  m_CameraPosition[0] = 1500.0 + ((fastSinf(m_SimulationTime * 1.0) * 900.0) - 300.0);
-  m_CameraPosition[1] = 300.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0);
-  m_CameraPosition[2] = 1500.0 + ((fastSinf(m_SimulationTime * 1.0) * 900.0) - 300.0);
-  m_Models[0]->Simulate(m_DeltaTime, false);
+  m_CameraTarget[0] = 300.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
+  m_CameraTarget[1] = -600.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
+  m_CameraTarget[2] = 300.0 + ((fastSinf(m_SimulationTime * -1.0) * 10.0) - 5.0);
+  m_CameraPosition[0] = 2500.0 + ((fastSinf(m_SimulationTime * -1.0) * 1000.0) - 300.0);
+  m_CameraPosition[1] = 450.0 + ((fastSinf(m_SimulationTime * 1.0) * 10.0) - 5.0);
+  m_CameraPosition[2] = 2500.0 + ((fastSinf(m_SimulationTime * 1.0) * 1000.0) - 300.0);
+  for (unsigned int i=0; i<m_ModelCount; i++) {
+    m_Models[i]->Simulate(m_DeltaTime, false);
+  }
   m_BatchFoo->m_NumBatched = 0;
   RenderModelRange(0, m_ModelCount, m_BatchFoo);
   return 1;
