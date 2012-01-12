@@ -151,7 +151,7 @@ const char *popMessageFromWebView() {
 
 	animating = FALSE;
 	displayLinkSupported = FALSE;
-	animationFrameInterval = 2;
+	animationFrameInterval = 1;
 	displayLink = nil;
 	animationTimer = nil;
 	
