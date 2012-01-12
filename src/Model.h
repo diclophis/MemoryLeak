@@ -20,7 +20,7 @@ public:
   ~Model();
 	void Render(StateFoo *sf, foofoo *batch_foo = NULL);
 	static void RenderFoo(StateFoo *sf, foofoo *foo);
-	float Simulate(float dt, bool pushing = false);
+	float Simulate(float st, float dt, bool pushing = false);
 	void Die(float dt);
 	void Live(float dt);
 	void Harm(Model *other);

@@ -18,5 +18,8 @@ public:
   float m_CameraZ;
   float m_CameraR;
   foofoo *m_BatchFoo;
+  bool m_TouchingLeft;
+  bool m_TouchingRight;
+  int m_CurrentTempo;
 
 };
