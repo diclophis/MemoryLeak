@@ -8,6 +8,7 @@
 #include <math.h> //for GCCFIX
 #include <libmodplug/stdafx.h>
 #include <libmodplug/sndfile.h>
+//#include <libmodplug/snd_fx.cpp>
 
 #define MMCMP_SUPPORT
 

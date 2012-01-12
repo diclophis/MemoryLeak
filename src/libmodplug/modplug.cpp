@@ -147,6 +147,11 @@ int ModPlug_GetCurrentSpeed(ModPlugFile* file)
 	return file->mSoundFile.m_nMusicSpeed;
 }
 
+void ModPlug_SetCurrentSpeed(ModPlugFile* file, int s)
+{
+	file->mSoundFile.SetTempo(s);
+}
+
 int ModPlug_GetCurrentTempo(ModPlugFile* file)
 {
 	return file->mSoundFile.m_nMusicTempo;
