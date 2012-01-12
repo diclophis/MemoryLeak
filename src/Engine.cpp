@@ -70,6 +70,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
+  m_Fov = 90.0;
 
 	
 	m_AudioBufferSize = 0;
@@ -97,7 +98,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 void Engine::ResetStateFoo() {
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  //glBlendFunc(GL_ONE, GL_ONE);
 
   //glEnable(GL_TEXTURE_2D);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -123,6 +125,7 @@ void Engine::ResetStateFoo() {
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    //glEnable(GL_BLEND);
   }
 
   m_StateFoo->g_lastTexture = -1;
@@ -199,7 +202,7 @@ void Engine::DrawScreen(float rotation) {
     //glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     if (m_IsThreeD) {
-      GLU_PERSPECTIVE(100.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
+      GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
       glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
       RenderModelPhase();
     } else {
@@ -310,7 +313,7 @@ void Engine::ResizeScreen(int width, int height) {
 	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
 	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  glClearColor(0.0, 0.0, 0.5, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   m_IsScreenResized = true;
   if (m_IsThreeD) {
