@@ -318,8 +318,10 @@ void Engine::ResizeScreen(int width, int height) {
   m_IsScreenResized = true;
   if (m_IsThreeD) {
 		//glMatrixMode(GL_PROJECTION);
+    //glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
     //GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
+    //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
   } else {
     //glMatrixMode(GL_PROJECTION);
     //glLoadIdentity();
