@@ -19,7 +19,7 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
-static int game_index = 0;
+static int game_index = 3;
 
 bool pushMessageToWebView(const char *theMessage) {
 	return true;
