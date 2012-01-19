@@ -70,6 +70,7 @@ public:
 
   int m_LandscapeIndex;
   int m_PlayerIndex;
+  int m_PlayerIndex2;
   int m_SpaceShipPartsStartIndex;
   int m_SpaceShipPartsStopIndex;
   int m_PlatformsStartIndex;

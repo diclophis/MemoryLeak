@@ -124,9 +124,9 @@ void Engine::ResetStateFoo() {
   glShadeModel(GL_FLAT);
 
   //if (m_IsThreeD) {
-    //glEnableClientState(GL_NORMAL_ARRAY);
-    //glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     //glEnable(GL_BLEND);
   //}
 
@@ -204,10 +204,10 @@ void Engine::DrawScreen(float rotation) {
     //glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     //if (m_IsThreeD) {
-      //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 50.0);
-      //glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-      //RenderModelPhase();
-      //glLoadIdentity();
+      GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 50.0);
+      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+      RenderModelPhase();
+      glLoadIdentity();
     //} else {
       glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
       RenderSpritePhase();
