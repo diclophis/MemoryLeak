@@ -40,7 +40,7 @@
 		[glView startAnimation];
 	} else {
 		[glView build];
-		[glView startGame:[NSNumber numberWithInt:0]];
+		[glView startGame:[NSNumber numberWithInt:3]];
 		[glView startAnimation];
 	}
 }
