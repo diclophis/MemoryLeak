@@ -192,17 +192,38 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
 #endif
 
-  size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
+  if (foo->m_NeedsCopy) {
+    size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
 
 
-  size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+    size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
+    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+  }
 
+  if (true) {
+    glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+  }
 
-  glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+  if (false) {
+  /*
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glDepthFunc(GL_LESS);
+    glCullFace(GL_BACK);
+    glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glPolygonMode(GL_BACK, GL_LINE);
+    glDepthFunc(GL_LEQUAL);
+    glCullFace(GL_FRONT);
+    glDisable(GL_TEXTURE_2D);
+    glColor4f(1.0, 0.0, 0.0, 1.0);
+    glLineWidth(2.0);
+    glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glEnable(GL_TEXTURE_2D);
+  */
+  }
 
   if (false) {
     glDisable(GL_TEXTURE_2D);
@@ -212,8 +233,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
-
-
 }
 
 
@@ -303,7 +322,6 @@ float Model::Simulate(float st, float dt, bool pushing) {
 	m_IsPushing = pushing;
 	//m_Life += dt;
 
-  /*
 	if (m_FooFoo->m_numFrames > 1) {
 		if (m_Life > (1.0 / (float)m_Fps)) {
 			m_Frame++;
@@ -314,9 +332,8 @@ float Model::Simulate(float st, float dt, bool pushing) {
 			m_Frame = 0;
 		}
 	}
-  */
 
-  m_Position[1] = fastSinf((m_Life + st) * 3.0) * 60.0;
+  //m_Position[1] = fastSinf((m_Life + st) * 3.0) * 60.0;
   //m_Scale[0] = 1.0 + fastSinf((m_Life + st) * 1.5) * 0.0;
   //m_Scale[1] = 1.0 + fastSinf((m_Life + st) * 1.5) * 0.0;
   //m_Scale[2] = 1.0 + fastSinf((m_Life + st) * 1.5) * 0.0;

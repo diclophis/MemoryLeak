@@ -59,6 +59,7 @@ struct foofoo {
     m_NumBatchedElements = 0;
     m_numSpriteFoos = 0;
     m_numModelFoos = 0;
+    m_NeedsCopy = true;
 	}
 
 	~foofoo()
@@ -123,6 +124,7 @@ struct foofoo {
   int m_NumBatched;
   int m_NumBatchedElements;
   size_t m_Stride;
+  bool m_NeedsCopy;
   SpriteFoo *m_SpriteFoos;
   ModelFoo *m_ModelFoos;
   GLshort *m_IndexFoo;
