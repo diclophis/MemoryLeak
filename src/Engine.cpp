@@ -90,7 +90,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
   m_CurrentSound = 0;
-
+  m_RenderStride = 1;
+  m_RenderStrideOffset = 0;
 
 }
 
@@ -116,17 +117,18 @@ void Engine::ResetStateFoo() {
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisable(GL_TEXTURE_2D);
 */
-  
+ 
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glShadeModel(GL_FLAT);
 
-  if (m_IsThreeD) {
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+  //if (m_IsThreeD) {
+    //glEnableClientState(GL_NORMAL_ARRAY);
+    //glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_CULL_FACE);
     //glEnable(GL_BLEND);
-  }
+  //}
 
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
@@ -201,14 +203,15 @@ void Engine::DrawScreen(float rotation) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     //glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    if (m_IsThreeD) {
-      GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
-      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-      RenderModelPhase();
-    } else {
+    //if (m_IsThreeD) {
+      //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 50.0);
+      //glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+      //RenderModelPhase();
+      //glLoadIdentity();
+    //} else {
       glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
       RenderSpritePhase();
-    }
+    //}
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
@@ -294,9 +297,16 @@ void Engine::DoAudio(short buffer[], int size) {
 
 
 void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
-	for (unsigned int i=s; i<e; i++) {
+  //LOGV("rendering: %d %d start: %d skipping: %d\n", s, e, m_RenderStrideOffset, m_RenderStride);
+	for (unsigned int i=(s + m_RenderStrideOffset); i<e; i+=m_RenderStride) {
 		m_Models[i]->Render(m_StateFoo, batch_foo);
 	}
+  if (m_RenderStride > 1) {
+    m_RenderStrideOffset += 1;
+    if (m_RenderStrideOffset > m_RenderStride) {
+      m_RenderStrideOffset = 0;
+    }
+  }
 }
 
 
