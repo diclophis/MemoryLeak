@@ -21,5 +21,9 @@ public:
   bool m_TouchingLeft;
   bool m_TouchingRight;
   int m_CurrentTempo;
+  float m_MaxDistanceX;
+  float m_MaxDistanceY;
+  float m_MaxDepth;
+  float m_MaxHeight;
 
 };

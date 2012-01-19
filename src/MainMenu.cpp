@@ -17,10 +17,18 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   m_TouchingLeft = false;
   m_TouchingRight = false;
 
+  m_MaxDistanceX = 1.2;
+  m_MaxDistanceY = 1.2;
+  m_MaxDepth = -0.25;
+  m_MaxHeight = 0.75;
+  m_Fov = 10.0;
 
-  LoadSound(0);
+  LoadSound(3);
   m_CurrentTempo = ModPlug_GetCurrentTempo(m_Sounds[0]);
-  LoadModel(1, 0, 1);
+  //8 is spaceman
+  //7 is jetpack
+  //6 is truss
+  LoadModel(5, 0, 1);
   CreateFoos();
 }
 
@@ -32,21 +40,33 @@ MainMenu::~MainMenu() {
 
 void MainMenu::CreateFoos() {
   float x = 0;
-  float y = 0;
-  for (unsigned int i=0; i<625; i++) {
+  float z = 0;
+  if (true) {
     m_Models.push_back(new Model(m_FooFoos.at(0)));
-    m_Models[i]->SetPosition(x, fastSinf((float)i * 0.5) * 100.0, y);
-    m_Models[i]->m_Life = (float)i;
-    //130
-    x += 100.0;
     m_ModelCount++;
-    if ((m_ModelCount % 25) == 0) {
-      x = 0.0;
-      y += 100.0;
+  } else {
+    int chubes = 5;
+    for (unsigned int i=0; i<(chubes * chubes); i++) {
+      m_Models.push_back(new Model(m_FooFoos.at(0)));
+      m_Models[i]->SetPosition(x, 0.0, z);
+      m_Models[i]->m_Life = (float)i;
+      x += 1.0;
+      m_ModelCount++;
+      if ((m_ModelCount % chubes) == 0) {
+        m_MaxDistanceX = x;
+        x = 0.0;
+        z += 1.0;
+      }
+      m_MaxDistanceY = z;
     }
+    //m_MaxDepth = -1.0;
+    //m_MaxHeight = 1.0;
   }
-  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(6), m_FooFoos[0]->m_numFaces, m_ModelCount);
+
+  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
   ResetStateFoo();
+  m_BatchFoo->m_NumBatched = 0;
+  RenderModelRange(0, m_ModelCount, m_BatchFoo);
 }
 
 
@@ -68,7 +88,7 @@ void MainMenu::Hit(float x, float y, int hitState) {
     //m_IsPushingAudio = false;
   }
   
-  LOGV("wtf: %d\n", ModPlug_GetCurrentSpeed(m_Sounds[0]));
+  //LOGV("wtf: %d\n", ModPlug_GetCurrentSpeed(m_Sounds[0]));
   //if (hitState == 2 && xx < 0.0) {
   //  m_TouchingLeft = false;
   //}
@@ -101,23 +121,36 @@ int MainMenu::Simulate() {
     m_Fov = 120.0;
   }
   //m_Fov += m_DeltaTime;
-  m_CameraTarget[0] = 300.0 + ((fastSinf(m_SimulationTime * -1.5) * 200.0) - 100.0);
-  m_CameraTarget[1] = -2000.0 + ((fastSinf(m_SimulationTime * -1.5) * 200.0) - 100.0);
-  m_CameraTarget[2] = 300.0 + ((fastSinf(m_SimulationTime * -1.5) * 200.0) - 100.0);
-  m_CameraPosition[0] = 2400.0 + ((fastSinf(m_SimulationTime * -0.4) * 1000.0) - 300.0);
-  m_CameraPosition[1] = 555.0 + ((fastSinf(m_SimulationTime * 0.2) * 200.0) - 100.0);
-  m_CameraPosition[2] = 2400.0 + ((fastSinf(m_SimulationTime * 0.6) * 1000.0) - 300.0);
+  if (false) {
+    m_CameraTarget[0] = 0.0 + ((fastSinf(m_SimulationTime * -1.0) * 0.7) - 0.5);
+    m_CameraTarget[1] = m_MaxDepth + ((fastSinf(m_SimulationTime * -0.7) * 1.0) - 0.5);
+    m_CameraTarget[2] = 0.0 + ((fastSinf(m_SimulationTime * -1.0) * 0.7) - 0.5);
+    m_CameraPosition[0] = m_MaxDistanceX + ((fastSinf(m_SimulationTime * -0.1) * 0.5 * m_MaxDistanceX) - (0.25 * m_MaxDistanceX));
+    m_CameraPosition[1] = m_MaxHeight + ((fastSinf(m_SimulationTime * 0.05) * 0.5 * m_MaxHeight) - (0.25 * m_MaxHeight));
+    m_CameraPosition[2] = m_MaxDistanceY + ((fastSinf(m_SimulationTime * 0.15) * 0.5 * m_MaxDistanceY) - (0.25 * m_MaxDistanceY));
+  } else {
+    m_CameraTarget[0] = 0.0;
+    m_CameraTarget[1] = 0.0;
+    m_CameraTarget[2] = 0.0;
+    //m_CameraPosition[0] = 1.5 + fastSinf(m_SimulationTime * -0.25);
+    //m_CameraPosition[1] = 1.5 + fastSinf(m_SimulationTime * 0.1);
+    //m_CameraPosition[2] = 1.5;
+    m_CameraPosition[0] = 0.75;
+    m_CameraPosition[1] = 1.5;
+    m_CameraPosition[2] = 0.75;
+  }
+  /*
   for (unsigned int i=0; i<m_ModelCount; i++) {
     m_Models[i]->Simulate(m_SimulationTime, m_DeltaTime, false);
   }
-  m_BatchFoo->m_NumBatched = 0;
-  RenderModelRange(0, m_ModelCount, m_BatchFoo);
+  */
   return 1;
 }
 
 
 void MainMenu::RenderModelPhase() {
   Model::RenderFoo(m_StateFoo, m_BatchFoo);
+  m_BatchFoo->m_NeedsCopy = false;
 }
 
 
