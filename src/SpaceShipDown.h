@@ -113,6 +113,7 @@ public:
   foofoo *m_EnemyFoo;
   foofoo *m_BatchFoo;
   foofoo *m_SecondBatchFoo;
+  foofoo *m_ThirdBatchFoo;
   
 
 };
