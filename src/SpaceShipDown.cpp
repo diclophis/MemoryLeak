@@ -39,12 +39,17 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
   LoadSound(0);
   LoadSound(1);
   LoadSound(2);
+  LoadModel(5, 0, 1);
   CreateFoos();
   StartLevel(0);
 }
 
 
 void SpaceShipDown::CreateFoos() {
+
+  m_Models.push_back(new Model(m_FooFoos.at(0)));
+  m_ModelCount++;
+
   ResetStateFoo();
   //BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 1, 2, 0.0);
@@ -86,6 +91,7 @@ void SpaceShipDown::CreateFoos() {
       }
     }
   }
+  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
 }
 
 
@@ -102,6 +108,7 @@ void SpaceShipDown::DestroyFoos() {
   delete m_EnemyFoo;
   delete m_BatchFoo;
   delete m_SecondBatchFoo;
+  delete m_ThirdBatchFoo;
 }
 
 
@@ -785,6 +792,13 @@ int SpaceShipDown::Simulate() {
   RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
   RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
 */
+  m_CameraTarget[0] = 0.0;
+  m_CameraTarget[1] = 0.0;
+  m_CameraTarget[2] = 0.0;
+  m_CameraPosition[0] = 0.75;
+  m_CameraPosition[1] = 1.5;
+  m_CameraPosition[2] = 0.75;
+
 
   return 1;
 }
@@ -948,15 +962,19 @@ void SpaceShipDown::CreateDebugDraw() {
 
 
 void SpaceShipDown::RenderModelPhase() {
+  m_ThirdBatchFoo->m_NumBatched = 0;
+  RenderModelRange(0, m_ModelCount, m_ThirdBatchFoo);
+  Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo);
 }
 
 
 void SpaceShipDown::RenderSpritePhase() {
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0);
   if (m_DebugDrawToggle) {
-    AtlasSprite::ReleaseBuffers();
-    glDisable(GL_TEXTURE_2D);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    //AtlasSprite::ReleaseBuffers();
+    //glDisable(GL_TEXTURE_2D);
+    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glColor4f(1.0, 0.0, 0.0, 1.0);
     world->DrawDebugData();
     glRotatef(90.0, 1.0, 0.0, 0.0);
     Color bodyColor;
@@ -976,8 +994,8 @@ void SpaceShipDown::RenderSpritePhase() {
     const Color baseColor = (reached ? atColor : noColor);
 
     glColor4f(1.0, 1.0, 1.0, 1.0);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnable(GL_TEXTURE_2D);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glEnable(GL_TEXTURE_2D);
   } else {
     glEnable(GL_BLEND);
 
