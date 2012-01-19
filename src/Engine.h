@@ -100,6 +100,8 @@ public:
   int m_SpriteCount;
   int m_ModelCount;
   bool m_IsThreeD;
+  int m_RenderStride;
+  int m_RenderStrideOffset;
 
   int m_LastDraw;
   int m_CurrentDraw;
