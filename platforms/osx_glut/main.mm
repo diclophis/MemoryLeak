@@ -7,8 +7,8 @@
 
 #include "MemoryLeak.h"
 
-static int kWindowWidth = 1280;
-static int kWindowHeight = 1280;
+static int kWindowWidth = 128;
+static int kWindowHeight = 128;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;

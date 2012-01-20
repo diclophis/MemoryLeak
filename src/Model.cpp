@@ -239,39 +239,30 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 void Model::Render(StateFoo *sf, foofoo *batch_foo) {
   
   //memcpy(&batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)], &m_FooFoo->m_ModelFoos[(m_Frame * (m_FooFoo->m_numFaces * 3)) + 0], (m_FooFoo->m_numFaces * 3) * sizeof(ModelFoo));
-  int num_faces_times_vertices_per_face = (m_FooFoo->m_numFaces * 3);
-  int frame_offset = (m_Frame * (num_faces_times_vertices_per_face));
-  ModelFoo *l = NULL;
-  ModelFoo *r = NULL;
-  for (int i=0; i<(num_faces_times_vertices_per_face); i++) {
-    int frame_offset_plus_index = frame_offset + i;
-    l = &batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)];
-    r = &m_FooFoo->m_ModelFoos[frame_offset_plus_index];
-    l->vertex[0] = (r->vertex[0] * m_Scale[0]) + m_Position[0];
-    l->vertex[1] = (r->vertex[1] * m_Scale[1]) + m_Position[1];
-    l->vertex[2] = (r->vertex[2] * m_Scale[2]) + m_Position[2];
-    //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[0] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[0] * m_Scale[0]) + m_Position[0];
-    //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[1] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[1] * m_Scale[1]) + m_Position[1];
-    //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[2] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[2] * m_Scale[2]) + m_Position[2];
-    l->normal[0] = r->normal[0];
-    l->normal[1] = r->normal[1];
-    l->normal[2] = r->normal[2];
-    l->texture[0] = r->texture[0];
-    l->texture[1] = r->texture[1];
-    l->texture[2] = r->texture[2];
 
-    /*
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[0] = m_FooFoo->m_ModelFoos[frame_offset_plus_index].normal[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[1] = m_FooFoo->m_ModelFoos[frame_offset_plus_index].normal[1];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].normal[2] = m_FooFoo->m_ModelFoos[frame_offset_plus_index].normal[2];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[0] = m_FooFoo->m_ModelFoos[frame_offset_plus_index].texture[0];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[1] = m_FooFoo->m_ModelFoos[frame_offset_plus_index].texture[1];
-    batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].texture[2] = m_FooFoo->m_ModelFoos[frame_offset_plus_index].texture[2];
-    */
-
-    batch_foo->m_IndexFoo[(batch_foo->m_NumBatched)] = batch_foo->m_NumBatched;
-    batch_foo->m_NumBatched++;
-  }
+    int num_faces_times_vertices_per_face = (m_FooFoo->m_numFaces * 3);
+    int frame_offset = (m_Frame * (num_faces_times_vertices_per_face));
+    ModelFoo *l = NULL;
+    ModelFoo *r = NULL;
+    for (int i=0; i<(num_faces_times_vertices_per_face); i++) {
+      int frame_offset_plus_index = frame_offset + i;
+      l = &batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)];
+      r = &m_FooFoo->m_ModelFoos[frame_offset_plus_index];
+      l->vertex[0] = (r->vertex[0] * m_Scale[0]) + m_Position[0];
+      l->vertex[1] = (r->vertex[1] * m_Scale[1]) + m_Position[1];
+      l->vertex[2] = (r->vertex[2] * m_Scale[2]) + m_Position[2];
+      //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[0] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[0] * m_Scale[0]) + m_Position[0];
+      //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[1] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[1] * m_Scale[1]) + m_Position[1];
+      //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[2] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[2] * m_Scale[2]) + m_Position[2];
+      l->normal[0] = r->normal[0];
+      l->normal[1] = r->normal[1];
+      l->normal[2] = r->normal[2];
+      l->texture[0] = r->texture[0];
+      l->texture[1] = r->texture[1];
+      l->texture[2] = r->texture[2];
+      batch_foo->m_IndexFoo[(batch_foo->m_NumBatched)] = batch_foo->m_NumBatched;
+      batch_foo->m_NumBatched++;
+    }
 }
 
 
