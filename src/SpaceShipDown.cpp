@@ -855,10 +855,7 @@ int SpaceShipDown::Simulate() {
   //LOGV("%f -- %f %f %f %f\n", (m_CameraTarget[0] - m_CameraPosition[0]), m_CameraTarget[0], m_CameraTarget[1], m_CameraPosition[0], m_CameraPosition[1]);
   //LOGV("%f %f\n", m_Models[0]->m_Position[0], m_Models[1]->m_Position[0]);
 
-  m_ThirdBatchFoo->m_NumBatched = 0;
-  RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
-  RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
-  RenderModelRange(m_PlayerIndex, m_PlayerIndex+1, m_ThirdBatchFoo);
+  
 
   return 1;
 }
@@ -1022,6 +1019,10 @@ void SpaceShipDown::CreateDebugDraw() {
 
 
 void SpaceShipDown::RenderModelPhase() {
+  m_ThirdBatchFoo->m_NumBatched = 0;
+  RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
+  RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
+  RenderModelRange(m_PlayerIndex, m_PlayerIndex+1, m_ThirdBatchFoo);
   Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo);
 }
 

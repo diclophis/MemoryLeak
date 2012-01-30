@@ -64,7 +64,9 @@ Model::Model(foofoo *a) : m_FooFoo(a) {
 
 
 foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_model_count) {
-	foofoo *ff = new foofoo;
+  size_t size_of_model_foo = sizeof(ModelFoo);
+  foofoo *ff = new foofoo;
+  ff->m_Stride = size_of_model_foo;
   ff->m_Texture = texture_index;
   ff->m_numFaces = max_face_count * max_model_count;
   ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * 3 * sizeof(ModelFoo));
@@ -77,8 +79,10 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
 	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
 	glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
 
-  size_t size_of_model_foo = sizeof(ModelFoo);
-  ff->m_Stride = size_of_model_foo;
+  glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
+  size_t interleaved_buffer_size = (ff->m_numFaces * ff->m_Stride);
+  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+  Engine::CheckGL("Wtf\n");
 
   ff->m_numIndexBuffers = 1;
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
@@ -199,8 +203,8 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
   }
 
   if (true) {
@@ -251,9 +255,6 @@ void Model::Render(StateFoo *sf, foofoo *batch_foo) {
       l->vertex[0] = (r->vertex[0] * m_Scale[0]) + m_Position[0];
       l->vertex[1] = (r->vertex[1] * m_Scale[1]) + m_Position[1];
       l->vertex[2] = (r->vertex[2] * m_Scale[2]) + m_Position[2];
-      //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[0] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[0] * m_Scale[0]) + m_Position[0];
-      //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[1] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[1] * m_Scale[1]) + m_Position[1];
-      //batch_foo->m_ModelFoos[(batch_foo->m_NumBatched)].vertex[2] = (m_FooFoo->m_ModelFoos[frame_offset_plus_index].vertex[2] * m_Scale[2]) + m_Position[2];
       l->normal[0] = r->normal[0];
       l->normal[1] = r->normal[1];
       l->normal[2] = r->normal[2];
@@ -261,6 +262,21 @@ void Model::Render(StateFoo *sf, foofoo *batch_foo) {
       l->texture[1] = r->texture[1];
       l->texture[2] = r->texture[2];
       batch_foo->m_IndexFoo[(batch_foo->m_NumBatched)] = batch_foo->m_NumBatched;
+
+      size_t interleaved_buffer_size = (1 * batch_foo->m_Stride);
+      //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+      //batch_foo->m_ModelFoos + batch_foo->m_NumBatched;
+      //(batch_foo->m_NumBatched * batch_foo->m_Stride);
+      
+      glBindBuffer(GL_ARRAY_BUFFER, batch_foo->m_InterleavedBuffers[0]);
+      glPushMatrix();
+      {
+        glTranslatef(m_Position[0], m_Position[1], m_Position[2]);
+        glBufferSubData(GL_ARRAY_BUFFER, (batch_foo->m_NumBatched * batch_foo->m_Stride), interleaved_buffer_size, r);
+        //glBindBuffer(GL_ARRAY_BUFFER, 0);
+      }
+      glPopMatrix();
+
       batch_foo->m_NumBatched++;
     }
 }
