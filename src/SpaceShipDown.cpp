@@ -36,6 +36,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+LOGV("alloc ssd\n");
   LoadSound(0);
   LoadSound(1);
   LoadSound(2);
@@ -50,7 +51,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<f
 
 
 void SpaceShipDown::CreateFoos() {
-
+LOGV("create foos\n");
 
   ResetStateFoo();
   //BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2
@@ -98,6 +99,7 @@ void SpaceShipDown::CreateFoos() {
 
 
 void SpaceShipDown::DestroyFoos() {
+LOGV("destroy foos\n");
   delete m_PlayerFoo;
   delete m_PlayerAfterburnerFoo;
   delete m_SpaceShipPartBaseFoo;
@@ -255,7 +257,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_SpriteCount++;
 
   m_Models.push_back(new Model(m_FooFoos.at(1)));
-  LOGV("wha1: %d\n", m_PlayerIndex);
+  //LOGV("wha1: %d\n", m_PlayerIndex);
   m_Models[m_PlayerIndex]->m_Scale[0] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[1] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[2] = 2.0;
@@ -317,7 +319,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   m_SpriteCount++;
   m_SpaceShipPartsStopIndex = m_SpriteCount;
 
-  LOGV("wha2: %d\n", part_index);
+  //LOGV("wha2: %d\n", part_index);
   m_Models[part_index]->m_Scale[0] = scale;
   m_Models[part_index]->m_Scale[1] = scale;
   m_Models[part_index]->m_Scale[2] = scale;
@@ -443,7 +445,7 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   m_PlatformsStopIndex = m_SpriteCount;
 
   m_Models.push_back(new Model(m_FooFoos.at(0)));
-  LOGV("wha3: %d\n", platform_index);
+  //LOGV("wha3: %d\n", platform_index);
   m_Models[platform_index]->m_Scale[0] = 1.5;
   m_Models[platform_index]->m_Scale[1] = 1.5;
   m_Models[platform_index]->m_Scale[2] = 1.5;

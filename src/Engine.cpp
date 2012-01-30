@@ -24,7 +24,7 @@ namespace OpenSteer {
 
 
 Engine::~Engine() {
-
+LOGV("Engine::dealloc\n");
   if (m_AudioBufferSize > 0) {
     delete m_AudioMixBuffer;
   }

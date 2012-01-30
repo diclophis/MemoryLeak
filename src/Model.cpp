@@ -69,7 +69,8 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_Stride = size_of_model_foo;
   ff->m_Texture = texture_index;
   ff->m_numFaces = max_face_count * max_model_count;
-  ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numFaces * 3 * sizeof(ModelFoo));
+  ff->m_numModelFoos = ff->m_numFaces * 3;
+  ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numModelFoos * sizeof(ModelFoo));
   ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
 
   ff->m_numVertexArrayObjects = 1;
@@ -105,7 +106,8 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 	ff->m_numFaces = a->mMeshes[0]->mNumFaces;
 	ff->m_AnimationStart = s;
 	ff->m_AnimationEnd = e;
-	ff->m_ModelFoos = (ModelFoo *)malloc((ff->m_numFaces * 3 * ff->m_numFrames) * sizeof(ModelFoo));
+  ff->m_numModelFoos = (ff->m_numFaces * 3 * ff->m_numFrames);
+	ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numModelFoos * sizeof(ModelFoo));
   ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
 
 	if (a->mMeshes[0]->HasTextureCoords(0)) {
@@ -203,8 +205,8 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
-    //glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
   }
 
   if (true) {
@@ -263,6 +265,7 @@ void Model::Render(StateFoo *sf, foofoo *batch_foo) {
       l->texture[2] = r->texture[2];
       batch_foo->m_IndexFoo[(batch_foo->m_NumBatched)] = batch_foo->m_NumBatched;
 
+if (false) {
       size_t interleaved_buffer_size = (1 * batch_foo->m_Stride);
       //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
       //batch_foo->m_ModelFoos + batch_foo->m_NumBatched;
@@ -276,6 +279,7 @@ void Model::Render(StateFoo *sf, foofoo *batch_foo) {
         //glBindBuffer(GL_ARRAY_BUFFER, 0);
       }
       glPopMatrix();
+}
 
       batch_foo->m_NumBatched++;
     }

@@ -99,7 +99,7 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  //LOGV("key: %d %c\n", key, key);
+  LOGV("key: %d %c\n", key, key);
   if (key == 49) {
     if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
@@ -134,6 +134,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameStart();
       } else {
         //game_index = 3;
+        LOGV("start new game\n");
         Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
       }
     }

@@ -64,6 +64,7 @@ struct foofoo {
 
 	~foofoo()
 	{
+    LOGV("deallic foofoo\n");
     glDeleteBuffers(m_numBuffers, m_VerticeBuffers);
     glDeleteBuffers(m_numBuffers, m_IndexBuffers);
     glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
@@ -88,7 +89,12 @@ struct foofoo {
       free(m_SpriteFoos);
     }
     if (m_numModelFoos > 0) {
+    LOGV("freeing m_ModelFoos in foofoo\n");
       free(m_ModelFoos);
+    }
+    if (m_numFaces > 0) {
+    LOGV("freeing m_IndexFoo in foofoo\n");
+      free(m_IndexFoo);
     }
 #ifdef HAS_VAO
     glDeleteVertexArraysOES(m_numVertexArrayObjects, m_VertexArrayObjects);

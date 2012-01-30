@@ -166,7 +166,9 @@ foofoo *AtlasSprite::GetBatchFoo(GLuint texture_index, int max_frame_count) {
 	foofoo *ff = new foofoo;
   ff->m_Texture = texture_index;
   ff->m_numFrames = max_frame_count;
-  ff->m_SpriteFoos = (SpriteFoo *)malloc(ff->m_numFrames * 4 * sizeof(SpriteFoo));
+  ff->m_numSpriteFoos = ff->m_numFrames * 4;
+
+  ff->m_SpriteFoos = (SpriteFoo *)malloc(ff->m_numSpriteFoos * sizeof(SpriteFoo));
 
   ff->m_numVertexArrayObjects = 1;
 	ff->m_VertexArrayObjects = (GLuint*)calloc((ff->m_numVertexArrayObjects), sizeof(GLuint));
