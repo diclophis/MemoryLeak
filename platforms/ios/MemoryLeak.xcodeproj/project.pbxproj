@@ -11,7 +11,7 @@
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
 		FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A320129E3EB70056E630 /* ModelOctree.cpp */; };
 		FC14176B1285413100166578 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417631285413100166578 /* EAGLView.mm */; };
-		FC14176C1285413100166578 /* MemoryLeakAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417651285413100166578 /* MemoryLeakAppDelegate.mm */; };
+		FC14176C1285413100166578 /* MemoryLeakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1417651285413100166578 /* MemoryLeakAppDelegate.m */; };
 		FC14176D1285413100166578 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1417661285413100166578 /* Default.png */; };
 		FC14176E1285413100166578 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417671285413100166578 /* main.mm */; };
 		FC14176F1285413100166578 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC1417681285413100166578 /* MainWindow.xib */; };
@@ -189,7 +189,7 @@
 		FC1417621285413100166578 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		FC1417631285413100166578 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		FC1417641285413100166578 /* MemoryLeakAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeakAppDelegate.h; sourceTree = "<group>"; };
-		FC1417651285413100166578 /* MemoryLeakAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MemoryLeakAppDelegate.mm; sourceTree = "<group>"; };
+		FC1417651285413100166578 /* MemoryLeakAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemoryLeakAppDelegate.m; sourceTree = "<group>"; };
 		FC1417661285413100166578 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		FC1417671285413100166578 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		FC1417681285413100166578 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
@@ -766,7 +766,7 @@
 				FC1417621285413100166578 /* EAGLView.h */,
 				FC1417631285413100166578 /* EAGLView.mm */,
 				FC1417641285413100166578 /* MemoryLeakAppDelegate.h */,
-				FC1417651285413100166578 /* MemoryLeakAppDelegate.mm */,
+				FC1417651285413100166578 /* MemoryLeakAppDelegate.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1544,7 +1544,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC14176B1285413100166578 /* EAGLView.mm in Sources */,
-				FC14176C1285413100166578 /* MemoryLeakAppDelegate.mm in Sources */,
+				FC14176C1285413100166578 /* MemoryLeakAppDelegate.m in Sources */,
 				FC14176E1285413100166578 /* main.mm in Sources */,
 				FC141A961285415900166578 /* aiAssert.cpp in Sources */,
 				FC141A9C1285415900166578 /* Assimp.cpp in Sources */,
