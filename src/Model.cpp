@@ -72,6 +72,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_numModelFoos = ff->m_numFaces * 3;
   ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numModelFoos * sizeof(ModelFoo));
   ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
+  LOGV("\nsizeof: %d %d\n", sizeof(ff->m_ModelFoos[0].vertex), sizeof(ff->m_ModelFoos[0].xyz)); 
 
   ff->m_numVertexArrayObjects = 1;
 	ff->m_VertexArrayObjects = (GLuint*)calloc((ff->m_numVertexArrayObjects), sizeof(GLuint));
@@ -154,12 +155,13 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 }
 
 
-void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
+void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
 
-	if (foo->m_Texture != sf->g_lastTexture) {
-		sf->g_lastTexture = foo->m_Texture;
-		glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
-	}
+  if (foo->m_Texture != sf->g_lastTexture) {
+    sf->g_lastTexture = foo->m_Texture;
+    glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
+  }
+  
 
 #ifdef HAS_VAO
   if (foo->m_VertexArrayObjects[0] == 0) {
@@ -198,18 +200,18 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo) {
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
 #endif
 
-  if (foo->m_NeedsCopy) {
+  if (foo->m_NeedsCopy && copy) {
     size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
 
 
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
   }
 
-  if (true) {
+  if (!copy) {
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
   }
 

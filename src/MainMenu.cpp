@@ -149,7 +149,7 @@ int MainMenu::Simulate() {
 
 
 void MainMenu::RenderModelPhase() {
-  Model::RenderFoo(m_StateFoo, m_BatchFoo);
+  Model::RenderFoo(m_StateFoo, m_BatchFoo, true);
   m_BatchFoo->m_NeedsCopy = false;
 }
 

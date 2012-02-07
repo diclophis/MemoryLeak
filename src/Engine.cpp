@@ -217,7 +217,7 @@ void Engine::DrawScreen(float rotation) {
   }
   m_CurrentDraw++;
   pthread_mutex_unlock(&m_Mutex);
-  sched_yield();
+  //sched_yield();
   //pthread_cond_signal(&m_VsyncCond);
 }
 

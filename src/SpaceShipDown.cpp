@@ -117,6 +117,9 @@ LOGV("destroy foos\n");
 
 
 void SpaceShipDown::StartLevel(int level_index) {
+
+LOGV("Start Level\n");
+
   m_LevelIndex = level_index;
   if (m_LevelIndex > m_LevelFoos->size() - 1) {
     m_LevelIndex = 0;
@@ -857,6 +860,12 @@ int SpaceShipDown::Simulate() {
   //LOGV("%f -- %f %f %f %f\n", (m_CameraTarget[0] - m_CameraPosition[0]), m_CameraTarget[0], m_CameraTarget[1], m_CameraPosition[0], m_CameraPosition[1]);
   //LOGV("%f %f\n", m_Models[0]->m_Position[0], m_Models[1]->m_Position[0]);
 
+  m_ThirdBatchFoo->m_NumBatched = 0;
+  RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
+  RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
+  RenderModelRange(m_PlayerIndex, m_PlayerIndex+1, m_ThirdBatchFoo);
+  Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, true);
+
   
 
   return 1;
@@ -1021,11 +1030,12 @@ void SpaceShipDown::CreateDebugDraw() {
 
 
 void SpaceShipDown::RenderModelPhase() {
-  m_ThirdBatchFoo->m_NumBatched = 0;
-  RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
-  RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
-  RenderModelRange(m_PlayerIndex, m_PlayerIndex+1, m_ThirdBatchFoo);
-  Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo);
+  Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, false);
+  //46074 4 11 1 4 0 1
+  //Start Level
+  //130329 15 63 12 15 11 12
+
+  //LOGV("%d %d %d %d %d %d %d\n",m_ThirdBatchFoo->m_NumBatched, m_PlatformsStartIndex, m_PlatformsStopIndex, m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_PlayerIndex, m_PlayerIndex+1);
 }
 
 
