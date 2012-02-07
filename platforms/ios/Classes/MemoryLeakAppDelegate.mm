@@ -7,7 +7,6 @@
 //
 
 
-#import "MemoryLeak.h"
 #import "MemoryLeakAppDelegate.h"
 #import "EAGLView.h"
 

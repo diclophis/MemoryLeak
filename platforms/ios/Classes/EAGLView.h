@@ -9,6 +9,8 @@
 
 #import <AudioToolbox/AudioToolbox.h>
 #import <QuartzCore/QuartzCore.h>
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
 
 
 void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer);
@@ -17,8 +19,6 @@ void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inProper
 GLuint loadTexture(UIImage *image);
 bool pushMessageToWebView(const char *);
 const char *popMessageFromWebView();
-struct Engine;
-typedef struct Engine Engine;
 
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.

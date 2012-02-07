@@ -3,7 +3,7 @@
 //  MemoryLeak
 //
 //  Created by Jon Bardin on 9/7/09.
-//  Copyright __MyCompanyName__ 2009. All rights reserved.
+//  Copyright GPL
 //
 
 #import <UIKit/UIKit.h>
