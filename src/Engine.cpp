@@ -139,10 +139,17 @@ void Engine::ResetStateFoo() {
 
 void Engine::CreateThread(void (theCleanup)()) {
   m_SimulationThreadCleanup = theCleanup;
+  /*
   pthread_attr_t attr; 
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   pthread_create(&m_Thread, &attr, Engine::EnterThread, this);
+  */
+
+	timeval tim;
+	gettimeofday(&tim, NULL);
+	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+  StartSimulation();
 }
 
 
@@ -217,21 +224,19 @@ void Engine::DrawScreen(float rotation) {
   }
   m_CurrentDraw++;
   pthread_mutex_unlock(&m_Mutex);
+  RunThread();
   //sched_yield();
   //pthread_cond_signal(&m_VsyncCond);
 }
 
 
 int Engine::RunThread() {
-	double t1, t2;
 	timeval tim;
-	gettimeofday(&tim, NULL);
-	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  StartSimulation();
-  int drawn = 0;
-	while (m_GameState > 0) {
-    drawn = (m_CurrentDraw - m_LastDraw);
-    if (drawn > 0) {
+
+  //int drawn = 0;
+	//while (m_GameState > 0) {
+    //drawn = (m_CurrentDraw - m_LastDraw);
+    //if (drawn > 0) {
       pthread_mutex_lock(&m_Mutex);
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -241,7 +246,7 @@ int Engine::RunThread() {
       if (m_DeltaTime > 0.5) {
         LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
         pthread_mutex_unlock(&m_Mutex);
-        continue;
+        //continue;
       }
       m_LastDraw = m_CurrentDraw;
       if (m_GameState > 1) {
@@ -255,9 +260,9 @@ int Engine::RunThread() {
         pthread_mutex_unlock(&m_Mutex);
       }
       m_IsSceneBuilt = true;
-    }
-	}
-  m_SimulationThreadCleanup();
+    //}
+	//}
+  //m_SimulationThreadCleanup();
 	return m_GameState;
 }
 

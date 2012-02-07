@@ -111,6 +111,7 @@ public:
 
   int m_CurrentSound;
   float m_Fov;
+	double t1, t2;
 
 
 };
