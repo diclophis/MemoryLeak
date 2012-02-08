@@ -7,18 +7,12 @@
 //
 
 
-#import <AudioToolbox/AudioToolbox.h>
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/ES1/gl.h>
 #import <OpenGLES/ES1/glext.h>
+#import "Audio.h"
 
 
-void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer);
-void interruptionListenerCallback (void *inUserData,UInt32 interruptionState );
-void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inPropertyID, UInt32 inPropertyValueSize, const void *inPropertyValue);
-GLuint loadTexture(UIImage *image);
-bool pushMessageToWebView(const char *);
-const char *popMessageFromWebView();
 
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
@@ -33,6 +27,7 @@ const char *popMessageFromWebView();
   BOOL animating;
   BOOL displayLinkSupported;
   NSInteger animationFrameInterval;
+  
   // Use of the CADisplayLink class is the preferred method for controlling your animation timing.
   // CADisplayLink will link to the main display and fire every vsync when added to a given run-loop.
   // The NSTimer class is used only as fallback when running on a pre 3.1 device where CADisplayLink
@@ -46,6 +41,7 @@ const char *popMessageFromWebView();
   // The pixel dimensions of the CAEAGLLayer
   GLint backingWidth;
   GLint backingHeight;
+  
   // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
   GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
 
@@ -70,6 +66,7 @@ const char *popMessageFromWebView();
 -(void)startGame:(id)i;
 -(BOOL)wasActive;
 -(void)initAudio2;
+-(GLuint)loadTexture:(UIImage *)image;
 
 
 @end

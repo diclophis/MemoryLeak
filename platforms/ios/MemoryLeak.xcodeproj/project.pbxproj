@@ -157,6 +157,7 @@
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */; };
+		FCAB716214E264F4008A34BC /* Audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCAB716014E264F4008A34BC /* Audio.mm */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
 		FCDE089712D924A3004CE9B7 /* load_it.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087312D924A3004CE9B7 /* load_it.cpp */; };
 		FCDE089C12D924A3004CE9B7 /* load_mod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087812D924A3004CE9B7 /* load_mod.cpp */; };
@@ -662,6 +663,8 @@
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		FCAB716014E264F4008A34BC /* Audio.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Audio.mm; sourceTree = "<group>"; };
+		FCAB716114E264F4008A34BC /* Audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Audio.h; sourceTree = "<group>"; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		FCDE087312D924A3004CE9B7 /* load_it.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_it.cpp; sourceTree = "<group>"; };
 		FCDE087812D924A3004CE9B7 /* load_mod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mod.cpp; sourceTree = "<group>"; };
@@ -767,6 +770,8 @@
 				FC1417631285413100166578 /* EAGLView.mm */,
 				FC1417641285413100166578 /* MemoryLeakAppDelegate.h */,
 				FC1417651285413100166578 /* MemoryLeakAppDelegate.m */,
+				FCAB716014E264F4008A34BC /* Audio.mm */,
+				FCAB716114E264F4008A34BC /* Audio.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1699,6 +1704,7 @@
 				FC419535147DB07700A63C6B /* TerrainRayTest.cpp in Sources */,
 				FC419536147DB07700A63C6B /* Vec3.cpp in Sources */,
 				FC419537147DB07700A63C6B /* Vec3Utilities.cpp in Sources */,
+				FCAB716214E264F4008A34BC /* Audio.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

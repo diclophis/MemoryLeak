@@ -35,7 +35,6 @@
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
 	if ([glView wasActive]) {
-    NSLog(@"starting animation again!!!");
 		[glView startAnimation];
 	} else {
 		[glView build];

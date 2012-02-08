@@ -445,34 +445,7 @@ void Engine::gluePerspective(float fovy, float aspect,
 }
 
 
-void Engine::SetWebViewPushAndPop(bool (thePusher)(const char *), const char *(*thePopper)()) {
-  m_WebViewMessagePusher = thePusher;
-  m_WebViewMessagePopper = thePopper;
-}
-
-
-char *Engine::CreateWebViewFunction(const char *fmt, ...) {
-  va_list ap;
-  va_start (ap, fmt);
-  vsnprintf (m_WebViewFunctionBuffer, 1024 * sizeof(char), fmt, ap);
-  va_end (ap);	
-  return m_WebViewFunctionBuffer;	
-}
-
-
-const char *Engine::PopMessageFromWebView() {
-  const char *s = m_WebViewMessagePopper();
-  return s;
-}
-
-
-bool Engine::PushMessageToWebView(char *messageToPush) {
-  sprintf(m_WebViewFunctionBufferTwo, "javascript:(function() { %s })()", messageToPush);
-  return m_WebViewMessagePusher(m_WebViewFunctionBufferTwo);
-}
-
-
-void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
+void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void (theCleanup)()) {
   if (games.size() == 0) {
     games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
@@ -489,7 +462,6 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   }
 
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
-  m_CurrentGame->SetWebViewPushAndPop(thePusher, thePopper);
   m_CurrentGame->CreateThread(theCleanup);
   
   pthread_mutex_unlock(&m_GameSwitchLock);

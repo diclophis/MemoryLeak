@@ -1,94 +1,16 @@
 //  Jon Bardin on 7/12/10 GPL
 
 #import "MemoryLeakAppDelegate.h"
-
-
+#import "EAGLView.h"
 #include "MemoryLeak.h"
 
-
-#import "EAGLView.h"
-
-
-void nada();
-void checkStatus(OSStatus s);
-
-void nada () {
-    LOGV("nada\n");
-}
 
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> levels;
 static std::vector<foo*> sounds;
-
 static GLuint g_LastFrameBuffer = -1;
 static GLuint g_LastRenderBuffer = -1;
-
-void checkStatus(OSStatus status) {
-	if(status == 0)
-		NSLog(@"success");
-	else if(status == errSecNotAvailable)
-		NSLog(@"no trust results available");
-	else if(status == errSecItemNotFound)
-		NSLog(@"the item cannot be found");
-	else if(status == errSecParam)
-		NSLog(@"parameter error");
-	else if(status == errSecAllocate)
-		NSLog(@"memory allocation error");
-	else if(status == errSecInteractionNotAllowed)
-		NSLog(@"user interaction not allowd");
-	else if(status == errSecUnimplemented)
-		NSLog(@"not implemented");
-	else if(status == errSecDuplicateItem)
-		NSLog(@"item already exists");
-	else if(status == errSecDecode)
-		NSLog(@"unable to decode data");
-	else
-		NSLog(@"unknown: %ld", status);
-	
-}
-
-
-void interruptionListenerCallback (void *inUserData,UInt32 interruptionState ) {
-	LOGV("interupption\n");
-	if (interruptionState == kAudioSessionBeginInterruption) {
-		//TODO: phone call interuption, pause game?
-	} else if (interruptionState == kAudioSessionEndInterruption) {
-		// if the interruption was removed, and the app had been playing, resume playback
-		UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
-		AudioSessionSetProperty (
-								 kAudioSessionProperty_AudioCategory,
-								 sizeof (sessionCategory),
-								 &sessionCategory
-								 );
-		AudioSessionSetActive (true);
-	}
-}
-
-
-void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inPropertyID, UInt32 inPropertyValueSize, const void *inPropertyValue) {
-	if (inPropertyID==kAudioSessionProperty_AudioRouteChange ) {
-		CFDictionaryRef routeChangeDictionary = (CFDictionaryRef)inPropertyValue;
-		NSString *oldroute = (NSString*)CFDictionaryGetValue (
-															  routeChangeDictionary,
-															  CFSTR (kAudioSession_AudioRouteChangeKey_OldRoute)
-															  );
-		NSLog(@"Audio route changed : %@",oldroute);
-		if ([oldroute compare:@"Headphone"]==NSOrderedSame) {	
-			//TODO: pause on headphone?
-		}
-	}	
-}
-
-
-bool pushMessageToWebView(const char *theMessage) {
-	return true;
-}
-
-
-const char *popMessageFromWebView() {
-  return "";
-}
 
 
 @implementation EAGLView
@@ -123,6 +45,7 @@ const char *popMessageFromWebView() {
   {
     NSLog(@"Could not get sharegroup from the main context");
   }
+  
   WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
 	
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
@@ -134,7 +57,6 @@ const char *popMessageFromWebView() {
 	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer);
 	
 	//Bind framebuffers to the context and this layer
-	//glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
 	[context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:eaglLayer];
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
 	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
@@ -150,18 +72,17 @@ const char *popMessageFromWebView() {
 	}
 
 	animating = FALSE;
-	displayLinkSupported = FALSE;
 	animationFrameInterval = 1;
 	displayLink = nil;
-	animationTimer = nil;
 	
-	// A system version of 3.1 or greater is required to use CADisplayLink. The NSTimer
-	// class is used as fallback when it isn't available.
+
 	NSString *reqSysVer = @"3.1";
 	NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
 	if ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending) {
-		displayLinkSupported = TRUE;
-	}
+	} else {
+    NSLog(@"display link required");
+    return;
+  }
 
 	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
 	for (NSString *path in model_names) {
@@ -188,17 +109,13 @@ const char *popMessageFromWebView() {
 		firstLevel->len = len;
 		levels.push_back(firstLevel);
 	}
-	
+
+  
 	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
 	for (NSString *path in texture_names) {
 		NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-		UIImage *image = [[UIImage alloc] initWithData:texData];		
-		
-		if (image == nil) {
-			throw 1;
-		}
-		
-		textures.push_back(loadTexture(image));
+		UIImage *image = [[UIImage alloc] initWithData:texData];
+		textures.push_back([self loadTexture:image]);
 		[image release];
 		[texData release];
 	}
@@ -305,7 +222,7 @@ const char *popMessageFromWebView() {
 }
 
 
-GLuint loadTexture(UIImage *image) {
+-(GLuint)loadTexture:(UIImage *)image {
 	GLuint text = 0;
 	glEnable(GL_TEXTURE_2D);
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
@@ -345,9 +262,7 @@ static OSStatus playbackCallback(void *inRefCon,
 								 UInt32 inNumberFrames, 
 								 AudioBufferList *ioDataList) {
 
-  // Notes: ioData contains buffers (may be more than one!)
-  // Fill them up as much as you can. Remember to set the size value in each buffer to match how
-  // much data is in the buffer.
+
 	
 	if (ioDataList->mNumberBuffers != 1) {
 		LOGV("the fuck\n");
@@ -497,14 +412,9 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)stopAnimation {
   if (animating) {
-    Engine::CurrentGamePause();
-    if (displayLinkSupported) {
-        [displayLink invalidate];
-        displayLink = nil;
-    } else {
-        [animationTimer invalidate];
-        animationTimer = nil;
-    }
+    Engine::CurrentGamePause(); 
+    [displayLink invalidate];
+    displayLink = nil;
     animating = FALSE;
   }
 }
@@ -522,52 +432,49 @@ static OSStatus playbackCallback(void *inRefCon,
 
 -(void)startGame:(id)i {
   if ([[NSThread currentThread] isEqual:[NSThread mainThread]]) {
-    Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+    Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, NULL);
   } else {
     [EAGLContext setCurrentContext:WorkingContext];
-    Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, nada);
+    Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, NULL);
     [EAGLContext setCurrentContext:nil];
   }
 }
 
 
 -(void)dealloc {	
-	// Tear down GL
-    if (defaultFramebuffer) {
-        glDeleteFramebuffersOES(1, &defaultFramebuffer);
-        defaultFramebuffer = 0;
-    }
+  if (defaultFramebuffer) {
+    glDeleteFramebuffersOES(1, &defaultFramebuffer);
+    defaultFramebuffer = 0;
+  }
 	
-    if (colorRenderbuffer) {
-        glDeleteRenderbuffersOES(1, &colorRenderbuffer);
-        colorRenderbuffer = 0;
-    }
+  if (colorRenderbuffer) {
+    glDeleteRenderbuffersOES(1, &colorRenderbuffer);
+    colorRenderbuffer = 0;
+  }
 	
 	if(depthRenderbuffer) {
-        glDeleteRenderbuffersOES(1, &depthRenderbuffer);
-        depthRenderbuffer = 0;
-    }
+    glDeleteRenderbuffersOES(1, &depthRenderbuffer);
+    depthRenderbuffer = 0;
+  }
 	
-    // Tear down context
-    if ([EAGLContext currentContext] == context) {
-        [EAGLContext setCurrentContext:nil];
-	}
+  if ([EAGLContext currentContext] == context) {
+    [EAGLContext setCurrentContext:nil];
+  }	
 	
+  [context release];
+  context = nil;
 	
-    [context release];
-    context = nil;
-	
-    [super dealloc];
+  [super dealloc];
 }
 
 
 -(BOOL)wasActive {
 	if (Engine::CurrentGame()) {
-        Engine::CurrentGameStart();
-        return YES;
-    } else {
-        return NO;
-    }
+    Engine::CurrentGameStart();
+    return YES;
+  } else {
+    return NO;
+  }
 }
 
 

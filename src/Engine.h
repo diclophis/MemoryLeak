@@ -33,14 +33,6 @@ public:
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
   void (*m_SimulationThreadCleanup)();
-  bool (*m_WebViewMessagePusher)(const char *);
-  const char *(*m_WebViewMessagePopper)();
-  void SetWebViewPushAndPop(bool (const char *), const char *(*)());
-  char m_WebViewFunctionBuffer[1024];
-  char m_WebViewFunctionBufferTwo[1024];
-  char *CreateWebViewFunction(const char *fmt, ...);
-  const char *PopMessageFromWebView();
-  bool PushMessageToWebView(char *messageToPush);
   bool Active();
   void StopSimulation();
   void StartSimulation();
@@ -48,7 +40,7 @@ public:
   void LoadSound(int i);
   void LoadModel(int i, int s, int e);
 
-  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, bool (const char *), const char *(*)(), void ());
+  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void ());
   static void CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   static void CurrentGameDestroyFoos();
   static void CurrentGameCreateFoos();

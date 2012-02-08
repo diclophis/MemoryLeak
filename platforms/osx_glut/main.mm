@@ -21,19 +21,6 @@ static std::vector<foo*> levels;
 
 static int game_index = 3;
 
-bool pushMessageToWebView(const char *theMessage) {
-	return true;
-}
-
-
-const char *popMessageFromWebView() {
-  return "";
-}
-
-
-void SimulationThreadCleanup() {
-}
-
 
 GLuint loadTexture(NSBitmapImageRep *image) {
   GLuint text = 0;
@@ -41,12 +28,6 @@ GLuint loadTexture(NSBitmapImageRep *image) {
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
   glGenTextures(1, &text);
   glBindTexture(GL_TEXTURE_2D, text);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-  //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   GLuint width = CGImageGetWidth(image.CGImage);
@@ -133,9 +114,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else {
-        //game_index = 3;
         LOGV("start new game\n");
-        Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+        Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
       }
     }
     reset_down = !reset_down;
@@ -224,7 +204,7 @@ int main(int argc, char** argv) {
   [sounds_path release];
   [mainBundle release];
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
 
   glutMainLoop();
 
