@@ -12,3 +12,4 @@ void checkStatus(OSStatus s);
 void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer);
 void interruptionListenerCallback (void *inUserData,UInt32 interruptionState );
 void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inPropertyID, UInt32 inPropertyValueSize, const void *inPropertyValue);
+void initAudio2();
