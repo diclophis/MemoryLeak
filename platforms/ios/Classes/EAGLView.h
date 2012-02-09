@@ -27,8 +27,8 @@
   
   CADisplayLink *displayLink;
 	EAGLContext *context;
-  EAGLSharegroup *Share;
-  EAGLContext *WorkingContext;
+  EAGLSharegroup *glShareGroup;
+  EAGLContext *glWorkingContext;
     
   // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
   GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
@@ -40,7 +40,6 @@
 @property (nonatomic) NSInteger animationFrameInterval;
 
 
--(void)build;
 -(void)startAnimation;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;

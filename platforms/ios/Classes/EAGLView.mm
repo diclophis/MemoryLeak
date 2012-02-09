@@ -38,20 +38,21 @@ static GLuint g_LastRenderBuffer = -1;
 
     eaglLayer.opaque = TRUE;
     eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
-    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
+    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:glShareGroup];
     
     if (!context || ![EAGLContext setCurrentContext:context]) {
       [self release];
       return nil;
     }
     
-    Share = context.sharegroup;
-    if (!Share)
+    glShareGroup = context.sharegroup;
+    if (!glShareGroup)
     {
       NSLog(@"Could not get sharegroup from the main context");
+      return nil;
     }
     
-    WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
+    glWorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:glShareGroup];
     
     // Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
     glGenFramebuffersOES(1, &defaultFramebuffer);
