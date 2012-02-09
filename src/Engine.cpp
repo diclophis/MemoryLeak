@@ -24,7 +24,8 @@ namespace OpenSteer {
 
 
 Engine::~Engine() {
-LOGV("Engine::dealloc\n");
+  LOGV("Engine::dealloc\n");
+  
   if (m_AudioBufferSize > 0) {
     delete m_AudioMixBuffer;
   }
@@ -90,9 +91,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
   m_CurrentSound = 0;
-  m_RenderStride = 1;
-  m_RenderStrideOffset = 0;
-
 }
 
 
@@ -174,8 +172,7 @@ bool Engine::WaitVsync() {
 }
 
 
-
-int isExtensionSupported(const char *extension) {
+int Engine::isExtensionSupported(const char *extension) {
   const GLubyte *extensions = NULL;
   const GLubyte *start;
   GLubyte *where, *terminator;
@@ -302,16 +299,9 @@ void Engine::DoAudio(short buffer[], int size) {
 
 
 void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
-  //LOGV("rendering: %d %d start: %d skipping: %d\n", s, e, m_RenderStrideOffset, m_RenderStride);
-	for (unsigned int i=(s + m_RenderStrideOffset); i<e; i+=m_RenderStride) {
+	for (unsigned int i=s; i<e; i++) {
 		m_Models[i]->Render(m_StateFoo, batch_foo);
 	}
-  if (m_RenderStride > 1) {
-    m_RenderStrideOffset += 1;
-    if (m_RenderStrideOffset > m_RenderStride) {
-      m_RenderStrideOffset = 0;
-    }
-  }
 }
 
 
@@ -527,7 +517,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DrawScreen(rotation);
   } else {
-    //LOGV("foooo man chuuu\n");
+    LOGV("foooo man chuuu\n");
   }
 }
 
@@ -536,7 +526,7 @@ void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {
-    //LOGV("foooo man chuuu\n");
+    LOGV("foooo man chuuu\n");
   }
 }
 

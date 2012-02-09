@@ -72,7 +72,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_numModelFoos = ff->m_numFaces * 3;
   ff->m_ModelFoos = (ModelFoo *)malloc(ff->m_numModelFoos * sizeof(ModelFoo));
   ff->m_IndexFoo = (GLshort *)malloc((ff->m_numFaces * 3) * sizeof(GLshort));
-  LOGV("\nsizeof: %d %d\n", sizeof(ff->m_ModelFoos[0].vertex), sizeof(ff->m_ModelFoos[0].xyz)); 
+  //LOGV("\nsizeof: %d %d\n", sizeof(ff->m_ModelFoos[0].vertex), sizeof(ff->m_ModelFoos[0].xyz)); 
 
   ff->m_numVertexArrayObjects = 1;
 	ff->m_VertexArrayObjects = (GLuint*)calloc((ff->m_numVertexArrayObjects), sizeof(GLuint));

@@ -39,7 +39,8 @@ public:
   void PauseSimulation();
   void LoadSound(int i);
   void LoadModel(int i, int s, int e);
-
+  int isExtensionSupported(const char *extension);
+  
   static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void ());
   static void CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   static void CurrentGameDestroyFoos();
@@ -92,8 +93,6 @@ public:
   int m_SpriteCount;
   int m_ModelCount;
   bool m_IsThreeD;
-  int m_RenderStride;
-  int m_RenderStrideOffset;
 
   int m_LastDraw;
   int m_CurrentDraw;

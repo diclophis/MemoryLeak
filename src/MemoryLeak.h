@@ -31,15 +31,14 @@
 #include <vector>
 #include <string>
 #include <math.h>
+#include <iomanip>
+#include <sstream>
 
 #ifdef DESKTOP
   #ifndef __APPLE__
-    //#define arc4random(...) ((rand() >> 4) & 0xffff) | ((rand() << 12) & 0xffff0000)
     #define GLU_PERSPECTIVE gluPerspective
     #define glOrthof glOrtho
     #define GLfixed GLfloat
-    //#define GLdouble GLfloat
-    //#define GLfloat GLdouble
     #define glFrustumx glFrustum
   #else
     #define GLfixed GLfloat
@@ -57,15 +56,8 @@
 	  #include <OpenGL/gl.h>    // Header File For The OpenGL32 Library
 	  #include <OpenGL/glu.h>   // Header File For The GLu32 Library
 	  #include <OpenGL/glext.h>   // Header File For The GLu32 Library
-    //#include <OpenGLES/EAGL.h>
-    //#include <OpenGLES/EAGLDrawable.h>
-    //#include <OpenGLES/ES1/gl.h>
-    //#include <OpenGLES/ES1/glext.h>
     #include <GLUT/glut.h>    // Header File For The GLut Library
     #define glOrthof glOrtho
-
-
-
   #else
     #include <OpenGLES/ES1/gl.h>
     #include <OpenGLES/ES1/glext.h>
@@ -73,21 +65,10 @@
   #endif
 #else
   #ifdef DESKTOP
-    //#define GL_GLEXT_LEGACY
-    //#define USE_MGL_NAMESPACE
     #include <GL/gl.h>
     #include <GL/glut.h>
     #include <GL/glext.h>
     #include <GL/glu.h>
-    
-    //#include <GLES/gl.h>
-    //#include <GLES/glext.h>
-    //#include <GL/glu.h>
-    //#define glOrthof glOrtho
-
-    //#include <GL/gl.h>
-    //#include <GL/glext.h>
-    //#include <GL/glut.h>
   #endif
 #endif
 
@@ -95,9 +76,6 @@
   #include <GLES/gl.h>
   #include <GLES/glext.h>
   #define glFrustum glFrustumf
-  //#include <GLES2/gl2.h>
-  //#include <GLES2/gl2ext.h>
-
 #endif
 
 #ifdef DESKTOP
@@ -135,8 +113,8 @@
 
 #include "Box2D.h"
 
-#include <iomanip>
-#include <sstream>
+
+
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/Color.h"
 
