@@ -25,127 +25,125 @@ static GLuint g_LastRenderBuffer = -1;
   return [CAEAGLLayer class];
 }
 
+
 -(id)initWithCoder:(NSCoder *)aDecoder {
   if ((self = [super initWithCoder:aDecoder])) {
-    NSLog(@"woooo\n");
-    [self build];
+
+    animating = FALSE;
+    animationFrameInterval = 1;
+    displayLink = nil;
+    
+    // Get the layer
+    CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
+
+    eaglLayer.opaque = TRUE;
+    eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
+    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
+    
+    if (!context || ![EAGLContext setCurrentContext:context]) {
+      [self release];
+      return nil;
+    }
+    
+    Share = context.sharegroup;
+    if (!Share)
+    {
+      NSLog(@"Could not get sharegroup from the main context");
+    }
+    
+    WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
+    
+    // Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
+    glGenFramebuffersOES(1, &defaultFramebuffer);
+    glGenRenderbuffersOES(1, &colorRenderbuffer);
+    g_LastFrameBuffer = defaultFramebuffer;
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+    glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer);
+    
+    // The pixel dimensions of the CAEAGLLayer
+    GLint backingWidth;
+    GLint backingHeight;
+    
+    //Bind framebuffers to the context and this layer
+    [context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:eaglLayer];
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
+    
+    glGenRenderbuffersOES(1, &depthRenderbuffer);
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
+    glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
+    glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer);
+    
+    if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES) {
+      NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
+      return nil;
+    }
+
+    NSString *reqSysVer = @"3.1";
+    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+    if ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending) {
+    } else {
+      NSLog(@"display link required");
+      return nil;
+    }
+
+    NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
+    for (NSString *path in model_names) {
+      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      fseek(fd, 0, SEEK_END);
+      unsigned int len = ftell(fd);
+      rewind(fd);
+      foo *firstModel = new foo;
+      firstModel->fp = fd;
+      firstModel->off = 0;
+      firstModel->len = len;
+      models.push_back(firstModel);
+    }
+    
+    NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
+    for (NSString *path in level_names) {
+      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      fseek(fd, 0, SEEK_END);
+      unsigned int len = ftell(fd);
+      rewind(fd);
+      foo *firstLevel = new foo;
+      firstLevel->fp = fd;
+      firstLevel->off = 0;
+      firstLevel->len = len;
+      levels.push_back(firstLevel);
+    }
+
+    
+    NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
+    for (NSString *path in texture_names) {
+      NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+      UIImage *image = [[UIImage alloc] initWithData:texData];
+      textures.push_back([self loadTexture:image]);
+      [image release];
+      [texData release];
+    }
+    
+    
+    NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
+    for (NSString *path in sound_names) {
+      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      fseek(fd, 0, SEEK_END);
+      unsigned int len = ftell(fd);
+      rewind(fd);
+      foo *firstSound = new foo;
+      firstSound->fp = fd;
+      firstSound->off = 0;
+      firstSound->len = len;
+      sounds.push_back(firstSound);
+    }
+    
+    
+    initAudio2();
+
+
   }
   return self;
-}
-
--(void)build {
-
-  animating = FALSE;
-	animationFrameInterval = 1;
-	displayLink = nil;
-  
-	// Get the layer
-	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
-
-	eaglLayer.opaque = TRUE;
-	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
-	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
-	
-	if (!context || ![EAGLContext setCurrentContext:context]) {
-		[self release];
-		return;
-	}
-  
-  Share = context.sharegroup;
-  if (!Share)
-  {
-    NSLog(@"Could not get sharegroup from the main context");
-  }
-  
-  WorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:Share];
-	
-	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
-	glGenFramebuffersOES(1, &defaultFramebuffer);
-	glGenRenderbuffersOES(1, &colorRenderbuffer);
-  g_LastFrameBuffer = defaultFramebuffer;
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
-	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer);
-	
-  // The pixel dimensions of the CAEAGLLayer
-  GLint backingWidth;
-  GLint backingHeight;
-  
-	//Bind framebuffers to the context and this layer
-	[context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:eaglLayer];
-	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
-	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
-	
-	glGenRenderbuffersOES(1, &depthRenderbuffer);
-	glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
-	glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
-	glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer);
-	
-	if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES) {
-		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
-		return;
-	}
-
-	NSString *reqSysVer = @"3.1";
-	NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
-	if ([currSysVer compare:reqSysVer options:NSNumericSearch] != NSOrderedAscending) {
-	} else {
-    NSLog(@"display link required");
-    return;
-  }
-
-	NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
-	for (NSString *path in model_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		models.push_back(firstModel);
-	}
-	
-	NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
-	for (NSString *path in level_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
-		foo *firstLevel = new foo;
-		firstLevel->fp = fd;
-		firstLevel->off = 0;
-		firstLevel->len = len;
-		levels.push_back(firstLevel);
-	}
-
-  
-	NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
-	for (NSString *path in texture_names) {
-		NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-		UIImage *image = [[UIImage alloc] initWithData:texData];
-		textures.push_back([self loadTexture:image]);
-		[image release];
-		[texData release];
-	}
-	
-	
-	NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
-	for (NSString *path in sound_names) {
-		FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
-		fseek(fd, 0, SEEK_END);
-		unsigned int len = ftell(fd);
-		rewind(fd);
-		foo *firstSound = new foo;
-		firstSound->fp = fd;
-		firstSound->off = 0;
-		firstSound->len = len;
-		sounds.push_back(firstSound);
-	}
-	
-	
-  initAudio2();
 }
 
 
