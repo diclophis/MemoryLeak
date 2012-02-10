@@ -120,7 +120,7 @@ void RadiantFireEightSixOne::PlayerDive() {
 
 
 void RadiantFireEightSixOne::PlayerLimitVelocity() {
-  const float minVelocityX = 5;
+  const float minVelocityX = 1;
   const float minVelocityY = -20;
   b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
   if (vel.x < minVelocityX) {

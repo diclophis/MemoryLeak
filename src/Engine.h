@@ -64,7 +64,6 @@ public:
   float m_ScreenAspect;
   float m_ScreenHalfHeight;
   int m_GameState;
-  double m_Waits[1];
   float m_CameraPosition[3];
   float m_CameraTarget[3];
   pthread_cond_t m_VsyncCond;
@@ -81,22 +80,12 @@ public:
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;
   std::vector<ModPlugFile *>m_Sounds;
-  int m_RenderIndex;
-  short *m_AudioMixBuffer;
-  int m_AudioBufferSize;
+
   bool m_IsPushingAudio;
   float m_Zoom;
-  float m_Balance;
-  float m_WebViewTimeout;
-  pthread_mutex_t m_ScriptMutex;
-  pthread_t m_ScriptThread;
+
   int m_SpriteCount;
   int m_ModelCount;
-  bool m_IsThreeD;
-
-  int m_LastDraw;
-  int m_CurrentDraw;
-  bool m_IsDrawReadyAfterResume;
 
   StateFoo *m_StateFoo;
 

@@ -26,10 +26,6 @@ namespace OpenSteer {
 Engine::~Engine() {
   LOGV("Engine::dealloc\n");
   
-  if (m_AudioBufferSize > 0) {
-    delete m_AudioMixBuffer;
-  }
-
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
     delete *i;
   }
@@ -73,20 +69,7 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_Zoom = 1.0;
   m_Fov = 10.0;
 
-	
-	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
-  m_WebViewTimeout = 0.0;
-
-
-  //glMatrixMode(GL_MODELVIEW);
-  //glLoadIdentity();
-
-  m_IsThreeD = false;
-
-  m_LastDraw = 0;
-  m_CurrentDraw = 0;
-  m_IsDrawReadyAfterResume = true;
 
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
@@ -96,10 +79,8 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 void Engine::ResetStateFoo() {
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-
- 
   /*
+	glColor4f(1.0, 1.0, 1.0, 1.0);
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -119,6 +100,7 @@ void Engine::ResetStateFoo() {
 
 void Engine::CreateThread(void (theCleanup)()) {
   m_SimulationThreadCleanup = theCleanup;
+
   /*
   pthread_attr_t attr; 
   pthread_attr_init(&attr);
@@ -184,28 +166,21 @@ int Engine::isExtensionSupported(const char *extension) {
 
 
 void Engine::DrawScreen(float rotation) {
-  //pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    //glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //if (m_IsThreeD) {
-      GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 200.0);
-      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-      RenderModelPhase();
-      glLoadIdentity();
-    //} else {
-      glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-      RenderSpritePhase();
-    //}
+    // Render 3D
+    GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 200.0);
+    glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+    RenderModelPhase();
+    glLoadIdentity();
+    // Render 2D
+    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+    RenderSpritePhase();
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  m_CurrentDraw++;
-  //pthread_mutex_unlock(&m_Mutex);
   RunThread();
-  //sched_yield();
-  //pthread_cond_signal(&m_VsyncCond);
 }
 
 
@@ -228,7 +203,6 @@ int Engine::RunThread() {
         //return;
         //continue;
       }
-      m_LastDraw = m_CurrentDraw;
       if (m_GameState > 1) {
         //pthread_mutex_unlock(&m_Mutex);
         pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
@@ -304,17 +278,6 @@ void Engine::ResizeScreen(int width, int height) {
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   m_IsScreenResized = true;
-  if (m_IsThreeD) {
-		//glMatrixMode(GL_PROJECTION);
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-    //GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
-    //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
-  } else {
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-  }
 }
 
 
