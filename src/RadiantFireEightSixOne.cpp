@@ -8,7 +8,7 @@
 RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   m_IsPushingAudio = true;
-  m_Zoom = 0.75;
+  m_Zoom = 1.25;
   m_RequestedFullscreen = false;
   m_Touched = false;
   b2BodyDef spriteBodyDef;
@@ -104,16 +104,13 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
-  //glPushMatrix();
-  //{
-    glTranslatef(m_Terrain->position.x - 128.0, -175.0, 0.0);
-    m_Terrain->Render();
-    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-    AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
-    ResetStateFoo();
-    AtlasSprite::ReleaseBuffers();
-  //}
-  //glPopMatrix();
+  glTranslatef(m_Terrain->position.x - 128.0, -175.0, 0.0);
+  m_Terrain->Render();
+  
+  //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+  //AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
+  //ResetStateFoo();
+  //AtlasSprite::ReleaseBuffers();
 }
 
 

@@ -97,36 +97,18 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 void Engine::ResetStateFoo() {
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-  //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  //glBlendFunc(GL_ONE, GL_ONE);
 
-  //glEnable(GL_TEXTURE_2D);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  //glEnableClientState(GL_VERTEX_ARRAY);
-  //glEnableClientState(GL_NORMAL_ARRAY);
-  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-/*
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_DEPTH_TEST);
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glDisable(GL_TEXTURE_2D);
-*/
  
+  /*
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glShadeModel(GL_FLAT);
 
-  //if (m_IsThreeD) {
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    //glEnable(GL_BLEND);
-  //}
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  */
 
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
@@ -202,7 +184,7 @@ int Engine::isExtensionSupported(const char *extension) {
 
 
 void Engine::DrawScreen(float rotation) {
-  pthread_mutex_lock(&m_Mutex);
+  //pthread_mutex_lock(&m_Mutex);
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     //glMatrixMode(GL_MODELVIEW);
@@ -220,7 +202,7 @@ void Engine::DrawScreen(float rotation) {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
   m_CurrentDraw++;
-  pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_unlock(&m_Mutex);
   RunThread();
   //sched_yield();
   //pthread_cond_signal(&m_VsyncCond);
@@ -234,27 +216,28 @@ int Engine::RunThread() {
 	//while (m_GameState > 0) {
     //drawn = (m_CurrentDraw - m_LastDraw);
     //if (drawn > 0) {
-      pthread_mutex_lock(&m_Mutex);
+      //pthread_mutex_lock(&m_Mutex);
       gettimeofday(&tim, NULL);
       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
       m_DeltaTime = t2 - t1;
       gettimeofday(&tim, NULL);
       t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_DeltaTime > 0.5) {
+      if (m_DeltaTime > 0.6) {
         LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
-        pthread_mutex_unlock(&m_Mutex);
+        //pthread_mutex_unlock(&m_Mutex);
+        //return;
         //continue;
       }
       m_LastDraw = m_CurrentDraw;
       if (m_GameState > 1) {
-        pthread_mutex_unlock(&m_Mutex);
+        //pthread_mutex_unlock(&m_Mutex);
         pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
       } else {
         m_SimulationTime += (m_DeltaTime);
         if (Active()) {
           Simulate();
         }
-        pthread_mutex_unlock(&m_Mutex);
+        //pthread_mutex_unlock(&m_Mutex);
       }
       m_IsSceneBuilt = true;
     //}
