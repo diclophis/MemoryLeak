@@ -122,7 +122,6 @@
 		FC2C4B5C13C16F3300FECDEA /* b2WeldJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B2B13C16F3300FECDEA /* b2WeldJoint.cpp */; };
 		FC2C4B5D13C16F3300FECDEA /* b2WheelJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B2D13C16F3300FECDEA /* b2WheelJoint.cpp */; };
 		FC2C4B5E13C16F3300FECDEA /* b2Rope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B3013C16F3300FECDEA /* b2Rope.cpp */; };
-		FC2C4B6113C1771000FECDEA /* Hero.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B5F13C1771000FECDEA /* Hero.cpp */; };
 		FC2C4B6713C1778700FECDEA /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6413C1778600FECDEA /* Terrain.cpp */; };
 		FC2C4B6913C1792D00FECDEA /* MLPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6813C1792D00FECDEA /* MLPoint.cpp */; };
 		FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6A13C1AB6F00FECDEA /* RenderTexture.cpp */; };
@@ -577,8 +576,6 @@
 		FC2C4B2E13C16F3300FECDEA /* b2WheelJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2WheelJoint.h; sourceTree = "<group>"; };
 		FC2C4B3013C16F3300FECDEA /* b2Rope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Rope.cpp; sourceTree = "<group>"; };
 		FC2C4B3113C16F3300FECDEA /* b2Rope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Rope.h; sourceTree = "<group>"; };
-		FC2C4B5F13C1771000FECDEA /* Hero.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hero.cpp; sourceTree = "<group>"; };
-		FC2C4B6013C1771000FECDEA /* Hero.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hero.h; sourceTree = "<group>"; };
 		FC2C4B6313C1778500FECDEA /* MLPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLPoint.h; sourceTree = "<group>"; };
 		FC2C4B6413C1778600FECDEA /* Terrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terrain.cpp; sourceTree = "<group>"; };
 		FC2C4B6513C1778600FECDEA /* Terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terrain.h; sourceTree = "<group>"; };
@@ -791,8 +788,6 @@
 				FC2C4B6313C1778500FECDEA /* MLPoint.h */,
 				FC2C4B6413C1778600FECDEA /* Terrain.cpp */,
 				FC2C4B6513C1778600FECDEA /* Terrain.h */,
-				FC2C4B5F13C1771000FECDEA /* Hero.cpp */,
-				FC2C4B6013C1771000FECDEA /* Hero.h */,
 				FC2C4ACF13C16F3300FECDEA /* Box2D */,
 				FC6D4D6613A46D1B00DE1200 /* FooIO.h */,
 				FC6D4D6713A46D1B00DE1200 /* Game.h */,
@@ -1680,7 +1675,6 @@
 				FC2C4B5C13C16F3300FECDEA /* b2WeldJoint.cpp in Sources */,
 				FC2C4B5D13C16F3300FECDEA /* b2WheelJoint.cpp in Sources */,
 				FC2C4B5E13C16F3300FECDEA /* b2Rope.cpp in Sources */,
-				FC2C4B6113C1771000FECDEA /* Hero.cpp in Sources */,
 				FC2C4B6713C1778700FECDEA /* Terrain.cpp in Sources */,
 				FC2C4B6913C1792D00FECDEA /* MLPoint.cpp in Sources */,
 				FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */,

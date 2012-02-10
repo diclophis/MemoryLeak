@@ -199,8 +199,8 @@ int SuperStarShooter::Simulate() {
 void SuperStarShooter::CreateCollider(float x, float y, float r, int flag) {
   int sx = 0;
   int sy = 0;
-  float l = 120 * (1.0 / 60.0);
   /*
+  float l = 120 * (1.0 / 60.0);
   if (flag & BARREL) {
     m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 1, l * 0.5, "", 8, 11, l, 100.0, 100.0));
   } else if (flag & STAR) {
