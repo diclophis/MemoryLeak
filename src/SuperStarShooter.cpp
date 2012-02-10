@@ -45,7 +45,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   //CreateCollider(SUBDIVIDE * 2, SUBDIVIDE * 2, 0.0, STAR);
   
   m_GridCount = GRID_X * GRID_Y;
-  m_GridPositions = new int[m_GridCount * 2];
+  m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int)); //new int[m_GridCount * 2];
   m_GridStartIndex = m_SpriteCount;
 
   CreateFoos();
@@ -76,17 +76,27 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 SuperStarShooter::~SuperStarShooter() {
   delete m_Space;
   delete m_GridPositions;
+  DestroyFoos();
 }
 
 
 void SuperStarShooter::CreateFoos() {
+  LOGV("SuperStarShooter::CreateFoos\n");
   ResetStateFoo();
   m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 0, 64, 0.0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), m_GridCount);
+  if (m_SimulationTime > 0.0) {
+    for (unsigned int i=0; i<m_SpriteCount; i++) {
+      m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
+    }
+  }
 }
 
 
 void SuperStarShooter::DestroyFoos() {
+  LOGV("SuperStarShooter::DestroyFoos\n");
+  delete m_GridFoo;
+  delete m_BatchFoo;
 }
 
 
