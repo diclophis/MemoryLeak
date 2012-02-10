@@ -42,7 +42,7 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
 
 void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
 	if (m_FooFoo->m_numFrames == 0) {
-    LOGV("Fail, animation is at least 1 frame\n");
+    //LOGV("Fail, animation is at least 1 frame\n");
     return;
   }
   if (batch_foo == NULL) {

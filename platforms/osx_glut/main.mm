@@ -105,14 +105,14 @@ void processNormalKeys(unsigned char key, int x, int y) {
     if (reset_down) {
 
     } else {
-      if (key == 50) {
+      if (key == 112) {
         Engine::CurrentGamePause();
-      } else if (key == 51) {
+      } else if (key == 114) {
         Engine::CurrentGameDestroyFoos();
         Engine::CurrentGameSetAssets(textures, models, levels, sounds);
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
-      } else {
+      } else if (key == 115) {
         LOGV("start new game\n");
         Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
       }

@@ -23,6 +23,8 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 10;
   m_AtlasSprites[m_PlayerIndex]->SetScale(30 / 2.0, 30 / 2.0);
   m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_SpriteCount++;
+
   m_PlayerRadius = 14.0f;
   m_PlayerIsAwake = false;
   m_PlayerRotation = 0;
@@ -39,13 +41,24 @@ RadiantFireEightSixOne::~RadiantFireEightSixOne() {
 
 
 void RadiantFireEightSixOne::CreateFoos() {
+  LOGV("RadiantFire::CreateFoos\n");
   ResetStateFoo();
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 0, 64, 0.0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1);
+  if (m_SimulationTime > 0.0) {
+    for (unsigned int i=0; i<m_SpriteCount; i++) {
+      if (i == m_PlayerIndex) {
+        m_AtlasSprites[i]->ResetFoo(m_PlayerFoo, NULL);
+      }
+    }
+  }
 }
 
 
 void RadiantFireEightSixOne::DestroyFoos() {
+  LOGV("RadiantFire::DestroyFoos\n");
+  delete m_PlayerFoo;
+  delete m_BatchFoo;
 }
 
 
@@ -91,13 +104,13 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
   //glTranslatef(m_Terrain->position.x - 128.0, -175.0, 0.0);
-  glTranslatef(m_Terrain->position.x - 128.0, 0.0, 0.0);
+  glTranslatef(m_Terrain->position.x, 0.0, 0.0);
   m_Terrain->Render();
   
-  //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-  //AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
-  //ResetStateFoo();
-  //AtlasSprite::ReleaseBuffers();
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+  AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
+  ResetStateFoo();
+  AtlasSprite::ReleaseBuffers();
 }
 
 

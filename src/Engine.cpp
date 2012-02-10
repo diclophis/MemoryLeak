@@ -166,6 +166,7 @@ int Engine::isExtensionSupported(const char *extension) {
 
 
 void Engine::DrawScreen(float rotation) {
+  RunThread();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
@@ -180,43 +181,29 @@ void Engine::DrawScreen(float rotation) {
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  RunThread();
 }
 
 
 int Engine::RunThread() {
 	timeval tim;
-
-  //int drawn = 0;
-	//while (m_GameState > 0) {
-    //drawn = (m_CurrentDraw - m_LastDraw);
-    //if (drawn > 0) {
-      //pthread_mutex_lock(&m_Mutex);
-      gettimeofday(&tim, NULL);
-      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-      m_DeltaTime = t2 - t1;
-      gettimeofday(&tim, NULL);
-      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_DeltaTime > 0.6) {
-        LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
-        //pthread_mutex_unlock(&m_Mutex);
-        //return;
-        //continue;
-      }
-      if (m_GameState > 1) {
-        //pthread_mutex_unlock(&m_Mutex);
-        pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
-      } else {
-        m_SimulationTime += (m_DeltaTime);
-        if (Active()) {
-          Simulate();
-        }
-        //pthread_mutex_unlock(&m_Mutex);
-      }
-      m_IsSceneBuilt = true;
-    //}
-	//}
-  //m_SimulationThreadCleanup();
+  gettimeofday(&tim, NULL);
+  t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+  m_DeltaTime = t2 - t1;
+  gettimeofday(&tim, NULL);
+  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+  if (m_DeltaTime > 0.6) {
+    LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
+  }
+  if (m_GameState > 1) {
+    //pthread_mutex_unlock(&m_Mutex);
+    //pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
+  } else {
+    m_SimulationTime += (m_DeltaTime);
+    if (Active()) {
+      Simulate();
+    }
+  }
+  m_IsSceneBuilt = true;
 	return m_GameState;
 }
 
