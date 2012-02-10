@@ -133,5 +133,4 @@
 
 #include "MLPoint.h"
 #include "Terrain.h"
-#include "Hero.h"
 

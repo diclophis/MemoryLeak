@@ -12,14 +12,31 @@ public:
 	void RenderSpritePhase();
   void CreateFoos();
   void DestroyFoos();
-
   void CreateBox2DWorld();
+  void PlayerSleep();
+  void PlayerWake();
+  void PlayerDive();
+  void PlayerLimitVelocity();
+  void PlayerUpdateNodePosition();
+  void PlayerReset();
+  void PlayerCreateBox2DBody();
 
-  b2World *world;
-  Terrain *terrain;
-  Hero *hero;
+  b2World *m_World;
+  b2Body *m_PlayerBody;
+
+  Terrain *m_Terrain;
 
   bool m_Touched;
   bool m_RequestedFullscreen;
+
+  float m_PlayerRadius;
+  bool m_PlayerIsAwake;
+  float m_PlayerRotation;
+  MLPoint m_PlayerPosition;
+
+  int m_PlayerIndex;
+
+  foofoo *m_PlayerFoo;
+  foofoo *m_BatchFoo;
 
 };
