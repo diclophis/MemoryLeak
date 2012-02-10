@@ -45,7 +45,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   //CreateCollider(SUBDIVIDE * 2, SUBDIVIDE * 2, 0.0, STAR);
   
   m_GridCount = GRID_X * GRID_Y;
-  m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int)); //new int[m_GridCount * 2];
+  m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
   CreateFoos();
@@ -56,7 +56,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_GridPositions[(i * 2) + 1] = yy;
     m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE, yy * SUBDIVIDE);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-    m_AtlasSprites[m_SpriteCount]->m_Fps = 10;
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 1;
     m_AtlasSprites[m_SpriteCount]->m_Frame = (m_SpriteCount - (m_GridStartIndex)) % 64;
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
