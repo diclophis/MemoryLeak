@@ -6,6 +6,7 @@
 
 
 RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+  LOGV("alloc RadiantFire\n");
   LoadSound(0);
   m_IsPushingAudio = true;
   m_Zoom = 1.25;
@@ -35,8 +36,10 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
 
 
 RadiantFireEightSixOne::~RadiantFireEightSixOne() {
+  LOGV("dealloc RadiantFire\n");
   delete m_Terrain;
   delete m_World;
+  DestroyFoos();
 }
 
 
