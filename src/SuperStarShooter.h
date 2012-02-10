@@ -34,6 +34,9 @@ public:
   float m_CameraActualOffsetX;
   float m_CameraActualOffsetY;
 
+  float m_LastCenterX;
+  float m_LastCenterY;
+
   float m_PercentThere;
 
   float m_WarpTimeout;
