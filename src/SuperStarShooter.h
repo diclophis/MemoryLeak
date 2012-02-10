@@ -40,4 +40,7 @@ public:
 
   float m_DebugTimeout;
 
+  foofoo *m_GridFoo;
+  foofoo *m_BatchFoo;
+
 };

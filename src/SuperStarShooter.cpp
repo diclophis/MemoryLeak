@@ -16,13 +16,14 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 5
-#define GRID_Y 5
+#define GRID_X 30
+#define GRID_Y 30
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+
 
   int xx = 0;
   int yy = 0;
@@ -31,9 +32,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 1.0;
+  m_Zoom = 2.0;
 
-  LoadSound(1);
+  LoadSound(3);
   m_IsPushingAudio = true;
 
 	m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
@@ -47,13 +48,18 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridPositions = new int[m_GridCount * 2];
   m_GridStartIndex = m_SpriteCount;
 
+  CreateFoos();
+
   for (unsigned int i=0; i<m_GridCount; i++) {
-    //m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 64, 1.0, "", 0, 64, 0.0, SUBDIVIDE, SUBDIVIDE));
-    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
-    m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_AtlasSprites.push_back(new SpriteGun(m_GridFoo, NULL));
     m_GridPositions[(i * 2)] = xx;
     m_GridPositions[(i * 2) + 1] = yy;
     m_AtlasSprites[m_SpriteCount]->SetPosition(xx * SUBDIVIDE, yy * SUBDIVIDE);
+    m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 10;
+    m_AtlasSprites[m_SpriteCount]->m_Frame = (m_SpriteCount - (m_GridStartIndex)) % 64;
+    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
+    m_AtlasSprites[m_SpriteCount]->Build(0);
     xx++;
     if (xx >= GRID_X) {
       xx = 0;
@@ -74,6 +80,9 @@ SuperStarShooter::~SuperStarShooter() {
 
 
 void SuperStarShooter::CreateFoos() {
+  ResetStateFoo();
+  m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 0, 64, 0.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), m_GridCount);
 }
 
 
@@ -116,10 +125,15 @@ void SuperStarShooter::RenderSpritePhase() {
   //glPushMatrix();
   //{
     glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
-    RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
-    AtlasSprite::ReleaseBuffers();
+
+    //RenderSpriteRange(m_GridStartIndex, m_GridStopIndex);
+    //AtlasSprite::ReleaseBuffers();
+
   //}
   //glPopMatrix();
+
+    RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
+    AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
 
@@ -131,6 +145,10 @@ int SuperStarShooter::Simulate() {
   }
 
   m_DebugTimeout += m_DeltaTime;
+
+  for (unsigned int i=0; i<m_SpriteCount; i++) {
+    m_AtlasSprites[i]->Simulate(m_DeltaTime);
+  }
 
 /*
   for (unsigned int i=0; i<m_SpriteCount; i++) {
