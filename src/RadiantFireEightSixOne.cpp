@@ -17,18 +17,6 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint>
   m_Terrain = new Terrain(m_World, m_Textures->at(0));  
   CreateFoos();
 
-  /*
-  spriteBodyDef.position.Set(hero->position.x / PTM_RATIO, hero->position.y / PTM_RATIO);
-  b2Body *spriteBody = world->CreateBody(&spriteBodyDef);
-  b2PolygonShape spriteShape;
-  spriteShape.SetAsBox(100.0 / PTM_RATIO / 2, 100.0 / PTM_RATIO / 2);
-  b2FixtureDef spriteShapeDef;
-  spriteShapeDef.shape = &spriteShape;
-  spriteShapeDef.density = 10.0;
-  spriteShapeDef.isSensor = true;
-  spriteBody->CreateFixture(&spriteShapeDef);
-  */
-
   m_PlayerIndex = 0;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = false;
@@ -93,8 +81,6 @@ int RadiantFireEightSixOne::Simulate() {
   PlayerUpdateNodePosition();
   m_Terrain->SetOffsetX(m_PlayerPosition.x);
 
-  //terrain->SetOffsetX(m_SimulationTime * 300);
-
   return 1;
 }
 
@@ -152,7 +138,7 @@ void RadiantFireEightSixOne::PlayerUpdateNodePosition() {
   m_PlayerPosition = MLPointMake(x, y);
   b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
   float angle = atan2f(vel.y, vel.x);
-  m_PlayerRotation = angle; //1 * RadiansToDegrees(angle);
+  m_PlayerRotation = angle;
   m_AtlasSprites[m_PlayerIndex]->m_Rotation = m_PlayerRotation;
   if (y < -m_PlayerRadius && m_PlayerIsAwake) {
     PlayerSleep();
