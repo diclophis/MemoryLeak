@@ -212,12 +212,16 @@ void Terrain::ResetHillVertices() {
 
 
 void Terrain::Render() {
+  glEnable(GL_TEXTURE_2D);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  
   //glPushMatrix();
   //{
   //glEnableClientState(GL_VERTEX_ARRAY);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//Engine::CheckGL("Render in T2");
+Engine::CheckGL("Render in T2");
   if (true) {
     //glEnable(GL_TEXTURE_2D);
     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -226,7 +230,7 @@ void Terrain::Render() {
     glBindTexture(GL_TEXTURE_2D, rt->name);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
-//Engine::CheckGL("Render in T1");
+Engine::CheckGL("Render in T1");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
     //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     //glBindTexture(GL_TEXTURE_2D, 0);
@@ -243,6 +247,9 @@ void Terrain::Render() {
   //Engine::CheckGL("Render in T");
   //}
   //glPopMatrix();
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisable(GL_TEXTURE_2D);
 }
 
 
@@ -338,7 +345,7 @@ GLuint Terrain::GenerateStripesTexture() {
         }
       }
 
-      //glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -354,7 +361,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glDisable(GL_BLEND);
       glDisableClientState(GL_COLOR_ARRAY);
-      //glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
     }
     
 
@@ -381,7 +388,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      //glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
       glVertexPointer(2, GL_FLOAT, 0, vertices);
       glColorPointer(4, GL_FLOAT, 0, colors);
@@ -391,7 +398,7 @@ GLuint Terrain::GenerateStripesTexture() {
       glDisableClientState(GL_COLOR_ARRAY);
 
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-      //glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
       glDisable(GL_BLEND);
       
     }
@@ -413,7 +420,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      //glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
       glVertexPointer(2, GL_FLOAT, 0, vertices);
       glColorPointer(4, GL_FLOAT, 0, colors);
@@ -423,7 +430,7 @@ GLuint Terrain::GenerateStripesTexture() {
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
       glDisableClientState(GL_COLOR_ARRAY);
-      //glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
       glDisable(GL_BLEND);
       
     }
@@ -440,7 +447,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      //glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
       glLineWidth(borderWidth);
       glColor4f(1.0, 0.0, 0.0, borderAlpha);
       glVertexPointer(2, GL_FLOAT, 0, vertices);
@@ -450,7 +457,7 @@ GLuint Terrain::GenerateStripesTexture() {
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
       glColor4f(1.0, 1.0, 1.0, 1.0);
-      //glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
       glDisable(GL_BLEND);
     }
 
