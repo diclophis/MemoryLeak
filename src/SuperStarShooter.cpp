@@ -136,10 +136,6 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
-  //m_CameraActualOffsetX += -(20.0 * m_DeltaTime * (m_CameraActualOffsetX - m_CameraOffsetX));
-  //m_CameraActualOffsetY += -(20.0 * m_DeltaTime * (m_CameraActualOffsetY - m_CameraOffsetY));
-  m_CameraActualOffsetX = m_CameraOffsetX;
-  m_CameraActualOffsetY = m_CameraOffsetY;
 
   bool print_index = false;
   if (m_DebugTimeout > 2.0) {
@@ -149,19 +145,15 @@ int SuperStarShooter::Simulate() {
 
   m_DebugTimeout += m_DeltaTime;
 
-  //for (unsigned int i=0; i<m_SpriteCount; i++) {
-  //  m_AtlasSprites[i]->Simulate(m_DeltaTime);
-  //}
-
   bool recenter_x = false;
   bool recenter_y = false;
 
-  if (fastAbs(m_LastCenterX - m_CameraOffsetX) >= (SUBDIVIDE)) {
+  if (fastAbs(m_LastCenterX - m_CameraOffsetX) > (SUBDIVIDE)) {
     m_LastCenterX = m_CameraOffsetX;
     recenter_x = true;
   }
 
-  if (fastAbs(m_LastCenterY - m_CameraOffsetY) >= (SUBDIVIDE)) {
+  if (fastAbs(m_LastCenterY - m_CameraOffsetY) > (SUBDIVIDE)) {
     m_LastCenterY = m_CameraOffsetY;
     recenter_y = true;
   }
@@ -173,47 +165,26 @@ int SuperStarShooter::Simulate() {
       int gx = -1;
       int gy = -1;
       IndexToXY(i - m_GridStartIndex, &gx, &gy);
-      float px = (gx * SUBDIVIDE) + (-m_CameraActualOffsetX) - (((GRID_X - 1) / 2) * SUBDIVIDE);
-      float py = (gy * SUBDIVIDE) + (-m_CameraActualOffsetY) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
-
-      //0: 1   [ 0,  0]   [-039.0, -043.0]   [ 0,  0]
-      //should be -1, -1
-
-      int sx = (px / SUBDIVIDE);
-      int sy = (py / SUBDIVIDE);
-      if (sx >= 0 & sy >= 0) {
+      float px = (gx * SUBDIVIDE) + (m_CameraOffsetX) - (((GRID_X - 1) / 2) * SUBDIVIDE);
+      float py = (gy * SUBDIVIDE) + (m_CameraOffsetY) - (((GRID_Y - 1) / 2) * SUBDIVIDE);
+      int sx = floor(px / SUBDIVIDE);
+      int sy = floor(py / SUBDIVIDE);
+      if (sx >= 0 && sy >= 0) {
         annotate_index = m_Space->at(sx, sy, 0);
       }
       m_AtlasSprites[i]->m_Frame = -annotate_index;
 
-      if (recenter) {
-        m_AtlasSprites[i]->SetPosition(((gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE)) + m_CameraOffsetX, ((gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE)) + m_CameraOffsetY);
-
+      if (recenter_x) {
+        m_AtlasSprites[i]->SetPosition(((gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE)) + m_CameraOffsetX, m_AtlasSprites[i]->m_Position[1]);
       }
+
+      if (recenter_y) {
+        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], ((gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE)) + m_CameraOffsetY);
+      }
+
       if (print_index) {
         //LOGV("%2d:%2d   [%2d, %2d]   [%+06.1f, %+06.1f]   [%2d, %2d]\n", i, m_AtlasSprites[i]->m_Frame, gx, gy, px, py, sx, sy);
       }
-      /*
-      float bumpx = -0.5;
-      float bumpy = -0.5;
-      //if (m_AtlasSprites[i]->m_Position[0] > 0.0) {
-      //  bumpx = 0.5;
-      //}
-      //if (m_AtlasSprites[i]->m_Position[1] > 0.0) {
-      //  bumpy = 0.5;
-      //}
-      float wtfx = ((int)((ax) / SUBDIVIDE) * SUBDIVIDE);
-      float wtfy = ((int)((ay) / SUBDIVIDE) * SUBDIVIDE);
-      //float wtfx = ax; //(((ax) / SUBDIVIDE) * SUBDIVIDE);
-      //float wtfy = ay; //(((ay) / SUBDIVIDE) * SUBDIVIDE);
-      if (m_AtlasSprites[i]->m_Frame != -annotate_index) {
-        //LOGV("changed: %d to %d\n", i, annotate_index);
-      }
-      m_AtlasSprites[i]->m_Frame = -annotate_index;
-      if (print_index) {
-        //LOGV("%d %d | %d is %d @ %f %f  -- %f %f %f %f\n", ox, oy, i, m_AtlasSprites[i]->m_Frame,  m_AtlasSprites[i]->m_Position[0],  m_AtlasSprites[i]->m_Position[1], ax, ay, wtfx, wtfy);
-      }
-      */
     }
   }
 
