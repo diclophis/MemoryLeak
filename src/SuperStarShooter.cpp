@@ -146,7 +146,8 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  m_CameraOffsetX += m_DeltaTime * 400.0;
+  m_CameraOffsetY += m_DeltaTime * 600.0;
+  m_CameraOffsetX += m_DeltaTime * 600.0;
 
   bool print_index = false;
   if (m_DebugTimeout > 2.0) {
@@ -168,25 +169,25 @@ int SuperStarShooter::Simulate() {
   
   if ((dx) > (SUBDIVIDE)) {
     dir_x = floorf(dx / SUBDIVIDE);
-    recenter_dx = dx;
+    recenter_dx = dx - SUBDIVIDE;
     recenter_x = true;
   }
   
   if ((dy) > (SUBDIVIDE)) {
     dir_y = floorf(dy / SUBDIVIDE);
-    recenter_dy = dy;
+    recenter_dy = dy - SUBDIVIDE;
     recenter_y = true;
   }
   
   if ((dx) < (-SUBDIVIDE)) {
     dir_x = -floorf(-dx / SUBDIVIDE);
-    recenter_dx = -dx;
+    recenter_dx = -(-dx - SUBDIVIDE);
     recenter_x = true;
   }
   
   if ((dy) < (-SUBDIVIDE)) {
     dir_y = -floorf(-dy / SUBDIVIDE);
-    recenter_dy = -dy;
+    recenter_dy = -(-dy - SUBDIVIDE);
     recenter_y = true;
   }
   
@@ -221,14 +222,14 @@ int SuperStarShooter::Simulate() {
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
       if (recenter_x) {
         //m_AtlasSprites[i]->SetPosition(((gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE)) + m_CameraOffsetX, m_AtlasSprites[i]->m_Position[1]);
-        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0] + (dir_x * SUBDIVIDE), m_AtlasSprites[i]->m_Position[1]);
+        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0] + ((SUBDIVIDE * dir_x) + recenter_dx), m_AtlasSprites[i]->m_Position[1]);
         m_LastCenterX = m_CameraActualOffsetX;     
-        LOGV("%f %f\n", dx, dir_x);
+        //LOGV("%f %f %f\n", dx, dir_x, recenter_dx);
       }
       
       if (recenter_y) {
         //m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], ((gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE)) + m_CameraOffsetY);
-        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] + (dir_y * SUBDIVIDE));
+        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] + ((SUBDIVIDE * dir_y) + recenter_dy));
         m_LastCenterY = m_CameraActualOffsetY;
       }
       
