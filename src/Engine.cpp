@@ -201,6 +201,8 @@ int Engine::RunThread() {
     m_SimulationTime += (m_DeltaTime);
     if (Active()) {
       Simulate();
+    } else {
+      LOGV("not active\n");
     }
   }
   m_IsSceneBuilt = true;
