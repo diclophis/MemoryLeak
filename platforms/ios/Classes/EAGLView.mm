@@ -138,11 +138,6 @@ static GLuint g_LastRenderBuffer = -1;
       firstSound->len = len;
       sounds.push_back(firstSound);
     }
-    
-    
-    initAudio2();
-
-
   }
   return self;
 }
@@ -300,6 +295,7 @@ static GLuint g_LastRenderBuffer = -1;
 
 -(void)startGame:(id)i {
   Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, textures, models, levels, sounds, NULL);
+  initAudio2();
 }
 
 
