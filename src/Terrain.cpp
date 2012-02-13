@@ -204,12 +204,32 @@ void Terrain::ResetHillVertices() {
 }
 
 
-void Terrain::Render() {
+void Terrain::Render(StateFoo *sf) {
+
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  
+	if (rt->name != sf->g_lastTexture) {
+		glBindTexture(GL_TEXTURE_2D, rt->name);
+		sf->g_lastTexture = rt->name;
+	}
+  
+#ifdef HAS_VAO  
+  sf->g_lastVertexArrayObject = -1; 
+  glBindVertexArrayOES(0);
+#else
+
+#endif
+  
+  sf->g_lastInterleavedBuffer = -1;
+  sf->g_lastElementBuffer = -1;
+  
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  
+  
   if (true) {
-    glBindTexture(GL_TEXTURE_2D, rt->name);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
@@ -221,6 +241,8 @@ void Terrain::Render() {
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   }
+  
+  
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);

@@ -19,7 +19,7 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
-static int game_index = 1; 
+static int game_index = 2; 
 
 GLuint loadTexture(NSBitmapImageRep *image) {
   GLuint text = 0;
@@ -79,7 +79,7 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  LOGV("key: %d %c\n", key, key);
+  //LOGV("key: %d %c\n", key, key);
   if (key == 49) {
     if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
@@ -113,7 +113,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else if (key == 115) {
-        LOGV("start new game\n");
+        //LOGV("start new game\n");
         Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
       }
     }

@@ -74,6 +74,8 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
     if (index == MotionEvent.ACTION_POINTER_UP || index == MotionEvent.ACTION_UP || index == MotionEvent.ACTION_CANCEL) {
       nativeTouch(x, y, 2);
+    } else if (index == MotionEvent.ACTION_MOVE) {
+      nativeTouch(x, y, 1);
     } else if (index == MotionEvent.ACTION_POINTER_DOWN || index == MotionEvent.ACTION_DOWN) {
       nativeTouch(x, y, 0);
     }

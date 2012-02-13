@@ -452,7 +452,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DrawScreen(rotation);
   } else {
-    LOGV("foooo man chuuu\n");
+    LOGV("CurrentGameDrawScreen without m_CurrentGame set\n");
   }
 }
 
@@ -461,7 +461,7 @@ void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {
-    LOGV("foooo man chuuu\n");
+    LOGV("CurrentGameDoAudio without m_CurrentGame set\n");
   }
 }
 

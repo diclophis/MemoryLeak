@@ -108,12 +108,9 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 void RadiantFireEightSixOne::RenderSpritePhase() {
   //glTranslatef(m_Terrain->position.x - 128.0, -175.0, 0.0);
   glTranslatef(m_Terrain->position.x, 0.0, 0.0);
-  m_Terrain->Render();
-  
+  m_Terrain->Render(m_StateFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
-  ResetStateFoo();
-  AtlasSprite::ReleaseBuffers();
 }
 
 

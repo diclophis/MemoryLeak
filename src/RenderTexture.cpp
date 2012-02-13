@@ -62,8 +62,8 @@ void RenderTexture::Begin() {
 
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  //glFlush();
-  //glFinish();
+  glFlush();
+  glFinish();
 }
 
 
@@ -72,6 +72,6 @@ void RenderTexture::End() {
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  //glFlush();
-  //glFinish();
+  glFlush();
+  glFinish();
 }

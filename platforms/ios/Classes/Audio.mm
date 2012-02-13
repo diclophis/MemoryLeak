@@ -17,7 +17,8 @@ static AudioComponentInstance audioUnit;
 
 void checkStatus(OSStatus status) {
 	if(status == 0)
-		printf("success");
+		//printf("success");
+    return;
 	else if(status == errSecNotAvailable)
 		printf("no trust results available");
 	else if(status == errSecItemNotFound)

@@ -36,7 +36,7 @@ public:
   float offsetX;
   MLPoint position;
 
-  void Render();
+  void Render(StateFoo *sf);
 
   int m_TextureIndex;
 
