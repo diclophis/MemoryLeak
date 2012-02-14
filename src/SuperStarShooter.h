@@ -46,4 +46,6 @@ public:
   foofoo *m_GridFoo;
   foofoo *m_BatchFoo;
 
+  bool m_Bump;
+
 };
