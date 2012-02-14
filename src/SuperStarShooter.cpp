@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 30
-#define GRID_Y 30
+#define GRID_X 3
+#define GRID_Y 3
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -46,8 +46,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space->set(1, 0, 0, -3);
   m_Space->set(1, 1, 0, -32);
   m_Space->set(2, 2, 0, -40);
+  for (unsigned int i=3; i<30; i++) {
+    m_Space->set(i, i, 0, -40);
+  }
   
-  m_GridCount = GRID_X * GRID_Y;
+  m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
@@ -145,7 +148,7 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  //m_CameraOffsetY += m_DeltaTime * 600.0;
+  m_CameraOffsetY -= m_DeltaTime * 10.0;
   //m_CameraOffsetX += m_DeltaTime * 600.0;
 
   bool print_index = false;
@@ -166,25 +169,25 @@ int SuperStarShooter::Simulate() {
   float dy = -(m_LastCenterY - m_CameraActualOffsetY);
   
   
-  if ((dx) > (SUBDIVIDE)) {
+  if ((dx) >= (SUBDIVIDE)) {
     dir_x = floorf(dx / SUBDIVIDE);
     recenter_dx = dx - SUBDIVIDE;
     recenter_x = true;
   }
   
-  if ((dy) > (SUBDIVIDE)) {
+  if ((dy) >= (SUBDIVIDE)) {
     dir_y = floorf(dy / SUBDIVIDE);
     recenter_dy = dy - SUBDIVIDE;
     recenter_y = true;
   }
   
-  if ((dx) < (-SUBDIVIDE)) {
+  if ((dx) <= (-SUBDIVIDE)) {
     dir_x = -floorf(-dx / SUBDIVIDE);
     recenter_dx = -(-dx - SUBDIVIDE);
     recenter_x = true;
   }
   
-  if ((dy) < (-SUBDIVIDE)) {
+  if ((dy) <= (-SUBDIVIDE)) {
     dir_y = -floorf(-dy / SUBDIVIDE);
     recenter_dy = -(-dy - SUBDIVIDE);
     recenter_y = true;
@@ -202,7 +205,6 @@ int SuperStarShooter::Simulate() {
         m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] + ((SUBDIVIDE * dir_y) + recenter_dy));
         m_LastCenterY = m_CameraActualOffsetY;
       }
-      
       int annotate_index = -12;
       int gx = -1;
       int gy = -1;
@@ -215,6 +217,15 @@ int SuperStarShooter::Simulate() {
         annotate_index = m_Space->at(sx, sy, 0);
       }
       m_AtlasSprites[i]->m_Frame = -annotate_index;
+
+      //if (print_index) {
+      if (i == 4 || i == 7) {
+        LOGV("%d %d\n", i, m_AtlasSprites[i]->m_Frame);
+        if (m_AtlasSprites[i]->m_Frame == 12) {
+          sleep(2);
+        }
+      }
+      //}
     }
   }
   
