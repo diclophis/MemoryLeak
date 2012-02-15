@@ -41,12 +41,7 @@ public:
 
   float m_WarpTimeout;
 
-  float m_DebugTimeout;
-
   foofoo *m_GridFoo;
   foofoo *m_BatchFoo;
-
-  float m_Bump;
-  bool m_Bumped;
 
 };
