@@ -56,22 +56,28 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<m_GridCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_GridFoo, NULL));
+
     float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
     float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
     int sx = (int)floor(px / SUBDIVIDE);
     int sy = (int)floor(py / SUBDIVIDE);
-    m_GridPositions[(i * 2)] = xx;
-    m_GridPositions[(i * 2) + 1] = yy;
+
+    m_GridPositions[(i * 2)] = sx;
+    m_GridPositions[(i * 2) + 1] = sy;
+
     m_AtlasSprites[m_SpriteCount]->SetPosition(px, py);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 0;
+
     if (sx >= 0 && sy >= 0) {
       m_AtlasSprites[m_SpriteCount]->m_Frame = -m_Space->at(sx, sy, 0);
     } else {
       m_AtlasSprites[m_SpriteCount]->m_Frame = 12;
     }
+
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
+
     xx++;
     if (xx >= GRID_X) {
       xx = 0;
@@ -154,14 +160,16 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  //m_CameraOffsetX += m_DeltaTime * -10.0;
-  //m_CameraOffsetY += m_DeltaTime * -10.0;
+  //m_CameraOffsetX += m_DeltaTime * 20.0;
+  //m_CameraOffsetY += m_DeltaTime * 20.0;
 
   m_CameraActualOffsetX = (m_CameraOffsetX);
   m_CameraActualOffsetY = (m_CameraOffsetY);
 
   bool recenter_x = false;
   bool recenter_y = false;
+  int dsx = 0;
+  int dsy = 0;
   float dx = (m_LastCenterX - m_CameraActualOffsetX);
   float dy = (m_LastCenterY - m_CameraActualOffsetY);
   
@@ -181,39 +189,47 @@ int SuperStarShooter::Simulate() {
     m_LastCenterY -= dy; //m_CameraActualOffsetY;
   }
 
-  /*
-  for (unsigned int i=0; i<m_SpriteCount; i++) {
-    m_AtlasSprites[i]->Simulate(m_DeltaTime);
-    if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
+  if (dx > 0) {
+    dsx = 1;
+  } else {
+    dsx = -1;
+  }
 
-      int annotate_index = -12;
+  if (dy > 0) {
+    dsy = 1;
+  } else {
+    dsy = -1;
+  }
 
-      int gx = -1;
-      int gy = -1;
-      IndexToXY(i - m_GridStartIndex, &gx, &gy);
-
-      //if (recenter_x) {
-      //  m_AtlasSprites[i]->m_Position[0] -= dx;
-      //}
-
-      //if (recenter_y) {
-      //  m_AtlasSprites[i]->m_Position[1] -= dy;
-      //}
-
-      float px = m_LastCenterX; //m_AtlasSprites[i]->m_Position[0];
-      float py = m_LastCenterY; //m_AtlasSprites[i]->m_Position[1];
-      int sx = (int)floor(px / SUBDIVIDE);
-      int sy = (int)floor(py / SUBDIVIDE);
-
-      if (sx >= 0 && sy >= 0) {
-        annotate_index = m_Space->at(sx, sy, 0);
+  if ((recenter_x || recenter_y)) {
+    for (unsigned int i=0; i<m_SpriteCount; i++) {
+      if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
+        int annotate_index = -12;
+        int sx = -1;
+        int sy = -1;
+        int nsx = 0;
+        int nsy = 0;
+        IndexToXY(i - m_GridStartIndex, &sx, &sy);
+        nsx = sx;
+        nsy = sy;
+        if (recenter_x) {
+          nsx -= dsx;
+          m_AtlasSprites[i]->m_Position[0] -= ((SUBDIVIDE) * dsx);
+        }
+        if (recenter_y) {
+          nsy -= dsy;
+          m_AtlasSprites[i]->m_Position[1] -= ((SUBDIVIDE) * dsy);
+        }
+        m_GridPositions[(i * 2)] = nsx;
+        m_GridPositions[(i * 2) + 1] = nsy;
+        if (nsx >= 0 && nsy >= 0) {
+          m_AtlasSprites[i]->m_Frame = -m_Space->at(nsx, nsy, 0);
+        } else {
+          m_AtlasSprites[i]->m_Frame = 12;
+        }
       }
-
-      m_AtlasSprites[i]->m_Frame = -annotate_index;
-
     }
   }
-  */
 
   return 1;
 }
