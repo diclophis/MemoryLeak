@@ -151,59 +151,19 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  //if (m_Bumped) {
-  //  m_Bumped = false;
-  //  m_Bump += 1.0;
-  //}
-
-  m_CameraActualOffsetX = (m_CameraOffsetX);
-  m_CameraActualOffsetY = (m_CameraOffsetY);
-
-  //m_CameraOffsetY -= m_DeltaTime * 5.0;
-  //m_CameraOffsetX += m_DeltaTime * 600.0;
-
-  
-  //bool print_index = false;
-  //if (m_DebugTimeout > 2.0) {
-  //  m_DebugTimeout = 0.0;
-  //  print_index = true;
-  //}
-
-  //m_DebugTimeout += m_DeltaTime;
-
   bool recenter_x = false;
   bool recenter_y = false;
-  //float dir_x = 0.0;
-  //float dir_y = 0.0;
-  //float recenter_dx = 0.0;
-  //float recenter_dy = 0.0;
-  float dx = (m_LastCenterX - m_CameraActualOffsetX);
-  float dy = (m_LastCenterY - m_CameraActualOffsetY);
+  float dx = fastAbs(m_LastCenterX - m_CameraActualOffsetX);
+  float dy = fastAbs(m_LastCenterY - m_CameraActualOffsetY);
   
-  if ((dx) >= (SUBDIVIDE)) {
-    //dir_x = floorf(dx / SUBDIVIDE);
-    //recenter_dx = dx - SUBDIVIDE;
+  if ((dx) > (SUBDIVIDE)) {
     recenter_x = true;
   }
   
-  if ((dy) >= (SUBDIVIDE)) {
-    //dir_y = floorf(dy / SUBDIVIDE);
-    //recenter_dy = dy - SUBDIVIDE;
+  if ((dy) > (SUBDIVIDE)) {
     recenter_y = true;
   }
   
-  if ((dx) <= (-SUBDIVIDE)) {
-    //dir_x = -floorf(-dx / SUBDIVIDE);
-    //recenter_dx = -(-dx - SUBDIVIDE);
-    recenter_x = true;
-  }
-  
-  if ((dy) <= (-SUBDIVIDE)) {
-    //dir_y = -floorf(-dy / SUBDIVIDE);
-    //recenter_dy = -(-dy - SUBDIVIDE);
-    recenter_y = true;
-  }
-
   if (recenter_x) {
     m_LastCenterX = m_CameraActualOffsetX;     
   }
@@ -216,7 +176,6 @@ int SuperStarShooter::Simulate() {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
 
-
       int annotate_index = -12;
       int gx = -1;
       int gy = -1;
@@ -226,42 +185,27 @@ int SuperStarShooter::Simulate() {
       float ny = m_LastCenterY + (gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
 
       if (recenter_x) {
-        //m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0] - dx, m_AtlasSprites[i]->m_Position[1]);
-        m_AtlasSprites[i]->SetPosition(nx, m_AtlasSprites[i]->m_Position[1]);
-      }
-      
-      if (recenter_y) {
-        //m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] - dy);
-        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], ny);
+        m_AtlasSprites[i]->m_Position[0] = nx;
       }
 
-      //m_AtlasSprites[i]->SetPosition(nx, ny);
+      if (recenter_y) {
+        m_AtlasSprites[i]->m_Position[1] = ny;
+      }
 
       float px = m_AtlasSprites[i]->m_Position[0];
-      //m_CameraActualOffsetX + (gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
       float py = m_AtlasSprites[i]->m_Position[1];
-      //m_CameraActualOffsetY + (gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
-      int sx = floor(px / SUBDIVIDE);
-      int sy = floor(py / SUBDIVIDE);
+      int sx = (int)floor(px / SUBDIVIDE);
+      int sy = (int)floor(py / SUBDIVIDE);
       if (sx >= 0 && sy >= 0) {
         annotate_index = m_Space->at(sx, sy, 0);
       }
       m_AtlasSprites[i]->m_Frame = -annotate_index;
 
-      /*
-      //if (print_index) {
-      if (i == 4 || i == 7) {
-        if (recenter_y || recenter_x) {
-          LOGV("%d %f %f %d %d %f\n", recenter_y, dy, dir_y, i, m_AtlasSprites[i]->m_Frame, recenter_dy);
-        }
-        if (m_AtlasSprites[i]->m_Frame == 12) {
-          //sleep(2);
-        }
-      }
-      //}
-      */
     }
   }
+
+  m_CameraActualOffsetX = (m_CameraOffsetX);
+  m_CameraActualOffsetY = (m_CameraOffsetY);
 
   return 1;
 }
