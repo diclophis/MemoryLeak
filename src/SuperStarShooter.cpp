@@ -196,8 +196,8 @@ int SuperStarShooter::Simulate() {
       //  m_AtlasSprites[i]->m_Position[1] = ny;
       }
 
-      float px = m_AtlasSprites[i]->m_Position[0];
-      float py = m_AtlasSprites[i]->m_Position[1];
+      float px = m_AtlasSprites[i]->m_Position[0] + (SUBDIVIDE / 2.0);
+      float py = m_AtlasSprites[i]->m_Position[1] + (SUBDIVIDE / 2.0);
       int sx = (int)floor(px / SUBDIVIDE);
       int sy = (int)floor(py / SUBDIVIDE);
 
