@@ -16,14 +16,13 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 3
-#define GRID_Y 3
+#define GRID_X 7
+#define GRID_Y 7
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
-
 
   int xx = 0;
   int yy = 0;
@@ -35,6 +34,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Zoom = 1.0;
 
   LoadSound(3);
+
   m_IsPushingAudio = true;
 
 	m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
@@ -63,7 +63,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites[m_SpriteCount]->SetPosition((xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE), (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 0;
-    m_AtlasSprites[m_SpriteCount]->m_Frame = 1; //(m_SpriteCount - (m_GridStartIndex)) % 64;
+    m_AtlasSprites[m_SpriteCount]->m_Frame = 1;
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     xx++;
@@ -76,6 +76,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridStopIndex = m_SpriteCount;
 
   m_WarpTimeout = 0.0;
+  m_Bumped = false;
+  m_Bump = 0.0;
 }
 
 
@@ -125,14 +127,13 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   }
   */
   if (hitState == 0) {
-    m_Bump = true;
 
-    //m_CameraStopOffsetX = (xx + m_CameraOffsetX);
-    //m_CameraStopOffsetY = (yy + m_CameraOffsetY);
+    m_CameraStopOffsetX = (xx + m_CameraOffsetX);
+    m_CameraStopOffsetY = (yy + m_CameraOffsetY);
   }
   if (hitState == 1) {
-    //m_CameraOffsetX = m_CameraStopOffsetX - xx;
-    //m_CameraOffsetY = m_CameraStopOffsetY -yy;
+    m_CameraOffsetX = m_CameraStopOffsetX - xx;
+    m_CameraOffsetY = m_CameraStopOffsetY -yy;
   }
 }
 
@@ -142,7 +143,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  //glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
+  glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
@@ -150,29 +151,34 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  //m_CameraActualOffsetX = (m_CameraOffsetX);
-  //m_CameraActualOffsetY = (m_CameraOffsetY);
+  //if (m_Bumped) {
+  //  m_Bumped = false;
+  //  m_Bump += 1.0;
+  //}
 
-  //m_CameraOffsetY -= m_DeltaTime * 10.0;
+  m_CameraActualOffsetX = (m_CameraOffsetX);
+  m_CameraActualOffsetY = (m_CameraOffsetY);
+
+  //m_CameraOffsetY -= m_DeltaTime * 5.0;
   //m_CameraOffsetX += m_DeltaTime * 600.0;
 
-  bool print_index = false;
-  if (m_DebugTimeout > 2.0) {
-    m_DebugTimeout = 0.0;
-    print_index = true;
-  }
+  
+  //bool print_index = false;
+  //if (m_DebugTimeout > 2.0) {
+  //  m_DebugTimeout = 0.0;
+  //  print_index = true;
+  //}
 
-  m_DebugTimeout += m_DeltaTime;
+  //m_DebugTimeout += m_DeltaTime;
 
   bool recenter_x = false;
   bool recenter_y = false;
-  float dir_x = 0.0;
-  float dir_y = 0.0;
-  float recenter_dx = 0.0;
-  float recenter_dy = 0.0;
-  float dx = -(m_LastCenterX - m_CameraActualOffsetX);
-  float dy = -(m_LastCenterY - m_CameraActualOffsetY);
-  
+  //float dir_x = 0.0;
+  //float dir_y = 0.0;
+  //float recenter_dx = 0.0;
+  //float recenter_dy = 0.0;
+  float dx = (m_LastCenterX - m_CameraActualOffsetX);
+  float dy = (m_LastCenterY - m_CameraActualOffsetY);
   
   if ((dx) >= (SUBDIVIDE)) {
     //dir_x = floorf(dx / SUBDIVIDE);
@@ -209,25 +215,32 @@ int SuperStarShooter::Simulate() {
   for (unsigned int i=0; i<m_SpriteCount; i++) {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
-      /*
-      if (recenter_x) {
-        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0] + dx, m_AtlasSprites[i]->m_Position[1]);
-      }
-      
-      if (recenter_y) {
-        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] + dy + (-SUBDIVIDE));
-      }
-      */
-      if (m_Bump) {
-        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] + 1.0);
-      }
+
 
       int annotate_index = -12;
       int gx = -1;
       int gy = -1;
       IndexToXY(i - m_GridStartIndex, &gx, &gy);
-      float px = m_CameraActualOffsetX + (gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
-      float py = m_CameraActualOffsetY + (gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+
+      float nx = m_LastCenterX + (gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+      float ny = m_LastCenterY + (gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+
+      if (recenter_x) {
+        //m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0] - dx, m_AtlasSprites[i]->m_Position[1]);
+        m_AtlasSprites[i]->SetPosition(nx, m_AtlasSprites[i]->m_Position[1]);
+      }
+      
+      if (recenter_y) {
+        //m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], m_AtlasSprites[i]->m_Position[1] - dy);
+        m_AtlasSprites[i]->SetPosition(m_AtlasSprites[i]->m_Position[0], ny);
+      }
+
+      //m_AtlasSprites[i]->SetPosition(nx, ny);
+
+      float px = m_AtlasSprites[i]->m_Position[0];
+      //m_CameraActualOffsetX + (gx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+      float py = m_AtlasSprites[i]->m_Position[1];
+      //m_CameraActualOffsetY + (gy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
       int sx = floor(px / SUBDIVIDE);
       int sy = floor(py / SUBDIVIDE);
       if (sx >= 0 && sy >= 0) {
@@ -235,7 +248,7 @@ int SuperStarShooter::Simulate() {
       }
       m_AtlasSprites[i]->m_Frame = -annotate_index;
 
-
+      /*
       //if (print_index) {
       if (i == 4 || i == 7) {
         if (recenter_y || recenter_x) {
@@ -246,10 +259,9 @@ int SuperStarShooter::Simulate() {
         }
       }
       //}
+      */
     }
   }
-
-  m_Bump = false;
 
   return 1;
 }
