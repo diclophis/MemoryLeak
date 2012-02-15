@@ -56,12 +56,20 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<m_GridCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_GridFoo, NULL));
+    float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+    float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+    int sx = (int)floor(px / SUBDIVIDE);
+    int sy = (int)floor(py / SUBDIVIDE);
     m_GridPositions[(i * 2)] = xx;
     m_GridPositions[(i * 2) + 1] = yy;
-    m_AtlasSprites[m_SpriteCount]->SetPosition((xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE), (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
+    m_AtlasSprites[m_SpriteCount]->SetPosition(px, py);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 0;
-    m_AtlasSprites[m_SpriteCount]->m_Frame = 1;
+    if (sx >= 0 && sy >= 0) {
+      m_AtlasSprites[m_SpriteCount]->m_Frame = -m_Space->at(sx, sy, 0);
+    } else {
+      m_AtlasSprites[m_SpriteCount]->m_Frame = 12;
+    }
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     xx++;
@@ -173,6 +181,7 @@ int SuperStarShooter::Simulate() {
     m_LastCenterY -= dy; //m_CameraActualOffsetY;
   }
 
+  /*
   for (unsigned int i=0; i<m_SpriteCount; i++) {
     m_AtlasSprites[i]->Simulate(m_DeltaTime);
     if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
@@ -183,15 +192,13 @@ int SuperStarShooter::Simulate() {
       int gy = -1;
       IndexToXY(i - m_GridStartIndex, &gx, &gy);
 
-/*
-      if (recenter_x) {
-        m_AtlasSprites[i]->m_Position[0] -= dx;
-      }
+      //if (recenter_x) {
+      //  m_AtlasSprites[i]->m_Position[0] -= dx;
+      //}
 
-      if (recenter_y) {
-        m_AtlasSprites[i]->m_Position[1] -= dy;
-      }
-*/
+      //if (recenter_y) {
+      //  m_AtlasSprites[i]->m_Position[1] -= dy;
+      //}
 
       float px = m_LastCenterX; //m_AtlasSprites[i]->m_Position[0];
       float py = m_LastCenterY; //m_AtlasSprites[i]->m_Position[1];
@@ -206,6 +213,7 @@ int SuperStarShooter::Simulate() {
 
     }
   }
+  */
 
   return 1;
 }
