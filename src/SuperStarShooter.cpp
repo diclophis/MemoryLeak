@@ -160,7 +160,7 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  //m_CameraOffsetX += m_DeltaTime * 20.0;
+  //m_CameraOffsetX += m_DeltaTime * 1000.0;
   //m_CameraOffsetY += m_DeltaTime * 20.0;
 
   m_CameraActualOffsetX = (m_CameraOffsetX);
@@ -182,24 +182,15 @@ int SuperStarShooter::Simulate() {
   }
 
   if (recenter_x) {
-    m_LastCenterX -= dx; //m_CameraActualOffsetX;     
+    m_LastCenterX -= dx;
   }
 
   if (recenter_y) {
-    m_LastCenterY -= dy; //m_CameraActualOffsetY;
+    m_LastCenterY -= dy;
   }
 
-  if (dx > 0) {
-    dsx = 1;
-  } else {
-    dsx = -1;
-  }
-
-  if (dy > 0) {
-    dsy = 1;
-  } else {
-    dsy = -1;
-  }
+  dsx = (dx / SUBDIVIDE);
+  dsy = (dy / SUBDIVIDE);
 
   if ((recenter_x || recenter_y)) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
@@ -213,12 +204,13 @@ int SuperStarShooter::Simulate() {
         nsx = sx;
         nsy = sy;
         if (recenter_x) {
+          //LOGV("dsx: %f %d\n", dx, dsx);
           nsx -= dsx;
-          m_AtlasSprites[i]->m_Position[0] -= ((SUBDIVIDE) * dsx);
+          m_AtlasSprites[i]->m_Position[0] -= dx; //((SUBDIVIDE) * dsx);
         }
         if (recenter_y) {
           nsy -= dsy;
-          m_AtlasSprites[i]->m_Position[1] -= ((SUBDIVIDE) * dsy);
+          m_AtlasSprites[i]->m_Position[1] -= dy; //((SUBDIVIDE) * dsy);
         }
         m_GridPositions[(i * 2)] = nsx;
         m_GridPositions[(i * 2) + 1] = nsy;
@@ -230,6 +222,7 @@ int SuperStarShooter::Simulate() {
       }
     }
   }
+
 
   return 1;
 }
