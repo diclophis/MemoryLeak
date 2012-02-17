@@ -120,7 +120,7 @@ static GLuint g_LastRenderBuffer = -1;
     for (NSString *path in texture_names) {
       NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
       UIImage *image = [[UIImage alloc] initWithData:texData];
-      textures.push_back([self loadTexture:image]);
+      textures.push_back([self loadTexture2:image]);
       [image release];
       [texData release];
     }
@@ -247,6 +247,76 @@ static GLuint g_LastRenderBuffer = -1;
 	glDisable(GL_TEXTURE_2D);
 	return text;
 }
+
+- (GLuint)loadTexture2:(UIImage *)image {
+  unsigned int* inPixel32;
+  unsigned short* outPixel16;
+
+	GLuint text = 0;
+
+  CGImageRef textureImage = image.CGImage;
+  CGColorSpaceRef colorSpace;
+  
+  GLuint textureWidth = CGImageGetWidth(textureImage);
+  GLuint textureHeight = CGImageGetHeight(textureImage);
+
+  //GLuint imageSizeX = CGImageGetWidth(textureImage);
+  //GLuint imageSizeY = CGImageGetHeight(textureImage);
+
+  //void *textureData = (void *)calloc(1,textureWidth * textureHeight * 4); // Por 4 pues cada pixel necesita 4 bytes, RGBA
+  //CGContextRef textureContext = CGBitmapContextCreate(textureData, textureWidth,textureHeight, 8, textureWidth * 4,CGImageGetColorSpace(textureImage),kCGImageAlphaPremultipliedLast);
+
+  colorSpace = CGColorSpaceCreateDeviceRGB();
+  void *textureData = malloc(textureWidth * textureHeight * 4);
+  CGContextRef textureContext = CGBitmapContextCreate(textureData, textureWidth, textureHeight, 8, 4 * textureWidth, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+  CGColorSpaceRelease(colorSpace);
+
+  //CGContextDrawImage(textureContext, CGRectMake(0.0, 0.0, (float)textureWidth, (float)textureHeight), textureImage);
+  CGContextDrawImage(textureContext, CGRectMake(0, 0, (float)textureWidth, (float)textureHeight), textureImage);
+
+
+  /*
+  //Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
+  void *tempData = malloc(textureWidth * textureHeight * 2);
+  unsigned int* inPixel32 = (unsigned int*)textureData;
+  unsigned short* outPixel16 = (unsigned short*)tempData;
+  //for(int i = 0; i < textureWidth * textureHeight ; ++i, ++inPixel32)
+  for(int i = 0; i < textureWidth * textureHeight; i++) {
+    outPixel16[i] = (inPixel32[i] >> 4  & 0xF) | (inPixel32[i] >> 12 & 0xF) | (inPixel32[i] >> 20 & 0xF) | (inPixel32[i] >> 28 & 0xF);
+  }
+
+  free(textureData);
+  textureData = tempData;
+  */
+
+  void *tempData = malloc(textureHeight * textureWidth * 2);
+  inPixel32 = (unsigned int*)textureData;
+  outPixel16 = (unsigned short*)tempData;
+  for(unsigned int i = 0; i < textureWidth * textureHeight; ++i, ++inPixel32) {
+    *outPixel16++ = ((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | ((((*inPixel32 >> 8) & 0xFF) >> 4) << 8) | ((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | ((((*inPixel32 >> 24) & 0xFF) >> 4) << 0);
+  }
+  free(textureData);
+  textureData = tempData;
+
+  CGContextRelease(textureContext);
+
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &text);
+	glBindTexture(GL_TEXTURE_2D, text);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, textureData);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+
+  free(textureData);
+	return text;
+
+}
+
 
 
 

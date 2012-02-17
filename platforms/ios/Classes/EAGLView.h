@@ -46,6 +46,7 @@
 -(void)startGame:(id)i;
 -(BOOL)wasActive;
 -(GLuint)loadTexture:(UIImage *)image;
+-(GLuint)loadTexture2:(UIImage *)image;
 
 
 @end

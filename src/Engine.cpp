@@ -261,8 +261,8 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo
 void Engine::ResizeScreen(int width, int height) {
   m_ScreenWidth = width;
   m_ScreenHeight = height;
-	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
-	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
+  m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
+  m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   glClearColor(0.0, 0.0, 0.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
