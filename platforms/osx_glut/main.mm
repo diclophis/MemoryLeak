@@ -115,6 +115,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
       } else if (key == 115) {
         //LOGV("start new game\n");
         Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+      } else {
+        //glutEnterGameMode();
       }
     }
     reset_down = !reset_down;
@@ -128,6 +130,7 @@ int main(int argc, char** argv) {
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
+  //glutGameModeString("1440×900:32@60");
   glutCreateWindow("main");
   glutDisplayFunc(draw);
   glutKeyboardFunc(processNormalKeys);

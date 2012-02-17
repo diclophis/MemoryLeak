@@ -31,7 +31,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_Zoom = 1.0;
 
-  LoadSound(3);
+  LoadSound(0);
 
   m_IsPushingAudio = true;
 
@@ -44,6 +44,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space->set(1, 0, 0, -3);
   m_Space->set(1, 1, 0, -32);
   m_Space->set(2, 2, 0, -40);
+  m_Space->set(10, 15, 0, -30);
   for (unsigned int i=3; i<30; i++) {
     m_Space->set(i, i, 0, -40);
   }
@@ -162,6 +163,9 @@ int SuperStarShooter::Simulate() {
 
   //m_CameraOffsetX += m_DeltaTime * 1000.0;
   //m_CameraOffsetY += m_DeltaTime * 20.0;
+
+  //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
+  //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
 
   m_CameraActualOffsetX = (m_CameraOffsetX);
   m_CameraActualOffsetY = (m_CameraOffsetY);
