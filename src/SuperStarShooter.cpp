@@ -88,6 +88,17 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   }
   m_GridStopIndex = m_SpriteCount;
 
+  m_PlayerIndex = m_SpriteCount;
+  m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 0.0);
+  m_AtlasSprites[m_PlayerIndex]->m_IsAlive = false;
+  m_AtlasSprites[m_PlayerIndex]->m_Fps = 0;
+  m_AtlasSprites[m_PlayerIndex]->m_Frame = 0;
+  m_AtlasSprites[m_PlayerIndex]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
+  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = SUBDIVIDE;
+  m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_SpriteCount++;
+
   m_WarpTimeout = 0.0;
 }
 
@@ -103,7 +114,8 @@ void SuperStarShooter::CreateFoos() {
   LOGV("SuperStarShooter::CreateFoos\n");
   ResetStateFoo();
   m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 0, 64, 0.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), m_GridCount);
+  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 0, 1, 0.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), m_GridCount + 1);
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
@@ -116,6 +128,7 @@ void SuperStarShooter::DestroyFoos() {
   LOGV("SuperStarShooter::DestroyFoos\n");
   delete m_GridFoo;
   delete m_BatchFoo;
+  delete m_PlayerFoo;
 }
 
 
@@ -155,6 +168,7 @@ void SuperStarShooter::RenderModelPhase() {
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
@@ -166,6 +180,7 @@ int SuperStarShooter::Simulate() {
 
   //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
   //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
+  m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
 
   m_CameraActualOffsetX = (m_CameraOffsetX);
   m_CameraActualOffsetY = (m_CameraOffsetY);
@@ -198,7 +213,7 @@ int SuperStarShooter::Simulate() {
 
   if ((recenter_x || recenter_y)) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
-      if (i >= m_GridStartIndex && i <= m_GridStopIndex) {
+      if (i >= m_GridStartIndex && i < m_GridStopIndex) {
         int annotate_index = -12;
         int sx = -1;
         int sy = -1;
@@ -227,6 +242,9 @@ int SuperStarShooter::Simulate() {
     }
   }
 
+  if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
+    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
+  }
 
   return 1;
 }

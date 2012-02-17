@@ -41,7 +41,10 @@ public:
 
   float m_WarpTimeout;
 
+  int m_PlayerIndex;
+
   foofoo *m_GridFoo;
   foofoo *m_BatchFoo;
+  foofoo *m_PlayerFoo;
 
 };

@@ -18,6 +18,7 @@ AtlasSprite::~AtlasSprite() {
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
+  delete m_TargetPosition;
 }
 
 
@@ -27,6 +28,10 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
 	m_Position = new float[2];
 	m_Velocity = new float[2];
 	m_Scale = new float[2];
+	m_TargetPosition = new float[2];
+
+  m_TargetPosition[0] = 0.0;
+  m_TargetPosition[1] = 0.0;
 	m_Scale[0] = 1.0;
 	m_Scale[1] = 1.0;
 	m_Position[0] = 0.0;
@@ -310,4 +315,27 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
   ff->m_SpriteFoos = sprite_foos;
 
   return ff;
+}
+
+
+bool AtlasSprite::MoveToTargetPosition(float dt) {
+	float dx = m_Position[0] - m_TargetPosition[0];
+	float dy = m_Position[1] - m_TargetPosition[1];
+	float tx = 0.0;
+	float ty = 0.0;
+	bool done = false;
+	if ((fabs(dx) > 1.0) || (fabs(dy) > 1.0)) {
+		tx = -((dx) * dt * 5.0);
+		ty = -((dy) * dt * 5.0);
+		done = false;
+	} else {
+		tx = -dx;
+		ty = -dy;
+		m_Velocity[0] = 0;
+		m_Velocity[1] = 0;
+		done = true;
+	}
+	m_Position[0] += tx;
+	m_Position[1] += ty;
+  return done;
 }
