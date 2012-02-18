@@ -239,7 +239,7 @@ namespace {
 #ifndef _iPhoneVersion
         glPushAttrib (GL_ENABLE_BIT);
 #else
-	//	glGetBooleanv(GL_CULL_FACE, &cullState);
+		glGetBooleanv(GL_CULL_FACE, &cullState);
 #endif
         glDisable (GL_CULL_FACE);
     }
@@ -250,10 +250,10 @@ namespace {
 #ifndef _iPhoneVersion		
         glPopAttrib ();
 #else 
-	//	if(cullState)
+		if(cullState)
 			glEnable(GL_CULL_FACE);
-	//	else
-	//		glDisable(GL_CULL_FACE);
+		else
+			glDisable(GL_CULL_FACE);
 #endif
     }
 

@@ -299,9 +299,9 @@ OpenSteer::SimpleVehicle::annotationVelocityAcceleration (float maxLengthA,
                                                           float maxLengthV)
 {
     const float desat = 0.4f;
-    const float aScale = maxLengthA / maxForce ();
-    const float vScale = maxLengthV / maxSpeed ();
-    const Vec3& p = position();
+    //const float aScale = maxLengthA / maxForce ();
+    //const float vScale = maxLengthV / maxSpeed ();
+    //const Vec3& p = position();
     const Color aColor (desat, desat, 1); // bluish
     const Color vColor (    1, desat, 1); // pinkish
 

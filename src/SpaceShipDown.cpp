@@ -553,8 +553,8 @@ void SpaceShipDown::CreatePickupJoints() {
 
 
 void SpaceShipDown::CreateLandscape() {
-  float m_WorldWidthInPixels = m_WorldWidth * 2.0;
-  float m_WorldHeightInPixels = m_WorldHeight * 2.0;
+  //float m_WorldWidthInPixels = m_WorldWidth * 2.0;
+  //float m_WorldHeightInPixels = m_WorldHeight * 2.0;
 
   m_LandscapeIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_LandscapeFoo, NULL));
@@ -764,7 +764,8 @@ int SpaceShipDown::Simulate() {
             m_PollJointDef->bodyA = bodyA;
             m_PollJointDef->bodyB = bodyB;
             m_PollJointDef->localAxisA.Set(0.0f, 1.0f);
-            (b2PrismaticJointDef *)world->CreateJoint(m_PollJointDef);
+            b2PrismaticJointDef *uneeded = (b2PrismaticJointDef *)world->CreateJoint(m_PollJointDef);
+            uneeded = NULL;
             if (m_RequiredPartIndex == m_SpaceShipPartsStartIndex) {
               m_RequiredPartIndex += 2;
             } else if (m_RequiredPartIndex == m_SpaceShipPartsStopIndex - 1) {
@@ -1173,8 +1174,8 @@ Vec3 EnemyVehicle::steerToEvadeAllOtherEnemies (void) {
 			// steering to flee from eFuture (enemy's future position)
 			const Vec3 flee = xxxsteerForFlee (eFuture);
 			
-			const float eForwardDistance = forward().dot (eOffset);
-			const float behindThreshold = radius() * -50.0;
+			//const float eForwardDistance = forward().dot (eOffset);
+			//const float behindThreshold = radius() * -50.0;
 			
 			const float distanceWeight = 0.1; //1 / eDistance;
 			const float forwardWeight = 1.0; //((eForwardDistance > behindThreshold) ? 1.0f : 0.5f);
