@@ -325,8 +325,8 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	float ty = 0.0;
 	bool done = false;
 	if ((fabs(dx) > 1.0) || (fabs(dy) > 1.0)) {
-		tx = -((dx) * dt * 0.1);
-		ty = -((dy) * dt * 0.1);
+		tx = -((dx) * dt * 10.0);
+		ty = -((dy) * dt * 10.0);
 		done = false;
 	} else {
 		tx = -dx;

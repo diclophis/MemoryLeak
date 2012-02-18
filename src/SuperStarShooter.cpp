@@ -186,12 +186,38 @@ int SuperStarShooter::Simulate() {
   //m_CameraActualOffsetX = (m_CameraOffsetX);
   //m_CameraActualOffsetY = (m_CameraOffsetY);
 
+  float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
+  float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
+
+  /*
+  if (tx > 20.0) {
+    tx = 20.0;
+  }
+  if (tx < -20.0) {
+    tx = -20.0;
+  }
+
+  if (ty > 20.0) {
+    ty = 20.0;
+  }
+  if (ty < -20.0) {
+    ty = -20.0;
+  }
+  */
+
+  m_CameraActualOffsetX += -(tx * m_DeltaTime * 1.0);
+  m_CameraActualOffsetY += -(ty * m_DeltaTime * 1.0);
+
+  //LOGV("tx: %f act: %f\n", tx, m_CameraActualOffsetX);
+
   bool recenter_x = false;
   bool recenter_y = false;
   int dsx = 0;
   int dsy = 0;
   float dx = (m_LastCenterX - m_CameraActualOffsetX);
   float dy = (m_LastCenterY - m_CameraActualOffsetY);
+
+  //LOGV("dx: %f\n", dx);
   
   if (fastAbs(dx) >= (SUBDIVIDE)) {
     recenter_x = true;
@@ -212,7 +238,7 @@ int SuperStarShooter::Simulate() {
     m_LastCenterY -= dy; //(dsy * SUBDIVIDE);
   }
 
-  if (false && (recenter_x || recenter_y)) {
+  if (true && (recenter_x || recenter_y)) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
       if (i >= m_GridStartIndex && i < m_GridStopIndex) {
         int sx = -1;
@@ -246,9 +272,9 @@ int SuperStarShooter::Simulate() {
 
   //m_AtlasSprites[m_PlayerIndex]->m_Position[1] -= dy;
   
-  //if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
-  //  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
-  //}
+  if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
+    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
+  }
 
 
   return 1;
