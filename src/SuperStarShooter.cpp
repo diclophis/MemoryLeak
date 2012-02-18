@@ -245,11 +245,11 @@ int SuperStarShooter::Simulate() {
 
         if (recenter_x) {
           nsx -= dsx;
-          m_AtlasSprites[i]->m_Position[0] -= dx + mx;
+          m_AtlasSprites[i]->m_Position[0] = m_LastCenterX + px;
         }
         if (recenter_y) {
           nsy -= dsy;
-          m_AtlasSprites[i]->m_Position[1] -= dy + my;
+          m_AtlasSprites[i]->m_Position[1] = m_LastCenterY + py;
         }
         m_GridPositions[(i * 2)] = nsx;
         m_GridPositions[(i * 2) + 1] = nsy;
@@ -258,6 +258,11 @@ int SuperStarShooter::Simulate() {
         } else {
           m_AtlasSprites[i]->m_Frame = 12;
         }
+      }
+      xx++;
+      if (xx >= GRID_X) {
+        xx = 0;
+        yy++;
       }
     }
   }
