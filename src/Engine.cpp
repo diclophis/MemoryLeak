@@ -192,7 +192,7 @@ int Engine::RunThread() {
   m_DeltaTime = t2 - t1;
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  if (m_DeltaTime > 0.07) {
+  if (m_DeltaTime > 0.3) {
     LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
   } else {
     if (m_GameState > 1) {
