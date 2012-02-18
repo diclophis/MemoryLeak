@@ -1072,7 +1072,7 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_TEXTURE_2D);
   } else {
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
 
     //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1, m_SecondBatchFoo);
     //RenderSpriteRange(m_DropZonesStartIndex, m_DropZonesStopIndex, m_BatchFoo);
@@ -1084,7 +1084,7 @@ void SpaceShipDown::RenderSpritePhase() {
     AtlasSprite::RenderFoo(m_StateFoo, m_SecondBatchFoo);
     AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 
-    glDisable(GL_BLEND);
+    //glDisable(GL_BLEND);
   }
 }
 

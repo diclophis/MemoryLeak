@@ -70,6 +70,8 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
 
 void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -123,7 +125,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  if (true) {
+  if (false) {
     glDisable(GL_TEXTURE_2D);
     glPointSize(2.0);
     glColor4f(0.0, 1.0, 0.0, 1.0);
@@ -137,6 +139,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
+  glDisable(GL_BLEND);
 }
 
 

@@ -182,8 +182,8 @@ int SuperStarShooter::Simulate() {
 
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
-  float mx = (tx * m_DeltaTime * 10.0);
-  float my = (ty * m_DeltaTime * 10.0);
+  float mx = (tx * m_DeltaTime * 5.0);
+  float my = (ty * m_DeltaTime * 5.0);
 
   /*
   float length = mx * mx + my * my;
