@@ -180,10 +180,11 @@ int SuperStarShooter::Simulate() {
   //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
   //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
 
-  m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  //m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  //LOGV("%f %f %f\n", m_CameraOffsetX, m_CameraActualOffsetX, m_LastCenterX);
 
-  m_CameraActualOffsetX = (m_CameraOffsetX);
-  m_CameraActualOffsetY = (m_CameraOffsetY);
+  //m_CameraActualOffsetX = (m_CameraOffsetX);
+  //m_CameraActualOffsetY = (m_CameraOffsetY);
 
   bool recenter_x = false;
   bool recenter_y = false;
@@ -204,14 +205,14 @@ int SuperStarShooter::Simulate() {
   dsy = (dy / SUBDIVIDE);
 
   if (recenter_x) {
-    m_LastCenterX -= (dsx * SUBDIVIDE);
+    m_LastCenterX -= dx; //(dsx * SUBDIVIDE);
   }
 
   if (recenter_y) {
-    m_LastCenterY -= (dsy * SUBDIVIDE);
+    m_LastCenterY -= dy; //(dsy * SUBDIVIDE);
   }
 
-  if ((recenter_x || recenter_y)) {
+  if (false && (recenter_x || recenter_y)) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
       if (i >= m_GridStartIndex && i < m_GridStopIndex) {
         int sx = -1;
@@ -223,11 +224,11 @@ int SuperStarShooter::Simulate() {
         nsy = sy;
         if (recenter_x) {
           nsx -= dsx;
-          m_AtlasSprites[i]->m_Position[0] -= dx; //((SUBDIVIDE) * dsx);
+          m_AtlasSprites[i]->m_Position[0] -= dx;
         }
         if (recenter_y) {
           nsy -= dsy;
-          m_AtlasSprites[i]->m_Position[1] -= dy; //((SUBDIVIDE) * dsy);
+          m_AtlasSprites[i]->m_Position[1] -= dy;
         }
         m_GridPositions[(i * 2)] = nsx;
         m_GridPositions[(i * 2) + 1] = nsy;
@@ -240,9 +241,15 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
-    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
-  }
+  //m_AtlasSprites[m_PlayerIndex]->m_Position[0] -= (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
+  //m_AtlasSprites[m_PlayerIndex]->m_Position[1] -= (m_AtlasSprites[m_PlayerIndex]->m_Position[1] - m_CameraActualOffsetY);
+
+  //m_AtlasSprites[m_PlayerIndex]->m_Position[1] -= dy;
+  
+  //if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
+  //  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
+  //}
+
 
   return 1;
 }

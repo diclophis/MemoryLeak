@@ -191,18 +191,16 @@ int Engine::RunThread() {
   m_DeltaTime = t2 - t1;
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  if (m_DeltaTime > 0.6) {
+  if (m_DeltaTime > 0.07) {
     LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
-  }
-  if (m_GameState > 1) {
-    //pthread_mutex_unlock(&m_Mutex);
-    //pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
   } else {
-    m_SimulationTime += (m_DeltaTime);
-    if (Active()) {
-      Simulate();
+    if (m_GameState > 1) {
+      //paused
     } else {
-      LOGV("not active\n");
+      m_SimulationTime += (m_DeltaTime);
+      if (Active()) {
+        Simulate();
+      }
     }
   }
   m_IsSceneBuilt = true;
