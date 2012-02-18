@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 32
-#define GRID_Y 32
+#define GRID_X 15
+#define GRID_Y 15
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -48,7 +48,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space->set(10, 15, 0, -27);
   */
   for (unsigned int i=3; i<30; i++) {
-    m_Space->set(i, i, 0, -28);
+    m_Space->set(i, i, 0, -50);
   }
   
   m_GridCount = (GRID_X * GRID_Y);

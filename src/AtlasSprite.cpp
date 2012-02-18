@@ -71,7 +71,6 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
 void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -328,8 +327,8 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	float ty = 0.0;
 	bool done = false;
 	if ((fabs(dx) > 1.0) || (fabs(dy) > 1.0)) {
-		tx = -((dx) * dt * 3.0);
-		ty = -((dy) * dt * 3.0);
+		tx = -((dx) * dt * 1.0);
+		ty = -((dy) * dt * 1.0);
 		done = false;
 	} else {
 		tx = -dx;
