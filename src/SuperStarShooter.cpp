@@ -106,13 +106,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 5.0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 30.0);
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 6;
   m_AtlasSprites[m_PlayerIndex]->m_Frame = 0;
   m_AtlasSprites[m_PlayerIndex]->SetScale(25.0, 30.0);
   m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = SUBDIVIDE;
-  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 5.0;
+  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 30.0;
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 
