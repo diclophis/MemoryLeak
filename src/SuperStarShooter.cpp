@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 17
-#define GRID_Y 17
+#define GRID_X 64
+#define GRID_Y 64
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -42,15 +42,31 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space = new Octree<int>(32 * 32, BLANK);
 
   for (unsigned int i=0; i<100; i++) {
-    m_Space->set(i * 4, 5, 1, 118);
-    m_Space->set(i * 4, 4, 1, 118 + 16);
-    m_Space->set(i * 4, 3, 1, 118 + 16 + 16);
-    m_Space->set(i * 4, 2, 0, 118 + 16 + 16 + 16);
+    m_Space->set(i, 1, 0, 48);
+    m_Space->set(i, 2, 0, 48);
+    m_Space->set(i, 3, 0, 48);
+    m_Space->set(i, 4, 0, 48);
+    m_Space->set(i, 5, 0, 48);
+    m_Space->set(i, 6, 0, 48);
+    m_Space->set(i, 7, 0, 48);
+    m_Space->set(i, 8, 0, 48);
+    m_Space->set(i, 9, 0, 48);
+  }
 
-    m_Space->set((i * 4) + 2, 3, 1, 118);
-    m_Space->set((i * 4) + 2, 2, 1, 118 + 16);
-    m_Space->set((i * 4) + 2, 1, 1, 118 + 16 + 16);
-    m_Space->set((i * 4) + 2, 0, 0, 118 + 16 + 16 + 16);
+  for (unsigned int i=0; i<100; i++) {
+    m_Space->set(i, 0, 1, 56);
+  }
+
+  for (unsigned int i=0; i<100; i++) {
+    m_Space->set(i * 4, 6, 1, 118);
+    m_Space->set(i * 4, 5, 1, 118 + 16);
+    m_Space->set(i * 4, 4, 1, 118 + 16 + 16);
+    m_Space->set(i * 4, 3, 0, 118 + 16 + 16 + 16);
+
+    m_Space->set((i * 4) + 2, 4, 1, 118);
+    m_Space->set((i * 4) + 2, 3, 1, 118 + 16);
+    m_Space->set((i * 4) + 2, 2, 1, 118 + 16 + 16);
+    m_Space->set((i * 4) + 2, 1, 0, 118 + 16 + 16 + 16);
   }
 
   /*
@@ -60,9 +76,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space->set(2, 2, 0, -28);
   m_Space->set(10, 15, 0, -27);
   */
-  for (unsigned int i=3; i<30; i++) {
-    m_Space->set(i, i, 0, 50);
-  }
+  
+  //for (unsigned int i=3; i<30; i++) {
+    m_Space->set(6, 7, 0, 50);
+  //}
+
   
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -119,13 +137,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 60.0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 130.0);
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 6;
   m_AtlasSprites[m_PlayerIndex]->m_Frame = 0;
   m_AtlasSprites[m_PlayerIndex]->SetScale(25.0, 35.0);
   m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = SUBDIVIDE;
-  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 60.0;
+  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 130.0;
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 
@@ -147,9 +165,10 @@ void SuperStarShooter::CreateFoos() {
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 14, 29, 32, 0.0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(7), (m_GridCount * 2) + 1);
   if (m_SimulationTime > 0.0) {
-    for (unsigned int i=0; i<m_SpriteCount; i++) {
+    for (unsigned int i=m_GridStartIndex; i<m_SecondGridStopIndex; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
     }
+    m_AtlasSprites[m_PlayerIndex]->ResetFoo(m_PlayerFoo, NULL);
   }
 }
 
@@ -210,6 +229,8 @@ int SuperStarShooter::Simulate() {
   //m_CameraOffsetY += m_DeltaTime * 20.0;
   //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
   //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
+
+m_Zoom = 2.0 + fastSinf(m_SimulationTime);
 
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
@@ -302,7 +323,7 @@ int SuperStarShooter::Simulate() {
 
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
     m_WarpTimeout += m_DeltaTime;
-    if (m_WarpTimeout > 1.0) {
+    if (m_WarpTimeout > 0.5) {
       m_WarpTimeout = 0.0;
       m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
     }
