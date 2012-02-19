@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 32
-#define GRID_Y 32
+#define GRID_X 5
+#define GRID_Y 5
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 
@@ -57,8 +57,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   CreateFoos();
 
-  for (unsigned int i=0; i<m_GridCount; i++) {
+  for (unsigned int i=0; i<(m_GridCount * 2); i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_GridFoo, NULL));
+  }
+
+  for (unsigned int i=0; i<m_GridCount; i++) {
 
     float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
     float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
@@ -69,17 +72,24 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_GridPositions[(i * 2) + 1] = sy;
 
     m_AtlasSprites[m_SpriteCount]->SetPosition(px, py);
+    m_AtlasSprites[m_SpriteCount + m_GridCount]->SetPosition(px, py);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
+    m_AtlasSprites[m_SpriteCount + m_GridCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 0;
+    m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Fps = 0;
 
     if (sx >= 0 && sy >= 0) {
       m_AtlasSprites[m_SpriteCount]->m_Frame = -m_Space->at(sx, sy, 0);
+      m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = 51; //-m_Space->at(sx, sy, 1);
     } else {
       m_AtlasSprites[m_SpriteCount]->m_Frame = 64;
+      m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = 51;
     }
 
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
+    m_AtlasSprites[m_SpriteCount + m_GridCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_AtlasSprites[m_SpriteCount + m_GridCount]->Build(0);
 
     xx++;
     if (xx >= GRID_X) {
@@ -88,7 +98,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     }
     m_SpriteCount++;
   }
+
   m_GridStopIndex = m_SpriteCount;
+  m_SecondGridStartIndex = m_GridStopIndex;
+  m_SecondGridStopIndex = m_GridStopIndex + m_GridCount;
+  m_SpriteCount += m_GridCount;
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
@@ -118,7 +132,7 @@ void SuperStarShooter::CreateFoos() {
   ResetStateFoo();
   m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 16, 0, 256, 0.0);
   m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 14, 29, 32, 0.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(7), m_GridCount + 1);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(7), (m_GridCount * 2) + 1);
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
@@ -172,6 +186,7 @@ void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
+  RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
@@ -233,34 +248,36 @@ int SuperStarShooter::Simulate() {
   int yy = 0;
 
   if (true && (recenter_x || recenter_y)) {
-    for (unsigned int i=0; i<m_SpriteCount; i++) {
-      if (i >= m_GridStartIndex && i < m_GridStopIndex) {
-        int sx = -1;
-        int sy = -1;
-        int nsx = 0;
-        int nsy = 0;
-        IndexToXY(i - m_GridStartIndex, &sx, &sy);
-        nsx = sx;
-        nsy = sy;
+    for (unsigned int i=m_GridStartIndex; i<m_GridStopIndex; i++) {
+      int sx = -1;
+      int sy = -1;
+      int nsx = 0;
+      int nsy = 0;
+      IndexToXY(i - m_GridStartIndex, &sx, &sy);
+      nsx = sx;
+      nsy = sy;
 
-        float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
-        float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+      float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+      float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
 
-        if (recenter_x) {
-          nsx -= dsx;
-          m_AtlasSprites[i]->m_Position[0] = m_LastCenterX + px;
-        }
-        if (recenter_y) {
-          nsy -= dsy;
-          m_AtlasSprites[i]->m_Position[1] = m_LastCenterY + py;
-        }
-        m_GridPositions[(i * 2)] = nsx;
-        m_GridPositions[(i * 2) + 1] = nsy;
-        if (nsx >= 0 && nsy >= 0) {
-          m_AtlasSprites[i]->m_Frame = -m_Space->at(nsx, nsy, 0);
-        } else {
-          m_AtlasSprites[i]->m_Frame = 64;
-        }
+      if (recenter_x) {
+        nsx -= dsx;
+        m_AtlasSprites[i]->m_Position[0] = m_LastCenterX + px;
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = m_LastCenterX + px;
+      }
+      if (recenter_y) {
+        nsy -= dsy;
+        m_AtlasSprites[i]->m_Position[1] = m_LastCenterY + py;
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = m_LastCenterY + py;
+      }
+      m_GridPositions[(i * 2)] = nsx;
+      m_GridPositions[(i * 2) + 1] = nsy;
+      if (nsx >= 0 && nsy >= 0) {
+        m_AtlasSprites[i]->m_Frame = -m_Space->at(nsx, nsy, 0);
+        m_AtlasSprites[i + m_GridCount]->m_Frame = 51; //-m_Space->at(nsx, nsy, 1);
+      } else {
+        m_AtlasSprites[i]->m_Frame = 64;
+        m_AtlasSprites[i + m_GridCount]->m_Frame = 51;
       }
       xx++;
       if (xx >= GRID_X) {

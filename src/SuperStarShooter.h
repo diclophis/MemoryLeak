@@ -21,6 +21,8 @@ public:
 
   int m_GridStartIndex;
   int m_GridStopIndex;
+  int m_SecondGridStartIndex;
+  int m_SecondGridStopIndex;
 
   int m_GridCount;
   int *m_GridPositions;
