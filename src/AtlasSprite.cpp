@@ -124,7 +124,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  if (false) {
+  if (true) {
     glDisable(GL_TEXTURE_2D);
     glPointSize(2.0);
     glColor4f(0.0, 1.0, 0.0, 1.0);
@@ -327,8 +327,12 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	float ty = 0.0;
 	bool done = false;
 	if ((fabs(dx) > 1.0) || (fabs(dy) > 1.0)) {
-		tx = -((dx) * dt * 1.0);
-		ty = -((dy) * dt * 1.0);
+    if (dx != 0.0) {
+      tx = -(dt * 50.0 * (dx / fastAbs(dx)));
+    }
+    if (dy != 0.0) {
+      ty = -(dt * 50.0 * (dy / fastAbs(dy)));
+    }
 		done = false;
 	} else {
 		tx = -dx;

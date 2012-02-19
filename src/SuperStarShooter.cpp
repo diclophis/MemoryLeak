@@ -16,10 +16,11 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 5
-#define GRID_Y 5
+#define GRID_X 17
+#define GRID_Y 17
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
+#define BLANK 255
 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
@@ -38,9 +39,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 	m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
-  m_Space = new Octree<int>(32 * 32, -64);
+  m_Space = new Octree<int>(32 * 32, BLANK);
+  m_Space->set(4, 3, 1, 114);
+  m_Space->set(4, 2, 1, 114 + 16);
+  m_Space->set(4, 1, 1, 114 + 16 + 16);
+  m_Space->set(4, 0, 0, 114 + 16 + 16 + 16);
+
   /*
-  m_Space->set(0, 0, 0, -63);
   m_Space->set(0, 1, 0, -63);
   m_Space->set(1, 0, 0, -63);
   m_Space->set(1, 1, 0, -27);
@@ -48,7 +53,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space->set(10, 15, 0, -27);
   */
   for (unsigned int i=3; i<30; i++) {
-    m_Space->set(i, i, 0, -50);
+    m_Space->set(i, i, 0, 50);
   }
   
   m_GridCount = (GRID_X * GRID_Y);
@@ -79,11 +84,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Fps = 0;
 
     if (sx >= 0 && sy >= 0) {
-      m_AtlasSprites[m_SpriteCount]->m_Frame = -m_Space->at(sx, sy, 0);
-      m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = 51; //-m_Space->at(sx, sy, 1);
+      m_AtlasSprites[m_SpriteCount]->m_Frame = m_Space->at(sx, sy, 0);
+      m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = m_Space->at(sx, sy, 1);
     } else {
-      m_AtlasSprites[m_SpriteCount]->m_Frame = 64;
-      m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = 51;
+      m_AtlasSprites[m_SpriteCount]->m_Frame = BLANK;
+      m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = BLANK;
     }
 
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
@@ -106,13 +111,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 30.0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 55.0);
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 6;
   m_AtlasSprites[m_PlayerIndex]->m_Frame = 0;
   m_AtlasSprites[m_PlayerIndex]->SetScale(25.0, 30.0);
   m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = SUBDIVIDE;
-  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 30.0;
+  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 55.0;
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 
@@ -273,11 +278,11 @@ int SuperStarShooter::Simulate() {
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
       if (nsx >= 0 && nsy >= 0) {
-        m_AtlasSprites[i]->m_Frame = -m_Space->at(nsx, nsy, 0);
-        m_AtlasSprites[i + m_GridCount]->m_Frame = 51; //-m_Space->at(nsx, nsy, 1);
+        m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
+        m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
       } else {
-        m_AtlasSprites[i]->m_Frame = 64;
-        m_AtlasSprites[i + m_GridCount]->m_Frame = 51;
+        m_AtlasSprites[i]->m_Frame = BLANK;
+        m_AtlasSprites[i + m_GridCount]->m_Frame = BLANK;
       }
       xx++;
       if (xx >= GRID_X) {
