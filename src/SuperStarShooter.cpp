@@ -40,10 +40,18 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 	m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
   m_Space = new Octree<int>(32 * 32, BLANK);
-  m_Space->set(4, 3, 1, 114);
-  m_Space->set(4, 2, 1, 114 + 16);
-  m_Space->set(4, 1, 1, 114 + 16 + 16);
-  m_Space->set(4, 0, 0, 114 + 16 + 16 + 16);
+
+  for (unsigned int i=0; i<100; i++) {
+    m_Space->set(i * 4, 5, 1, 118);
+    m_Space->set(i * 4, 4, 1, 118 + 16);
+    m_Space->set(i * 4, 3, 1, 118 + 16 + 16);
+    m_Space->set(i * 4, 2, 0, 118 + 16 + 16 + 16);
+
+    m_Space->set((i * 4) + 2, 3, 1, 118);
+    m_Space->set((i * 4) + 2, 2, 1, 118 + 16);
+    m_Space->set((i * 4) + 2, 1, 1, 118 + 16 + 16);
+    m_Space->set((i * 4) + 2, 0, 0, 118 + 16 + 16 + 16);
+  }
 
   /*
   m_Space->set(0, 1, 0, -63);
@@ -111,13 +119,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 55.0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 60.0);
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 6;
   m_AtlasSprites[m_PlayerIndex]->m_Frame = 0;
-  m_AtlasSprites[m_PlayerIndex]->SetScale(25.0, 30.0);
+  m_AtlasSprites[m_PlayerIndex]->SetScale(25.0, 35.0);
   m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = SUBDIVIDE;
-  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 55.0;
+  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 60.0;
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 
