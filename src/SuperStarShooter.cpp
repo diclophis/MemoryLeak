@@ -230,8 +230,6 @@ int SuperStarShooter::Simulate() {
   //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
   //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
 
-m_Zoom = 2.0 + fastSinf(m_SimulationTime);
-
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
   float mx = (tx * m_DeltaTime * 5.0);
