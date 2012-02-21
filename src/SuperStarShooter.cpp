@@ -16,8 +16,8 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 64
-#define GRID_Y 64
+#define GRID_X 17
+#define GRID_Y 17
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -58,15 +58,18 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   }
 
   for (unsigned int i=0; i<100; i++) {
-    m_Space->set(i * 4, 6, 1, 118);
-    m_Space->set(i * 4, 5, 1, 118 + 16);
-    m_Space->set(i * 4, 4, 1, 118 + 16 + 16);
-    m_Space->set(i * 4, 3, 0, 118 + 16 + 16 + 16);
+    int col_top = 68;
+    m_Space->set(i * 4, 7, 1, col_top);
+    m_Space->set(i * 4, 6, 1, col_top + 16);
+    m_Space->set(i * 4, 5, 1, col_top + 16 + 16);
+    m_Space->set(i * 4, 4, 1, col_top + 16 + 16 + 16);
+    m_Space->set(i * 4, 3, 0, col_top + 16 + 16 + 16 + 16);
 
-    m_Space->set((i * 4) + 2, 4, 1, 118);
-    m_Space->set((i * 4) + 2, 3, 1, 118 + 16);
-    m_Space->set((i * 4) + 2, 2, 1, 118 + 16 + 16);
-    m_Space->set((i * 4) + 2, 1, 0, 118 + 16 + 16 + 16);
+    m_Space->set((i * 4) + 2, 5, 1, col_top);
+    m_Space->set((i * 4) + 2, 4, 1, col_top + 16);
+    m_Space->set((i * 4) + 2, 3, 1, col_top + 16 + 16);
+    m_Space->set((i * 4) + 2, 2, 1, col_top + 16 + 16 + 16);
+    m_Space->set((i * 4) + 2, 1, 0, col_top + 16 + 16 + 16 + 16);
   }
 
   /*
@@ -78,7 +81,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   */
   
   //for (unsigned int i=3; i<30; i++) {
-    m_Space->set(6, 7, 0, 50);
+    m_Space->set(6, 7, 0, 11);
   //}
 
   
