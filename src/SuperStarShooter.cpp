@@ -72,19 +72,24 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_Space->set((i * 4) + 2, 1, 0, col_top + 16 + 16 + 16 + 16);
   }
 
-  /*
-  m_Space->set(0, 1, 0, -63);
-  m_Space->set(1, 0, 0, -63);
-  m_Space->set(1, 1, 0, -27);
-  m_Space->set(2, 2, 0, -28);
-  m_Space->set(10, 15, 0, -27);
-  */
-  
-  //for (unsigned int i=3; i<30; i++) {
-    m_Space->set(6, 7, 0, 11);
-  //}
+  m_Space->set(6, 7, 0, 11);
 
-  
+  int start = (250);
+  int wx = 10;
+  int wy = 7;
+  int ox = 0;
+  int oy = 7;
+
+  for (int fy = 0; fy < wy; fy++) {
+    for (int fx = wx; fx >= 0; fx--) {
+    LOGV("%d %d\n", fx, fy);
+      m_Space->set(fx + ox, fy + oy, 1, start);
+      start -= 1;
+    }
+    start -= (16);
+    start += (wx + 1);
+  }
+
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
