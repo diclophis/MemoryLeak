@@ -16,6 +16,7 @@ public:
   void CreateCollider(float x, float y, float r, int f);
   void IndexToXY(int index, int *x, int *y);
   int XYToIndex(int x, int y);
+  void BlitIntoSpace(int layer, int bottom_left_start, int width, int height, int offset_x, int offset_y);
 
 	Octree<int> *m_Space;
 

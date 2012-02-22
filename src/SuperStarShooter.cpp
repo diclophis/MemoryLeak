@@ -42,21 +42,16 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Space = new Octree<int>(32 * 32, BLANK);
 
   for (unsigned int i=0; i<100; i++) {
-    m_Space->set(i, 1, 0, 48);
-    m_Space->set(i, 2, 0, 48);
-    m_Space->set(i, 3, 0, 48);
-    m_Space->set(i, 4, 0, 48);
-    m_Space->set(i, 5, 0, 48);
-    m_Space->set(i, 6, 0, 48);
-    m_Space->set(i, 7, 0, 48);
-    m_Space->set(i, 8, 0, 48);
-    m_Space->set(i, 9, 0, 48);
+    for (unsigned int ii=0; ii<100; ii++) {
+      m_Space->set(i, ii, 0, 51);
+    }
   }
 
-  for (unsigned int i=0; i<100; i++) {
-    m_Space->set(i, 0, 1, 56);
-  }
+  //for (unsigned int i=0; i<100; i++) {
+  //  m_Space->set(i, 0, 1, 56);
+  //}
 
+  /*
   for (unsigned int i=0; i<100; i++) {
     int col_top = 68;
     m_Space->set(i * 4, 7, 1, col_top);
@@ -71,24 +66,38 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_Space->set((i * 4) + 2, 2, 1, col_top + 16 + 16 + 16);
     m_Space->set((i * 4) + 2, 1, 0, col_top + 16 + 16 + 16 + 16);
   }
+  */
 
   m_Space->set(6, 7, 0, 11);
 
-  int start = (250);
-  int wx = 10;
-  int wy = 7;
-  int ox = 0;
-  int oy = 7;
+  BlitIntoSpace(0, 41, 10, 3, 0, 0);
 
-  for (int fy = 0; fy < wy; fy++) {
-    for (int fx = wx; fx >= 0; fx--) {
-    LOGV("%d %d\n", fx, fy);
-      m_Space->set(fx + ox, fy + oy, 1, start);
-      start -= 1;
-    }
-    start -= (16);
-    start += (wx + 1);
-  }
+  int col_top = 68;
+  m_Space->set(0 + 1, 7, 1, col_top);
+  m_Space->set(0 + 1, 6, 1, col_top + 16);
+  m_Space->set(0 + 1, 5, 1, col_top + 16 + 16);
+  m_Space->set(0 + 1, 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(0 + 1, 3, 0, col_top + 16 + 16 + 16 + 16);
+
+  m_Space->set(0 + 3, 7, 1, col_top);
+  m_Space->set(0 + 3, 6, 1, col_top + 16);
+  m_Space->set(0 + 3, 5, 1, col_top + 16 + 16);
+  m_Space->set(0 + 3, 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(0 + 3, 3, 0, col_top + 16 + 16 + 16 + 16);
+
+  m_Space->set(0 + 6, 7, 1, col_top);
+  m_Space->set(0 + 6, 6, 1, col_top + 16);
+  m_Space->set(0 + 6, 5, 1, col_top + 16 + 16);
+  m_Space->set(0 + 6, 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(0 + 6, 3, 0, col_top + 16 + 16 + 16 + 16);
+
+  m_Space->set(0 + 8, 7, 1, col_top);
+  m_Space->set(0 + 8, 6, 1, col_top + 16);
+  m_Space->set(0 + 8, 5, 1, col_top + 16 + 16);
+  m_Space->set(0 + 8, 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(0 + 8, 3, 0, col_top + 16 + 16 + 16 + 16);
+
+  BlitIntoSpace(1, 249, 10, 7, 0, 7);
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -163,6 +172,19 @@ SuperStarShooter::~SuperStarShooter() {
   delete m_Space;
   delete m_GridPositions;
   DestroyFoos();
+}
+
+
+void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y) {
+  for (int fy = 0; fy < height; fy++) {
+    for (int fx = (width - 1); fx >= 0; fx--) {
+      LOGV("%d %d %d\n", fx + offset_x, fy + offset_y, bottom_right_start);
+      m_Space->set(fx + offset_x, fy + offset_y, layer, bottom_right_start);
+      bottom_right_start -= 1;
+    }
+    bottom_right_start -= (16);
+    bottom_right_start += width;
+  }
 }
 
 
