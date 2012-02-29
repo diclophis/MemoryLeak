@@ -90,8 +90,13 @@ void Engine::ResetStateFoo() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   */
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  
+  //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  //glBlendEquation(GL_FUNC_SUBTRACT);
+  
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
   m_StateFoo->g_lastInterleavedBuffer = -1;

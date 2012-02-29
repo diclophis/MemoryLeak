@@ -45,9 +45,19 @@ public:
   float m_WarpTimeout;
 
   int m_PlayerIndex;
+  int m_PlayerStartIndex;
+  int m_PlayerStopIndex;
+
+  int m_HoleIndex;
+
+  float m_TouchStartX;
+  float m_TouchStartY;
+
+  bool m_PlayerCanMove;
 
   foofoo *m_GridFoo;
   foofoo *m_BatchFoo;
-  foofoo *m_PlayerFoo;
+  foofoo **m_PlayerFoos;
+  foofoo *m_HoleFoo;
 
 };

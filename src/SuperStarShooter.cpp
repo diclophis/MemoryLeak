@@ -36,8 +36,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_IsPushingAudio = true;
 
-	m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
-	m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
+	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
+	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
   m_Space = new Octree<int>(32 * 32, BLANK);
 
@@ -46,6 +46,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
       m_Space->set(i, ii, 0, 51);
     }
   }
+
+  m_PlayerFoos = (foofoo **)malloc(sizeof(foofoo *) * 4);
 
   //for (unsigned int i=0; i<100; i++) {
   //  m_Space->set(i, 0, 1, 56);
@@ -68,7 +70,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   }
   */
 
-  m_Space->set(6, 7, 0, 11);
+  //m_Space->set(6, 7, 0, 11);
 
   BlitIntoSpace(0, 41, 10, 3, 0, 0);
 
@@ -152,16 +154,29 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_SecondGridStopIndex = m_GridStopIndex + m_GridCount;
   m_SpriteCount += m_GridCount;
 
-  m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoo, NULL));
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 130.0);
-  m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
-  m_AtlasSprites[m_PlayerIndex]->m_Fps = 6;
-  m_AtlasSprites[m_PlayerIndex]->m_Frame = 0;
-  m_AtlasSprites[m_PlayerIndex]->SetScale(25.0, 35.0);
-  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = SUBDIVIDE;
-  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = 130.0;
-  m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_PlayerStartIndex = m_SpriteCount;
+  for (unsigned int i=0; i<4; i++) {
+    int sub_index = m_SpriteCount;
+    m_PlayerIndex = sub_index;
+    m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
+    m_AtlasSprites[sub_index]->SetPosition(0.0, 130.0);
+    m_AtlasSprites[sub_index]->m_IsAlive = true;
+    m_AtlasSprites[sub_index]->m_Fps = 6;
+    m_AtlasSprites[sub_index]->m_Frame = 0;
+    m_AtlasSprites[sub_index]->SetScale(25.0, 35.0);
+    m_AtlasSprites[sub_index]->m_TargetPosition[0] = 0.0;
+    m_AtlasSprites[sub_index]->m_TargetPosition[1] = 130.0;
+    m_AtlasSprites[sub_index]->Build(0);
+    m_SpriteCount++;
+  }
+  m_PlayerStopIndex = m_SpriteCount;
+
+  m_HoleIndex = m_SpriteCount;
+  m_AtlasSprites.push_back(new SpriteGun(m_HoleFoo, NULL));
+  m_AtlasSprites[m_HoleIndex]->SetPosition(150.0, 500.0);
+  m_AtlasSprites[m_HoleIndex]->m_Frame = 0;
+  m_AtlasSprites[m_HoleIndex]->SetScale(50.0, 50.0);
+  m_AtlasSprites[m_HoleIndex]->Build(0);
   m_SpriteCount++;
 
   m_WarpTimeout = 0.0;
@@ -178,7 +193,7 @@ SuperStarShooter::~SuperStarShooter() {
 void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y) {
   for (int fy = 0; fy < height; fy++) {
     for (int fx = (width - 1); fx >= 0; fx--) {
-      LOGV("%d %d %d\n", fx + offset_x, fy + offset_y, bottom_right_start);
+      //LOGV("%d %d %d\n", fx + offset_x, fy + offset_y, bottom_right_start);
       m_Space->set(fx + offset_x, fy + offset_y, layer, bottom_right_start);
       bottom_right_start -= 1;
     }
@@ -192,13 +207,18 @@ void SuperStarShooter::CreateFoos() {
   LOGV("SuperStarShooter::CreateFoos\n");
   ResetStateFoo();
   m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 16, 0, 256, 0.0);
-  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 14, 29, 32, 0.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(7), (m_GridCount * 2) + 1);
+
+  for (unsigned int i=0; i<4; i++) {
+    m_PlayerFoos[i] = AtlasSprite::GetFoo(m_Textures->at(7), 16, 14, 13 + (16 * i), 13 + (16 * i) + 3, 0.0);
+  }
+
+  m_HoleFoo = AtlasSprite::GetFoo(m_Textures->at(7), 8, 8, 24, 25, 0.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(7), (m_GridCount * 2) + 2);
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=m_GridStartIndex; i<m_SecondGridStopIndex; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
     }
-    m_AtlasSprites[m_PlayerIndex]->ResetFoo(m_PlayerFoo, NULL);
+    //m_AtlasSprites[m_PlayerIndex]->ResetFoo(m_PlayerFoo, NULL);
   }
 }
 
@@ -207,7 +227,7 @@ void SuperStarShooter::DestroyFoos() {
   LOGV("SuperStarShooter::DestroyFoos\n");
   delete m_GridFoo;
   delete m_BatchFoo;
-  delete m_PlayerFoo;
+  //delete m_PlayerFoo;
 }
 
 
@@ -229,6 +249,8 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     collide_index = m_Space->at(cx, cy, 0);
   }
   */
+
+  /*
   if (hitState == 0) {
     m_CameraStopOffsetX = (xx + m_CameraOffsetX);
     m_CameraStopOffsetY = (yy + m_CameraOffsetY);
@@ -236,6 +258,36 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   if (hitState == 1) {
     m_CameraOffsetX = (m_CameraStopOffsetX - xx);
     m_CameraOffsetY = (m_CameraStopOffsetY - yy);
+  }
+  */
+
+  if (hitState == 0) {
+    m_TouchStartX = (x);
+    m_TouchStartY = (y);
+  }
+
+  if (hitState == 2) {
+    float dx = x - m_TouchStartX;
+    float dy = y - m_TouchStartY;
+    if (fastAbs(dx) > fastAbs(dy)) {
+      LOGV("left right\n");
+      if (dx > 0) {
+        m_PlayerIndex = m_PlayerStartIndex + 1;
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
+      } else {
+        m_PlayerIndex = m_PlayerStartIndex + 3;
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] -= SUBDIVIDE;
+      }
+    } else {
+      LOGV("up down\n");
+      if (dy < 0) {
+        m_PlayerIndex = m_PlayerStartIndex + 0;
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] += SUBDIVIDE;
+      } else {
+        m_PlayerIndex = m_PlayerStartIndex + 2;
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] -= SUBDIVIDE;
+      }
+    }
   }
 }
 
@@ -249,14 +301,16 @@ void SuperStarShooter::RenderSpritePhase() {
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
+  RenderSpriteRange(m_HoleIndex, m_HoleIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
 
 int SuperStarShooter::Simulate() {
 
-  //m_CameraOffsetX += m_DeltaTime * 1000.0;
-  //m_CameraOffsetY += m_DeltaTime * 20.0;
+  m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
   //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
   //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
 
@@ -350,13 +404,25 @@ int SuperStarShooter::Simulate() {
   }
 
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
-    m_WarpTimeout += m_DeltaTime;
-    if (m_WarpTimeout > 0.5) {
-      m_WarpTimeout = 0.0;
-      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
+    for (unsigned int i=0; i<4; i++) {
+      if ((m_PlayerStartIndex + i) != m_PlayerIndex) {
+        m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[0] = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+        m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[1] = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+        m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0];
+        m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1];
+      }
     }
+
+    m_PlayerCanMove = true;
+
+    //m_WarpTimeout += m_DeltaTime;
+    //if (m_WarpTimeout > 0.5) {
+    //  m_WarpTimeout = 0.0;
+    //  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
+    //}
   } else {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+    m_PlayerCanMove = false;
   }
 
   return 1;
