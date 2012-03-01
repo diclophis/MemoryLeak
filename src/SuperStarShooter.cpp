@@ -455,9 +455,31 @@ int SuperStarShooter::Simulate() {
 
     if (m_Steps->size() > 1) {
       nodexyz *step = m_States[(intptr_t)m_Steps->at(1)];
-      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = ((float)step->x * SUBDIVIDE);
-      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ((float)step->y * SUBDIVIDE) + 30.0;
+      float tx = ((float)step->x * SUBDIVIDE);
+      float ty = ((float)step->y * SUBDIVIDE) + 30.0;
+      float dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+      float dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
+      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
+      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
+
       m_Steps->erase(m_Steps->begin());
+
+      if (fastAbs(dx) > fastAbs(dy)) {
+        LOGV("left right\n");
+        if (dx > 0) {
+          m_PlayerIndex = m_PlayerStartIndex + 1;
+        } else {
+          m_PlayerIndex = m_PlayerStartIndex + 3;
+        }
+      } else {
+        LOGV("up down\n");
+        if (dy > 0) {
+          m_PlayerIndex = m_PlayerStartIndex + 0;
+        } else {
+          m_PlayerIndex = m_PlayerStartIndex + 2;
+        }
+      }
     }
 
     //m_WarpTimeout += m_DeltaTime;
