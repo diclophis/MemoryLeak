@@ -73,5 +73,7 @@ public:
 
   int m_StatePointer;
   std::vector<nodexyz *>m_States;
+  
+  int StatePointerFor(int x, int y, int z);
 
 };
