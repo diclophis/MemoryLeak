@@ -21,6 +21,7 @@ enum colliders {
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
+#define WALK 51
 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
@@ -43,7 +44,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<100; i++) {
     for (unsigned int ii=0; ii<100; ii++) {
-      m_Space->set(i, ii, 0, 51);
+      m_Space->set(i, ii, 0, WALK);
     }
   }
 
@@ -285,7 +286,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
       float dx = x - m_TouchStartX;
       float dy = y - m_TouchStartY;
       if (fastAbs(dx) > fastAbs(dy)) {
-        LOGV("left right\n");
+        //LOGV("left right\n");
         if (dx > 0) {
           m_PlayerIndex = m_PlayerStartIndex + 1;
           m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
@@ -294,7 +295,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
           m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] -= SUBDIVIDE;
         }
       } else {
-        LOGV("up down\n");
+        //LOGV("up down\n");
         if (dy < 0) {
           m_PlayerIndex = m_PlayerStartIndex + 0;
           m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] += SUBDIVIDE;
@@ -444,7 +445,7 @@ int SuperStarShooter::Simulate() {
         //LOGV("solved\n");
         break;
       case micropather::MicroPather::NO_SOLUTION:
-        LOGV("none\n");
+        //LOGV("none\n");
         break;
       case micropather::MicroPather::START_END_SAME:
         //LOGV("same\n");
@@ -466,14 +467,14 @@ int SuperStarShooter::Simulate() {
       m_Steps->erase(m_Steps->begin());
 
       if (fastAbs(dx) > fastAbs(dy)) {
-        LOGV("left right\n");
+        //LOGV("left right\n");
         if (dx > 0) {
           m_PlayerIndex = m_PlayerStartIndex + 1;
         } else {
           m_PlayerIndex = m_PlayerStartIndex + 3;
         }
       } else {
-        LOGV("up down\n");
+        //LOGV("up down\n");
         if (dy > 0) {
           m_PlayerIndex = m_PlayerStartIndex + 0;
         } else {
@@ -481,19 +482,10 @@ int SuperStarShooter::Simulate() {
         }
       }
     }
-
-    //m_WarpTimeout += m_DeltaTime;
-    //if (m_WarpTimeout > 0.5) {
-    //  m_WarpTimeout = 0.0;
-    //  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] += SUBDIVIDE;
-    //}
   } else {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
     m_PlayerCanMove = false;
   }
-
-
-  //sleep(30);
 
   return 1;
 }
@@ -502,16 +494,6 @@ int SuperStarShooter::Simulate() {
 void SuperStarShooter::CreateCollider(float x, float y, float r, int flag) {
   int sx = 0;
   int sy = 0;
-  /*
-  float l = 120 * (1.0 / 60.0);
-  if (flag & BARREL) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 1, l * 0.5, "", 8, 11, l, 100.0, 100.0));
-  } else if (flag & STAR) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 0, 63, l * 0.5, "", 8, 11, l, 100.0, 100.0));
-  } else if (flag & MIRROR) {
-    m_AtlasSprites.push_back(new SpriteGun(m_Textures->at(1), 8, 8, 20, 21, l * 0.5, "", 8, 11, l, 100.0, 100.0));
-  }
-  */
   if (flag & BARREL) {
     m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
   } else if (flag & STAR) {
@@ -546,57 +528,39 @@ int SuperStarShooter::XYToIndex(int x, int y) {
 
 
 float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {	
-  int xStart, yStart, xEnd, yEnd;
 
-  xStart = m_States[((intptr_t)nodeStart)]->x;
-  yStart = m_States[((intptr_t)nodeStart)]->y;
+  int xStart = m_States[((intptr_t)nodeStart)]->x;
+  int yStart = m_States[((intptr_t)nodeStart)]->y;
 
-  xEnd = m_States[((intptr_t)nodeEnd)]->x;
-  yEnd = m_States[((intptr_t)nodeEnd)]->y;
+  int xEnd = m_States[((intptr_t)nodeEnd)]->x;
+  int yEnd = m_States[((intptr_t)nodeEnd)]->y;
 
-  //IndexToXY((intptr_t)nodeStart, &xStart, &yStart);
-  //IndexToXY((intptr_t)nodeEnd, &xEnd, &yEnd);
   int dx = xStart - xEnd;
   int dy = yStart - yEnd;
   int dz = 0;
+
   float least_cost = (float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
-  //LOGV("sx:%d sy:%d dx:%d dy:%d dz:%d least cost: %f\n", xStart, yStart, dx, dy, dz, least_cost);
+
   return least_cost;
 }
 
 
 void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCost> *neighbors) {
-  //LOGV("wtf\n");
-  int ax, ay;
 
-  ax = m_States[((intptr_t)node)]->x;
-  ay = m_States[((intptr_t)node)]->y;
+  int ax = m_States[((intptr_t)node)]->x;
+  int ay = m_States[((intptr_t)node)]->y;
 
-  //IndexToXY((intptr_t)node, &ax, &ay);
-
-  //int bx = ax;
-  //int by = ay;
-  //int bz = 0;
-  
   const int dx[8] = { 1, 0, -1, 0};
   const int dy[8] = { 0, 1, 0, -1};
   
-  //int colliding_index;
-  
-  //int lx = m_Models->at(m_ModelIndex)->m_Position[0] - bx;
-  //int lz = m_Models->at(m_ModelIndex)->m_Position[2] - bz;
-
   int lx = m_States[0]->x - ax;
   int ly = m_States[0]->y - ay;
   int lz = 0;
 
   float look_distance = (float)sqrt((double)(lx * lx) + (double)(ly * ly) + (double)(lz * lz));
   
-  //return;
-  //LOGV("%f\n", look_distance);
-  
-  if (look_distance > 15.0) {
-    //LOGV("abort\n");
+  if (look_distance > 20.0) {
+    LOGV("look: %f\n", look_distance);
     return;
   }
   
@@ -606,16 +570,17 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
     int nx = ax + dx[i];
     int ny = ay + dy[i];	
     bool passable = false;
-    //LOGV("nx: %d ny:%d\n", nx, ny);
     if (nx >= 0 && ny >= 0) {
-      //colliding_index = m_Space->at(nx, ny, bz);
-      //LOGV("collide @ %d %d %d %d\n", nx, ny, m_States[1]->x, m_States[1]->y);
-      if (nx == m_States[1]->x && ny == m_States[1]->y) {
-        passable = true;
-        pass_cost = 0.0;
-      } else {
-        passable = true;
-        pass_cost = 100.0;
+      int colliding_index = m_Space->at(nx, ny, 0);
+      //LOGV("%d\n", colliding_index);
+      if (colliding_index != (68 + 16 + 16 + 16 + 16)) {
+        if (nx == m_States[1]->x && ny == m_States[1]->y) {
+          passable = true;
+          pass_cost = 0.0;
+        } else {
+          passable = true;
+          pass_cost = 100.0;
+        }
       }
     }
     
@@ -624,7 +589,6 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
         (void *)StatePointerFor(nx, ny, 0), pass_cost
       };
       neighbors->push_back(nodeCost);
-    } else {
     }
   }
 }
