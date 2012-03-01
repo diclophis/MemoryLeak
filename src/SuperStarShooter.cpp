@@ -552,9 +552,9 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
 
   //IndexToXY((intptr_t)node, &ax, &ay);
 
-  int bx = ax;
-  int by = ay;
-  int bz = 0;
+  //int bx = ax;
+  //int by = ay;
+  //int bz = 0;
   
   const int dx[8] = { 1, 0, -1, 0};
   const int dy[8] = { 0, 1, 0, -1};
@@ -564,8 +564,8 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   //int lx = m_Models->at(m_ModelIndex)->m_Position[0] - bx;
   //int lz = m_Models->at(m_ModelIndex)->m_Position[2] - bz;
 
-  int lx = 0 - bx;
-  int ly = 0 - bz;
+  int lx = m_States[0]->x - ax;
+  int ly = m_States[0]->y - ay;
   int lz = 0;
 
   float look_distance = (float)sqrt((double)(lx * lx) + (double)(ly * ly) + (double)(lz * lz));
@@ -573,7 +573,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   //return;
   //LOGV("%f\n", look_distance);
   
-  if (look_distance > 10.0) {
+  if (look_distance > 15.0) {
     //LOGV("abort\n");
     return;
   }
@@ -581,8 +581,8 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   float pass_cost = 0;
   
   for( int i=0; i<4; ++i ) {
-    int nx = bx + dx[i];
-    int ny = by + dy[i];	
+    int nx = ax + dx[i];
+    int ny = ay + dy[i];	
     bool passable = false;
     //LOGV("nx: %d ny:%d\n", nx, ny);
     if (nx >= 0 && ny >= 0) {
@@ -595,32 +595,9 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
         passable = true;
         pass_cost = 100.0;
       }
-      /*
-      if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
-        if (m_Models->at(colliding_index)->m_IsPlayer) {
-          passable = true;
-          pass_cost = 0.0;
-        } else {
-          passable = true;
-          pass_cost = 100.0;
-        }
-      } else {
-        // there wasnt anything in front of me, but maybe below that there is?
-        colliding_index = m_Scene->at(nx, by - 1, nz);
-        if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
-        //	//something to stand on
-          if (m_Models->at(colliding_index)->m_IsStuck) {
-            pass_cost = 1.0;
-            passable = true;
-          }
-        }
-      }
-      */
     }
     
     if (passable) {
-      //nodexyz *new_node = (nodexyz *)malloc(1 * sizeof(nodexyz));
-
       micropather::StateCost nodeCost = {
         (void *)StatePointerFor(nx, ny, 0), pass_cost
       };
