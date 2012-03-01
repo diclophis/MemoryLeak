@@ -51,29 +51,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerFoos = (foofoo **)malloc(sizeof(foofoo *) * 4);
 
-  //for (unsigned int i=0; i<100; i++) {
-  //  m_Space->set(i, 0, 1, 56);
-  //}
-
-  /*
-  for (unsigned int i=0; i<100; i++) {
-    int col_top = 68;
-    m_Space->set(i * 4, 7, 1, col_top);
-    m_Space->set(i * 4, 6, 1, col_top + 16);
-    m_Space->set(i * 4, 5, 1, col_top + 16 + 16);
-    m_Space->set(i * 4, 4, 1, col_top + 16 + 16 + 16);
-    m_Space->set(i * 4, 3, 0, col_top + 16 + 16 + 16 + 16);
-
-    m_Space->set((i * 4) + 2, 5, 1, col_top);
-    m_Space->set((i * 4) + 2, 4, 1, col_top + 16);
-    m_Space->set((i * 4) + 2, 3, 1, col_top + 16 + 16);
-    m_Space->set((i * 4) + 2, 2, 1, col_top + 16 + 16 + 16);
-    m_Space->set((i * 4) + 2, 1, 0, col_top + 16 + 16 + 16 + 16);
-  }
-  */
-
-  //m_Space->set(6, 7, 0, 11);
-
   BlitIntoSpace(0, 41, 10, 3, 0, 0);
 
   int col_top = 68;
@@ -183,13 +160,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_WarpTimeout = 0.0;
 
-	//m_ModelOctree = new micropather::ModelOctree(*m_Space);
-
 	m_Pather = new micropather::MicroPather(this);
 	m_Steps = new std::vector<void *>;
 
-  //startState = (nodexyz *)malloc(1 * sizeof(nodexyz));
-  //endState = (nodexyz *)malloc(1 * sizeof(nodexyz));
   m_StatePointer = 0;
   for (unsigned int i=0; i<256; i++) {
     m_States.push_back(new nodexyz());
@@ -210,7 +183,6 @@ SuperStarShooter::~SuperStarShooter() {
 void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y) {
   for (int fy = 0; fy < height; fy++) {
     for (int fx = (width - 1); fx >= 0; fx--) {
-      //LOGV("%d %d %d\n", fx + offset_x, fy + offset_y, bottom_right_start);
       m_Space->set(fx + offset_x, fy + offset_y, layer, bottom_right_start);
       bottom_right_start -= 1;
     }
@@ -249,9 +221,6 @@ void SuperStarShooter::DestroyFoos() {
 
 
 void SuperStarShooter::Hit(float x, float y, int hitState) {
-  //LOGV("hit: %d\n", hitState);
-	
-  
   float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE / 2.0);
@@ -338,25 +307,10 @@ int SuperStarShooter::Simulate() {
   m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
-  //m_CameraOffsetX = fastSinf(m_SimulationTime * 1.5) * 400.0;
-  //m_CameraOffsetY = fastSinf(m_SimulationTime * 3.0) * 400.0;
-
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
-  float mx = (tx * m_DeltaTime * 5.0);
-  float my = (ty * m_DeltaTime * 5.0);
-
-  /*
-  float length = mx * mx + my * my;
-  float max = 1.0;
- 
-  if ((length > max * max) && (length > 0 )) {
-    float ratio = max / sqrtf(length);
-    mx *= ratio;
-    my *= ratio;
-  }
-  LOGV("mx: %f\n", mx);
-  */
+  float mx = (tx * m_DeltaTime * 1.0);
+  float my = (ty * m_DeltaTime * 1.0);
 
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
@@ -448,8 +402,6 @@ int SuperStarShooter::Simulate() {
       int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_Position[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / SUBDIVIDE), 0);
       int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
 
-      LOGV("tx: %d ty: %d\n", m_TargetX, m_TargetY);
-     
       float totalCost;
       m_Pather->Reset();
       int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
@@ -482,14 +434,12 @@ int SuperStarShooter::Simulate() {
         m_Steps->erase(m_Steps->begin());
 
         if (fastAbs(dx) > fastAbs(dy)) {
-          //LOGV("left right\n");
           if (dx > 0) {
             m_PlayerIndex = m_PlayerStartIndex + 1;
           } else {
             m_PlayerIndex = m_PlayerStartIndex + 3;
           }
         } else {
-          //LOGV("up down\n");
           if (dy > 0) {
             m_PlayerIndex = m_PlayerStartIndex + 0;
           } else {
@@ -576,7 +526,6 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   float look_distance = (float)sqrt((double)(lx * lx) + (double)(ly * ly) + (double)(lz * lz));
   
   if (look_distance > 20.0) {
-    LOGV("look: %f\n", look_distance);
     return;
   }
   
@@ -588,7 +537,6 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
     bool passable = false;
     if (nx >= 0 && ny >= 0) {
       int colliding_index = m_Space->at(nx, ny, 0);
-      //LOGV("%d\n", colliding_index);
       if (colliding_index != (68 + 16 + 16 + 16 + 16)) {
         if (nx == m_States[1]->x && ny == m_States[1]->y) {
           passable = true;
