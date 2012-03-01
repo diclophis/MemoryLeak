@@ -73,6 +73,9 @@ public:
 
   int m_StatePointer;
   std::vector<nodexyz *>m_States;
+
+  int m_TargetX;
+  int m_TargetY;
   
   int StatePointerFor(int x, int y, int z);
 

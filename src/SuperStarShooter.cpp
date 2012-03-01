@@ -22,6 +22,7 @@ enum colliders {
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
 #define WALK 51
+#define PLAYER_OFFSET 25.0
 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
@@ -160,13 +161,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetPosition(0.0, 30.0);
+    m_AtlasSprites[sub_index]->SetPosition(0.0, PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 6;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale(25.0, 35.0);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = 0.0;
-    m_AtlasSprites[sub_index]->m_TargetPosition[1] = 30.0;
+    m_AtlasSprites[sub_index]->m_TargetPosition[1] = PLAYER_OFFSET;
     m_AtlasSprites[sub_index]->Build(0);
     m_SpriteCount++;
   }
@@ -193,6 +194,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   for (unsigned int i=0; i<256; i++) {
     m_States.push_back(new nodexyz());
   }
+
+  m_TargetX = -1;
+  m_TargetY = -1;
 }
 
 
@@ -247,23 +251,27 @@ void SuperStarShooter::DestroyFoos() {
 void SuperStarShooter::Hit(float x, float y, int hitState) {
   //LOGV("hit: %d\n", hitState);
 	
-  //float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
-	//float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
   
-  /*
-  float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE * 0.5);
-  float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE * 0.5);
+  float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
+	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
+  float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE / 2.0);
+  float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE / 2.0);
 	float collide_x = (dx);
 	float collide_y = (dy);
   int cx = (collide_x / SUBDIVIDE);
   int cy = (collide_y / SUBDIVIDE);
   int collide_index = -1;
   bool collide_index_set = false;
-  if (cx > 0 && cy > 0) {
+  if (cx >= 0 && cy >= 0) {
     collide_index_set = true;
     collide_index = m_Space->at(cx, cy, 0);
   }
-  */
+
+  if (collide_index_set && m_PlayerCanMove) {
+    m_TargetX = cx;
+    m_TargetY = cy;
+  }
+
 
   /*
   if (hitState == 0) {
@@ -276,6 +284,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   }
   */
 
+  /*
   if (m_PlayerCanMove) {
     if (hitState == 0) {
       m_TouchStartX = (x);
@@ -306,6 +315,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
       }
     }
   }
+  */
 }
 
 
@@ -432,53 +442,59 @@ int SuperStarShooter::Simulate() {
 
     m_PlayerCanMove = true;
 
-    m_StatePointer = 0;
+    if (m_TargetX >= 0 && m_TargetY >= 0) {
+      m_StatePointer = 0;
 
-    int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_Position[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / SUBDIVIDE), 0);
-    int endState = StatePointerFor(10, 10, 0);
-   
-    float totalCost;
-    m_Pather->Reset();
-    int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
-    switch (solved) {
-      case micropather::MicroPather::SOLVED:
-        //LOGV("solved\n");
-        break;
-      case micropather::MicroPather::NO_SOLUTION:
-        //LOGV("none\n");
-        break;
-      case micropather::MicroPather::START_END_SAME:
-        //LOGV("same\n");
-        break;	
-      default:
-        break;
-    }
+      int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_Position[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / SUBDIVIDE), 0);
+      int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
 
-    if (m_Steps->size() > 1) {
-      nodexyz *step = m_States[(intptr_t)m_Steps->at(1)];
-      float tx = ((float)step->x * SUBDIVIDE);
-      float ty = ((float)step->y * SUBDIVIDE) + 30.0;
-      float dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-      float dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+      LOGV("tx: %d ty: %d\n", m_TargetX, m_TargetY);
+     
+      float totalCost;
+      m_Pather->Reset();
+      int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
+      switch (solved) {
+        case micropather::MicroPather::SOLVED:
+          //LOGV("solved\n");
+          break;
+        case micropather::MicroPather::NO_SOLUTION:
+          //LOGV("none\n");
+          break;
+        case micropather::MicroPather::START_END_SAME:
+          //LOGV("same\n");
+          m_TargetX = -1;
+          m_TargetY = -1;
+          break;	
+        default:
+          break;
+      }
 
-      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
-      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
+      if (m_Steps->size() > 1) {
+        nodexyz *step = m_States[(intptr_t)m_Steps->at(1)];
+        float tx = ((float)step->x * SUBDIVIDE);
+        float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
+        float dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+        float dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
-      m_Steps->erase(m_Steps->begin());
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
 
-      if (fastAbs(dx) > fastAbs(dy)) {
-        //LOGV("left right\n");
-        if (dx > 0) {
-          m_PlayerIndex = m_PlayerStartIndex + 1;
+        m_Steps->erase(m_Steps->begin());
+
+        if (fastAbs(dx) > fastAbs(dy)) {
+          //LOGV("left right\n");
+          if (dx > 0) {
+            m_PlayerIndex = m_PlayerStartIndex + 1;
+          } else {
+            m_PlayerIndex = m_PlayerStartIndex + 3;
+          }
         } else {
-          m_PlayerIndex = m_PlayerStartIndex + 3;
-        }
-      } else {
-        //LOGV("up down\n");
-        if (dy > 0) {
-          m_PlayerIndex = m_PlayerStartIndex + 0;
-        } else {
-          m_PlayerIndex = m_PlayerStartIndex + 2;
+          //LOGV("up down\n");
+          if (dy > 0) {
+            m_PlayerIndex = m_PlayerStartIndex + 0;
+          } else {
+            m_PlayerIndex = m_PlayerStartIndex + 2;
+          }
         }
       }
     }
