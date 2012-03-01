@@ -223,8 +223,8 @@ void SuperStarShooter::DestroyFoos() {
 void SuperStarShooter::Hit(float x, float y, int hitState) {
   float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
 	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
-  float dx = (xx + m_CameraOffsetX) + (SUBDIVIDE / 2.0);
-  float dy = (yy + m_CameraOffsetY) + (SUBDIVIDE / 2.0);
+  float dx = (xx + m_CameraActualOffsetX) + (SUBDIVIDE / 2.0);
+  float dy = (yy + m_CameraActualOffsetY) + (SUBDIVIDE / 2.0);
 	float collide_x = (dx);
 	float collide_y = (dy);
   int cx = (collide_x / SUBDIVIDE);
@@ -411,6 +411,8 @@ int SuperStarShooter::Simulate() {
           break;
         case micropather::MicroPather::NO_SOLUTION:
           //LOGV("none\n");
+          m_TargetX = -1;
+          m_TargetY = -1;
           break;
         case micropather::MicroPather::START_END_SAME:
           //LOGV("same\n");
@@ -525,7 +527,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
 
   float look_distance = (float)sqrt((double)(lx * lx) + (double)(ly * ly) + (double)(lz * lz));
   
-  if (look_distance > 20.0) {
+  if (look_distance > 5.0) {
     return;
   }
   
