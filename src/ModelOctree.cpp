@@ -1,28 +1,6 @@
 // Jon Bardin GPL
 
-
 #include "MemoryLeak.h"
-/*
-#include "micropather.h"
-#include <ctype.h>
-#include <stdio.h>
-#include <memory.h>
-#include <math.h>
-
-#include <vector>
-#include <iostream>
-
-#include "FooIO.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "Model.h"
-#include "octree.h"
-
-#include "ModelOctree.h"
-*/
 
 typedef struct {
   int node_index;
@@ -30,10 +8,11 @@ typedef struct {
   int ay;
 } nodexy;
 
+
 namespace micropather {
 
 
-  ModelOctree::ModelOctree(std::vector<Model *> &m, Octree<int> &o, int i) : m_Models(&m), m_Scene(&o), m_ModelIndex(i) {
+  ModelOctree::ModelOctree(Octree<int> &o) : m_Space(&o) {
   }
 
 
@@ -41,20 +20,19 @@ namespace micropather {
   }
 
 
-  float ModelOctree::LeastCostEstimate( void* nodeStart, void* nodeEnd ) 
-  {	
+  float ModelOctree::LeastCostEstimate(void *nodeStart, void *nodeEnd) {	
     int xStart, yStart, xEnd, yEnd;
-    NodeToXY(nodeStart, &xStart, &yStart );
-    NodeToXY(nodeEnd, &xEnd, &yEnd );
+    NodeToXY(nodeStart, &xStart, &yStart);
+    NodeToXY(nodeEnd, &xEnd, &yEnd);
     int dx = xStart - xEnd;
     int dy = 0;
     int dz = yStart - yEnd;
-    float least_cost = (float) sqrt( (double)(dx*dx) + (double)(dy*dy) + (double)(dz*dz));
+    float least_cost = (float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
     return least_cost;
   }
 
-  void ModelOctree::AdjacentCost( void* node, std::vector<StateCost> *neighbors ) 
-  {
+
+  void ModelOctree::AdjacentCost(void *node, std::vector<StateCost> *neighbors) {
     int ax, ay;
     
     NodeToXY(node, &ax, &ay);
@@ -63,15 +41,18 @@ namespace micropather {
     int by = 1;
     int bz = ay;
     
-      const int dx[8] = { 1, 0, -1, 0};
-      const int dz[8] = { 0, 1, 0, -1};
+    const int dx[8] = { 1, 0, -1, 0};
+    const int dz[8] = { 0, 1, 0, -1};
     
     int colliding_index;
     
-    int lx = m_Models->at(m_ModelIndex)->m_Position[0] - bx;
-    int lz = m_Models->at(m_ModelIndex)->m_Position[2] - bz;
+    //int lx = m_Models->at(m_ModelIndex)->m_Position[0] - bx;
+    //int lz = m_Models->at(m_ModelIndex)->m_Position[2] - bz;
 
-    float look_distance = (float)sqrt( (double)(lx*lx) + (double)(lz*lz));
+    int lx = 0 - bx;
+    int lz = 0 - bz;
+
+    float look_distance = (float)sqrt((double)(lx * lx) + (double)(lz * lz));
     
     if (look_distance > 10) {
       return;
@@ -79,12 +60,15 @@ namespace micropather {
     
     float pass_cost = 0;
     
-      for( int i=0; i<4; ++i ) {
+    for( int i=0; i<4; ++i ) {
       int nx = bx + dx[i];
       int nz = bz + dz[i];	
       bool passable = false;
       if (nx > 0 && nz > 0) {
-        colliding_index = m_Scene->at(nx, by, nz);
+        colliding_index = m_Space->at(nx, by, nz);
+        passable = true;
+        pass_cost = 1.0;
+        /*
         if (colliding_index >= 0 && colliding_index != m_ModelIndex) {
           if (m_Models->at(colliding_index)->m_IsPlayer) {
             passable = true;
@@ -104,10 +88,13 @@ namespace micropather {
             }
           }
         }
+        */
       }
       
       if (passable) {
-        StateCost nodeCost = { XYToNode(nx, nz), pass_cost };
+        StateCost nodeCost = {
+          XYToNode(nx, nz), pass_cost
+        };
         neighbors->push_back(nodeCost);
       } else {
       }

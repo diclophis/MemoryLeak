@@ -104,6 +104,7 @@
 #include <include/IOStream.h>
 #include <include/IOSystem.h>
 #include "foo.h"
+#include "nodexyz.h"
 
 #include "modplug.h"
 

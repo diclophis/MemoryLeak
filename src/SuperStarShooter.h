@@ -1,6 +1,6 @@
 // Jon Bardin GPL
 
-class SuperStarShooter : public Engine {
+class SuperStarShooter : public Engine, public micropather::Graph {
 
 public:
 
@@ -17,6 +17,10 @@ public:
   void IndexToXY(int index, int *x, int *y);
   int XYToIndex(int x, int y);
   void BlitIntoSpace(int layer, int bottom_left_start, int width, int height, int offset_x, int offset_y);
+
+	float LeastCostEstimate(void* nodeStart, void* nodeEnd);
+	void AdjacentCost(void* node, std::vector<micropather::StateCost> *neighbors);
+	void PrintStateInfo(void* node) {};
 
 	Octree<int> *m_Space;
 
@@ -59,5 +63,15 @@ public:
   foofoo *m_BatchFoo;
   foofoo **m_PlayerFoos;
   foofoo *m_HoleFoo;
+
+	micropather::MicroPather *m_Pather;
+	micropather::ModelOctree *m_ModelOctree;
+	std::vector<void *> *m_Steps;
+
+  //nodexyz *startState;
+  //nodexyz *endState;
+
+  int m_StatePointer;
+  std::vector<nodexyz *>m_States;
 
 };
