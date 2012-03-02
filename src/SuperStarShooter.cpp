@@ -32,7 +32,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 1.0;
+  m_Zoom = 2.0;
 
   LoadSound(0);
 
@@ -170,6 +170,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_TargetX = -1;
   m_TargetY = -1;
+
+  m_TargetIsDirty = false;
 }
 
 
@@ -231,14 +233,18 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   int cy = (collide_y / SUBDIVIDE);
   int collide_index = -1;
   bool collide_index_set = false;
+
   if (cx >= 0 && cy >= 0) {
     collide_index_set = true;
     collide_index = m_Space->at(cx, cy, 0);
   }
 
-  if (collide_index_set && m_PlayerCanMove) {
-    m_TargetX = cx;
-    m_TargetY = cy;
+  if (hitState == 2) {
+    if (collide_index_set) {
+      m_TargetX = cx;
+      m_TargetY = cy;
+      m_TargetIsDirty = true;
+    }
   }
 
 
@@ -384,75 +390,78 @@ int SuperStarShooter::Simulate() {
     }
   }
 
+  bool needs_next_step = false;
+
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
-    for (int i=0; i<4; i++) {
-      if ((m_PlayerStartIndex + i) != m_PlayerIndex) {
-        m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[0] = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-        m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[1] = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-        m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0];
-        m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1];
-      }
-    }
-
-    m_PlayerCanMove = true;
-
-    if (m_TargetX >= 0 && m_TargetY >= 0) {
-      m_StatePointer = 0;
-
-      int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_Position[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / SUBDIVIDE), 0);
-      int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
-
-      float totalCost;
-      m_Pather->Reset();
-      int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
-      switch (solved) {
-        case micropather::MicroPather::SOLVED:
-          //LOGV("solved\n");
-          break;
-        case micropather::MicroPather::NO_SOLUTION:
-          //LOGV("none\n");
-          m_TargetX = -1;
-          m_TargetY = -1;
-          break;
-        case micropather::MicroPather::START_END_SAME:
-          //LOGV("same\n");
-          m_TargetX = -1;
-          m_TargetY = -1;
-          break;	
-        default:
-          break;
-      }
-
-      if (m_Steps->size() > 1) {
-        nodexyz *step = m_States[(intptr_t)m_Steps->at(1)];
-        float tx = ((float)step->x * SUBDIVIDE);
-        float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
-        float dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-        float dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-
-        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
-        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
-
-        m_Steps->erase(m_Steps->begin());
-
-        if (fastAbs(dx) > fastAbs(dy)) {
-          if (dx > 0) {
-            m_PlayerIndex = m_PlayerStartIndex + 1;
-          } else {
-            m_PlayerIndex = m_PlayerStartIndex + 3;
-          }
-        } else {
-          if (dy > 0) {
-            m_PlayerIndex = m_PlayerStartIndex + 0;
-          } else {
-            m_PlayerIndex = m_PlayerStartIndex + 2;
-          }
-        }
-      }
-    }
+    needs_next_step = true;  
   } else {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
-    m_PlayerCanMove = false;
+  }
+
+  if (needs_next_step && m_Steps->size() > 0) {
+
+    nodexyz *step = m_States[(intptr_t)m_Steps->at(0)];
+    m_Steps->erase(m_Steps->begin());
+
+    float tx = ((float)step->x * SUBDIVIDE);
+    float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
+    float dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+    float dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
+    if (fastAbs(dx) > fastAbs(dy)) {
+      if (dx > 0) {
+        m_PlayerIndex = m_PlayerStartIndex + 1;
+      } else {
+        m_PlayerIndex = m_PlayerStartIndex + 3;
+      }
+    } else {
+      if (dy > 0) {
+        m_PlayerIndex = m_PlayerStartIndex + 0;
+      } else {
+        m_PlayerIndex = m_PlayerStartIndex + 2;
+      }
+    }
+
+    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
+    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
+  }
+
+  for (int i=0; i<4; i++) {
+    if ((m_PlayerStartIndex + i) != m_PlayerIndex) {
+      m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[0] = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+      m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[1] = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+      m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0];
+      m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1];
+    }
+  }
+
+  if (m_TargetIsDirty) {
+    m_StatePointer = 0;
+
+    int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_Position[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / SUBDIVIDE), 0);
+    int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
+
+    float totalCost;
+    m_Pather->Reset();
+    int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
+    switch (solved) {
+      case micropather::MicroPather::SOLVED:
+        //LOGV("solved\n");
+        m_TargetIsDirty = false;
+        break;
+      case micropather::MicroPather::NO_SOLUTION:
+        LOGV("none\n");
+        m_TargetX = -1;
+        m_TargetY = -1;
+        break;
+      case micropather::MicroPather::START_END_SAME:
+        LOGV("same\n");
+        m_TargetX = -1;
+        m_TargetY = -1;
+        break;	
+      default:
+        break;
+    }
   }
 
   return 1;

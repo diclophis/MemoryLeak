@@ -57,8 +57,6 @@ public:
   float m_TouchStartX;
   float m_TouchStartY;
 
-  bool m_PlayerCanMove;
-
   foofoo *m_GridFoo;
   foofoo *m_BatchFoo;
   foofoo **m_PlayerFoos;
@@ -78,5 +76,7 @@ public:
   int m_TargetY;
   
   int StatePointerFor(int x, int y, int z);
+
+  bool m_TargetIsDirty;
 
 };
