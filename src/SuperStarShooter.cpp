@@ -438,7 +438,7 @@ int SuperStarShooter::Simulate() {
   if (m_TargetIsDirty) {
     m_StatePointer = 0;
 
-    int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_Position[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / SUBDIVIDE), 0);
+    int startState = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE), 0);
     int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
 
     float totalCost;
@@ -447,7 +447,6 @@ int SuperStarShooter::Simulate() {
     switch (solved) {
       case micropather::MicroPather::SOLVED:
         //LOGV("solved\n");
-        m_TargetIsDirty = false;
         break;
       case micropather::MicroPather::NO_SOLUTION:
         LOGV("none\n");
@@ -462,6 +461,7 @@ int SuperStarShooter::Simulate() {
       default:
         break;
     }
+    m_TargetIsDirty = false;
   }
 
   return 1;
