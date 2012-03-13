@@ -28,7 +28,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   //8 is spaceman
   //7 is jetpack
   //6 is truss
-  LoadModel(5, 0, 1);
+  LoadModel(0, 0, 1);
   CreateFoos();
 }
 
@@ -135,9 +135,9 @@ int MainMenu::Simulate() {
     //m_CameraPosition[0] = 1.5 + fastSinf(m_SimulationTime * -0.25);
     //m_CameraPosition[1] = 1.5 + fastSinf(m_SimulationTime * 0.1);
     //m_CameraPosition[2] = 1.5;
-    m_CameraPosition[0] = 0.75;
-    m_CameraPosition[1] = 1.5;
-    m_CameraPosition[2] = 0.75;
+    m_CameraPosition[0] = 2.75;
+    m_CameraPosition[1] = 2.5;
+    m_CameraPosition[2] = 2.75;
   }
   /*
   for (unsigned int i=0; i<m_ModelCount; i++) {

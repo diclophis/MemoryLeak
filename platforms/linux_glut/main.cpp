@@ -143,7 +143,6 @@ void processNormalKeys(unsigned char key, int x, int y) {
         game_index = 0;
       }
       */
-      game_index = 3;
       Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
     }
     reset_down = !reset_down;
@@ -412,7 +411,7 @@ int main(int argc, char** argv) {
 
   min_buffer = periodsize2 * 16;
 
-  Engine::Start(3, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
   pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutMainLoop();
