@@ -19,7 +19,6 @@
 static pthread_t audio_thread;
 
 static std::vector<GLuint> textures;
-
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
@@ -42,7 +41,7 @@ snd_pcm_hw_params_t *hwparams;
 // the second number is the number of the device.
 char *pcm_name;
 
-static int game_index = 0;
+static int game_index = 1;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
@@ -51,6 +50,8 @@ static bool debug_down = false;
 
 void *pump_audio(void *) {
   snd_pcm_sframes_t foo;
+
+  LOGV("%d min_buffer\n", min_buffer);
 
   short *buffer;
   buffer = new short[min_buffer];
@@ -65,17 +66,6 @@ void *pump_audio(void *) {
       //LOGV("wrote: %lu\n", foo);
     }
   }
-}
-
-bool pushMessageToWebView(const char *theMessage) {
-	return true;
-}
-
-const char *popMessageFromWebView() {
-  return "";
-}
-
-void SimulationThreadCleanup() {
 }
 
 
@@ -134,17 +124,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
   } else {
     if (reset_down) {
     } else {
-      /*
-      game_index = key - 49;
-      if (game_index > 3) {
-        game_index = 0;
-      }
-      if (game_index < 0) {
-        game_index = 0;
-      }
-      */
-      game_index = 3;
-      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
     }
     reset_down = !reset_down;
   }
@@ -205,29 +185,24 @@ int main(int argc, char** argv) {
     exit(1);
   }
 
-  //while ((dp=readdir(dir)) != NULL) {
   for (int i=0; i<dir_ents; i++) {
     char *tmp;
     tmp = path_cat(dir_path, dps[i]->d_name);
-    //if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
-    //} else {
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      GLuint tex_2d = SOIL_load_OGL_texture(
-        tmp,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        //SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
-        SOIL_FLAG_MULTIPLY_ALPHA
-      );
-      textures.push_back(tex_2d);
-    //}
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    GLuint tex_2d = SOIL_load_OGL_texture(
+      tmp,
+      SOIL_LOAD_AUTO,
+      SOIL_CREATE_NEW_ID,
+      SOIL_FLAG_MULTIPLY_ALPHA
+    );
+    textures.push_back(tex_2d);
 
     free(tmp);
     tmp=NULL;
   }
-
-  //closedir(dir);
 
   dir_path="../../assets/models/";
   dir = opendir(dir_path);
@@ -400,19 +375,15 @@ int main(int argc, char** argv) {
     return(-1);
   }
 
-  //snd_pcm_uframes_t nframes;
-
   snd_pcm_uframes_t buffersize2, periodsize2;
   if (snd_pcm_get_params(pcm_handle, &buffersize2, &periodsize2) < 0) {
-  //if (snd_pcm_hw_params_get_buffer_size(hwparams, &nframes) < 0) {
-  //if (snd_pcm_hw_params_get_period_size_min(hwparams, &nframes, NULL) < 0) {
     fprintf(stderr, "Error cant get num frames\n");
     return(-1);
   }
 
   min_buffer = periodsize2 * 16;
 
-  Engine::Start(3, kWindowWidth, kWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
   pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutMainLoop();

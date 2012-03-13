@@ -72,6 +72,8 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
+
+
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	

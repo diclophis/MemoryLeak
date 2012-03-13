@@ -32,7 +32,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 2.0;
+  m_Zoom = 1.0;
 
   LoadSound(0);
 
@@ -299,7 +299,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-m_CameraActualOffsetX, -m_CameraActualOffsetY, 0.0);
+  glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
@@ -452,11 +452,13 @@ int SuperStarShooter::Simulate() {
         LOGV("none\n");
         m_TargetX = -1;
         m_TargetY = -1;
+        m_Steps->clear();
         break;
       case micropather::MicroPather::START_END_SAME:
         LOGV("same\n");
         m_TargetX = -1;
         m_TargetY = -1;
+        m_Steps->clear();
         break;	
       default:
         break;
