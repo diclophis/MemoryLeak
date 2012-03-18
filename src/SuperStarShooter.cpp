@@ -319,6 +319,20 @@ int SuperStarShooter::Simulate() {
 
   float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
 
+  float s = 0.0;
+  if (time_swiped > 2.0) {
+    //if (tx > 0.0) {
+    //LOGV("direct\n");
+    //}
+    s = 0.025;
+  } else {
+    //if (tx > 0.0) {
+    //  LOGV("percent of foo %f\n", time_swiped);
+    //}
+    s = 0.025 * (time_swiped / 2.0);
+  }
+
+
   /*
   mx = (tx * m_DeltaTime * (time_swiped * 20.0));
   my = (ty * m_DeltaTime * (time_swiped * 20.0));
@@ -341,8 +355,9 @@ int SuperStarShooter::Simulate() {
     my = -max;
   }
   */
-  mx = tx;
-  my = ty;
+
+  mx = tx * s;
+  my = ty * s;
 
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
