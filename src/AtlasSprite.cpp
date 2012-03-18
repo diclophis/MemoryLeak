@@ -71,7 +71,16 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
 
-
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
@@ -331,8 +340,8 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	} else {
 		tx = -dx;
 		ty = -dy;
-		m_Velocity[0] = 0;
-		m_Velocity[1] = 0;
+		//m_Velocity[0] = 0;
+		//m_Velocity[1] = 0;
 		done = true;
 	}
 	m_Position[0] += tx;

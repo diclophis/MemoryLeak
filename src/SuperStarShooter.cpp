@@ -138,6 +138,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
+    m_AtlasSprites[sub_index]->SetVelocity(300.0, 300.0);
     m_AtlasSprites[sub_index]->SetPosition(0.0, PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 20;
@@ -563,7 +564,8 @@ int SuperStarShooter::Simulate() {
     }
 
 
-    m_AtlasSprites[m_PlayerIndex]->SetVelocity(300.0, 300.0);
+  }
+
 
     for (int i=0; i<m_TrailCount; i++) {
       if (i < m_Steps->size()) {
@@ -581,7 +583,6 @@ int SuperStarShooter::Simulate() {
         m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = -50.0;
       }
     }
-  }
 
 
 
