@@ -47,7 +47,6 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
 
 void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
 	if (m_FooFoo->m_numFrames == 0) {
-    //LOGV("Fail, animation is at least 1 frame\n");
     return;
   }
   if (batch_foo == NULL) {
@@ -57,7 +56,6 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     for (unsigned int i=0; i<4; i++) {
       int x = ((cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) - (sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1])) * m_Scale[0];
       int y = ((sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) + (cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1])) * m_Scale[1];
-
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = (x + m_Position[0]);
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = (y + m_Position[1]);
       batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[0] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0];
@@ -87,8 +85,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    //glEnableClientState(GL_VERTEX_ARRAY);
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
@@ -145,10 +141,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 
 void AtlasSprite::Simulate(float deltaTime) {
-	//float dx = m_Velocity[0] * deltaTime;
-	//float dy = m_Velocity[1] * deltaTime;
-	//m_Position[0] += dx;
-	//m_Position[1] += dy;
 	m_Life += deltaTime;
 	m_AnimationLife += deltaTime;
   if (m_IsAlive) {
@@ -328,7 +320,7 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	float tx = 0.0;
 	float ty = 0.0;
 	bool done = false;
-	if ((fabs(dx) > 2.0) || (fabs(dy) > 2.0)) {
+	if ((fabs(dx) > 1.0) || (fabs(dy) > 1.0)) {
     if (dx != 0.0) {
       tx = -(dt * m_Velocity[0] * (dx / fastAbs(dx)));
     }
