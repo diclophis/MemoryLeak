@@ -52,6 +52,10 @@ public:
   int m_PlayerStartIndex;
   int m_PlayerStopIndex;
 
+  int m_TrailCount;
+  int m_TrailStartIndex;
+  int m_TrailStopIndex;
+
   int m_HoleIndex;
 
   float m_TouchStartX;
@@ -61,6 +65,7 @@ public:
   foofoo *m_BatchFoo;
   foofoo **m_PlayerFoos;
   foofoo *m_HoleFoo;
+  foofoo *m_TrailFoo;
 
 	micropather::MicroPather *m_Pather;
 	micropather::ModelOctree *m_ModelOctree;
