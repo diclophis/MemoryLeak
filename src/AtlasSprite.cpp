@@ -145,10 +145,10 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 
 void AtlasSprite::Simulate(float deltaTime) {
-	float dx = m_Velocity[0] * deltaTime;
-	float dy = m_Velocity[1] * deltaTime;
-	m_Position[0] += dx;
-	m_Position[1] += dy;
+	//float dx = m_Velocity[0] * deltaTime;
+	//float dy = m_Velocity[1] * deltaTime;
+	//m_Position[0] += dx;
+	//m_Position[1] += dy;
 	m_Life += deltaTime;
 	m_AnimationLife += deltaTime;
   if (m_IsAlive) {
@@ -330,10 +330,10 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	bool done = false;
 	if ((fabs(dx) > 1.0) || (fabs(dy) > 1.0)) {
     if (dx != 0.0) {
-      tx = -(dt * 50.0 * (dx / fastAbs(dx)));
+      tx = -(dt * m_Velocity[0] * (dx / fastAbs(dx)));
     }
     if (dy != 0.0) {
-      ty = -(dt * 50.0 * (dy / fastAbs(dy)));
+      ty = -(dt * m_Velocity[1] * (dy / fastAbs(dy)));
     }
 		done = false;
 	} else {

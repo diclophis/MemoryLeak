@@ -66,17 +66,19 @@ public:
 	micropather::ModelOctree *m_ModelOctree;
 	std::vector<void *> *m_Steps;
 
-  //nodexyz *startState;
-  //nodexyz *endState;
-
+  int m_MaxStatePointers;
   int m_StatePointer;
   std::vector<nodexyz *>m_States;
 
   int m_TargetX;
   int m_TargetY;
-  
+ 
   int StatePointerFor(int x, int y, int z);
 
   bool m_TargetIsDirty;
+
+  float m_GotLastSwipeAt;
+  bool m_SwipedBeforeUp;
+  bool m_StartedSwipe;
 
 };
