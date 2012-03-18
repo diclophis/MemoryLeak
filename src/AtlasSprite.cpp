@@ -155,7 +155,7 @@ void AtlasSprite::Simulate(float deltaTime) {
   if (m_IsAlive) {
     if (m_Fps > 0) {
       if (m_AnimationLife > (1.0 / (float)m_Fps)) {
-        m_Frame++;
+        m_Frame--;
         m_AnimationLife = 0.0;
       }
       
