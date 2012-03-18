@@ -90,7 +90,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 5;
+  m_TrailCount = 4;
 
   CreateFoos();
 
@@ -343,7 +343,7 @@ int SuperStarShooter::Simulate() {
 
   float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
   
-  float s = 1.0 * (time_swiped / 10.0);
+  float s = 1.0 * (time_swiped / 15.0);
   if (s > 1.0) {
     s = 1.0;
   }
@@ -441,7 +441,6 @@ int SuperStarShooter::Simulate() {
     int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
     switch (solved) {
       case micropather::MicroPather::SOLVED:
-        //LOGV("solved\n");
         m_Steps->erase(m_Steps->begin());
         break;
       case micropather::MicroPather::NO_SOLUTION:
@@ -454,46 +453,52 @@ int SuperStarShooter::Simulate() {
         LOGV("same\n");
         m_TargetX = -1;
         m_TargetY = -1;
-        //m_Steps->clear();
         break;	
       default:
         break;
     }
     m_TargetIsDirty = false;
-
   }
 
   bool needs_next_step = false;
 
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
-    //m_PlayerIndex = m_PlayerStartIndex;
     m_WarpTimeout += m_DeltaTime;
-    int stacked = 0;
     if (m_WarpTimeout > 0.1) {
-      for (unsigned int i=0; i<m_TrailCount; i++) {
-        if (i < m_Steps->size() && i < 4) {
-          nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
-          float tx = ((float)step->x * SUBDIVIDE);
-          float ty = ((float)step->y * SUBDIVIDE);
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 1;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
-        } else {
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (3 + stacked++) % 5;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = m_TargetX * SUBDIVIDE;
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = m_TargetY * SUBDIVIDE;
-        }
-      }
       needs_next_step = true;  
       m_WarpTimeout = 0.0;
     }
+
   } else {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
   }
+
+    int stacked = 3;
+    bool top_of_stack = false;
+    for (unsigned int i=0; i<m_TrailCount; i++) {
+      if (i < m_Steps->size() && i < 3) {
+        nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
+        float tx = ((float)step->x * SUBDIVIDE);
+        float ty = ((float)step->y * SUBDIVIDE);
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 1;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
+      } else {
+        if (top_of_stack) {
+          m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (int)fastAbs((stacked) % 5);
+        } else {
+          m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 3;
+          top_of_stack = true;
+        }
+        stacked--;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = m_TargetX * SUBDIVIDE;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = m_TargetY * SUBDIVIDE;
+      }
+    }
 
 
   if (needs_next_step && m_Steps->size() > 0) {
@@ -513,44 +518,25 @@ int SuperStarShooter::Simulate() {
     dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
     dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
+    if (dy > 0.0) {
+      //UP
+      m_PlayerIndex = m_PlayerStartIndex + 0;
+    }
 
-  // U R D L
+    if (dx > 0.0) {
+      //RIGHT
+      m_PlayerIndex = m_PlayerStartIndex + 1;
+    }
 
-      /*
-      if (fastAbs(dx) > fastAbs(dy)) {
-        if (dx > 0) {
-          m_PlayerIndex = m_PlayerStartIndex + 1;
-        } else {
-          m_PlayerIndex = m_PlayerStartIndex + 3;
-        }
-      } else {
-        if (dy > 0) {
-          m_PlayerIndex = m_PlayerStartIndex + 0;
-        } else {
-          m_PlayerIndex = m_PlayerStartIndex + 2;
-        }
-      }
-      */
+    if (dy < 0.0) {
+      //DOWN
+      m_PlayerIndex = m_PlayerStartIndex + 2;
+    }
 
-      if (dy > 0.0) {
-        //UP
-        m_PlayerIndex = m_PlayerStartIndex + 0;
-      }
-
-      if (dx > 0.0) {
-        //RIGHT
-        m_PlayerIndex = m_PlayerStartIndex + 1;
-      }
-
-      if (dy < 0.0) {
-        //DOWN
-        m_PlayerIndex = m_PlayerStartIndex + 2;
-      }
-
-      if (dx < 0.0) {
-        //LEFT
-        m_PlayerIndex = m_PlayerStartIndex + 3;
-      }
+    if (dx < 0.0) {
+      //LEFT
+      m_PlayerIndex = m_PlayerStartIndex + 3;
+    }
 
     m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
     m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
