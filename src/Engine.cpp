@@ -201,14 +201,8 @@ int Engine::RunThread() {
   m_DeltaTime = t2 - t1;
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  int times = 1;
-  if (m_DeltaTime > 0.2) {
-    //LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
-    m_DeltaTime *= 0.5;
-    times = 2;
-  }
-  
-  //else {
+  int times = 2;
+  m_DeltaTime *= 1.0 / (float)times;
   for (int i=0; i<times; i++) {
     if (m_GameState > 1) {
       //paused
