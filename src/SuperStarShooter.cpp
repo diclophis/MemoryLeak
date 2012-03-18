@@ -82,6 +82,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
+  m_TrailCount = 20;
+
   CreateFoos();
 
   for (int i=0; i<(m_GridCount * 2); i++) {
@@ -138,7 +140,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
     m_AtlasSprites[sub_index]->SetPosition(0.0, PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 12;
+    m_AtlasSprites[sub_index]->m_Fps = 20;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE));
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = 0.0;
@@ -175,13 +177,12 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_GotLastSwipeAt = 0.0;
   m_SwipedBeforeUp = false;
 
-  m_TrailCount = 20;
   m_TrailStartIndex = m_SpriteCount;
   for (int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_TrailFoo, NULL));
     m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 0.0);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-    m_AtlasSprites[m_SpriteCount]->m_Fps = 12; 
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 10; 
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 4.0, SUBDIVIDE / 4.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_SpriteCount++;
@@ -298,7 +299,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-round(m_CameraActualOffsetX), -round(m_CameraActualOffsetY), 0.0);
+  glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
@@ -324,7 +325,6 @@ int SuperStarShooter::Simulate() {
     s = 0.04 * (time_swiped / 0.5);
   }
 
-
   /*
   mx = (tx * m_DeltaTime * (time_swiped * 20.0));
   my = (ty * m_DeltaTime * (time_swiped * 20.0));
@@ -348,8 +348,8 @@ int SuperStarShooter::Simulate() {
   }
   */
 
-  mx = tx * s;
-  my = ty * s;
+  mx = roundf(tx * s);
+  my = roundf(ty * s);
 
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
@@ -467,7 +467,7 @@ int SuperStarShooter::Simulate() {
         LOGV("none\n");
         m_TargetX = -1;
         m_TargetY = -1;
-        //m_Steps->clear();
+        m_Steps->clear();
         break;
       case micropather::MicroPather::START_END_SAME:
         LOGV("same\n");
@@ -480,22 +480,6 @@ int SuperStarShooter::Simulate() {
     }
     m_TargetIsDirty = false;
 
-    for (int i=0; i<m_TrailCount; i++) {
-      if (i < m_Steps->size()) {
-        nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
-        float tx = ((float)step->x * SUBDIVIDE);
-        float ty = ((float)step->y * SUBDIVIDE);
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 4);
-        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
-      } else {
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 4;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = -50.0;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = -50.0;
-      }
-    }
   }
 
   bool needs_next_step = false;
@@ -579,13 +563,24 @@ int SuperStarShooter::Simulate() {
     }
 
 
+    m_AtlasSprites[m_PlayerIndex]->SetVelocity(300.0, 300.0);
 
-/*
-    //if ((fastAbs(dx) > 1.0) || (fastAbs(dy) > 1.0)) {
-    //}
-*/
-    m_AtlasSprites[m_PlayerIndex]->SetVelocity(150.0, 150.0);
-
+    for (int i=0; i<m_TrailCount; i++) {
+      if (i < m_Steps->size()) {
+        nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
+        float tx = ((float)step->x * SUBDIVIDE);
+        float ty = ((float)step->y * SUBDIVIDE);
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 4);
+        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
+      } else {
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 4;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = -50.0;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = -50.0;
+      }
+    }
   }
 
 
