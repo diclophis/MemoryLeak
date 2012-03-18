@@ -480,7 +480,7 @@ int SuperStarShooter::Simulate() {
     switch (solved) {
       case micropather::MicroPather::SOLVED:
         //LOGV("solved\n");
-        m_Steps->erase(m_Steps->begin());
+        //m_Steps->erase(m_Steps->begin());
         break;
       case micropather::MicroPather::NO_SOLUTION:
         LOGV("none\n");
