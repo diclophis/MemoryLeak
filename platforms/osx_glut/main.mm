@@ -29,6 +29,8 @@ GLuint loadTexture(NSBitmapImageRep *image) {
   glBindTexture(GL_TEXTURE_2D, text);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   GLuint width = CGImageGetWidth(image.CGImage);
   GLuint height = CGImageGetHeight(image.CGImage);
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();

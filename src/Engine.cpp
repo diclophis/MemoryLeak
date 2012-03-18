@@ -96,6 +96,9 @@ void Engine::ResetStateFoo() {
 
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
   //glBlendEquation(GL_FUNC_SUBTRACT);
   
   m_StateFoo->g_lastTexture = -1;
@@ -198,9 +201,15 @@ int Engine::RunThread() {
   m_DeltaTime = t2 - t1;
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  if (m_DeltaTime > 0.33) {
-    LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
-  } else {
+  int times = 1;
+  if (m_DeltaTime > 0.2) {
+    //LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
+    m_DeltaTime *= 0.5;
+    times = 2;
+  }
+  
+  //else {
+  for (int i=0; i<times; i++) {
     if (m_GameState > 1) {
       //paused
     } else {
@@ -210,6 +219,7 @@ int Engine::RunThread() {
       }
     }
   }
+
   m_IsSceneBuilt = true;
 	return m_GameState;
 }

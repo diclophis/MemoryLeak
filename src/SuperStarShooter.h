@@ -52,7 +52,7 @@ public:
   int m_PlayerStartIndex;
   int m_PlayerStopIndex;
 
-  int m_TrailCount;
+  unsigned int m_TrailCount;
   int m_TrailStartIndex;
   int m_TrailStopIndex;
 

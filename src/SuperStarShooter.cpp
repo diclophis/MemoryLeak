@@ -15,12 +15,13 @@ enum colliders {
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 24
-#define GRID_Y 24
+#define GRID_X 40
+#define GRID_Y 40
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
 #define WALK 51
+#define FILL 51
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
@@ -30,7 +31,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 2.0;
+  m_Zoom = 3.0;
 
   LoadSound(0);
 
@@ -41,8 +42,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_Space = new Octree<int>(32 * 32, BLANK);
 
-  for (unsigned int i=0; i<1024; i++) {
-    for (unsigned int ii=0; ii<1024; ii++) {
+  for (unsigned int i=0; i<124; i++) {
+    for (unsigned int ii=0; ii<124; ii++) {
       m_Space->set(i, ii, 0, WALK);
     }
   }
@@ -138,7 +139,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(350.0, 350.0);
+    m_AtlasSprites[sub_index]->SetVelocity(400.0, 400.0);
     m_AtlasSprites[sub_index]->SetPosition(0.0, PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 8;
@@ -164,9 +165,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 	m_Pather = new micropather::MicroPather(this);
 	m_Steps = new std::vector<void *>;
 
-  m_MaxStatePointers = 2048;
+  m_MaxStatePointers = 1024;
   m_StatePointer = 0;
-  for (unsigned int i=0; i<m_MaxStatePointers; i++) {
+  for (int i=0; i<m_MaxStatePointers; i++) {
     m_States.push_back(new nodexyz());
   }
 
@@ -195,6 +196,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 SuperStarShooter::~SuperStarShooter() {
   delete m_Space;
   delete m_GridPositions;
+  for (std::vector<nodexyz *>::iterator i = m_States.begin(); i != m_States.end(); ++i) {
+    delete *i;
+  }
+  m_States.clear();
+  m_Steps->clear();
+  delete m_Steps;
+  delete m_Pather;
   DestroyFoos();
 }
 
@@ -235,8 +243,14 @@ void SuperStarShooter::CreateFoos() {
 void SuperStarShooter::DestroyFoos() {
   LOGV("SuperStarShooter::DestroyFoos\n");
   delete m_GridFoo;
+  for (unsigned int i=0; i<4; i++) {
+    delete m_PlayerFoos[i];
+  }
+  free(m_PlayerFoos);
+  delete m_HoleFoo;
+  delete m_TrailFoo;
   delete m_BatchFoo;
-  //delete m_PlayerFoo;
+
 }
 
 
@@ -269,7 +283,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
       m_StartedSwipe = true;
     }
 
-    if ((m_GotLastSwipeAt > 0.0) && ((m_SimulationTime - m_GotLastSwipeAt) > 0.0855)) {
+    if ((m_GotLastSwipeAt > 0.0) && ((m_SimulationTime - m_GotLastSwipeAt) > 0.0655)) {
       m_SwipedBeforeUp = true;
     }
   }
@@ -319,11 +333,10 @@ int SuperStarShooter::Simulate() {
 
   float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
 
-  float s = 0.0;
-  if (time_swiped > 0.5) {
-    s = 0.04;
-  } else {
-    s = 0.04 * (time_swiped / 0.5);
+  
+  float s = 1.0 * (time_swiped / 10.0);
+  if (s > 1.0) {
+    s = 1.0;
   }
 
   /*
@@ -489,8 +502,8 @@ int SuperStarShooter::Simulate() {
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
     //m_PlayerIndex = m_PlayerStartIndex;
     m_WarpTimeout += m_DeltaTime;
-    if (m_WarpTimeout > 0.20) {
-      for (int i=0; i<m_TrailCount; i++) {
+    if (m_WarpTimeout > 0.1) {
+      for (unsigned int i=0; i<m_TrailCount; i++) {
         if (i < m_Steps->size() && i < 4) {
           nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
           float tx = ((float)step->x * SUBDIVIDE);
