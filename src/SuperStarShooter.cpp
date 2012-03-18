@@ -26,8 +26,12 @@ enum colliders {
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
-  int xx = 0;
-  int yy = 0;
+
+  m_CenterOfWorldX = 1;
+  m_CenterOfWorldY = 1;
+
+  int xx = 0; //m_CenterOfWorldX;
+  int yy = 0; //m_CenterOfWorldY;
 
   m_PercentThere = 0.0;
 
@@ -50,34 +54,37 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerFoos = (foofoo **)malloc(sizeof(foofoo *) * 4);
 
-  BlitIntoSpace(0, 41, 10, 3, 0, 0);
+  int bt_x = m_CenterOfWorldX;
+  int bt_y = m_CenterOfWorldY;
+
+  BlitIntoSpace(0, 41, 10, 3, bt_x, bt_y);
 
   int col_top = 68;
-  m_Space->set(0 + 1, 7, 1, col_top);
-  m_Space->set(0 + 1, 6, 1, col_top + 16);
-  m_Space->set(0 + 1, 5, 1, col_top + 16 + 16);
-  m_Space->set(0 + 1, 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(0 + 1, 3, 0, col_top + 16 + 16 + 16 + 16);
+  m_Space->set(bt_x + 1, bt_y + 7, 1, col_top);
+  m_Space->set(bt_x + 1, bt_y + 6, 1, col_top + 16);
+  m_Space->set(bt_x + 1, bt_y + 5, 1, col_top + 16 + 16);
+  m_Space->set(bt_x + 1, bt_y + 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(bt_x + 1, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
 
-  m_Space->set(0 + 3, 7, 1, col_top);
-  m_Space->set(0 + 3, 6, 1, col_top + 16);
-  m_Space->set(0 + 3, 5, 1, col_top + 16 + 16);
-  m_Space->set(0 + 3, 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(0 + 3, 3, 0, col_top + 16 + 16 + 16 + 16);
+  m_Space->set(bt_x + 3, bt_y + 7, 1, col_top);
+  m_Space->set(bt_x + 3, bt_y + 6, 1, col_top + 16);
+  m_Space->set(bt_x + 3, bt_y + 5, 1, col_top + 16 + 16);
+  m_Space->set(bt_x + 3, bt_y + 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(bt_x + 3, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
 
-  m_Space->set(0 + 6, 7, 1, col_top);
-  m_Space->set(0 + 6, 6, 1, col_top + 16);
-  m_Space->set(0 + 6, 5, 1, col_top + 16 + 16);
-  m_Space->set(0 + 6, 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(0 + 6, 3, 0, col_top + 16 + 16 + 16 + 16);
+  m_Space->set(bt_x + 6, bt_y + 7, 1, col_top);
+  m_Space->set(bt_x + 6, bt_y + 6, 1, col_top + 16);
+  m_Space->set(bt_x + 6, bt_y + 5, 1, col_top + 16 + 16);
+  m_Space->set(bt_x + 6, bt_y + 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(bt_x + 6, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
 
-  m_Space->set(0 + 8, 7, 1, col_top);
-  m_Space->set(0 + 8, 6, 1, col_top + 16);
-  m_Space->set(0 + 8, 5, 1, col_top + 16 + 16);
-  m_Space->set(0 + 8, 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(0 + 8, 3, 0, col_top + 16 + 16 + 16 + 16);
+  m_Space->set(bt_x + 8, bt_y + 7, 1, col_top);
+  m_Space->set(bt_x + 8, bt_y + 6, 1, col_top + 16);
+  m_Space->set(bt_x + 8, bt_y + 5, 1, col_top + 16 + 16);
+  m_Space->set(bt_x + 8, bt_y + 4, 1, col_top + 16 + 16 + 16);
+  m_Space->set(bt_x + 8, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
 
-  BlitIntoSpace(1, 249, 10, 7, 0, 7);
+  BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -93,8 +100,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (int i=0; i<m_GridCount; i++) {
 
-    float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
-    float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+    float px = ((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+    float py = ((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
     int sx = (int)floor(px / SUBDIVIDE);
     int sy = (int)floor(py / SUBDIVIDE);
 
@@ -139,14 +146,14 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(400.0, 400.0);
-    m_AtlasSprites[sub_index]->SetPosition(0.0, PLAYER_OFFSET);
+    m_AtlasSprites[sub_index]->SetVelocity(200.0, 200.0);
+    m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE / 2.0)), (m_CenterOfWorldY * (SUBDIVIDE / 2.0)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 8;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE));
-    m_AtlasSprites[sub_index]->m_TargetPosition[0] = 0.0;
-    m_AtlasSprites[sub_index]->m_TargetPosition[1] = PLAYER_OFFSET;
+    m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
+    m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
     m_SpriteCount++;
   }
@@ -180,7 +187,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_SwipedBeforeUp = false;
 
   m_TrailStartIndex = m_SpriteCount;
-  for (int i=0; i<m_TrailCount; i++) {
+  for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_TrailFoo, NULL));
     m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 0.0);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
@@ -437,13 +444,10 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  for (int i=0; i<m_TrailCount; i++) {
+  for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
     m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (2.0 * m_DeltaTime);
   }
-
-/*
-*/
 
   if (m_TargetIsDirty) {
     m_StatePointer = 0;
@@ -509,12 +513,12 @@ int SuperStarShooter::Simulate() {
           float tx = ((float)step->x * SUBDIVIDE);
           float ty = ((float)step->y * SUBDIVIDE);
           m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 2;
+          m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 1;
           m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
           m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
           m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
         } else {
-          m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 4;
+          m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 2;
           //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 4;
           //m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
           m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = m_TargetX * SUBDIVIDE;
@@ -594,13 +598,7 @@ int SuperStarShooter::Simulate() {
         m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1];
       }
     }
-
-
   }
-
-
-
-
 
   return 1;
 }

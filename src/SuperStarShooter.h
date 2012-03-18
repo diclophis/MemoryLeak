@@ -86,4 +86,7 @@ public:
   bool m_SwipedBeforeUp;
   bool m_StartedSwipe;
 
+  int m_CenterOfWorldX;
+  int m_CenterOfWorldY;
+
 };
