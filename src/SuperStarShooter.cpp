@@ -27,8 +27,8 @@ enum colliders {
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
 
-  m_CenterOfWorldX = 1;
-  m_CenterOfWorldY = 1;
+  m_CenterOfWorldX = 15;
+  m_CenterOfWorldY = 15;
 
   int xx = 0; //m_CenterOfWorldX;
   int yy = 0; //m_CenterOfWorldY;
@@ -147,7 +147,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
     m_AtlasSprites[sub_index]->SetVelocity(200.0, 200.0);
-    m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE / 2.0)), (m_CenterOfWorldY * (SUBDIVIDE / 2.0)) + PLAYER_OFFSET);
+    m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 8;
     m_AtlasSprites[sub_index]->m_Frame = 0;
@@ -197,6 +197,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_SpriteCount++;
   }
   m_TrailStopIndex = m_SpriteCount;
+
+  m_CameraActualOffsetX = m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  m_CameraActualOffsetY = m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 }
 
 
@@ -262,8 +265,8 @@ void SuperStarShooter::DestroyFoos() {
 
 
 void SuperStarShooter::Hit(float x, float y, int hitState) {
-  float xx = ((x) - (0.5 * (m_ScreenWidth))) * m_Zoom;
-	float yy = (0.5 * (m_ScreenHeight) - (y)) * m_Zoom;
+  float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
+	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
   float dx = (xx + m_CameraActualOffsetX) + (SUBDIVIDE / 2.0);
   float dy = (yy + m_CameraActualOffsetY) + (SUBDIVIDE / 2.0);
 	float collide_x = (dx);
@@ -339,7 +342,6 @@ int SuperStarShooter::Simulate() {
   float my;
 
   float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
-
   
   float s = 1.0 * (time_swiped / 10.0);
   if (s > 1.0) {
@@ -390,8 +392,8 @@ int SuperStarShooter::Simulate() {
     recenter_y = true;
   }
 
-  dsx = (dx / SUBDIVIDE);
-  dsy = (dy / SUBDIVIDE);
+  dsx = (dx / SUBDIVIDE) + m_CenterOfWorldX;
+  dsy = (dy / SUBDIVIDE) + m_CenterOfWorldY;
 
   if (recenter_x) {
     m_LastCenterX -= ((float)dsx * SUBDIVIDE);
@@ -414,8 +416,8 @@ int SuperStarShooter::Simulate() {
       nsx = sx;
       nsy = sy;
 
-      float px = (xx * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
-      float py = (yy * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+      float px = ((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+      float py = ((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
 
       if (recenter_x) {
         nsx -= dsx;
