@@ -184,7 +184,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 0.0);
     m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 24; 
-    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.0, SUBDIVIDE / 2.0);
+    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 4.0, SUBDIVIDE / 4.0);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_SpriteCount++;
   }
@@ -424,6 +424,7 @@ int SuperStarShooter::Simulate() {
 
     float totalCost;
     m_Pather->Reset();
+    m_Steps->clear();
     int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
     switch (solved) {
       case micropather::MicroPather::SOLVED:
@@ -433,13 +434,13 @@ int SuperStarShooter::Simulate() {
         LOGV("none\n");
         m_TargetX = -1;
         m_TargetY = -1;
-        m_Steps->clear();
+        //m_Steps->clear();
         break;
       case micropather::MicroPather::START_END_SAME:
         LOGV("same\n");
         m_TargetX = -1;
         m_TargetY = -1;
-        m_Steps->clear();
+        //m_Steps->clear();
         break;	
       default:
         break;
@@ -460,6 +461,37 @@ int SuperStarShooter::Simulate() {
         m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 4;
       }
     }
+  }
+
+  if (needs_next_step && m_Steps->size() > 0) {
+
+    nodexyz *step = m_States[(intptr_t)m_Steps->at(0)];
+    m_Steps->erase(m_Steps->begin());
+
+    float tx = ((float)step->x * SUBDIVIDE);
+    float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
+    float dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+    float dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
+    if ((fastAbs(dx) > 1.0) || (fastAbs(dy) > 1.0)) {
+      if (fastAbs(dx) > fastAbs(dy)) {
+        if (dx > 0) {
+          m_PlayerIndex = m_PlayerStartIndex + 1;
+        } else {
+          m_PlayerIndex = m_PlayerStartIndex + 3;
+        }
+      } else {
+        if (dy > 0) {
+          m_PlayerIndex = m_PlayerStartIndex + 0;
+        } else {
+          m_PlayerIndex = m_PlayerStartIndex + 2;
+        }
+      }
+    }
+
+    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] = tx;
+    m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] = ty;
+    m_AtlasSprites[m_PlayerIndex]->SetVelocity(40.0, 40.0);
   }
 
   return 1;
