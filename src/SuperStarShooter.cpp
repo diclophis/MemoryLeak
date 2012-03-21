@@ -11,18 +11,19 @@ enum colliders {
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-#define SUBDIVIDE 100.0
+#define SUBDIVIDE 200.0
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 40
-#define GRID_Y 40
+#define GRID_X 45
+#define GRID_Y 45
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
 #define WALK 51
 #define FILL 51
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
+#define MAX_WAIT_BEFORE_WARP 2.0
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
@@ -35,7 +36,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 3.0;
+  m_Zoom = 4.0;
 
   LoadSound(0);
 
@@ -146,7 +147,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(200.0, 200.0);
+    m_AtlasSprites[sub_index]->SetVelocity(10.0, 10.0);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 8;
@@ -312,6 +313,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
         m_TargetX = cx;
         m_TargetY = cy;
         m_TargetIsDirty = true;
+        m_WarpTimeout += MAX_WAIT_BEFORE_WARP;
       }
     }
     m_SwipedBeforeUp = false;
@@ -339,35 +341,36 @@ int SuperStarShooter::Simulate() {
   float ddx = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
   float ddy = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
 
+  /*
   float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
 
   bool stretched = false;
 
   if (time_swiped > 1.0) {
     if (m_PlayerIndex == m_PlayerStartIndex + 0) {
-      if (ddy > 5.0) {
-        m_CameraOffsetY += 175.0 * m_DeltaTime;
+      if (ddy > 135.0) {
+        m_CameraOffsetY += 0.0 * m_DeltaTime;
         stretched = true;
       }
     }
 
     if (m_PlayerIndex == m_PlayerStartIndex + 1) {
-      if (ddx > 5.0) {
-        m_CameraOffsetX += 175.0 * m_DeltaTime;
+      if (ddx > 135.0) {
+        m_CameraOffsetX += 0.0 * m_DeltaTime;
         stretched = true;
       }
     }
 
     if (m_PlayerIndex == m_PlayerStartIndex + 2) {
-      if (ddy < -5.0) {
-        m_CameraOffsetY -= 175.0 * m_DeltaTime;
+      if (ddy < -135.0) {
+        m_CameraOffsetY -= 0.0 * m_DeltaTime;
         stretched = true;
       }
     }
 
     if (m_PlayerIndex == m_PlayerStartIndex + 3) {
-      if (ddx < -5.0) {
-        m_CameraOffsetX -= 175.0 * m_DeltaTime;
+      if (ddx < -135.0) {
+        m_CameraOffsetX -= 0.0 * m_DeltaTime;
         stretched = true;
       }
     }
@@ -384,7 +387,7 @@ int SuperStarShooter::Simulate() {
   if (stretched) {
     s = 1.0;
   } else {
-    s = 1.0 * (time_swiped / 10.0);
+    s = 1.0 * (time_swiped / 1.0);
   }
 
   if (s > 1.0) {
@@ -396,6 +399,11 @@ int SuperStarShooter::Simulate() {
 
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
+
+  */
+
+  m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
   bool recenter_x = false;
   bool recenter_y = false;
@@ -507,7 +515,7 @@ int SuperStarShooter::Simulate() {
 
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
     m_WarpTimeout += m_DeltaTime;
-    if (m_WarpTimeout > 0.1) {
+    if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
       needs_next_step = true;  
       m_WarpTimeout = 0.0;
     }
@@ -613,12 +621,6 @@ int SuperStarShooter::Simulate() {
   if ((m_CameraActualOffsetY) > (max_window_y)) {
     m_CameraOffsetY = m_CameraActualOffsetY = max_window_y;
   }
-
-  /*
-  if (m_CameraActualOffsetY < m_ScreenHeight) {
-    m_CameraActualOffsetY = m_ScreenHeight;
-  }
-  */
 
   return 1;
 }

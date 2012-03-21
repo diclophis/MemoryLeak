@@ -325,22 +325,24 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	float tx = 0.0;
 	float ty = 0.0;
 	bool done = false;
-	if ((fabs(dx) > 5.0) || (fabs(dy) > 5.0)) {
-    if (dx != 0.0) {
-      tx = -(dt * m_Velocity[0] * (dx / fastAbs(dx)));
-    }
-    if (dy != 0.0) {
-      ty = -(dt * m_Velocity[1] * (dy / fastAbs(dy)));
-    }
-		done = false;
-	} else {
-		tx = -dx;
-		ty = -dy;
-		//m_Velocity[0] = 0;
-		//m_Velocity[1] = 0;
-		done = true;
-	}
+
+  if (dx != 0.0) {
+    //tx = -(dt * m_Velocity[0] * (dx / fastAbs(dx)));
+    tx = -(0.1 * (dx) * dt) * m_Velocity[0];
+  }
+  if (dy != 0.0) {
+    //ty = -(dt * m_Velocity[1] * (dy / fastAbs(dy)));
+    ty = -(0.1 * (dy) * dt) * m_Velocity[1];
+  }
+
 	m_Position[0] += tx;
 	m_Position[1] += ty;
+
+	if ((fastAbs(dx) < 10.0) && (fastAbs(dy) < 10.0)) {
+    m_Position[0] = m_TargetPosition[0];
+    m_Position[1] = m_TargetPosition[1];
+    done = true;
+  }
+
   return done;
 }
