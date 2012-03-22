@@ -36,7 +36,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 4.0;
+  m_Zoom = 10.0;
 
   LoadSound(0);
 
@@ -147,10 +147,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(10.0, 10.0);
+    m_AtlasSprites[sub_index]->SetVelocity(100.0, 100.0);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 8;
+    m_AtlasSprites[sub_index]->m_Fps = 30;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE));
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
@@ -184,7 +184,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_TargetIsDirty = false;
 
-  m_GotLastSwipeAt = 0.0;
+  m_GotLastSwipeAt = -10.0;
   m_SwipedBeforeUp = false;
 
   m_TrailStartIndex = m_SpriteCount;
@@ -338,8 +338,38 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
+
   float ddx = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
   float ddy = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
+
+  bool needs_next_step = false;
+
+  if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
+    m_WarpTimeout += m_DeltaTime;
+    if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
+      needs_next_step = true;  
+      m_WarpTimeout = 0.0;
+    }
+    m_Zoom -= (m_DeltaTime * 0.9);
+  } else {
+    m_Zoom += (m_DeltaTime * 1.0);
+
+    m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+  }
+
+  if (m_Zoom < 3.0) {
+    m_Zoom = 3.0;
+  }
+
+  if (m_Zoom > 10.0) {
+    m_Zoom = 10.0;
+  }
+
+  //float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
+
+  //if (time_swiped > 0.0 && time_swiped < 0.1) {
+  //  m_Zoom += 20.0 * m_DeltaTime;
+  //}
 
   /*
   float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
@@ -376,8 +406,6 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
-  float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
 
   float mx;
   float my;
@@ -393,17 +421,25 @@ int SuperStarShooter::Simulate() {
   if (s > 1.0) {
     s = 1.0;
   }
+  */
 
-  mx = roundf(tx * s);
-  my = roundf(ty * s);
+  m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
+  float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
+  float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
+  float s = 5.0;
+
+  float mx = (tx * s * m_DeltaTime);
+  float my = (ty * s * m_DeltaTime);
 
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
 
-  */
-
-  m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  if (false) {
+    m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+    m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  }
 
   bool recenter_x = false;
   bool recenter_y = false;
@@ -511,18 +547,6 @@ int SuperStarShooter::Simulate() {
     m_TargetIsDirty = false;
   }
 
-  bool needs_next_step = false;
-
-  if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
-    m_WarpTimeout += m_DeltaTime;
-    if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
-      needs_next_step = true;  
-      m_WarpTimeout = 0.0;
-    }
-
-  } else {
-    m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
-  }
 
     int stacked = 3;
     bool top_of_stack = false;

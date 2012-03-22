@@ -338,9 +338,14 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 	m_Position[0] += tx;
 	m_Position[1] += ty;
 
-	if ((fastAbs(dx) < 10.0) && (fastAbs(dy) < 10.0)) {
+	if ((fastAbs(tx) > fastAbs(dx)) || (fastAbs(dx) < 10.0)) {
     m_Position[0] = m_TargetPosition[0];
+  }
+  if ((fastAbs(ty) > fastAbs(dy)) || (fastAbs(dy) < 10.0)) {
     m_Position[1] = m_TargetPosition[1];
+  }
+
+  if (m_Position[0] == m_TargetPosition[0] && m_Position[1] == m_TargetPosition[1]) {
     done = true;
   }
 
