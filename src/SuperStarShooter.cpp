@@ -11,7 +11,7 @@ enum colliders {
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-#define SUBDIVIDE 200.0
+#define SUBDIVIDE (200.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
@@ -36,7 +36,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PercentThere = 0.0;
 
-  m_Zoom = 10.0;
+  m_Zoom = 1.0;
 
   LoadSound(0);
 
@@ -350,20 +350,22 @@ int SuperStarShooter::Simulate() {
       needs_next_step = true;  
       m_WarpTimeout = 0.0;
     }
-    m_Zoom -= (m_DeltaTime * 0.9);
+    m_Zoom -= (m_DeltaTime * 0.1);
   } else {
-    m_Zoom += (m_DeltaTime * 1.0);
+    m_Zoom += (m_DeltaTime * 0.2);
 
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
   }
 
-  if (m_Zoom < 3.0) {
-    m_Zoom = 3.0;
+  if (m_Zoom < 5.0) {
+    m_Zoom = 5.0;
   }
 
-  if (m_Zoom > 10.0) {
-    m_Zoom = 10.0;
+  if (m_Zoom > 6.0) {
+    m_Zoom = 6.0;
   }
+ 
+  m_Zoom = 1.0;
 
   //float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
 
@@ -485,17 +487,21 @@ int SuperStarShooter::Simulate() {
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = m_LastCenterX + px;
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = m_LastCenterX + px;
+        m_AtlasSprites[i]->m_Position[0] = floorf(m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = floorf(m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = m_LastCenterY + py;
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = m_LastCenterY + py;
+        m_AtlasSprites[i]->m_Position[1] = floorf(m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = floorf(m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
-      if (nsx >= 0 && nsy >= 0) {
+      if (nsx == 0 || nsy == 0) {
+        m_AtlasSprites[i]->m_Frame = 83; //m_Space->at(nsx, nsy, 0);
+        m_AtlasSprites[i + m_GridCount]->m_Frame = 83; //m_Space->at(nsx, nsy, 1);
+
+      } else if (nsx >= 0 && nsy >= 0) {
         m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
         m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
       } else {
@@ -630,20 +636,22 @@ int SuperStarShooter::Simulate() {
   float min_window_y = ((m_ScreenHeight * 1.5) - SUBDIVIDE * 0.5);
   float max_window_y = (((62 * SUBDIVIDE) * 1.5) + SUBDIVIDE);
 
-  if ((m_CameraActualOffsetX) < (min_window_x)) {
-    m_CameraOffsetX = m_CameraActualOffsetX = min_window_x;
-  }
+  if (false) {
+    if ((m_CameraActualOffsetX) < (min_window_x)) {
+      m_CameraOffsetX = m_CameraActualOffsetX = min_window_x;
+    }
 
-  if ((m_CameraActualOffsetX) > (max_window_x)) {
-    m_CameraOffsetX = m_CameraActualOffsetX = max_window_x;
-  }
+    if ((m_CameraActualOffsetX) > (max_window_x)) {
+      m_CameraOffsetX = m_CameraActualOffsetX = max_window_x;
+    }
 
-  if ((m_CameraActualOffsetY) < (min_window_y)) {
-    m_CameraOffsetY = m_CameraActualOffsetY = min_window_y;
-  }
+    if ((m_CameraActualOffsetY) < (min_window_y)) {
+      m_CameraOffsetY = m_CameraActualOffsetY = min_window_y;
+    }
 
-  if ((m_CameraActualOffsetY) > (max_window_y)) {
-    m_CameraOffsetY = m_CameraActualOffsetY = max_window_y;
+    if ((m_CameraActualOffsetY) > (max_window_y)) {
+      m_CameraOffsetY = m_CameraActualOffsetY = max_window_y;
+    }
   }
 
   return 1;

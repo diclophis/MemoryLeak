@@ -129,7 +129,8 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   if (false) {
     glDisable(GL_TEXTURE_2D);
-    glPointSize(2.0);
+    glPointSize(1.0);
+    glLineWidth(1.0);
     glColor4f(0.0, 1.0, 0.0, 1.0);
     glDrawElements(GL_LINES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -230,8 +231,8 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 	Sprite *m_Sprites;
 	m_Sprites = new Sprite[length];
 
-	GLfloat tdx = 1.0 / (float)sprites_per_row;
-	GLfloat tdy = 1.0 / (float)rows;
+	GLfloat tdx = (1.0 / (float)sprites_per_row);
+	GLfloat tdy = (1.0 / (float)rows);
 
 	float texture_x = 0;
 	float texture_y = 0;
