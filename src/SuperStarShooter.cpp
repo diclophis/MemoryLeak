@@ -11,7 +11,7 @@ enum colliders {
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-#define SUBDIVIDE (200.0) 
+#define SUBDIVIDE (16.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
@@ -20,8 +20,11 @@ enum colliders {
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
-#define WALK 51
-#define FILL 51
+#define TREASURE 10
+#define PURE 97
+#define SAND 98
+#define FILL SAND
+#define OVER PURE
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define MAX_WAIT_BEFORE_WARP 2.0
 
@@ -49,7 +52,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   for (unsigned int i=0; i<124; i++) {
     for (unsigned int ii=0; ii<124; ii++) {
-      m_Space->set(i, ii, 0, WALK);
+      m_Space->set(i, ii, 0, FILL);
     }
   }
 
@@ -331,7 +334,7 @@ void SuperStarShooter::RenderSpritePhase() {
   RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
-  RenderSpriteRange(m_HoleIndex, m_HoleIndex + 1, m_BatchFoo);
+  //RenderSpriteRange(m_HoleIndex, m_HoleIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
@@ -365,7 +368,7 @@ int SuperStarShooter::Simulate() {
     m_Zoom = 6.0;
   }
  
-  m_Zoom = 1.0;
+  m_Zoom = 0.5;
 
   //float time_swiped = m_SimulationTime - m_GotLastSwipeAt;
 
@@ -487,26 +490,26 @@ int SuperStarShooter::Simulate() {
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = floorf(m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = floorf(m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = round(m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = round(m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = floorf(m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = floorf(m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = round(m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = round(m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
-      if (nsx == 0 || nsy == 0) {
-        m_AtlasSprites[i]->m_Frame = 83; //m_Space->at(nsx, nsy, 0);
-        m_AtlasSprites[i + m_GridCount]->m_Frame = 83; //m_Space->at(nsx, nsy, 1);
-
-      } else if (nsx >= 0 && nsy >= 0) {
+      //if (nsx == 0 || nsy == 0) {
+      //  m_AtlasSprites[i]->m_Frame = PURE; //m_Space->at(nsx, nsy, 0);
+      //  m_AtlasSprites[i + m_GridCount]->m_Frame = PURE; //m_Space->at(nsx, nsy, 1);
+      //} else
+      if (nsx >= 0 && nsy >= 0) {
         m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
         m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
       } else {
-        m_AtlasSprites[i]->m_Frame = BLANK;
-        m_AtlasSprites[i + m_GridCount]->m_Frame = BLANK;
+        m_AtlasSprites[i]->m_Frame = OVER;
+        m_AtlasSprites[i + m_GridCount]->m_Frame = OVER;
       }
       xx++;
       if (xx >= GRID_X) {
@@ -518,7 +521,7 @@ int SuperStarShooter::Simulate() {
 
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (5.0 * m_DeltaTime);
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime);
   }
 
   if (m_TargetIsDirty) {
@@ -527,7 +530,9 @@ int SuperStarShooter::Simulate() {
     int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
 
     int startState = -1;
-    int startStateTarget = StatePointerFor((m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE), (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE), 0);
+    int selected_x = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE);
+    int selected_y = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE);
+    int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
     startState = startStateTarget;
     float totalCost;
     m_Pather->Reset();
@@ -537,15 +542,15 @@ int SuperStarShooter::Simulate() {
         m_Steps->erase(m_Steps->begin());
         break;
       case micropather::MicroPather::NO_SOLUTION:
-        LOGV("none\n");
-        m_TargetX = -1;
-        m_TargetY = -1;
+        //LOGV("none\n");
+        m_TargetX = selected_x;
+        m_TargetY = selected_y;
         m_Steps->clear();
         break;
       case micropather::MicroPather::START_END_SAME:
-        LOGV("same\n");
-        m_TargetX = -1;
-        m_TargetY = -1;
+        //LOGV("same\n");
+        m_TargetX = selected_x;
+        m_TargetY = selected_y;
         break;	
       default:
         break;

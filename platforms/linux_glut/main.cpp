@@ -13,8 +13,8 @@
 #include <alsa/asoundlib.h>
 #include <vector>
 
-#define kWindowWidth 1024
-#define kWindowHeight 1024
+#define kWindowWidth 320
+#define kWindowHeight 480
 
 static pthread_t audio_thread;
 
@@ -188,15 +188,11 @@ int main(int argc, char** argv) {
   for (int i=0; i<dir_ents; i++) {
     char *tmp;
     tmp = path_cat(dir_path, dps[i]->d_name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     GLuint tex_2d = SOIL_load_OGL_texture(
       tmp,
       SOIL_LOAD_AUTO,
       SOIL_CREATE_NEW_ID,
-      SOIL_FLAG_MULTIPLY_ALPHA
+      SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA
     );
     textures.push_back(tex_2d);
 
