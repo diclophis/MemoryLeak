@@ -26,7 +26,7 @@ enum colliders {
 #define FILL SAND
 #define OVER PURE
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define MAX_WAIT_BEFORE_WARP 2.0
+#define MAX_WAIT_BEFORE_WARP 1.0
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
@@ -150,7 +150,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(100.0, 100.0);
+    m_AtlasSprites[sub_index]->SetVelocity(200.0, 200.0);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 30;
@@ -330,10 +330,10 @@ void SuperStarShooter::RenderModelPhase() {
 
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
-  RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
-  RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
+  //RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
+  //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-  RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
+  //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
   //RenderSpriteRange(m_HoleIndex, m_HoleIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }

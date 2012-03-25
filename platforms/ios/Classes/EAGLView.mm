@@ -262,10 +262,23 @@ static GLuint g_LastRenderBuffer = -1;
   CGColorSpaceRelease(colorSpace);
   CGContextDrawImage(textureContext, CGRectMake(0, 0, (float)textureWidth, (float)textureHeight), textureImage);
   void *tempData = malloc(textureHeight * textureWidth * 2);
-  inPixel32 = (unsigned int*)textureData;
+  //inPixel32 = (unsigned int*)textureData;
   outPixel16 = (unsigned short*)tempData;
-  for(unsigned int i = 0; i < textureWidth * textureHeight; ++i, ++inPixel32) {
-    *outPixel16++ = ((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | ((((*inPixel32 >> 8) & 0xFF) >> 4) << 8) | ((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | ((((*inPixel32 >> 24) & 0xFF) >> 4) << 0);
+  for (unsigned int i=0; i<(textureHeight * textureWidth); i++) {
+  //  unsigned int inP = INT_MAX & (unsigned short)((0 >> 24) >> 4);
+  //  outPixel16[i] = ((((inP >> 0) & 0xFF) >> 4) << 12) | ((((inP >> 8) & 0xFF) >> 4) << 8) | ((((inP >> 16) & 0xFF) >> 4) << 4) | ((((inP >> 24) & 0xFF) >> 4) << 0);
+  //}
+  //for(unsigned int i = 0; i < textureWidth * textureHeight; ++i, ++inPixel32) {
+    //*outPixel16++ = ((unsigned short)((*inPixel32 >> 0) & 0xf0))<<8
+    //| ((unsigned short)((*inPixel32 >> 8) & 0xf0))<<4
+		//| (unsigned short)((*inPixel32 >> 16) & 0xf0)
+		//| (unsigned short)((*inPixel32 >> 24) >> 4);
+    
+    //*outPixel16++ = ((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | ((((*inPixel32 >> 8) & 0xFF) >> 4) << 8) | ((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | ((((*inPixel32 >> 24)) >> 4));
+    
+    int inP = ((int *)textureData)[i]; //INT_MAX & (unsigned short)((0 >> 24) >> 4);
+    outPixel16[i] = ((((inP >> 0) & 0xFF) >> 4) << 12) | ((((inP >> 8) & 0xFF) >> 4) << 8) | ((((inP >> 16) & 0xFF) >> 4) << 4) | ((((inP >> 24) & 0xFF) >> 4) << 0);
+
   }
   free(textureData);
   textureData = tempData;

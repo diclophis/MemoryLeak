@@ -127,7 +127,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  if (false) {
+  if (true) {
     glDisable(GL_TEXTURE_2D);
     glPointSize(1.0);
     glLineWidth(1.0);
@@ -323,26 +323,34 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 bool AtlasSprite::MoveToTargetPosition(float dt) {
 	float dx = m_Position[0] - m_TargetPosition[0];
 	float dy = m_Position[1] - m_TargetPosition[1];
+  float dir_x = 1.0;
+  if (dx < 0.0) {
+    dir_x = -1.0;
+  }
+  float dir_y = 1.0;
+  if (dy < 0.0) {
+    dir_y = -1.0;
+  }
 	float tx = 0.0;
 	float ty = 0.0;
 	bool done = false;
 
   if (dx != 0.0) {
     //tx = -(dt * m_Velocity[0] * (dx / fastAbs(dx)));
-    tx = -(0.1 * (dx) * dt) * m_Velocity[0];
+    tx = -(0.1 * dt) * m_Velocity[0] * dir_x;
   }
   if (dy != 0.0) {
     //ty = -(dt * m_Velocity[1] * (dy / fastAbs(dy)));
-    ty = -(0.1 * (dy) * dt) * m_Velocity[1];
+    ty = -(0.1 * dt) * m_Velocity[1] * dir_y;
   }
 
 	m_Position[0] += tx;
 	m_Position[1] += ty;
 
-	if ((fastAbs(tx) > fastAbs(dx)) || (fastAbs(dx) < 5.0)) {
+	if ((fastAbs(tx) > fastAbs(dx)) || (fastAbs(dx) < 1.0)) {
     m_Position[0] = m_TargetPosition[0];
   }
-  if ((fastAbs(ty) > fastAbs(dy)) || (fastAbs(dy) < 5.0)) {
+  if ((fastAbs(ty) > fastAbs(dy)) || (fastAbs(dy) < 1.0)) {
     m_Position[1] = m_TargetPosition[1];
   }
 
