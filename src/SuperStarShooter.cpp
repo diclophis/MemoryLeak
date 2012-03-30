@@ -27,6 +27,9 @@ enum colliders {
 #define OVER PURE
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define MAX_WAIT_BEFORE_WARP 1.0
+#define MAX_SEARCH 10
+#define MAX_STATE_POINTERS 1024
+
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
@@ -176,7 +179,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 	m_Pather = new micropather::MicroPather(this);
 	m_Steps = new std::vector<void *>;
 
-  m_MaxStatePointers = 1024;
+  m_MaxStatePointers = MAX_STATE_POINTERS;
   m_StatePointer = 0;
   for (int i=0; i<m_MaxStatePointers; i++) {
     m_States.push_back(new nodexyz());
@@ -731,7 +734,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
 
   float look_distance = (float)sqrt((double)(lx * lx) + (double)(ly * ly) + (double)(lz * lz));
   
-  if (look_distance > 20.0) {
+  if (look_distance > MAX_SEARCH) {
     return;
   }
   
