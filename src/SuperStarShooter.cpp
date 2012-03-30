@@ -60,19 +60,21 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     int bt_x = m_CenterOfWorldX;
     int bt_y = m_CenterOfWorldY;
     int col_top = 68;
+    int col_bottom_start = col_top + (16 * 4);
+    int col_top_start = col_top + (16 * 3);
 
     //stairs
     BlitIntoSpace(0, 41, 10, 3, bt_x, bt_y);
 
     //cols
-    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 1, bt_y + 3);
-    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 1, bt_y + 4);
-    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 3, bt_y + 3);
-    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 3, bt_y + 4);
-    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 6, bt_y + 3);
-    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 6, bt_y + 4);
-    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 8, bt_y + 3);
-    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 8, bt_y + 4);
+    BlitIntoSpace(0, col_bottom_start, 1, 1, bt_x + 1, bt_y + 3);
+    BlitIntoSpace(1, col_top_start, 1, 4, bt_x + 1, bt_y + 4);
+    BlitIntoSpace(0, col_bottom_start, 1, 1, bt_x + 3, bt_y + 3);
+    BlitIntoSpace(1, col_top_start, 1, 4, bt_x + 3, bt_y + 4);
+    BlitIntoSpace(0, col_bottom_start, 1, 1, bt_x + 6, bt_y + 3);
+    BlitIntoSpace(1, col_top_start, 1, 4, bt_x + 6, bt_y + 4);
+    BlitIntoSpace(0, col_bottom_start, 1, 1, bt_x + 8, bt_y + 3);
+    BlitIntoSpace(1, col_top_start, 1, 4, bt_x + 8, bt_y + 4);
 
     //roof
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
