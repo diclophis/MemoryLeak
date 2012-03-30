@@ -1,5 +1,6 @@
 // Vanilla MacOSX OpenGL App
 
+
 #import <Foundation/Foundation.h>
 #import <AppKit/NSImage.h>
 #import <QuartzCore/QuartzCore.h>
@@ -19,7 +20,7 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
-static int game_index = 2; 
+static int game_index = 1; 
 
 
 GLuint loadTexture(NSBitmapImageRep *image) {

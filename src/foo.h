@@ -66,7 +66,7 @@ struct foofoo {
 
 	~foofoo()
 	{
-    LOGV("deallic foofoo\n");
+    LOGV("dealloc foofoo\n");
     glDeleteBuffers(m_numBuffers, m_VerticeBuffers);
     glDeleteBuffers(m_numBuffers, m_IndexBuffers);
     glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
