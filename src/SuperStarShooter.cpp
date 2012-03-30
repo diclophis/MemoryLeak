@@ -156,7 +156,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
     m_AtlasSprites[sub_index]->SetVelocity(200.0, 200.0);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 30;
+    m_AtlasSprites[sub_index]->m_Fps = 15;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE));
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
@@ -344,9 +344,9 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-
-  float ddx = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
-  float ddy = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
+  // i forgot what these are used for
+  //float ddx = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
+  //float ddy = (m_AtlasSprites[m_PlayerIndex]->m_Position[0] - m_CameraActualOffsetX);
 
   bool needs_next_step = false;
 
@@ -436,7 +436,7 @@ int SuperStarShooter::Simulate() {
 
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
-  float s = 5.0;
+  float s = 2.0;
 
   float mx = (tx * s * m_DeltaTime);
   float my = (ty * s * m_DeltaTime);
