@@ -74,6 +74,9 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
   m_CurrentSound = 0;
+
+  m_SetStates = 0;
+
 }
 
 
@@ -84,10 +87,18 @@ void Engine::ResetStateFoo() {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+  if (false) {
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  }
+
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
   m_StateFoo->g_lastInterleavedBuffer = -1;
   m_StateFoo->g_lastVertexArrayObject = -1;
+  m_StateFoo->m_EnabledStates = false;
 
 }
 
@@ -162,6 +173,14 @@ int Engine::isExtensionSupported(const char *extension) {
 void Engine::DrawScreen(float rotation) {
   RunThread();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
+    
+    /*
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    */
+    
     // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
@@ -259,7 +278,19 @@ void Engine::ResizeScreen(int width, int height) {
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   glClearColor(0.925, 0.890, 0.804, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  m_IsScreenResized = true;
+  
+  //if (m_SetStates++ < 3) {
+    /*
+    glPointSize(10.0);
+    float eq[] = { 0.0, 0.0 };
+    glVertexPointer(2, GL_FLOAT, sizeof(float), eq);
+    glTexCoordPointer(2, GL_FLOAT, 0, eq);
+    glDrawArrays(GL_POINTS, 0, 1);
+    */
+  //} else {
+    m_IsScreenResized = true;
+  //}
+  
 }
 
 

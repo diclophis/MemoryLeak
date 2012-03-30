@@ -32,6 +32,7 @@ typedef struct {
   GLuint g_lastElementBuffer;
   GLuint g_lastInterleavedBuffer;
   GLuint g_lastVertexArrayObject;
+  bool m_EnabledStates;
 } StateFoo;
 
 #ifdef __cplusplus

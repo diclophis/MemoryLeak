@@ -93,5 +93,7 @@ public:
   float m_Fov;
 	double t1, t2;
 
+  int m_SetStates;
+
 
 };

@@ -67,17 +67,21 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
 
 void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
-  glEnable(GL_BLEND);
-  glEnable(GL_TEXTURE_2D);
+  /*
+  if (false) {
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
 
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  }
+  */
+  
   if (foo->m_Texture != sf->g_lastTexture) {
 		glBindTexture(GL_TEXTURE_2D, foo->m_Texture);
 		sf->g_lastTexture = foo->m_Texture;
 	}
-
+  
 #ifdef HAS_VAO
   if (foo->m_VertexArrayObjects[0] == 0) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
@@ -118,6 +122,14 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
   
+  if (!sf->m_EnabledStates) {
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    sf->m_EnabledStates = true;
+  }
+  
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   if (false) {
@@ -132,10 +144,14 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   foo->m_NumBatched = 0;
 
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisable(GL_TEXTURE_2D);
-  glDisable(GL_BLEND);
+  /*
+  if (false) {
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+  }
+  */
 }
 
 
