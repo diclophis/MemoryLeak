@@ -45,7 +45,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_Zoom = 1.0;
 
   LoadSound(0);
-
+  LoadSound(1);
+  m_CurrentSound = 0;
+  
   m_IsPushingAudio = true;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
