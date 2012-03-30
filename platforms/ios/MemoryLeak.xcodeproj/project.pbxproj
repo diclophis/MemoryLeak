@@ -1757,6 +1757,7 @@
 					"-D_iPhoneVersion",
 					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
+					"-DMODPLUG_FASTSOUNDLIB",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1804,6 +1805,7 @@
 					"-D_iPhoneVersion",
 					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
+					"-DMODPLUG_FASTSOUNDLIB",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1895,6 +1897,7 @@
 					"-D_iPhoneVersion",
 					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
+					"-DMODPLUG_FASTSOUNDLIB",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
