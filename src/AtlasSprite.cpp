@@ -29,7 +29,6 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
 	m_Velocity = new float[2];
 	m_Scale = new float[2];
 	m_TargetPosition = new float[2];
-
   m_TargetPosition[0] = 0.0;
   m_TargetPosition[1] = 0.0;
 	m_Scale[0] = 1.0;
@@ -71,12 +70,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
 
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  
-  
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
@@ -321,26 +314,28 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 
 
 bool AtlasSprite::MoveToTargetPosition(float dt) {
+	bool done = false;
 	float dx = m_Position[0] - m_TargetPosition[0];
 	float dy = m_Position[1] - m_TargetPosition[1];
+
   float dir_x = 1.0;
   if (dx < 0.0) {
     dir_x = -1.0;
   }
+
   float dir_y = 1.0;
   if (dy < 0.0) {
     dir_y = -1.0;
   }
+
 	float tx = 0.0;
 	float ty = 0.0;
-	bool done = false;
 
   if (dx != 0.0) {
-    //tx = -(dt * m_Velocity[0] * (dx / fastAbs(dx)));
     tx = -(0.1 * dt) * m_Velocity[0] * dir_x;
   }
+
   if (dy != 0.0) {
-    //ty = -(dt * m_Velocity[1] * (dy / fastAbs(dy)));
     ty = -(0.1 * dt) * m_Velocity[1] * dir_y;
   }
 
