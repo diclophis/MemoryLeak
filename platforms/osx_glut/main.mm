@@ -5,7 +5,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioToolbox.h>
 
+
 #include "MemoryLeak.h"
+
 
 static int kWindowWidth = 500;
 static int kWindowHeight = 500;
@@ -13,13 +15,12 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-
 static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
+static int game_index = 2; 
 
-static int game_index = 1; 
 
 GLuint loadTexture(NSBitmapImageRep *image) {
   GLuint text = 0;
@@ -27,8 +28,6 @@ GLuint loadTexture(NSBitmapImageRep *image) {
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
   glGenTextures(1, &text);
   glBindTexture(GL_TEXTURE_2D, text);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   GLuint width = CGImageGetWidth(image.CGImage);
@@ -117,8 +116,6 @@ void processNormalKeys(unsigned char key, int x, int y) {
       } else if (key == 115) {
         //LOGV("start new game\n");
         Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
-      } else {
-        //glutEnterGameMode();
       }
     }
     reset_down = !reset_down;
@@ -132,7 +129,6 @@ int main(int argc, char** argv) {
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
   glutInitWindowPosition(1000, 500);
-  //glutGameModeString("1440×900:32@60");
   glutCreateWindow("main");
   glutDisplayFunc(draw);
   glutKeyboardFunc(processNormalKeys);
@@ -180,12 +176,10 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-
 		foo *firstModel = new foo;
 		firstModel->fp = fd;
 		firstModel->off = 0;
 		firstModel->len = len;
-		
 		levels.push_back(firstModel);
 	}
   [level_names release];
@@ -196,12 +190,10 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-
 		foo *firstModel = new foo;
 		firstModel->fp = fd;
 		firstModel->off = 0;
 		firstModel->len = len;
-		
 		sounds.push_back(firstModel);
 	}
   [sound_names release];
