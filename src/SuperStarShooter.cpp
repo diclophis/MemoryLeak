@@ -236,16 +236,16 @@ void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int widt
 void SuperStarShooter::CreateFoos() {
   LOGV("SuperStarShooter::CreateFoos\n");
   ResetStateFoo();
-  m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 16, 0, 256, 0.0);
+  m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(8), 16, 16, 0, 256, 0.0);
 
   for (unsigned int i=0; i<4; i++) {
-    m_PlayerFoos[i] = AtlasSprite::GetFoo(m_Textures->at(7), 16, 14, 13 + (16 * i), 13 + (16 * i) + 3, 0.0);
+    m_PlayerFoos[i] = AtlasSprite::GetFoo(m_Textures->at(8), 16, 14, 13 + (16 * i), 13 + (16 * i) + 3, 0.0);
   }
 
-  m_HoleFoo = AtlasSprite::GetFoo(m_Textures->at(7), 8, 8, 24, 25, 0.0);
-  m_TrailFoo = AtlasSprite::GetFoo(m_Textures->at(7), 16, 16, 251, 256, 0.0);
+  m_HoleFoo = AtlasSprite::GetFoo(m_Textures->at(8), 8, 8, 24, 25, 0.0);
+  m_TrailFoo = AtlasSprite::GetFoo(m_Textures->at(8), 16, 16, 251, 256, 0.0);
 
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(7), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(8), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
   if (m_SimulationTime > 0.0) {
     for (int i=m_GridStartIndex; i<m_SecondGridStopIndex; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
@@ -330,7 +330,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
-  //RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
+  RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
