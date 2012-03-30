@@ -79,32 +79,16 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
 
 void Engine::ResetStateFoo() {
 
-  /*
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-  glEnable(GL_TEXTURE_2D);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glShadeModel(GL_FLAT);
-
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  */
-  
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  //glBlendEquation(GL_FUNC_SUBTRACT);
-  
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
   m_StateFoo->g_lastInterleavedBuffer = -1;
   m_StateFoo->g_lastVertexArrayObject = -1;
+
 }
 
 
@@ -178,6 +162,7 @@ int Engine::isExtensionSupported(const char *extension) {
 void Engine::DrawScreen(float rotation) {
   RunThread();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
+    // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     // Render 3D
@@ -202,7 +187,6 @@ int Engine::RunThread() {
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   int times = 1;
-  //m_DeltaTime *= 1.0 / (float)times;
   for (int i=0; i<times; i++) {
     if (m_GameState > 1) {
       //paused
