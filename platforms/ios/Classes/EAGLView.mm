@@ -118,7 +118,6 @@ static GLuint g_LastRenderBuffer = -1;
     
     NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
     for (NSString *path in texture_names) {
-      NSLog(@"wtf: %@", path);
       NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
       UIImage *image = [[UIImage alloc] initWithData:texData];
       textures.push_back([self loadTexture2:image]);
