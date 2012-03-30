@@ -1,15 +1,9 @@
 // Jon Bardin GPL
 
 
-enum colliders {
-  BARREL = 1,
-  MIRROR = 2,
-  STAR = 4
-};
-
-
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
+
 
 #define SUBDIVIDE (16.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
@@ -40,8 +34,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   int xx = 0;
   int yy = 0;
 
-  m_PercentThere = 0.0;
-
   m_Zoom = 1.0;
 
   LoadSound(0);
@@ -63,37 +55,28 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_PlayerFoos = (foofoo **)malloc(sizeof(foofoo *) * 4);
 
-  int bt_x = m_CenterOfWorldX;
-  int bt_y = m_CenterOfWorldY;
+  {
+    //int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y
+    int bt_x = m_CenterOfWorldX;
+    int bt_y = m_CenterOfWorldY;
+    int col_top = 68;
 
-  BlitIntoSpace(0, 41, 10, 3, bt_x, bt_y);
+    //stairs
+    BlitIntoSpace(0, 41, 10, 3, bt_x, bt_y);
 
-  int col_top = 68;
-  m_Space->set(bt_x + 1, bt_y + 7, 1, col_top);
-  m_Space->set(bt_x + 1, bt_y + 6, 1, col_top + 16);
-  m_Space->set(bt_x + 1, bt_y + 5, 1, col_top + 16 + 16);
-  m_Space->set(bt_x + 1, bt_y + 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(bt_x + 1, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
+    //cols
+    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 1, bt_y + 3);
+    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 1, bt_y + 4);
+    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 3, bt_y + 3);
+    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 3, bt_y + 4);
+    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 6, bt_y + 3);
+    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 6, bt_y + 4);
+    BlitIntoSpace(0, col_top + 16 + 16 + 16 + 16, 1, 1, bt_x + 8, bt_y + 3);
+    BlitIntoSpace(1, col_top + 16 + 16 + 16, 1, 4, bt_x + 8, bt_y + 4);
 
-  m_Space->set(bt_x + 3, bt_y + 7, 1, col_top);
-  m_Space->set(bt_x + 3, bt_y + 6, 1, col_top + 16);
-  m_Space->set(bt_x + 3, bt_y + 5, 1, col_top + 16 + 16);
-  m_Space->set(bt_x + 3, bt_y + 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(bt_x + 3, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
-
-  m_Space->set(bt_x + 6, bt_y + 7, 1, col_top);
-  m_Space->set(bt_x + 6, bt_y + 6, 1, col_top + 16);
-  m_Space->set(bt_x + 6, bt_y + 5, 1, col_top + 16 + 16);
-  m_Space->set(bt_x + 6, bt_y + 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(bt_x + 6, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
-
-  m_Space->set(bt_x + 8, bt_y + 7, 1, col_top);
-  m_Space->set(bt_x + 8, bt_y + 6, 1, col_top + 16);
-  m_Space->set(bt_x + 8, bt_y + 5, 1, col_top + 16 + 16);
-  m_Space->set(bt_x + 8, bt_y + 4, 1, col_top + 16 + 16 + 16);
-  m_Space->set(bt_x + 8, bt_y + 3, 0, col_top + 16 + 16 + 16 + 16);
-
-  BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
+    //roof
+    BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
+  }
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -665,31 +648,6 @@ int SuperStarShooter::Simulate() {
   }
 
   return 1;
-}
-
-
-void SuperStarShooter::CreateCollider(float x, float y, float r, int flag) {
-  int sx = 0;
-  int sy = 0;
-  if (flag & BARREL) {
-    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
-  } else if (flag & STAR) {
-    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
-  } else if (flag & MIRROR) {
-    m_AtlasSprites.push_back(new SpriteGun(NULL, NULL));
-  }
-  m_AtlasSprites[m_SpriteCount]->m_IsFlags = flag;
-  m_AtlasSprites[m_SpriteCount]->SetPosition(x, y);
-  m_AtlasSprites[m_SpriteCount]->m_Rotation = r;
-  m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-  m_AtlasSprites[m_SpriteCount]->Build(1);
-  sx = (x / SUBDIVIDE);
-  sy = (y / SUBDIVIDE);
-  int existing_index = m_Space->at(sx, sy, 0); 
-  if (existing_index < 0) {
-    m_Space->set(sx, sy, 0, m_SpriteCount);
-  }
-  m_SpriteCount++;
 }
 
 
