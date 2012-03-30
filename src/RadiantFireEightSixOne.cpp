@@ -123,7 +123,7 @@ void RadiantFireEightSixOne::PlayerSleep() {
 void RadiantFireEightSixOne::PlayerWake() {
   m_PlayerIsAwake = true;
   m_PlayerBody->SetActive(true);
-  m_PlayerBody->ApplyLinearImpulse(b2Vec2(3, 3), m_PlayerBody->GetPosition());
+  m_PlayerBody->ApplyLinearImpulse(b2Vec2(10, 10), m_PlayerBody->GetPosition());
 }
 
 
