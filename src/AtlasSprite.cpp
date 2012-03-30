@@ -127,7 +127,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  if (true) {
+  if (false) {
     glDisable(GL_TEXTURE_2D);
     glPointSize(1.0);
     glLineWidth(1.0);

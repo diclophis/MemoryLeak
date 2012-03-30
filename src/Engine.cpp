@@ -178,7 +178,7 @@ int Engine::isExtensionSupported(const char *extension) {
 void Engine::DrawScreen(float rotation) {
   RunThread();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     // Render 3D
     GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 200.0);
