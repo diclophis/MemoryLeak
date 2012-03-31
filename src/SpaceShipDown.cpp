@@ -826,10 +826,6 @@ int SpaceShipDown::Simulate() {
   m_CameraPosition[1] = m_CameraTarget[1] + 1; //30.0 - (m_CameraOffsetY / (PTM_RATIO)); //m_Models[m_PlayerIndex]->m_Position[1] + 60.0; //m_CameraPosition[1]+(m_CameraOffsetY);
   m_CameraPosition[2] = 15.0; //m_CameraOffsetY / m_Zoom;
 
-
-
-  
-
   return 1;
 }
 

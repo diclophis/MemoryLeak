@@ -272,7 +272,8 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
   m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  glClearColor(0.925, 0.890, 0.804, 1.0);
+  //glClearColor(0.925, 0.890, 0.804, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   
   //if (m_SetStates++ < 3) {
