@@ -70,6 +70,7 @@ public:
 
   int m_LandscapeIndex;
   int m_PlayerIndex;
+  int m_PlayerStopIndex;
   int m_PlayerIndex2;
   int m_SpaceShipPartsStartIndex;
   int m_SpaceShipPartsStopIndex;
@@ -83,6 +84,7 @@ public:
   int m_EnemiesStopIndex;
   int m_StackCount;
   int m_LevelIndex;
+  bool m_LevelLoaded;
   float m_TakeoffTimeout;
 
   float m_PickupTimeout;

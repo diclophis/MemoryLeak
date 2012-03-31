@@ -39,13 +39,13 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc ssd\n");
+  m_LevelLoaded = false;
   LoadSound(0);
   LoadModel(0, 0, 1);
   LoadModel(1, 0, 1);
   LoadModel(2, 0, 1);
   LoadModel(3, 0, 1);
   LoadModel(4, 0, 1);
-  CreateFoos();
   StartLevel(0);
 }
 
@@ -94,7 +94,8 @@ void SpaceShipDown::CreateFoos() {
       }
     }
   }
-  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), m_FooFoos[0]->m_numFaces, 100);
+
+  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 100000, 1000);
 }
 
 
@@ -119,6 +120,8 @@ void SpaceShipDown::DestroyFoos() {
 void SpaceShipDown::StartLevel(int level_index) {
 
   LOGV("Start Level\n");
+
+  CreateFoos();
 
   m_LevelIndex = level_index;
   if (m_LevelIndex > m_LevelFoos->size() - 1) {
@@ -155,10 +158,29 @@ void SpaceShipDown::StartLevel(int level_index) {
   LoadLevel(m_LevelIndex, 3);
   CreateBorder(m_WorldWidth, m_WorldHeight);
   m_CurrentSound = m_LevelIndex;
+  m_LevelLoaded = true;
 }
 
 
 void SpaceShipDown::StopLevel() {
+
+  DestroyFoos();
+
+  m_SpaceShipPartsStartIndex = 0;
+  m_SpaceShipPartsStopIndex = 0;
+  m_PlatformsStartIndex = 0;
+  m_PlatformsStopIndex = 0;
+  m_DropZonesStartIndex = 0;
+  m_DropZonesStopIndex = 0;
+  m_PickedUpPartIndex = 0;
+  m_EnemiesStartIndex = 0;
+  m_EnemiesStopIndex = 0;
+  m_PlayerIndex = 0;
+  m_PlayerStopIndex = 0;
+
+  ClearModels();
+  ClearSprites();
+
   for (std::vector<b2JointDef*>::iterator i = m_PickupJointDefs.begin(); i != m_PickupJointDefs.end(); ++i) {
     delete *i;
   }
@@ -180,12 +202,12 @@ void SpaceShipDown::StopLevel() {
   delete world;
   delete m_FrictionJointDef;
   delete m_PollJointDef;
+  m_LevelLoaded = false;
 }
 
 
 SpaceShipDown::~SpaceShipDown() {
   StopLevel();
-  DestroyFoos();
 }
 
 
@@ -256,6 +278,8 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_AtlasSprites[m_PlayerIndex]->SetScale(BLOCK_WIDTH / 2, BLOCK_WIDTH / 2);
   m_AtlasSprites[m_PlayerIndex]->Build(PLAYER_AFTERBURNER_COUNT);
   m_SpriteCount++;
+
+  m_PlayerStopIndex = m_SpriteCount;
 
   m_Models.push_back(new Model(m_FooFoos.at(1)));
   m_Models[m_PlayerIndex]->m_Scale[0] = 2.0;
@@ -589,6 +613,10 @@ void SpaceShipDown::AdjustZoom() {
 
 int SpaceShipDown::Simulate() {
 
+  if (!m_LevelLoaded) {
+    return 1;
+  }
+
   AdjustZoom();
 
   m_PickupTimeout += m_DeltaTime;
@@ -806,11 +834,6 @@ int SpaceShipDown::Simulate() {
   m_CameraOffsetX += -(0.75 * m_DeltaTime * (-tx + m_CameraOffsetX));
   m_CameraOffsetY += -(0.75 * m_DeltaTime * (-ty + m_CameraOffsetY));
 
-  float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
-  if (space_ship_height > m_WorldHeight * 1.5) {
-    StopLevel();
-    StartLevel(m_LevelIndex + 1);
-  }
 
   m_Fov = 60;
 
@@ -825,6 +848,17 @@ int SpaceShipDown::Simulate() {
   m_CameraPosition[0] = m_CameraTarget[0]; //0.0 - ((m_CameraOffsetX / (PTM_RATIO)) * 8.0); //m_CameraPosition[1]+(m_CameraOffsetX);
   m_CameraPosition[1] = m_CameraTarget[1] + 1; //30.0 - (m_CameraOffsetY / (PTM_RATIO)); //m_Models[m_PlayerIndex]->m_Position[1] + 60.0; //m_CameraPosition[1]+(m_CameraOffsetY);
   m_CameraPosition[2] = 15.0; //m_CameraOffsetY / m_Zoom;
+
+  //float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
+  //if (space_ship_height > m_WorldHeight * 1.5) {
+  //  StopLevel();
+  //  StartLevel(m_LevelIndex + 1);
+  //}
+
+  if (m_SimulationTime > 5.0) {
+    StopLevel();
+    StartLevel(m_LevelIndex + 1);
+  }
 
   return 1;
 }
@@ -991,7 +1025,8 @@ void SpaceShipDown::RenderModelPhase() {
   m_ThirdBatchFoo->m_NumBatched = 0;
   RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
-  RenderModelRange(m_PlayerIndex, m_PlayerIndex+1, m_ThirdBatchFoo);
+  RenderModelRange(m_PlayerIndex, m_PlayerStopIndex, m_ThirdBatchFoo);
+  LOGV("wtf: %d\n", m_ThirdBatchFoo->m_NumBatched);
   Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, true);
   Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, false);
 }

@@ -39,6 +39,8 @@ public:
   void PauseSimulation();
   void LoadSound(int i);
   void LoadModel(int i, int s, int e);
+  void ClearModels();
+  void ClearSprites();
   int isExtensionSupported(const char *extension);
   
   static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void ());

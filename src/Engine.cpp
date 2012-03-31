@@ -31,15 +31,8 @@ Engine::~Engine() {
   }
   m_FooFoos.clear();
 
-  for (std::vector<SpriteGun *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
-    delete *i;
-  }
-  m_AtlasSprites.clear();
 
-  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
-    delete *i;
-  }
-  m_Models.clear();
+  ClearModels();
 
   for (std::vector<ModPlugFile *>::iterator i = m_Sounds.begin(); i != m_Sounds.end(); ++i) {
     ModPlug_Unload(*i);
@@ -48,6 +41,24 @@ Engine::~Engine() {
 
 
   free(m_StateFoo);
+}
+
+
+void Engine::ClearSprites() {
+  for (std::vector<SpriteGun *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
+    delete *i;
+  }
+  m_AtlasSprites.clear();
+  m_SpriteCount = 0;
+}
+
+
+void Engine::ClearModels() {
+  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
+    delete *i;
+  }
+  m_Models.clear();
+  m_ModelCount = 0;
 }
 
 
