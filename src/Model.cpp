@@ -168,9 +168,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
@@ -212,6 +209,14 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   }
 
   if (!copy) {
+    if (!sf->m_EnabledStates) {
+      glEnable(GL_BLEND);
+      glEnable(GL_TEXTURE_2D);
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      sf->m_EnabledStates = true;
+    }
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
   }
 

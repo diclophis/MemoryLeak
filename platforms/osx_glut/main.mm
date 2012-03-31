@@ -20,7 +20,7 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
-static int game_index = 1; 
+static int game_index = 3; 
 
 
 GLuint loadTexture(NSBitmapImageRep *image) {

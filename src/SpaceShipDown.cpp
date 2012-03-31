@@ -38,8 +38,8 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 LOGV("alloc ssd\n");
   LoadSound(0);
-  LoadSound(1);
-  LoadSound(2);
+  //LoadSound(1);
+  //LoadSound(2);
   LoadModel(0, 0, 1);
   LoadModel(1, 0, 1);
   LoadModel(2, 0, 1);
@@ -55,19 +55,19 @@ LOGV("create foos\n");
 
   ResetStateFoo();
   //BLOCK_WIDTH * 1.2, BLOCK_WIDTH * 1.2
-  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 1, 2, 0.0);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 3, 4, 1.0);
-  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 4, 5, 0.0);
-  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 6, 7, 0.0);
-  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 5, 6, 0.0);
-  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 7, 8, 1.0);
-  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 8, 16, 1.0);
-  m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 0, 1, 0.0);
-  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(3), 4, 4, 2, 3, 1.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(3), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 1, 2, 0.0);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 3, 4, 1.0);
+  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 4, 5, 0.0);
+  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 6, 7, 0.0);
+  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 5, 6, 0.0);
+  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 7, 8, 1.0);
+  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 8, 16, 1.0);
+  m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 0, 1, 0.0);
+  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 2, 3, 1.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
 
-  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(2), 1, 1, 0, 1, 0.0);
-  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(2), 1);
+  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(0), 1, 1, 0, 1, 0.0);
+  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1);
 
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
@@ -94,7 +94,7 @@ LOGV("create foos\n");
       }
     }
   }
-  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(5), m_FooFoos[0]->m_numFaces, 100);
+  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), m_FooFoos[0]->m_numFaces, 100);
 }
 
 
@@ -1035,7 +1035,6 @@ void SpaceShipDown::RenderModelPhase() {
   //46074 4 11 1 4 0 1
   //Start Level
   //130329 15 63 12 15 11 12
-
   //LOGV("%d %d %d %d %d %d %d\n",m_ThirdBatchFoo->m_NumBatched, m_PlatformsStartIndex, m_PlatformsStopIndex, m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_PlayerIndex, m_PlayerIndex+1);
 }
 
