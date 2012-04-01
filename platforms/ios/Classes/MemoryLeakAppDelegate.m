@@ -37,7 +37,7 @@
 	if ([glView wasActive]) {
 		[glView startAnimation];
 	} else {
-		[glView startGame:[NSNumber numberWithInt:1]];
+		[glView startGame:[NSNumber numberWithInt:3]];
 		[glView startAnimation];
 	}
 }

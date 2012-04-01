@@ -82,8 +82,8 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
 	glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
 
   glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
-  size_t interleaved_buffer_size = (ff->m_numFaces * ff->m_Stride);
-  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+  //size_t interleaved_buffer_size = (ff->m_numFaces * ff->m_Stride);
+  //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
   Engine::CheckGL("Wtf\n");
 
   ff->m_numIndexBuffers = 1;
@@ -197,18 +197,18 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
 #endif
 
-  if (foo->m_NeedsCopy && copy) {
+  //if (foo->m_NeedsCopy && copy) {
     size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
 
 
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
-  }
+  //}
 
-  if (!copy) {
+  //if (!copy) {
     if (!sf->m_EnabledStates) {
       glEnable(GL_BLEND);
       glEnable(GL_TEXTURE_2D);
@@ -218,7 +218,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
       sf->m_EnabledStates = true;
     }
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-  }
+  //}
 
   if (false) {
   /*

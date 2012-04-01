@@ -95,7 +95,7 @@ void SpaceShipDown::CreateFoos() {
     }
   }
 
-  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 100000, 1000);
+  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 1000, 1000);
 }
 
 
@@ -157,7 +157,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   LoadLevel(m_LevelIndex, 0);
   LoadLevel(m_LevelIndex, 3);
   CreateBorder(m_WorldWidth, m_WorldHeight);
-  m_CurrentSound = m_LevelIndex;
+  m_CurrentSound = 0;
   m_LevelLoaded = true;
 }
 
@@ -1026,9 +1026,9 @@ void SpaceShipDown::RenderModelPhase() {
   RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_PlayerIndex, m_PlayerStopIndex, m_ThirdBatchFoo);
-  LOGV("wtf: %d\n", m_ThirdBatchFoo->m_NumBatched);
+  //LOGV("wtf: %d\n", m_ThirdBatchFoo->m_NumBatched);
   Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, true);
-  Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, false);
+  //Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, false);
 }
 
 

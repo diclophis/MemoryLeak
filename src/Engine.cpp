@@ -31,6 +31,7 @@ Engine::~Engine() {
   }
   m_FooFoos.clear();
 
+  ClearSprites();
 
   ClearModels();
 
