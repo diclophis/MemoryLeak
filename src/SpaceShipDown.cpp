@@ -1022,6 +1022,13 @@ void SpaceShipDown::CreateDebugDraw() {
 
 void SpaceShipDown::RenderModelPhase() {
   m_ThirdBatchFoo->m_NumBatched = 0;
+  
+  m_StateFoo->m_LastBufferIndex++;
+  
+  if (m_StateFoo->m_LastBufferIndex > 1) {
+    m_StateFoo->m_LastBufferIndex = 0;
+  }
+  
   RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_PlayerIndex, m_PlayerStopIndex, m_ThirdBatchFoo);

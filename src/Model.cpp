@@ -175,10 +175,10 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
   }
 
-#ifdef HAS_VAOX
-  if (foo->m_VertexArrayObjects[sf->m_LastBufferIndex] == 0) {
-    glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[sf->m_LastBufferIndex]);
-    sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[sf->m_LastBufferIndex];
+#ifdef HAS_VAO
+  if (foo->m_VertexArrayObjects[0] == 0) {
+    glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
+    sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
 
     //sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
@@ -187,12 +187,12 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     
     //if (foo->m_IndexBuffers[sf->m_LastBufferIndex] != sf->g_lastElementBuffer) {
-      sf->g_lastElementBuffer = foo->m_IndexBuffers[sf->m_LastBufferIndex];
+      sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     //}
     
     //if (foo->m_InterleavedBuffers[sf->m_LastBufferIndex] != sf->g_lastInterleavedBuffer) {
-      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[sf->m_LastBufferIndex];
+      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     //}
     
@@ -203,21 +203,21 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
     glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
   } else {
-    //if (foo->m_VertexArrayObjects[sf->m_LastBufferIndex] != sf->g_lastVertexArrayObject) {
-      sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[sf->m_LastBufferIndex];
+    if (foo->m_VertexArrayObjects[0] != sf->g_lastVertexArrayObject) {
+      sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
       glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-    //}
+    }
     
-    //if (foo->m_IndexBuffers[sf->m_LastBufferIndex] != sf->g_lastElementBuffer) {
-      sf->g_lastElementBuffer = foo->m_IndexBuffers[sf->m_LastBufferIndex];
-      //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-    //}
+    if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
+      sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+    }
     
-    //if (foo->m_InterleavedBuffers[sf->m_LastBufferIndex] != sf->g_lastInterleavedBuffer) {
-      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[sf->m_LastBufferIndex];
+    if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
+      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
       //LOGV("wtf: %d\n", sf->g_lastInterleavedBuffer);
-      //glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-    //}
+      glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+    }
     
     //LOGV("use VAO: %d %d %d %d\n", sf->m_LastBufferIndex, sf->g_lastVertexArrayObject, sf->g_lastElementBuffer, sf->g_lastInterleavedBuffer);
 
@@ -268,11 +268,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-    sf->m_LastBufferIndex++;
-  
-    if (sf->m_LastBufferIndex > 1) {
-      sf->m_LastBufferIndex = 0;
-    }
 
     //LOGV("wtf: %d\n", sf->m_LastBufferIndex);
   
