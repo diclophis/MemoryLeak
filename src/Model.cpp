@@ -161,17 +161,27 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     sf->g_lastTexture = foo->m_Texture;
     glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
   }
-  
 
 #ifdef HAS_VAO
   if (foo->m_VertexArrayObjects[0] == 0) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-    sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
-    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-    sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+    //sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
+    //glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+    //sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+    
+    if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
+      sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+    }
+    
+    if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
+      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
+      glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+    }
+    
     glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
     glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
     glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
@@ -182,30 +192,34 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     }
   }
 #else
+  
   if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
-
+  
   if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
-
+  
   glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
 	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
+  
 #endif
 
   //if (foo->m_NeedsCopy && copy) {
+
     size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, foo->m_IndexFoo, GL_DYNAMIC_DRAW);
+    //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
 
 
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, foo->m_ModelFoos, GL_DYNAMIC_DRAW);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+
   //}
 
   //if (!copy) {
@@ -217,10 +231,12 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
       glEnableClientState(GL_VERTEX_ARRAY);
       sf->m_EnabledStates = true;
     }
+  
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
   //}
 
   if (false) {
+    
   /*
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glPolygonMode(GL_FRONT, GL_FILL);
@@ -236,6 +252,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glEnable(GL_TEXTURE_2D);
   */
+    
   }
 
   if (false) {
