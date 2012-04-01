@@ -834,9 +834,8 @@ int SpaceShipDown::Simulate() {
     ty = -m_WorldWidth * 0.5;
   }
 
-  m_CameraOffsetX += -(0.75 * m_DeltaTime * (-tx + m_CameraOffsetX));
-  m_CameraOffsetY += -(0.75 * m_DeltaTime * (-ty + m_CameraOffsetY));
-
+  m_CameraOffsetX += -(0.85 * m_DeltaTime * (-tx + m_CameraOffsetX));
+  m_CameraOffsetY += -(0.85 * m_DeltaTime * (-ty + m_CameraOffsetY));
 
   m_Fov = 60;
 
@@ -850,7 +849,7 @@ int SpaceShipDown::Simulate() {
 
   m_CameraPosition[0] = m_CameraTarget[0];
   m_CameraPosition[1] = m_CameraTarget[1];
-  m_CameraPosition[2] = 15.0;
+  m_CameraPosition[2] = 20.0;
 
   //float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
   //if (space_ship_height > m_WorldHeight * 1.5) {

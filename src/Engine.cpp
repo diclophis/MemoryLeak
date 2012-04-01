@@ -112,6 +112,7 @@ void Engine::ResetStateFoo() {
   m_StateFoo->g_lastInterleavedBuffer = -1;
   m_StateFoo->g_lastVertexArrayObject = -1;
   m_StateFoo->m_EnabledStates = false;
+  m_StateFoo->m_LastBufferIndex = 0;
 
 }
 
