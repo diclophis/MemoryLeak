@@ -36,7 +36,7 @@ static GLuint g_LastRenderBuffer = -1;
     // Get the layer
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
 
-    eaglLayer.opaque = TRUE;
+    eaglLayer.opaque = TRUE; //kEAGLColorFormatRGBA8
     eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
     context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:glShareGroup];
     
@@ -210,16 +210,22 @@ static GLuint g_LastRenderBuffer = -1;
     }
 
     Engine::CurrentGameDrawScreen(0);		
-	
+    
+    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES};
+    //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES, GL_COLOR_ATTACHMENT0_OES};
+    //const GLenum discards[]  = {GL_DEPTH_EXT, GL_COLOR_EXT};
+    glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards);
+    
     if (g_LastRenderBuffer != colorRenderbuffer) {
       g_LastRenderBuffer = colorRenderbuffer;
       glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
     }
-
-    const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES};
-    glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards);
     
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
+
+
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    
   }
 }
 

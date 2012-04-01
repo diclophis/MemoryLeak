@@ -80,15 +80,20 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   ff->m_numInterleavedBuffers = 1;
 	ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
 	glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
-
   glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
-  //size_t interleaved_buffer_size = (ff->m_numFaces * ff->m_Stride);
-  //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW);
+  size_t interleaved_buffer_size = (ff->m_numFaces * ff->m_Stride);
+  LOGV("bind array buffer: %d %d\n", ff->m_InterleavedBuffers[0], interleaved_buffer_size);
+  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, ff->m_ModelFoos, GL_STATIC_DRAW);
   Engine::CheckGL("Wtf\n");
 
   ff->m_numIndexBuffers = 1;
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
   glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
+  size_t interleaved_element_buffer_size = (ff->m_numFaces) * sizeof(GLshort);
+  LOGV("bind element array buffer: %d %d\n", ff->m_IndexBuffers[0], interleaved_element_buffer_size);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, ff->m_IndexFoo, GL_STATIC_DRAW);
+  Engine::CheckGL("Wtf 2\n");
 
   return ff;
 }
@@ -167,6 +172,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
+
     //sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
     //glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     //sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
@@ -212,13 +218,15 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   //if (foo->m_NeedsCopy && copy) {
 
     size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, foo->m_IndexFoo, GL_DYNAMIC_DRAW);
-    //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_STATIC_DRAW);
+    //LOGV("subdata element array buffer: %d %d\n", sf->g_lastElementBuffer, interleaved_element_buffer_size);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
 
 
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, foo->m_ModelFoos, GL_DYNAMIC_DRAW);
-    //glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+    //LOGV("subdata array buffer: %d %d\n", sf->g_lastInterleavedBuffer, interleaved_buffer_size);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
 
   //}
 

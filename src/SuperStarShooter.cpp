@@ -225,7 +225,9 @@ void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int widt
 
 void SuperStarShooter::CreateFoos() {
   LOGV("SuperStarShooter::CreateFoos\n");
+
   ResetStateFoo();
+
   m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(0), 16, 16, 0, 256, 0.0);
 
   for (unsigned int i=0; i<4; i++) {
