@@ -26,11 +26,12 @@ static GLuint g_LastRenderBuffer = -1;
 }
 
 
+
 -(id)initWithCoder:(NSCoder *)aDecoder {
   if ((self = [super initWithCoder:aDecoder])) {
 
     animating = FALSE;
-    animationFrameInterval = 4;
+    animationFrameInterval = 1;
     displayLink = nil;
     
     // Get the layer
@@ -223,9 +224,10 @@ static GLuint g_LastRenderBuffer = -1;
     
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
 
+    //const GLenum discards_2[]  = {GL_COLOR_ATTACHMENT0_OES};
+    //glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards_2);
 
     //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    
   }
 }
 

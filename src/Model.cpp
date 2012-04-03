@@ -86,7 +86,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
     glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[i]);
     size_t interleaved_buffer_size = (ff->m_numFaces * ff->m_Stride);
     //LOGV("bind array buffer: %d %d\n", ff->m_InterleavedBuffers[0], interleaved_buffer_size);
-    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, ff->m_ModelFoos, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, ff->m_ModelFoos, GL_STATIC_DRAW);
     Engine::CheckGL("Wtf\n");
   }
 
@@ -97,7 +97,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[i]);
     size_t interleaved_element_buffer_size = (ff->m_numFaces) * sizeof(GLshort);
     //LOGV("bind element array buffer: %d %d\n", ff->m_IndexBuffers[0], interleaved_element_buffer_size);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, ff->m_IndexFoo, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, ff->m_IndexFoo, GL_STATIC_DRAW);
     Engine::CheckGL("Wtf 2\n");
   }
 
@@ -169,7 +169,6 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   
 
-  
   if (foo->m_Texture != sf->g_lastTexture) {
     sf->g_lastTexture = foo->m_Texture;
     glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
@@ -186,22 +185,22 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     //sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     
-    //if (foo->m_IndexBuffers[sf->m_LastBufferIndex] != sf->g_lastElementBuffer) {
+    if (foo->m_IndexBuffers[sf->m_LastBufferIndex] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-    //}
+    }
     
-    //if (foo->m_InterleavedBuffers[sf->m_LastBufferIndex] != sf->g_lastInterleavedBuffer) {
+    if (foo->m_InterleavedBuffers[sf->m_LastBufferIndex] != sf->g_lastInterleavedBuffer) {
       sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-    //}
+    }
     
-    LOGV("setup VAO: %d %d %d %d\n", sf->m_LastBufferIndex, sf->g_lastVertexArrayObject, sf->g_lastElementBuffer, sf->g_lastInterleavedBuffer);
-
+    //LOGV("setup VAO: %d %d %d %d\n", sf->m_LastBufferIndex, sf->g_lastVertexArrayObject, sf->g_lastElementBuffer, sf->g_lastInterleavedBuffer);
     
     glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
     glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
     glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
+
   } else {
     if (foo->m_VertexArrayObjects[0] != sf->g_lastVertexArrayObject) {
       sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
@@ -224,15 +223,15 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   }
 #else
   
-  //if (foo->m_IndexBuffers[sf->m_LastBufferIndex] != sf->g_lastElementBuffer) {
+  if (foo->m_IndexBuffers[sf->m_LastBufferIndex] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = foo->m_IndexBuffers[sf->m_LastBufferIndex];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-  //}
+  }
   
-  //if (foo->m_InterleavedBuffers[sf->m_LastBufferIndex] != sf->g_lastInterleavedBuffer) {
+  if (foo->m_InterleavedBuffers[sf->m_LastBufferIndex] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[sf->m_LastBufferIndex];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-  //}
+  }
   
   glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
 	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
@@ -243,15 +242,12 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   //if (foo->m_NeedsCopy && copy) {
 
     size_t interleaved_element_buffer_size = (foo->m_NumBatched) * sizeof(GLshort);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_element_buffer_size, NULL, GL_STATIC_DRAW);
-    //LOGV("subdata element array buffer: %d %d\n", sf->g_lastElementBuffer, interleaved_element_buffer_size);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
-
-
     size_t interleaved_buffer_size = (foo->m_NumBatched * foo->m_Stride);
-    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
-    //LOGV("subdata array buffer: %d %d\n", sf->g_lastInterleavedBuffer, interleaved_buffer_size);
+
+
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, interleaved_element_buffer_size, foo->m_IndexFoo);
     glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_ModelFoos);
+
 
   //}
 
@@ -267,6 +263,15 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   }
   
     glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
+    //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_STATIC_DRAW);
+
+
+    //sf->m_LastBufferIndex++;
+    //if (sf->m_LastBufferIndex > 1) {
+    //  sf->m_LastBufferIndex = 0;
+    //}
 
 
     //LOGV("wtf: %d\n", sf->m_LastBufferIndex);
