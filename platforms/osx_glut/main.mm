@@ -27,7 +27,7 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int game_index = 3; 
-static float *outData;
+static short int *outData;
 
 static void CheckError(OSStatus error, const char *operation)
 {
@@ -206,21 +206,22 @@ LOGV("input\n");
 
 OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
 
-  LOGV("render\n");
+  //LOGV("render\n");
 
   float zero = 0.0;
 
+  size_t size = inNumberFrames * sizeof(short) * 2;
+  
+  Engine::CurrentGameDoAudio(outData, size);
+
   for (int iBuffer=0; iBuffer < ioDataList->mNumberBuffers; ++iBuffer) {
-    NSLog(@"  Buffer %d has %d channels and wants %d bytes of data.", iBuffer, ioDataList->mBuffers[iBuffer].mNumberChannels, ioDataList->mBuffers[iBuffer].mDataByteSize);
-    //UInt16 *frameBuffer = (UInt16 *)ioDataList->mBuffers[iBuffer].mData;
-    //for (int j = 0; j < inNumberFrames; j++) {
-    //  frameBuffer[j] = rand();
-    //}
+    //NSLog(@"  Buffer %d has %d channels and wants %d bytes of data.", iBuffer, ioDataList->mBuffers[iBuffer].mNumberChannels, ioDataList->mBuffers[iBuffer].mDataByteSize);
 
     AudioBuffer *ioData = &ioDataList->mBuffers[iBuffer];
-    size_t size = inNumberFrames * sizeof(short) * 2;
-
-    Engine::CurrentGameDoAudio((short int *)ioData->mData, size);
+    float *buffer = (float *)ioData->mData;
+    for (int j = 0; j < inNumberFrames; j++) {
+      buffer[j] = (float)outData[j] / (float)INT16_MAX;
+    }
 
     ioData->mDataByteSize = size;
 
@@ -285,7 +286,7 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
 
 void audioUnitSetup() {
 
-  outData = (float *)calloc(8192, sizeof(float));
+  outData = (short int *)calloc(8192, sizeof(short int));
 
   AudioDeviceID *deviceIDs;
   NSMutableArray *deviceNames;
@@ -346,7 +347,6 @@ void audioUnitSetup() {
   UInt32 one = 1;
   UInt32 zero = 0;
 
-  /*
   CheckError( AudioUnitSetProperty(inputUnit,
                                    kAudioOutputUnitProperty_EnableIO,
                                    kAudioUnitScope_Input,
@@ -364,7 +364,6 @@ void audioUnitSetup() {
                                    &zero,
                                    sizeof(UInt32)), "Couldn't disable output on the audio unit");
  
-  */
 
   // Enable output
   CheckError( AudioUnitSetProperty(outputUnit,
@@ -374,7 +373,6 @@ void audioUnitSetup() {
                                    &one,
                                    sizeof(one)), "Couldn't enable IO on the input scope of output unit");
  
-  /*
   // Disable input
   CheckError( AudioUnitSetProperty(outputUnit,
                                    kAudioOutputUnitProperty_EnableIO,
@@ -382,34 +380,31 @@ void audioUnitSetup() {
                                    kInputBus,
                                    &zero,
                                    sizeof(UInt32)), "Couldn't disable output on the audio unit");
-  */
 
   // TODO: first query the hardware for desired stream descriptions
   // Check the input stream format
   AudioStreamBasicDescription inputFormat;
   AudioStreamBasicDescription outputFormat;
 
+  AudioDeviceID thisDeviceID;
   UInt32 size = sizeof(AudioDeviceID);
-  if(defaultInputDeviceID == kAudioDeviceUnknown)
-  {
-  LOGV("set default in\n");
-      AudioDeviceID thisDeviceID;
+  //if(defaultInputDeviceID == kAudioDeviceUnknown)
+  //{
+    LOGV("set default in\n");
       propsize = sizeof(AudioDeviceID);
       CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &thisDeviceID), "Could not get the default device");
       defaultInputDeviceID = thisDeviceID;
-  }
+  //}
 
   AudioDeviceID defaultOutputDeviceID;
   //if (defaultOutputDeviceID == kAudioDeviceUnknown)
   //{
   LOGV("set default out\n");
-      AudioDeviceID thisDeviceID;
       propsize = sizeof(AudioDeviceID);
       CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propsize, &thisDeviceID), "Could not get the default device");
       defaultOutputDeviceID = thisDeviceID;
   //}
     
-  /* 
   // Set the current device to the default input unit.
   CheckError( AudioUnitSetProperty( inputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
@@ -417,24 +412,24 @@ void audioUnitSetup() {
                                    kOutputBus,
                                    &defaultInputDeviceID,
                                    sizeof(AudioDeviceID) ), "Couldn't set the current input audio device");
-  */
 
+/*
   CheckError( AudioUnitSetProperty( outputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
                                    kAudioUnitScope_Global,
                                    kOutputBus,
                                    &defaultOutputDeviceID,
                                    sizeof(AudioDeviceID) ), "Couldn't set the current output audio device");
-    
+*/   
     
   UInt32 propertySize = sizeof(AudioStreamBasicDescription);
-  //CheckError(AudioUnitGetProperty(inputUnit,
-  //      kAudioUnitProperty_StreamFormat,
-  //      kAudioUnitScope_Output,
-  //      kInputBus,
-  //      &outputFormat,
-  //      &propertySize),
-  //      "Couldn't get ASBD from input unit");
+  CheckError(AudioUnitGetProperty(inputUnit,
+        kAudioUnitProperty_StreamFormat,
+        kAudioUnitScope_Output,
+        kInputBus,
+        &outputFormat,
+        &propertySize),
+        "Couldn't get ASBD from input unit");
     
     
   // 9/6/10 - check the input device's stream format
@@ -452,13 +447,11 @@ void audioUnitSetup() {
   // outputFormat.mFormatFlags = kAudioFormatFlagsCanonical;
   Float64 samplingRate = inputFormat.mSampleRate;
   UInt32 numBytesPerSample = inputFormat.mBitsPerChannel / 8;
-
   UInt32 numInputChannels = inputFormat.mChannelsPerFrame;
   UInt32 numOutputChannels = outputFormat.mChannelsPerFrame;
-
   */
 
-	outputFormat.mSampleRate = 44100;
+	outputFormat.mSampleRate = 44100.0;
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
 	outputFormat.mFormatFlags = kAudioFormatFlagsCanonical | kAudioFormatFlagIsNonInterleaved;
 	outputFormat.mFramesPerPacket = 1;
@@ -473,14 +466,21 @@ void audioUnitSetup() {
 
   propertySize = sizeof(AudioStreamBasicDescription);
 
-  CheckError(AudioUnitSetProperty(outputUnit,
+  CheckError(AudioUnitSetProperty(inputUnit,
         kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input,
-        kOutputBus,
+        kAudioUnitScope_Output,
+        kInputBus,
         &outputFormat,
         propertySize),
         "Couldn't set the ASBD on the audio unit (after setting its sampling rate)");
 
+  CheckError(AudioUnitSetProperty(outputUnit,
+        kAudioUnitProperty_StreamFormat,
+        kAudioUnitScope_Output,
+        kInputBus,
+        &outputFormat,
+        propertySize),
+        "Couldn't set the ASBD on the audio unit (after setting its sampling rate)");
 
   // Get the size of the IO buffer(s)
   //UInt32 bufferSizeFrames = 0;
@@ -534,7 +534,6 @@ void audioUnitSetup() {
   // Slap a render callback on the unit
   AURenderCallbackStruct callbackStruct;
 
-  /*
   callbackStruct.inputProc = inputCallback;
   callbackStruct.inputProcRefCon = NULL;
   
@@ -545,15 +544,14 @@ void audioUnitSetup() {
                                    &callbackStruct,
                                    sizeof(callbackStruct)), "Couldn't set the callback on the input unit");
   
-  */
 
   callbackStruct.inputProc = renderCallback;
   callbackStruct.inputProcRefCon = NULL;
 
-  CheckError( AudioUnitSetProperty(outputUnit,
+  CheckError(AudioUnitSetProperty(outputUnit,
                                    kAudioUnitProperty_SetRenderCallback,
                                    kAudioUnitScope_Input,
-                                   0,
+                                   kOutputBus,
                                    &callbackStruct,
                                    sizeof(callbackStruct)),
              "Couldn't set the render callback on the input unit");
@@ -567,7 +565,7 @@ void audioUnitSetup() {
 
   isInputAvailable = 1;
 
-  //CheckError( AudioOutputUnitStart(inputUnit), "Couldn't start the output unit");
+  //CheckError(AudioOutputUnitStart(inputUnit), "Couldn't start the output unit");
   CheckError(AudioOutputUnitStart(outputUnit), "Couldn't start the output unit");
 
 
