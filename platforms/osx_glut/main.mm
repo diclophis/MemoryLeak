@@ -199,9 +199,9 @@ void somethingElse() {
 }
 
 
-OSStatus inputCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
-  LOGV("input\n");
-}
+//OSStatus inputCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
+//  LOGV("input\n");
+//}
 
 
 OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
@@ -266,13 +266,16 @@ void audioUnitSetup() {
   }
   */
 
-  AudioUnit inputUnit;
+  //AudioUnit inputUnit;
+
   AudioUnit outputUnit;
 
+  /*
   AudioComponentDescription inputDescription = {0};
   inputDescription.componentType = kAudioUnitType_Output;
   inputDescription.componentSubType = kAudioUnitSubType_HALOutput;
   inputDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+  */
 
   AudioComponentDescription outputDescription = {0};
   outputDescription.componentType = kAudioUnitType_Output;
@@ -280,8 +283,8 @@ void audioUnitSetup() {
   outputDescription.componentManufacturer = kAudioUnitManufacturer_Apple; 
 
   // Get component
-  AudioComponent inputComponent = AudioComponentFindNext(NULL, &inputDescription);
-  CheckError( AudioComponentInstanceNew(inputComponent, &inputUnit), "Couldn't create the output audio unit");
+  //AudioComponent inputComponent = AudioComponentFindNext(NULL, &inputDescription);
+  //CheckError( AudioComponentInstanceNew(inputComponent, &inputUnit), "Couldn't create the output audio unit");
 
   AudioComponent outputComponent = AudioComponentFindNext(NULL, &outputDescription);
   CheckError( AudioComponentInstanceNew(outputComponent, &outputUnit), "Couldn't create the output audio unit");
@@ -291,6 +294,7 @@ void audioUnitSetup() {
   UInt32 one = 1;
   UInt32 zero = 0;
 
+  /*
   CheckError( AudioUnitSetProperty(inputUnit,
                                    kAudioOutputUnitProperty_EnableIO,
                                    kAudioUnitScope_Input,
@@ -306,7 +310,7 @@ void audioUnitSetup() {
                                    kOutputBus,
                                    &zero,
                                    sizeof(UInt32)), "Couldn't disable output on the audio unit");
- 
+  */ 
 
   // Enable output
   CheckError( AudioUnitSetProperty(outputUnit,
@@ -326,7 +330,8 @@ void audioUnitSetup() {
 
   // TODO: first query the hardware for desired stream descriptions
   // Check the input stream format
-  AudioStreamBasicDescription inputFormat;
+  //AudioStreamBasicDescription inputFormat;
+
   AudioStreamBasicDescription outputFormat;
 
   AudioDeviceID defaultOutputDeviceID;
@@ -346,15 +351,6 @@ void audioUnitSetup() {
   CheckError(AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &defaultOutputDeviceID), "Couldn't set the current output audio device");
 
   /*
-  propsize = sizeof(AudioDeviceID);
-  CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &thisDeviceID), "Could not get the default device");
-  defaultInputDeviceID = thisDeviceID;
-
-  propsize = sizeof(AudioDeviceID);
-  CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propsize, &thisDeviceID), "Could not get the default device");
-  defaultOutputDeviceID = thisDeviceID;
-  */
-
   // Set the current device to the default input unit.
   CheckError(AudioUnitSetProperty(inputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
@@ -362,6 +358,7 @@ void audioUnitSetup() {
                                    kOutputBus,
                                    &defaultInputDeviceID,
                                    sizeof(AudioDeviceID)), "Couldn't set the current input audio device");
+  */
 
   CheckError( AudioUnitSetProperty(outputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
@@ -370,6 +367,7 @@ void audioUnitSetup() {
                                    &defaultOutputDeviceID,
                                    sizeof(AudioDeviceID)), "Couldn't set the current output audio device");
 
+  /*
   propertySize = sizeof(AudioStreamBasicDescription);
   CheckError(AudioUnitGetProperty(inputUnit,
         kAudioUnitProperty_StreamFormat,
@@ -387,7 +385,8 @@ void audioUnitSetup() {
         &inputFormat,
         &propertySize),
         "Couldn't get ASBD from input unit");
-    
+  */
+
 	outputFormat.mSampleRate = 44100.0;
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
 	outputFormat.mFormatFlags = kAudioFormatFlagsCanonical;
@@ -399,6 +398,7 @@ void audioUnitSetup() {
 
   propertySize = sizeof(AudioStreamBasicDescription);
 
+  /*
   CheckError(AudioUnitSetProperty(inputUnit,
         kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Output,
@@ -406,6 +406,7 @@ void audioUnitSetup() {
         &outputFormat,
         propertySize),
         "Couldn't set the ASBD on the audio unit (after setting its sampling rate)");
+  */
 
   CheckError(AudioUnitSetProperty(outputUnit,
         kAudioUnitProperty_StreamFormat,
@@ -417,7 +418,7 @@ void audioUnitSetup() {
 
   BOOL isInterleaved = false;
 
-  AudioBufferList *inputBuffer;
+  //AudioBufferList *inputBuffer;
 
   if (outputFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) {
     // The audio is non-interleaved
@@ -431,6 +432,7 @@ void audioUnitSetup() {
   // Slap a render callback on the unit
   AURenderCallbackStruct callbackStruct;
 
+  /*
   callbackStruct.inputProc = inputCallback;
   callbackStruct.inputProcRefCon = NULL;
   
@@ -441,6 +443,7 @@ void audioUnitSetup() {
                                    &callbackStruct,
                                    sizeof(callbackStruct)), "Couldn't set the callback on the input unit");
   
+  */
 
   callbackStruct.inputProc = renderCallback;
   callbackStruct.inputProcRefCon = NULL;
