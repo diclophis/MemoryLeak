@@ -26,7 +26,7 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
-static int game_index = 3; 
+static int game_index = 2;
 static short int *outData;
 
 static void CheckError(OSStatus error, const char *operation)

@@ -197,11 +197,11 @@ void Engine::DrawScreen(float rotation) {
     RenderModelPhase();
 
     // Reset for switch to 2D
-    //glLoadIdentity();
+    glLoadIdentity();
     
     // Render 2D
-    //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-    //RenderSpritePhase();
+    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+    RenderSpritePhase();
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
