@@ -149,61 +149,6 @@ void processNormalKeys(unsigned char key, int x, int y) {
 }
 
 
-void somethingElse() {
-  AudioObjectPropertyAddress  propertyAddress;
-  AudioObjectID               *deviceIDs;
-  UInt32                      propertySize;
-  NSInteger                   numDevices;
-
-  propertyAddress.mSelector = kAudioHardwarePropertyDevices;
-  propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
-  propertyAddress.mElement = kAudioObjectPropertyElementMaster;
-  if (AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize) == noErr) {
-      numDevices = propertySize / sizeof(AudioDeviceID);
-      deviceIDs = (AudioDeviceID *)calloc(numDevices, sizeof(AudioDeviceID));
-
-      if (AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, deviceIDs) == noErr) {
-          AudioObjectPropertyAddress      deviceAddress;
-          char                            deviceName[64];
-          char                            manufacturerName[64];
-
-          for (NSInteger idx=0; idx<numDevices; idx++) {
-              propertySize = sizeof(deviceName);
-              deviceAddress.mSelector = kAudioDevicePropertyDeviceName;
-              deviceAddress.mScope = kAudioObjectPropertyScopeGlobal;
-              deviceAddress.mElement = kAudioObjectPropertyElementMaster;
-              if (AudioObjectGetPropertyData(deviceIDs[idx], &deviceAddress, 0, NULL, &propertySize, deviceName) == noErr) {
-                  propertySize = sizeof(manufacturerName);
-                  deviceAddress.mSelector = kAudioDevicePropertyDeviceManufacturer;
-                  deviceAddress.mScope = kAudioObjectPropertyScopeGlobal;
-                  deviceAddress.mElement = kAudioObjectPropertyElementMaster;
-                  if (AudioObjectGetPropertyData(deviceIDs[idx], &deviceAddress, 0, NULL, &propertySize, manufacturerName) == noErr) {
-                      CFStringRef     uidString;
-
-                      propertySize = sizeof(uidString);
-                      deviceAddress.mSelector = kAudioDevicePropertyDeviceUID;
-                      deviceAddress.mScope = kAudioObjectPropertyScopeGlobal;
-                      deviceAddress.mElement = kAudioObjectPropertyElementMaster;
-                      if (AudioObjectGetPropertyData(deviceIDs[idx], &deviceAddress, 0, NULL, &propertySize, &uidString) == noErr) {
-                          NSLog(@"device %s by %s id %@", deviceName, manufacturerName, uidString);
-
-                          CFRelease(uidString);
-                      }
-                  }
-              }
-          }
-      }
-
-      free(deviceIDs);
-  }
-}
-
-
-//OSStatus inputCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
-//  LOGV("input\n");
-//}
-
-
 OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
 
   size_t size = inNumberFrames * sizeof(short) * 2;
@@ -228,92 +173,23 @@ void audioUnitSetup() {
 
   outData = (short int *)calloc(8192, sizeof(short int));
 
-  AudioDeviceID *deviceIDs;
-  NSMutableArray *deviceNames;
   AudioDeviceID defaultInputDeviceID;
-  NSString *defaultDeviceName;
-  UInt32 propSize;
-
-  deviceNames = [[NSMutableArray alloc] initWithCapacity:100];
-
-  UInt32 propsize;
-
-  //propsize = sizeof(AudioDeviceID);
-  //CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &defaultInputDeviceID), "Could not get the default device");
-
-  //AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &propSize, NULL);
-  //uint32_t deviceCount = (propSize / sizeof(AudioDeviceID));
-
-  // Allocate the device IDs
-  //deviceIDs = (AudioDeviceID *)calloc(deviceCount, sizeof(AudioDeviceID));
-  //[deviceNames removeAllObjects];
-
-  // Get all the device IDs
-  //CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &propSize, deviceIDs), "Could not get device IDs");
-
-  /*
-  // Get the names of all the device IDs
-  for (int i = 0; i < deviceCount; i++) {
-    UInt32 size = sizeof(AudioDeviceID);
-    CheckError( AudioDeviceGetPropertyInfo(deviceIDs[i], 0, true, kAudioDevicePropertyDeviceName, &size, NULL ), "Could not get device name length");
-
-    char cStringOfDeviceName[size];
-    CheckError( AudioDeviceGetProperty(deviceIDs[i], 0, true, kAudioDevicePropertyDeviceName, &size, cStringOfDeviceName ), "Could not get device name");
-    NSString *thisDeviceName = [NSString stringWithCString:cStringOfDeviceName encoding:NSUTF8StringEncoding];
-
-    NSLog(@"Device: %@, ID: %d", thisDeviceName, deviceIDs[i]);
-    [deviceNames addObject:thisDeviceName];
-  }
-  */
-
-  //AudioUnit inputUnit;
 
   AudioUnit outputUnit;
-
-  /*
-  AudioComponentDescription inputDescription = {0};
-  inputDescription.componentType = kAudioUnitType_Output;
-  inputDescription.componentSubType = kAudioUnitSubType_HALOutput;
-  inputDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
-  */
 
   AudioComponentDescription outputDescription = {0};
   outputDescription.componentType = kAudioUnitType_Output;
   outputDescription.componentSubType = kAudioUnitSubType_HALOutput;
   outputDescription.componentManufacturer = kAudioUnitManufacturer_Apple; 
 
-  // Get component
-  //AudioComponent inputComponent = AudioComponentFindNext(NULL, &inputDescription);
-  //CheckError( AudioComponentInstanceNew(inputComponent, &inputUnit), "Couldn't create the output audio unit");
-
   AudioComponent outputComponent = AudioComponentFindNext(NULL, &outputDescription);
-  CheckError( AudioComponentInstanceNew(outputComponent, &outputUnit), "Couldn't create the output audio unit");
+  CheckError(AudioComponentInstanceNew(outputComponent, &outputUnit), "Couldn't create the output audio unit");
 
-
-  // Enable input
+  // Enable output
   UInt32 one = 1;
   UInt32 zero = 0;
 
-  /*
-  CheckError( AudioUnitSetProperty(inputUnit,
-                                   kAudioOutputUnitProperty_EnableIO,
-                                   kAudioUnitScope_Input,
-                                   kInputBus,
-                                   &one,
-                                   sizeof(one)), "Couldn't enable IO on the input scope of output unit");
-
-
-  // Disable output on the input unit
-  CheckError( AudioUnitSetProperty(inputUnit,
-                                   kAudioOutputUnitProperty_EnableIO,
-                                   kAudioUnitScope_Output,
-                                   kOutputBus,
-                                   &zero,
-                                   sizeof(UInt32)), "Couldn't disable output on the audio unit");
-  */ 
-
-  // Enable output
-  CheckError( AudioUnitSetProperty(outputUnit,
+  CheckError(AudioUnitSetProperty(outputUnit,
                                    kAudioOutputUnitProperty_EnableIO,
                                    kAudioUnitScope_Output,
                                    kOutputBus,
@@ -321,21 +197,16 @@ void audioUnitSetup() {
                                    sizeof(one)), "Couldn't enable IO on the input scope of output unit");
  
   // Disable input
-  CheckError( AudioUnitSetProperty(outputUnit,
+  CheckError(AudioUnitSetProperty(outputUnit,
                                    kAudioOutputUnitProperty_EnableIO,
                                    kAudioUnitScope_Input,
                                    kInputBus,
                                    &zero,
                                    sizeof(UInt32)), "Couldn't disable output on the audio unit");
 
-  // TODO: first query the hardware for desired stream descriptions
-  // Check the input stream format
-  //AudioStreamBasicDescription inputFormat;
-
   AudioStreamBasicDescription outputFormat;
 
   AudioDeviceID defaultOutputDeviceID;
-  AudioDeviceID thisDeviceID;
   UInt32 size = sizeof(AudioDeviceID);
 
   AudioObjectPropertyAddress propertyAddress;
@@ -350,42 +221,12 @@ void audioUnitSetup() {
   propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
   CheckError(AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &defaultOutputDeviceID), "Couldn't set the current output audio device");
 
-  /*
-  // Set the current device to the default input unit.
-  CheckError(AudioUnitSetProperty(inputUnit,
-                                   kAudioOutputUnitProperty_CurrentDevice,
-                                   kAudioUnitScope_Global,
-                                   kOutputBus,
-                                   &defaultInputDeviceID,
-                                   sizeof(AudioDeviceID)), "Couldn't set the current input audio device");
-  */
-
   CheckError( AudioUnitSetProperty(outputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
                                    kAudioUnitScope_Global,
                                    kOutputBus,
                                    &defaultOutputDeviceID,
                                    sizeof(AudioDeviceID)), "Couldn't set the current output audio device");
-
-  /*
-  propertySize = sizeof(AudioStreamBasicDescription);
-  CheckError(AudioUnitGetProperty(inputUnit,
-        kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Output,
-        kInputBus,
-        &outputFormat,
-        &propertySize),
-        "Couldn't get ASBD from input unit");
-    
-  AudioStreamBasicDescription deviceFormat;
-  CheckError(AudioUnitGetProperty(inputUnit,
-        kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Input,
-        kInputBus,
-        &inputFormat,
-        &propertySize),
-        "Couldn't get ASBD from input unit");
-  */
 
 	outputFormat.mSampleRate = 44100.0;
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
@@ -398,16 +239,6 @@ void audioUnitSetup() {
 
   propertySize = sizeof(AudioStreamBasicDescription);
 
-  /*
-  CheckError(AudioUnitSetProperty(inputUnit,
-        kAudioUnitProperty_StreamFormat,
-        kAudioUnitScope_Output,
-        kInputBus,
-        &outputFormat,
-        propertySize),
-        "Couldn't set the ASBD on the audio unit (after setting its sampling rate)");
-  */
-
   CheckError(AudioUnitSetProperty(outputUnit,
         kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Output,
@@ -416,35 +247,8 @@ void audioUnitSetup() {
         propertySize),
         "Couldn't set the ASBD on the audio unit (after setting its sampling rate)");
 
-  BOOL isInterleaved = false;
-
-  //AudioBufferList *inputBuffer;
-
-  if (outputFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved) {
-    // The audio is non-interleaved
-    printf("Not interleaved!\n");
-    isInterleaved = NO;
-  } else {
-    printf ("Format is interleaved\n");
-    isInterleaved = YES;
-  }
-
   // Slap a render callback on the unit
   AURenderCallbackStruct callbackStruct;
-
-  /*
-  callbackStruct.inputProc = inputCallback;
-  callbackStruct.inputProcRefCon = NULL;
-  
-  CheckError( AudioUnitSetProperty(inputUnit,
-                                   kAudioOutputUnitProperty_SetInputCallback,
-                                   kAudioUnitScope_Global,
-                                   0,
-                                   &callbackStruct,
-                                   sizeof(callbackStruct)), "Couldn't set the callback on the input unit");
-  
-  */
-
   callbackStruct.inputProc = renderCallback;
   callbackStruct.inputProcRefCon = NULL;
 
@@ -456,18 +260,8 @@ void audioUnitSetup() {
                                    sizeof(callbackStruct)),
              "Couldn't set the render callback on the input unit");
 
-  //CheckError(AudioUnitInitialize(inputUnit), "Couldn't initialize the output unit");
-
   CheckError(AudioUnitInitialize(outputUnit), "Couldn't initialize the output unit");
-
-  UInt32 isInputAvailable = 0;
-  size = sizeof(isInputAvailable);
-
-  isInputAvailable = 1;
-
-  //CheckError(AudioOutputUnitStart(inputUnit), "Couldn't start the output unit");
   CheckError(AudioOutputUnitStart(outputUnit), "Couldn't start the output unit");
-
 
 }
 
