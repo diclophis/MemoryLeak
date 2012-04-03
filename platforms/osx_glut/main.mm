@@ -155,10 +155,10 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
   
   Engine::CurrentGameDoAudio(outData, size);
 
-  for (int iBuffer=0; iBuffer < ioDataList->mNumberBuffers; ++iBuffer) {
+  for (unsigned int iBuffer=0; iBuffer < ioDataList->mNumberBuffers; ++iBuffer) {
     AudioBuffer *ioData = &ioDataList->mBuffers[iBuffer];
     float *buffer = (float *)ioData->mData;
-    for (int j = 0; j < inNumberFrames; j++) {
+    for (unsigned int j = 0; j < inNumberFrames; j++) {
       buffer[j] = (float)outData[(j * 2) + iBuffer] / (float)INT16_MAX;
     }
 
@@ -172,8 +172,6 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
 void audioUnitSetup() {
 
   outData = (short int *)calloc(8192, sizeof(short int));
-
-  AudioDeviceID defaultInputDeviceID;
 
   AudioUnit outputUnit;
 
@@ -207,7 +205,6 @@ void audioUnitSetup() {
   AudioStreamBasicDescription outputFormat;
 
   AudioDeviceID defaultOutputDeviceID;
-  UInt32 size = sizeof(AudioDeviceID);
 
   AudioObjectPropertyAddress propertyAddress;
   UInt32 propertySize;
