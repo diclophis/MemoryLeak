@@ -11,9 +11,9 @@
 
 #include "MemoryLeak.h"
 
+
 #define kInputBus 1
 #define kOutputBus 0
-#define kDefaultDevice 999999
 
 
 static int kWindowWidth = 500;
@@ -29,23 +29,23 @@ static std::vector<foo*> levels;
 static int game_index = 2;
 static short int *outData;
 
-static void CheckError(OSStatus error, const char *operation)
-{
-if (error == noErr) return;
 
-char str[20];
-// see if it appears to be a 4-char-code
-*(UInt32 *)(str + 1) = CFSwapInt32HostToBig(error);
-if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4])) {
-str[0] = str[5] = '\'';
-str[6] = '\0';
-} else
-// no, format it as an integer
-sprintf(str, "%d", (int)error);
-    
-fprintf(stderr, "Error: %s (%s)\n", operation, str);
-    
-exit(1);
+static void CheckError(OSStatus error, const char *operation) {
+  if (error == noErr) return;
+  char str[20];
+  // see if it appears to be a 4-char-code
+  *(UInt32 *)(str + 1) = CFSwapInt32HostToBig(error);
+  if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4])) {
+    str[0] = str[5] = '\'';
+    str[6] = '\0';
+  } else {
+    // no, format it as an integer
+    sprintf(str, "%d", (int)error);
+  }
+      
+  fprintf(stderr, "Error: %s (%s)\n", operation, str);
+      
+  exit(1);
 }
 
 
@@ -236,19 +236,22 @@ void audioUnitSetup() {
 
   deviceNames = [[NSMutableArray alloc] initWithCapacity:100];
 
-  UInt32 propsize = sizeof(AudioDeviceID);
-  CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &defaultInputDeviceID), "Could not get the default device");
+  UInt32 propsize;
 
-  AudioHardwareGetPropertyInfo( kAudioHardwarePropertyDevices, &propSize, NULL );
-  uint32_t deviceCount = (propSize / sizeof(AudioDeviceID));
+  //propsize = sizeof(AudioDeviceID);
+  //CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &defaultInputDeviceID), "Could not get the default device");
+
+  //AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &propSize, NULL);
+  //uint32_t deviceCount = (propSize / sizeof(AudioDeviceID));
 
   // Allocate the device IDs
-  deviceIDs = (AudioDeviceID *)calloc(deviceCount, sizeof(AudioDeviceID));
-  [deviceNames removeAllObjects];
+  //deviceIDs = (AudioDeviceID *)calloc(deviceCount, sizeof(AudioDeviceID));
+  //[deviceNames removeAllObjects];
 
   // Get all the device IDs
-  CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &propSize, deviceIDs), "Could not get device IDs");
+  //CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &propSize, deviceIDs), "Could not get device IDs");
 
+  /*
   // Get the names of all the device IDs
   for (int i = 0; i < deviceCount; i++) {
     UInt32 size = sizeof(AudioDeviceID);
@@ -261,6 +264,7 @@ void audioUnitSetup() {
     NSLog(@"Device: %@, ID: %d", thisDeviceName, deviceIDs[i]);
     [deviceNames addObject:thisDeviceName];
   }
+  */
 
   AudioUnit inputUnit;
   AudioUnit outputUnit;
@@ -325,17 +329,31 @@ void audioUnitSetup() {
   AudioStreamBasicDescription inputFormat;
   AudioStreamBasicDescription outputFormat;
 
+  AudioDeviceID defaultOutputDeviceID;
   AudioDeviceID thisDeviceID;
   UInt32 size = sizeof(AudioDeviceID);
 
+  AudioObjectPropertyAddress propertyAddress;
+  UInt32 propertySize;
+
+  propertyAddress.mSelector = kAudioHardwarePropertyDevices;
+  propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+  propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+  AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize);
+
+  propertySize = sizeof(defaultOutputDeviceID);
+  propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+  CheckError(AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &defaultOutputDeviceID), "Couldn't set the current output audio device");
+
+  /*
   propsize = sizeof(AudioDeviceID);
   CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &thisDeviceID), "Could not get the default device");
   defaultInputDeviceID = thisDeviceID;
 
-  AudioDeviceID defaultOutputDeviceID;
   propsize = sizeof(AudioDeviceID);
   CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propsize, &thisDeviceID), "Could not get the default device");
   defaultOutputDeviceID = thisDeviceID;
+  */
 
   // Set the current device to the default input unit.
   CheckError(AudioUnitSetProperty(inputUnit,
@@ -352,7 +370,7 @@ void audioUnitSetup() {
                                    &defaultOutputDeviceID,
                                    sizeof(AudioDeviceID)), "Couldn't set the current output audio device");
 
-  UInt32 propertySize = sizeof(AudioStreamBasicDescription);
+  propertySize = sizeof(AudioStreamBasicDescription);
   CheckError(AudioUnitGetProperty(inputUnit,
         kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Output,
