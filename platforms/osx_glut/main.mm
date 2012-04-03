@@ -200,85 +200,25 @@ void somethingElse() {
 
 
 OSStatus inputCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
-LOGV("input\n");
+  LOGV("input\n");
 }
 
 
 OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFlags, const AudioTimeStamp * inTimeStamp, UInt32 inOutputBusNumber, UInt32 inNumberFrames, AudioBufferList * ioDataList) {
-
-  //LOGV("render\n");
-
-  float zero = 0.0;
 
   size_t size = inNumberFrames * sizeof(short) * 2;
   
   Engine::CurrentGameDoAudio(outData, size);
 
   for (int iBuffer=0; iBuffer < ioDataList->mNumberBuffers; ++iBuffer) {
-    //NSLog(@"Fetched: %d for buffer %d has %d channels and wants %d bytes of data.", size, iBuffer, ioDataList->mBuffers[iBuffer].mNumberChannels, ioDataList->mBuffers[iBuffer].mDataByteSize);
-
     AudioBuffer *ioData = &ioDataList->mBuffers[iBuffer];
     float *buffer = (float *)ioData->mData;
     for (int j = 0; j < inNumberFrames; j++) {
       buffer[j] = (float)outData[(j * 2) + iBuffer] / (float)INT16_MAX;
     }
 
-    ioData->mDataByteSize = size;
-
-    //memset(ioDataList->mBuffers[iBuffer].mData, 0, ioDataList->mBuffers[iBuffer].mDataByteSize);
+    ioData->mDataByteSize = size; // is this redundant?
   }
-
-  // Collect data to render from the callbacks
-  //sm.outputBlock(sm.outData, inNumberFrames, sm.numOutputChannels);
-
-	//if (ioDataList->mNumberBuffers != 1) {
-	//	LOGV("the fuck\n");
-  //}	
-	
-	
-  //Engine::CurrentGameDoAudio((short int *)outData, inNumberFrames * sizeof(short) * 2);
-
-  /*
-	AudioBuffer *ioData = &ioDataList->mBuffers[0];
-  Engine::CurrentGameDoAudio((short int *)ioData->mData, (inNumberFrames / 2) * sizeof(short) * 2);
-
-	ioData = &ioDataList->mBuffers[1];
-  Engine::CurrentGameDoAudio((short int *)ioData->mData, (inNumberFrames / 2) * sizeof(short) * 2);
-  */
-
-  /*
-  // Put the rendered data into the output buffer
-  // TODO: convert SInt16 ranges to float ranges.
-  if ( sm.numBytesPerSample == 4 ) // then we've already got floats
-  {
-    for (int iBuffer=0; iBuffer < ioData->mNumberBuffers; ++iBuffer) {
-      int thisNumChannels = ioData->mBuffers[iBuffer].mNumberChannels;
-      for (int iChannel = 0; iChannel < thisNumChannels; ++iChannel) {
-        vDSP_vsadd(sm.outData+iChannel, sm.numOutputChannels, &zero, (float *)ioData->mBuffers[iBuffer].mData, thisNumChannels, inNumberFrames);
-      }
-    }
-  }
-  else if ( sm.numBytesPerSample == 2 ) // then we need to convert SInt16 -> Float (and also scale)
-  {
-  }
-  */
-
-
-    //float scale = (float)INT16_MAX;
-    //vDSP_vsmul(outData, 1, &scale, outData, 1, inNumberFrames * 2);
-
-
-    for (int iBuffer=0; iBuffer < ioDataList->mNumberBuffers; ++iBuffer) {
-      int thisNumChannels = ioDataList->mBuffers[iBuffer].mNumberChannels;
-      //LOGV("%d %d %d\n", ioDataList->mNumberBuffers, thisNumChannels, inNumberFrames);
-      //for (int iChannel = 0; iChannel < thisNumChannels; ++iChannel) {
-      //  vDSP_vfix16(outData + iChannel, 2, (SInt16 *)ioDataList->mBuffers[iBuffer].mData + iChannel, thisNumChannels, inNumberFrames);
-      //}
-      for (int i=0; i<inNumberFrames; i++) {
-        //ioDataList->mBuffers[iBuffer].mData[i] = 0.0;
-      }
-    }
-  
 
   return noErr;
 
@@ -356,7 +296,6 @@ void audioUnitSetup() {
 
 
   // Disable output on the input unit
-  // (only on Mac, since on the iPhone, the input unit is also the output unit)
   CheckError( AudioUnitSetProperty(inputUnit,
                                    kAudioOutputUnitProperty_EnableIO,
                                    kAudioUnitScope_Output,
@@ -388,40 +327,31 @@ void audioUnitSetup() {
 
   AudioDeviceID thisDeviceID;
   UInt32 size = sizeof(AudioDeviceID);
-  //if(defaultInputDeviceID == kAudioDeviceUnknown)
-  //{
-    LOGV("set default in\n");
-      propsize = sizeof(AudioDeviceID);
-      CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &thisDeviceID), "Could not get the default device");
-      defaultInputDeviceID = thisDeviceID;
-  //}
+
+  propsize = sizeof(AudioDeviceID);
+  CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultInputDevice, &propsize, &thisDeviceID), "Could not get the default device");
+  defaultInputDeviceID = thisDeviceID;
 
   AudioDeviceID defaultOutputDeviceID;
-  //if (defaultOutputDeviceID == kAudioDeviceUnknown)
-  //{
-  LOGV("set default out\n");
-      propsize = sizeof(AudioDeviceID);
-      CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propsize, &thisDeviceID), "Could not get the default device");
-      defaultOutputDeviceID = thisDeviceID;
-  //}
-    
+  propsize = sizeof(AudioDeviceID);
+  CheckError(AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propsize, &thisDeviceID), "Could not get the default device");
+  defaultOutputDeviceID = thisDeviceID;
+
   // Set the current device to the default input unit.
-  CheckError( AudioUnitSetProperty( inputUnit,
+  CheckError(AudioUnitSetProperty(inputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
                                    kAudioUnitScope_Global,
                                    kOutputBus,
                                    &defaultInputDeviceID,
-                                   sizeof(AudioDeviceID) ), "Couldn't set the current input audio device");
+                                   sizeof(AudioDeviceID)), "Couldn't set the current input audio device");
 
-/*
-  CheckError( AudioUnitSetProperty( outputUnit,
+  CheckError( AudioUnitSetProperty(outputUnit,
                                    kAudioOutputUnitProperty_CurrentDevice,
                                    kAudioUnitScope_Global,
                                    kOutputBus,
                                    &defaultOutputDeviceID,
-                                   sizeof(AudioDeviceID) ), "Couldn't set the current output audio device");
-*/   
-    
+                                   sizeof(AudioDeviceID)), "Couldn't set the current output audio device");
+
   UInt32 propertySize = sizeof(AudioStreamBasicDescription);
   CheckError(AudioUnitGetProperty(inputUnit,
         kAudioUnitProperty_StreamFormat,
@@ -431,8 +361,6 @@ void audioUnitSetup() {
         &propertySize),
         "Couldn't get ASBD from input unit");
     
-    
-  // 9/6/10 - check the input device's stream format
   AudioStreamBasicDescription deviceFormat;
   CheckError(AudioUnitGetProperty(inputUnit,
         kAudioUnitProperty_StreamFormat,
@@ -442,29 +370,14 @@ void audioUnitSetup() {
         &propertySize),
         "Couldn't get ASBD from input unit");
     
-  /*
-  outputFormat.mSampleRate = inputFormat.mSampleRate;
-  // outputFormat.mFormatFlags = kAudioFormatFlagsCanonical;
-  Float64 samplingRate = inputFormat.mSampleRate;
-  UInt32 numBytesPerSample = inputFormat.mBitsPerChannel / 8;
-  UInt32 numInputChannels = inputFormat.mChannelsPerFrame;
-  UInt32 numOutputChannels = outputFormat.mChannelsPerFrame;
-  */
-
 	outputFormat.mSampleRate = 44100.0;
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
 	outputFormat.mFormatFlags = kAudioFormatFlagsCanonical;
-	//outputFormat.mFormatFlags = kAudioFormatFlagsCanonical | kAudioFormatFlagIsNonInterleaved;
-	//outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
 	outputFormat.mFramesPerPacket = 1;
 	outputFormat.mChannelsPerFrame	= 2;
 	outputFormat.mBitsPerChannel = 16;
   outputFormat.mBytesPerFrame = outputFormat.mBitsPerChannel / 8 * outputFormat.mChannelsPerFrame;
   outputFormat.mBytesPerPacket = outputFormat.mBytesPerFrame * outputFormat.mFramesPerPacket;
-
-  UInt32 numBytesPerSample = outputFormat.mBitsPerChannel / 8;
-
-  LOGV("foo %d\n", numBytesPerSample);
 
   propertySize = sizeof(AudioStreamBasicDescription);
 
@@ -484,12 +397,6 @@ void audioUnitSetup() {
         propertySize),
         "Couldn't set the ASBD on the audio unit (after setting its sampling rate)");
 
-  // Get the size of the IO buffer(s)
-  //UInt32 bufferSizeFrames = 0;
-  //size = sizeof(UInt32);
-  //CheckError (AudioUnitGetProperty(inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &bufferSizeFrames, &size), "Couldn't get buffer frame size from input unit");
-  //UInt32 bufferSizeBytes = bufferSizeFrames * sizeof(Float32);
-
   BOOL isInterleaved = false;
 
   AudioBufferList *inputBuffer;
@@ -498,39 +405,9 @@ void audioUnitSetup() {
     // The audio is non-interleaved
     printf("Not interleaved!\n");
     isInterleaved = NO;
-    
-    /*
-    // allocate an AudioBufferList plus enough space for array of AudioBuffers
-    UInt32 propsize = offsetof(AudioBufferList, mBuffers[0]) + (sizeof(AudioBuffer) * outputFormat.mChannelsPerFrame);
-
-    //malloc buffer lists
-    inputBuffer = (AudioBufferList *)malloc(propsize);
-    inputBuffer->mNumberBuffers = outputFormat.mChannelsPerFrame;
-
-    //pre-malloc buffers for AudioBufferLists
-    for(UInt32 i =0; i< inputBuffer->mNumberBuffers ; i++) {
-      inputBuffer->mBuffers[i].mNumberChannels = 1;
-      inputBuffer->mBuffers[i].mDataByteSize = bufferSizeBytes;
-      inputBuffer->mBuffers[i].mData = malloc(bufferSizeBytes);
-    }
-    */
   } else {
     printf ("Format is interleaved\n");
     isInterleaved = YES;
-    
-    /*
-    // allocate an AudioBufferList plus enough space for array of AudioBuffers
-    UInt32 propsize = offsetof(AudioBufferList, mBuffers[0]) + (sizeof(AudioBuffer) * 1);
-
-    //malloc buffer lists
-    inputBuffer = (AudioBufferList *)malloc(propsize);
-    inputBuffer->mNumberBuffers = 1;
-
-    //pre-malloc buffers for AudioBufferLists
-    inputBuffer->mBuffers[0].mNumberChannels = outputFormat.mChannelsPerFrame;
-    inputBuffer->mBuffers[0].mDataByteSize = bufferSizeBytes;
-    inputBuffer->mBuffers[0].mData = malloc(bufferSizeBytes);
-    */
   }
 
   // Slap a render callback on the unit
