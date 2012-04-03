@@ -215,12 +215,12 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
   Engine::CurrentGameDoAudio(outData, size);
 
   for (int iBuffer=0; iBuffer < ioDataList->mNumberBuffers; ++iBuffer) {
-    //NSLog(@"  Buffer %d has %d channels and wants %d bytes of data.", iBuffer, ioDataList->mBuffers[iBuffer].mNumberChannels, ioDataList->mBuffers[iBuffer].mDataByteSize);
+    //NSLog(@"Fetched: %d for buffer %d has %d channels and wants %d bytes of data.", size, iBuffer, ioDataList->mBuffers[iBuffer].mNumberChannels, ioDataList->mBuffers[iBuffer].mDataByteSize);
 
     AudioBuffer *ioData = &ioDataList->mBuffers[iBuffer];
     float *buffer = (float *)ioData->mData;
     for (int j = 0; j < inNumberFrames; j++) {
-      buffer[j] = (float)outData[j] / (float)INT16_MAX;
+      buffer[j] = (float)outData[(j * 2) + iBuffer] / (float)INT16_MAX;
     }
 
     ioData->mDataByteSize = size;
@@ -453,7 +453,9 @@ void audioUnitSetup() {
 
 	outputFormat.mSampleRate = 44100.0;
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
-	outputFormat.mFormatFlags = kAudioFormatFlagsCanonical | kAudioFormatFlagIsNonInterleaved;
+	outputFormat.mFormatFlags = kAudioFormatFlagsCanonical;
+	//outputFormat.mFormatFlags = kAudioFormatFlagsCanonical | kAudioFormatFlagIsNonInterleaved;
+	//outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
 	outputFormat.mFramesPerPacket = 1;
 	outputFormat.mChannelsPerFrame	= 2;
 	outputFormat.mBitsPerChannel = 16;
