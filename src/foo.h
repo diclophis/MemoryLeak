@@ -62,6 +62,7 @@ struct foofoo {
     m_NumBatchedElements = 0;
     m_numSpriteFoos = 0;
     m_numModelFoos = 0;
+    m_BufferCount = 0;
     m_NeedsCopy = true;
 	}
 
@@ -137,6 +138,7 @@ struct foofoo {
   SpriteFoo *m_SpriteFoos;
   ModelFoo *m_ModelFoos;
   GLshort *m_IndexFoo;
+  int m_BufferCount;
 };
 
 #ifdef __cplusplus

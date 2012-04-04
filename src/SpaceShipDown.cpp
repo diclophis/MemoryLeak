@@ -282,7 +282,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
 
   m_PlayerStopIndex = m_SpriteCount;
 
-  m_Models.push_back(new Model(m_FooFoos.at(1)));
+  m_Models.push_back(new Model(m_FooFoos.at(0)));
   m_Models[m_PlayerIndex]->m_Scale[0] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[1] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[2] = 2.0;
@@ -1022,7 +1022,6 @@ void SpaceShipDown::CreateDebugDraw() {
 
 void SpaceShipDown::RenderModelPhase() {
   m_ThirdBatchFoo->m_NumBatched = 0;
-  
   
   RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
