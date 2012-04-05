@@ -3,11 +3,10 @@
 //  MemoryLeak
 //
 //  Created by Jon Bardin on 9/7/09.
-//  Copyright __MyCompanyName__ 2009. All rights reserved.
+//  Copyright GPL
 //
 
 
-#import "MemoryLeak.h"
 #import "MemoryLeakAppDelegate.h"
 #import "EAGLView.h"
 
@@ -36,10 +35,8 @@
 
 -(void)applicationDidBecomeActive:(UIApplication *)application {
 	if ([glView wasActive]) {
-    NSLog(@"starting animation again!!!");
 		[glView startAnimation];
 	} else {
-		[glView build];
 		[glView startGame:[NSNumber numberWithInt:3]];
 		[glView startAnimation];
 	}

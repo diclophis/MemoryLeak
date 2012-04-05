@@ -24,6 +24,7 @@ typedef struct
   GLfloat vertex[3];
   GLfloat normal[3];
   GLfloat texture[3];
+  GLshort xyz[3];
 } ModelFoo;
 
 typedef struct {
@@ -31,6 +32,8 @@ typedef struct {
   GLuint g_lastElementBuffer;
   GLuint g_lastInterleavedBuffer;
   GLuint g_lastVertexArrayObject;
+  int m_LastBufferIndex;
+  bool m_EnabledStates;
 } StateFoo;
 
 #ifdef __cplusplus
@@ -59,11 +62,13 @@ struct foofoo {
     m_NumBatchedElements = 0;
     m_numSpriteFoos = 0;
     m_numModelFoos = 0;
+    m_BufferCount = 0;
     m_NeedsCopy = true;
 	}
 
 	~foofoo()
 	{
+    LOGV("dealloc foofoo\n");
     glDeleteBuffers(m_numBuffers, m_VerticeBuffers);
     glDeleteBuffers(m_numBuffers, m_IndexBuffers);
     glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
@@ -88,7 +93,12 @@ struct foofoo {
       free(m_SpriteFoos);
     }
     if (m_numModelFoos > 0) {
+    LOGV("freeing m_ModelFoos in foofoo\n");
       free(m_ModelFoos);
+    }
+    if (m_numFaces > 0) {
+    LOGV("freeing m_IndexFoo in foofoo\n");
+      free(m_IndexFoo);
     }
 #ifdef HAS_VAO
     glDeleteVertexArraysOES(m_numVertexArrayObjects, m_VertexArrayObjects);
@@ -128,6 +138,7 @@ struct foofoo {
   SpriteFoo *m_SpriteFoos;
   ModelFoo *m_ModelFoos;
   GLshort *m_IndexFoo;
+  int m_BufferCount;
 };
 
 #ifdef __cplusplus

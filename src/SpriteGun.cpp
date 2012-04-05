@@ -93,13 +93,13 @@ void SpriteGun::Simulate(float deltaTime) {
 }
 
 
-bool MyDataSortPredicate(const AtlasSprite* d1, const AtlasSprite* d2)
+bool SpriteGun::SortByLife(const AtlasSprite* d1, const AtlasSprite* d2)
 {
   return d1->m_Life > d2->m_Life;
 }
 
 void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
-  std::sort(m_AtlasSprites.begin(), m_AtlasSprites.end(), MyDataSortPredicate);
+  std::sort(m_AtlasSprites.begin(), m_AtlasSprites.end(), SortByLife);
   for (std::vector<AtlasSprite *>::const_iterator citer = m_AtlasSprites.begin(); citer != m_AtlasSprites.end(); ++citer) {
     AtlasSprite *c = *citer;
     if (c->m_IsAlive && m_RenderBullets) {

@@ -13,7 +13,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
   m_CameraZ = 0.0;
   m_CameraR = 0.0;
 
-  m_IsThreeD = true;
+  //m_IsThreeD = true;
   m_TouchingLeft = false;
   m_TouchingRight = false;
 
@@ -149,7 +149,7 @@ int MainMenu::Simulate() {
 
 
 void MainMenu::RenderModelPhase() {
-  Model::RenderFoo(m_StateFoo, m_BatchFoo);
+  Model::RenderFoo(m_StateFoo, m_BatchFoo, true);
   m_BatchFoo->m_NeedsCopy = false;
 }
 

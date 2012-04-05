@@ -40,5 +40,7 @@ public:
   foofoo *m_ShotFooFoo;
 
   void ResetFoo(foofoo *ff, foofoo *sff);
+
+  static bool SortByLife(const AtlasSprite* d1, const AtlasSprite* d2);
 	
 };

@@ -24,25 +24,16 @@ namespace OpenSteer {
 
 
 Engine::~Engine() {
-
-  if (m_AudioBufferSize > 0) {
-    delete m_AudioMixBuffer;
-  }
-
+  LOGV("Engine::dealloc\n");
+  
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
     delete *i;
   }
   m_FooFoos.clear();
 
-  for (std::vector<SpriteGun *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
-    delete *i;
-  }
-  m_AtlasSprites.clear();
+  ClearSprites();
 
-  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
-    delete *i;
-  }
-  m_Models.clear();
+  ClearModels();
 
   for (std::vector<ModPlugFile *>::iterator i = m_Sounds.begin(); i != m_Sounds.end(); ++i) {
     ModPlug_Unload(*i);
@@ -51,6 +42,24 @@ Engine::~Engine() {
 
 
   free(m_StateFoo);
+}
+
+
+void Engine::ClearSprites() {
+  for (std::vector<SpriteGun *>::iterator i = m_AtlasSprites.begin(); i != m_AtlasSprites.end(); ++i) {
+    delete *i;
+  }
+  m_AtlasSprites.clear();
+  m_SpriteCount = 0;
+}
+
+
+void Engine::ClearModels() {
+  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
+    delete *i;
+  }
+  m_Models.clear();
+  m_ModelCount = 0;
 }
 
 
@@ -72,77 +81,56 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_Zoom = 1.0;
   m_Fov = 10.0;
 
-	
-	m_AudioBufferSize = 0;
 	m_IsPushingAudio = false;
-  m_WebViewTimeout = 0.0;
-
-
-  //glMatrixMode(GL_MODELVIEW);
-  //glLoadIdentity();
-
-  m_IsThreeD = false;
-
-  m_LastDraw = 0;
-  m_CurrentDraw = 0;
-  m_IsDrawReadyAfterResume = true;
 
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
   m_CurrentSound = 0;
-  m_RenderStride = 1;
-  m_RenderStrideOffset = 0;
+
+  m_SetStates = 0;
 
 }
 
 
 void Engine::ResetStateFoo() {
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-  //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  //glBlendFunc(GL_ONE, GL_ONE);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-  //glEnable(GL_TEXTURE_2D);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  //glEnableClientState(GL_VERTEX_ARRAY);
-  //glEnableClientState(GL_NORMAL_ARRAY);
-  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  // dont change textures after upload
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-/*
-  glDisable(GL_CULL_FACE);
-  glDisable(GL_DEPTH_TEST);
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glDisable(GL_TEXTURE_2D);
-*/
- 
-  glEnable(GL_TEXTURE_2D);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glShadeModel(GL_FLAT);
-
-  //if (m_IsThreeD) {
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    //glEnable(GL_BLEND);
-  //}
+  if (false) {
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  }
 
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
   m_StateFoo->g_lastInterleavedBuffer = -1;
   m_StateFoo->g_lastVertexArrayObject = -1;
+  m_StateFoo->m_EnabledStates = false;
+  m_StateFoo->m_LastBufferIndex = 0;
+
 }
 
 
 void Engine::CreateThread(void (theCleanup)()) {
   m_SimulationThreadCleanup = theCleanup;
+
+  /*
   pthread_attr_t attr; 
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   pthread_create(&m_Thread, &attr, Engine::EnterThread, this);
+  */
+
+	timeval tim;
+	gettimeofday(&tim, NULL);
+	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+  StartSimulation();
 }
 
 
@@ -167,8 +155,7 @@ bool Engine::WaitVsync() {
 }
 
 
-
-int isExtensionSupported(const char *extension) {
+int Engine::isExtensionSupported(const char *extension) {
   const GLubyte *extensions = NULL;
   const GLubyte *start;
   GLubyte *where, *terminator;
@@ -198,66 +185,49 @@ int isExtensionSupported(const char *extension) {
 
 
 void Engine::DrawScreen(float rotation) {
-  pthread_mutex_lock(&m_Mutex);
+  RunThread();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
+    // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    //glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //if (m_IsThreeD) {
-      GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 200.0);
-      glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-      RenderModelPhase();
-      glLoadIdentity();
-    //} else {
-      glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-      RenderSpritePhase();
-    //}
+    
+    // Render 3D
+    GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
+    glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+    RenderModelPhase();
+
+    // Reset for switch to 2D
+    //glLoadIdentity();
+    
+    // Render 2D
+    //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+    //RenderSpritePhase();
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
-  m_CurrentDraw++;
-  pthread_mutex_unlock(&m_Mutex);
-  sched_yield();
-  //pthread_cond_signal(&m_VsyncCond);
 }
 
 
 int Engine::RunThread() {
-	double t1, t2;
 	timeval tim;
-	gettimeofday(&tim, NULL);
-	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  StartSimulation();
-  int drawn = 0;
-	while (m_GameState > 0) {
-    drawn = (m_CurrentDraw - m_LastDraw);
-    if (drawn > 0) {
-      pthread_mutex_lock(&m_Mutex);
-      gettimeofday(&tim, NULL);
-      t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-      m_DeltaTime = t2 - t1;
-      gettimeofday(&tim, NULL);
-      t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-      if (m_DeltaTime > 0.5) {
-        LOGV("SKIPPP m_DeltaTime: %f\n", m_DeltaTime);
-        pthread_mutex_unlock(&m_Mutex);
-        continue;
+  gettimeofday(&tim, NULL);
+  t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+  m_DeltaTime = t2 - t1;
+  gettimeofday(&tim, NULL);
+  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+  int times = 1;
+  for (int i=0; i<times; i++) {
+    if (m_GameState > 1) {
+      //paused
+    } else {
+      m_SimulationTime += (m_DeltaTime);
+      if (Active()) {
+        Simulate();
       }
-      m_LastDraw = m_CurrentDraw;
-      if (m_GameState > 1) {
-        pthread_mutex_unlock(&m_Mutex);
-        pthread_cond_wait(&m_ResumeCond, &m_Mutex2);
-      } else {
-        m_SimulationTime += (m_DeltaTime);
-        if (Active()) {
-          Simulate();
-        }
-        pthread_mutex_unlock(&m_Mutex);
-      }
-      m_IsSceneBuilt = true;
     }
-	}
-  m_SimulationThreadCleanup();
+  }
+
+  m_IsSceneBuilt = true;
 	return m_GameState;
 }
 
@@ -297,16 +267,9 @@ void Engine::DoAudio(short buffer[], int size) {
 
 
 void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
-  //LOGV("rendering: %d %d start: %d skipping: %d\n", s, e, m_RenderStrideOffset, m_RenderStride);
-	for (unsigned int i=(s + m_RenderStrideOffset); i<e; i+=m_RenderStride) {
+	for (unsigned int i=s; i<e; i++) {
 		m_Models[i]->Render(m_StateFoo, batch_foo);
 	}
-  if (m_RenderStride > 1) {
-    m_RenderStrideOffset += 1;
-    if (m_RenderStrideOffset > m_RenderStride) {
-      m_RenderStrideOffset = 0;
-    }
-  }
 }
 
 
@@ -320,23 +283,25 @@ void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo
 void Engine::ResizeScreen(int width, int height) {
   m_ScreenWidth = width;
   m_ScreenHeight = height;
-	m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
-	m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
+  m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
+  m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  //glClearColor(0.925, 0.890, 0.804, 1.0);
+  glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  m_IsScreenResized = true;
-  if (m_IsThreeD) {
-		//glMatrixMode(GL_PROJECTION);
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-    //GLU_PERSPECTIVE(80.0, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
-    //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 5000.0);
-  } else {
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-  }
+  
+  //if (m_SetStates++ < 3) {
+    /*
+    glPointSize(10.0);
+    float eq[] = { 0.0, 0.0 };
+    glVertexPointer(2, GL_FLOAT, sizeof(float), eq);
+    glTexCoordPointer(2, GL_FLOAT, 0, eq);
+    glDrawArrays(GL_POINTS, 0, 1);
+    */
+  //} else {
+    m_IsScreenResized = true;
+  //}
+  
 }
 
 
@@ -440,34 +405,7 @@ void Engine::gluePerspective(float fovy, float aspect,
 }
 
 
-void Engine::SetWebViewPushAndPop(bool (thePusher)(const char *), const char *(*thePopper)()) {
-  m_WebViewMessagePusher = thePusher;
-  m_WebViewMessagePopper = thePopper;
-}
-
-
-char *Engine::CreateWebViewFunction(const char *fmt, ...) {
-  va_list ap;
-  va_start (ap, fmt);
-  vsnprintf (m_WebViewFunctionBuffer, 1024 * sizeof(char), fmt, ap);
-  va_end (ap);	
-  return m_WebViewFunctionBuffer;	
-}
-
-
-const char *Engine::PopMessageFromWebView() {
-  const char *s = m_WebViewMessagePopper();
-  return s;
-}
-
-
-bool Engine::PushMessageToWebView(char *messageToPush) {
-  sprintf(m_WebViewFunctionBufferTwo, "javascript:(function() { %s })()", messageToPush);
-  return m_WebViewMessagePusher(m_WebViewFunctionBufferTwo);
-}
-
-
-void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s,bool (thePusher)(const char *), const char *(*thePopper)(), void (theCleanup)()) {
+void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void (theCleanup)()) {
   if (games.size() == 0) {
     games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
@@ -484,7 +422,6 @@ void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*
   }
 
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
-  m_CurrentGame->SetWebViewPushAndPop(thePusher, thePopper);
   m_CurrentGame->CreateThread(theCleanup);
   
   pthread_mutex_unlock(&m_GameSwitchLock);
@@ -550,7 +487,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DrawScreen(rotation);
   } else {
-    //LOGV("foooo man chuuu\n");
+    LOGV("CurrentGameDrawScreen without m_CurrentGame set\n");
   }
 }
 
@@ -559,7 +496,7 @@ void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {
-    //LOGV("foooo man chuuu\n");
+    LOGV("CurrentGameDoAudio without m_CurrentGame set\n");
   }
 }
 

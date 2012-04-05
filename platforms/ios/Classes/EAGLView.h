@@ -6,19 +6,11 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
-
-#import <AudioToolbox/AudioToolbox.h>
+#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
-
-
-void iPhoneDrv_AudioCallback(void *data, AudioQueueRef mQueue, AudioQueueBufferRef mBuffer);
-void interruptionListenerCallback (void *inUserData,UInt32 interruptionState );
-void propertyListenerCallback (void *inUserData, AudioSessionPropertyID inPropertyID, UInt32 inPropertyValueSize, const void *inPropertyValue);
-GLuint loadTexture(UIImage *image);
-bool pushMessageToWebView(const char *);
-const char *popMessageFromWebView();
-struct Engine;
-typedef struct Engine Engine;
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
+#import "Audio.h"
 
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
@@ -29,31 +21,28 @@ typedef struct Engine Engine;
 
 @private
 
-
+  // animating determines if the displaylink should fire off a draw call or not
   BOOL animating;
-  BOOL displayLinkSupported;
-  NSInteger animationFrameInterval;
-  // Use of the CADisplayLink class is the preferred method for controlling your animation timing.
-  // CADisplayLink will link to the main display and fire every vsync when added to a given run-loop.
-  // The NSTimer class is used only as fallback when running on a pre 3.1 device where CADisplayLink
-  // isn't available.
-  id displayLink;
-  NSTimer *animationTimer;
-	EAGLContext *context;
-  EAGLSharegroup *Share;
-  EAGLContext *WorkingContext;
   
-  // The pixel dimensions of the CAEAGLLayer
-  GLint backingWidth;
-  GLint backingHeight;
+  // see :setAnimationFrameInterval for description
+  NSInteger animationFrameInterval;
+  
+  // A CADisplayLink object is a timer object that allows your application to synchronize its drawing to the refresh rate of the display.
+  CADisplayLink *displayLink;
+  
+  // An EAGLContext object manages the state information, commands, and resources needed to draw using OpenGL ES. All OpenGL ES commands are executed in relation to an EAGL context.
+	EAGLContext *context;
+  
+  // glWorkingContext is the second context that is shared with the first context
+  EAGLContext *glWorkingContext;
+
+  // An EAGLSharegroup object manages OpenGL ES resources associated with one or more EAGLContext objects. It is created when an EAGLContext object is initialized and disposed of when the last EAGLContext object that references it is released. As an opaque object, there is no developer accessible API.
+  EAGLSharegroup *glShareGroup;
+    
   // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
+  // OpenGL renderbuffers are simple interfaces for drawing to destinations other than the buffers provided to the GL by the window-system.
   GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
 
-	OSStatus status;
-	AudioComponentInstance audioUnit;
-	AudioQueueRef mAudioQueue;
-	AudioQueueBufferRef *mBuffers;
-	BOOL mLastMessageReady;
 }
 
 
@@ -61,15 +50,12 @@ typedef struct Engine Engine;
 @property (nonatomic) NSInteger animationFrameInterval;
 
 
--(void)build;
 -(void)startAnimation;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
--(BOOL)pushMessageToWebView:(const char *)theMessage;
--(const char *)popMessageFromWebView;
 -(void)startGame:(id)i;
 -(BOOL)wasActive;
--(void)initAudio2;
+-(GLuint)loadTexture2:(UIImage *)image;
 
 
 @end

@@ -22,7 +22,7 @@ CXXFLAGS=\
 -I../../src/OpenSteer
 
 CFLAGS=$(CXXFLAGS)
-LDFLAGS=-m64 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -lpthread -lresolv -framework CoreAudio
+LDFLAGS=-m64 -arch x86_64 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -framework AudioToolbox -framework AudioUnit -framework CoreAudio -framework Accelerate -lpthread -lresolv
 
 objects   = $(patsubst %,build/%, $(patsubst %.mm,%.o, $(wildcard *.mm)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
@@ -42,7 +42,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/OpenSteer/*.cpp)))
 
 raptor_island: $(build) $(objects)
-	$(CXX) -o $(build)/raptor_island $(LDFLAGS) $(objects)
+	$(CXX) $(LDFLAGS) -o $(build)/raptor_island $(objects)
 
 $(build)/%.o: %.mm
 	$(CXX) $(CXXFLAGS) -c $< -o $@

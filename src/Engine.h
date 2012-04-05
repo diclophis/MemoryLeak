@@ -33,22 +33,17 @@ public:
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
   void (*m_SimulationThreadCleanup)();
-  bool (*m_WebViewMessagePusher)(const char *);
-  const char *(*m_WebViewMessagePopper)();
-  void SetWebViewPushAndPop(bool (const char *), const char *(*)());
-  char m_WebViewFunctionBuffer[1024];
-  char m_WebViewFunctionBufferTwo[1024];
-  char *CreateWebViewFunction(const char *fmt, ...);
-  const char *PopMessageFromWebView();
-  bool PushMessageToWebView(char *messageToPush);
   bool Active();
   void StopSimulation();
   void StartSimulation();
   void PauseSimulation();
   void LoadSound(int i);
   void LoadModel(int i, int s, int e);
-
-  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, bool (const char *), const char *(*)(), void ());
+  void ClearModels();
+  void ClearSprites();
+  int isExtensionSupported(const char *extension);
+  
+  static void Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void ());
   static void CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   static void CurrentGameDestroyFoos();
   static void CurrentGameCreateFoos();
@@ -71,7 +66,6 @@ public:
   float m_ScreenAspect;
   float m_ScreenHalfHeight;
   int m_GameState;
-  double m_Waits[1];
   float m_CameraPosition[3];
   float m_CameraTarget[3];
   pthread_cond_t m_VsyncCond;
@@ -88,29 +82,20 @@ public:
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;
   std::vector<ModPlugFile *>m_Sounds;
-  int m_RenderIndex;
-  short *m_AudioMixBuffer;
-  int m_AudioBufferSize;
+
   bool m_IsPushingAudio;
   float m_Zoom;
-  float m_Balance;
-  float m_WebViewTimeout;
-  pthread_mutex_t m_ScriptMutex;
-  pthread_t m_ScriptThread;
+
   int m_SpriteCount;
   int m_ModelCount;
-  bool m_IsThreeD;
-  int m_RenderStride;
-  int m_RenderStrideOffset;
-
-  int m_LastDraw;
-  int m_CurrentDraw;
-  bool m_IsDrawReadyAfterResume;
 
   StateFoo *m_StateFoo;
 
   int m_CurrentSound;
   float m_Fov;
+	double t1, t2;
+
+  int m_SetStates;
 
 
 };

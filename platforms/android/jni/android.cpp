@@ -107,16 +107,6 @@ void SimulationThreadCleanup() {
 }
 
 
-bool pushMessageToWebView(const char *messageToPush) {
-  return true;
-}
-
-
-const char *popMessageFromWebView() {
-  return "";
-}
-
-
 JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   g_Vm = vm;
   JNIEnv *env;
@@ -139,7 +129,7 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, SimulationThreadCleanup);
 }
 
 
@@ -221,7 +211,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
     Engine::CurrentGameCreateFoos();
     Engine::CurrentGameStart();
   } else {
-    Engine::Start(3, sWindowWidth, sWindowHeight, textures, models, levels, sounds, pushMessageToWebView, popMessageFromWebView, SimulationThreadCleanup);
+    Engine::Start(1, sWindowWidth, sWindowHeight, textures, models, levels, sounds, SimulationThreadCleanup);
     create_audio_thread();
   }
 }

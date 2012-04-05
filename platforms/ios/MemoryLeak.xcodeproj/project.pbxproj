@@ -11,7 +11,7 @@
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
 		FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A320129E3EB70056E630 /* ModelOctree.cpp */; };
 		FC14176B1285413100166578 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417631285413100166578 /* EAGLView.mm */; };
-		FC14176C1285413100166578 /* MemoryLeakAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417651285413100166578 /* MemoryLeakAppDelegate.mm */; };
+		FC14176C1285413100166578 /* MemoryLeakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1417651285413100166578 /* MemoryLeakAppDelegate.m */; };
 		FC14176D1285413100166578 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1417661285413100166578 /* Default.png */; };
 		FC14176E1285413100166578 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417671285413100166578 /* main.mm */; };
 		FC14176F1285413100166578 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC1417681285413100166578 /* MainWindow.xib */; };
@@ -122,7 +122,6 @@
 		FC2C4B5C13C16F3300FECDEA /* b2WeldJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B2B13C16F3300FECDEA /* b2WeldJoint.cpp */; };
 		FC2C4B5D13C16F3300FECDEA /* b2WheelJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B2D13C16F3300FECDEA /* b2WheelJoint.cpp */; };
 		FC2C4B5E13C16F3300FECDEA /* b2Rope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B3013C16F3300FECDEA /* b2Rope.cpp */; };
-		FC2C4B6113C1771000FECDEA /* Hero.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B5F13C1771000FECDEA /* Hero.cpp */; };
 		FC2C4B6713C1778700FECDEA /* Terrain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6413C1778600FECDEA /* Terrain.cpp */; };
 		FC2C4B6913C1792D00FECDEA /* MLPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6813C1792D00FECDEA /* MLPoint.cpp */; };
 		FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC2C4B6A13C1AB6F00FECDEA /* RenderTexture.cpp */; };
@@ -157,6 +156,7 @@
 		FCA06F0811EDD6BB00FE4BFA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */; };
 		FCA06F0C11EDD6D100FE4BFA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */; };
 		FCA63E55131B8F8C0050F9A2 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */; };
+		FCAB716214E264F4008A34BC /* Audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = FCAB716014E264F4008A34BC /* Audio.mm */; };
 		FCB14CC712001DFB0010E756 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB14CC612001DFB0010E756 /* CoreGraphics.framework */; };
 		FCDE089712D924A3004CE9B7 /* load_it.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087312D924A3004CE9B7 /* load_it.cpp */; };
 		FCDE089C12D924A3004CE9B7 /* load_mod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE087812D924A3004CE9B7 /* load_mod.cpp */; };
@@ -189,7 +189,7 @@
 		FC1417621285413100166578 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		FC1417631285413100166578 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		FC1417641285413100166578 /* MemoryLeakAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeakAppDelegate.h; sourceTree = "<group>"; };
-		FC1417651285413100166578 /* MemoryLeakAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MemoryLeakAppDelegate.mm; sourceTree = "<group>"; };
+		FC1417651285413100166578 /* MemoryLeakAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemoryLeakAppDelegate.m; sourceTree = "<group>"; };
 		FC1417661285413100166578 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		FC1417671285413100166578 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		FC1417681285413100166578 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
@@ -576,8 +576,6 @@
 		FC2C4B2E13C16F3300FECDEA /* b2WheelJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2WheelJoint.h; sourceTree = "<group>"; };
 		FC2C4B3013C16F3300FECDEA /* b2Rope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Rope.cpp; sourceTree = "<group>"; };
 		FC2C4B3113C16F3300FECDEA /* b2Rope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Rope.h; sourceTree = "<group>"; };
-		FC2C4B5F13C1771000FECDEA /* Hero.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hero.cpp; sourceTree = "<group>"; };
-		FC2C4B6013C1771000FECDEA /* Hero.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hero.h; sourceTree = "<group>"; };
 		FC2C4B6313C1778500FECDEA /* MLPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLPoint.h; sourceTree = "<group>"; };
 		FC2C4B6413C1778600FECDEA /* Terrain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Terrain.cpp; sourceTree = "<group>"; };
 		FC2C4B6513C1778600FECDEA /* Terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terrain.h; sourceTree = "<group>"; };
@@ -662,6 +660,8 @@
 		FCA06F0711EDD6BB00FE4BFA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FCA06F0B11EDD6D100FE4BFA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FCA63E54131B8F8C0050F9A2 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
+		FCAB716014E264F4008A34BC /* Audio.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Audio.mm; sourceTree = "<group>"; };
+		FCAB716114E264F4008A34BC /* Audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Audio.h; sourceTree = "<group>"; };
 		FCB14CC612001DFB0010E756 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		FCDE087312D924A3004CE9B7 /* load_it.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_it.cpp; sourceTree = "<group>"; };
 		FCDE087812D924A3004CE9B7 /* load_mod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = load_mod.cpp; sourceTree = "<group>"; };
@@ -766,7 +766,9 @@
 				FC1417621285413100166578 /* EAGLView.h */,
 				FC1417631285413100166578 /* EAGLView.mm */,
 				FC1417641285413100166578 /* MemoryLeakAppDelegate.h */,
-				FC1417651285413100166578 /* MemoryLeakAppDelegate.mm */,
+				FC1417651285413100166578 /* MemoryLeakAppDelegate.m */,
+				FCAB716014E264F4008A34BC /* Audio.mm */,
+				FCAB716114E264F4008A34BC /* Audio.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -786,8 +788,6 @@
 				FC2C4B6313C1778500FECDEA /* MLPoint.h */,
 				FC2C4B6413C1778600FECDEA /* Terrain.cpp */,
 				FC2C4B6513C1778600FECDEA /* Terrain.h */,
-				FC2C4B5F13C1771000FECDEA /* Hero.cpp */,
-				FC2C4B6013C1771000FECDEA /* Hero.h */,
 				FC2C4ACF13C16F3300FECDEA /* Box2D */,
 				FC6D4D6613A46D1B00DE1200 /* FooIO.h */,
 				FC6D4D6713A46D1B00DE1200 /* Game.h */,
@@ -1544,7 +1544,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC14176B1285413100166578 /* EAGLView.mm in Sources */,
-				FC14176C1285413100166578 /* MemoryLeakAppDelegate.mm in Sources */,
+				FC14176C1285413100166578 /* MemoryLeakAppDelegate.m in Sources */,
 				FC14176E1285413100166578 /* main.mm in Sources */,
 				FC141A961285415900166578 /* aiAssert.cpp in Sources */,
 				FC141A9C1285415900166578 /* Assimp.cpp in Sources */,
@@ -1675,7 +1675,6 @@
 				FC2C4B5C13C16F3300FECDEA /* b2WeldJoint.cpp in Sources */,
 				FC2C4B5D13C16F3300FECDEA /* b2WheelJoint.cpp in Sources */,
 				FC2C4B5E13C16F3300FECDEA /* b2Rope.cpp in Sources */,
-				FC2C4B6113C1771000FECDEA /* Hero.cpp in Sources */,
 				FC2C4B6713C1778700FECDEA /* Terrain.cpp in Sources */,
 				FC2C4B6913C1792D00FECDEA /* MLPoint.cpp in Sources */,
 				FC2C4B6C13C1AB7300FECDEA /* RenderTexture.cpp in Sources */,
@@ -1699,6 +1698,7 @@
 				FC419535147DB07700A63C6B /* TerrainRayTest.cpp in Sources */,
 				FC419536147DB07700A63C6B /* Vec3.cpp in Sources */,
 				FC419537147DB07700A63C6B /* Vec3Utilities.cpp in Sources */,
+				FCAB716214E264F4008A34BC /* Audio.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1714,6 +1714,7 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
@@ -1724,7 +1725,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -1756,6 +1757,7 @@
 					"-D_iPhoneVersion",
 					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
+					"-DMODPLUG_FASTSOUNDLIB",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1774,6 +1776,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1801,6 +1805,7 @@
 					"-D_iPhoneVersion",
 					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
+					"-DMODPLUG_FASTSOUNDLIB",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";
@@ -1863,6 +1868,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MemoryLeak_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1890,6 +1897,7 @@
 					"-D_iPhoneVersion",
 					"-DHAS_VAO",
 					"-DMODPLUG_BASIC_SUPPORT",
+					"-DMODPLUG_FASTSOUNDLIB",
 				);
 				PRODUCT_NAME = RaptorIsland;
 				PROVISIONING_PROFILE = "";

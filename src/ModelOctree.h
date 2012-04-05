@@ -6,36 +6,26 @@ class ModelOctree : public micropather::Graph {
 
 public:
 	
-	std::vector<Model *> *m_Models;
-	Octree<int> *m_Scene;
-	int m_ModelIndex;
+	Octree<int> *m_Space;
 
-	ModelOctree(std::vector<Model *> &m, Octree<int> &o, int i);
+	ModelOctree(Octree<int> &o);
 	~ModelOctree();
-	float LeastCostEstimate( void* nodeStart, void* nodeEnd );
-	void AdjacentCost( void* node, std::vector< StateCost > *neighbors );
-	void PrintStateInfo( void* node ) {};
 
-	static void NodeToXY( void* node, int* x, int* y )
-	{
-    int*  data = reinterpret_cast<int*>(node);
-    int   index    = *data;
+	float LeastCostEstimate(void* nodeStart, void* nodeEnd);
+	void AdjacentCost(void* node, std::vector<StateCost> *neighbors);
+	void PrintStateInfo(void* node) {};
+
+	static void NodeToXY(void* node, int* x, int* y) {
+    int *data = reinterpret_cast<int*>(node);
+    int index = *data;
     delete data;
-
-
-		//int index = (int)node;
-		*y = index / 64;
-		*x = index - *y * 64;
+		*y = index / 24;
+		*x = index - *y * 24;
 	}
 	
-	static void* XYToNode( int x, int y )
-	{
-		return (void*) ( y*64 + x );
+	static void* XYToNode(int x, int y) {
+		return (void *) ((y * 24) + x);
 	}
-	
-	void SetModelIndex (int i) {
-		m_ModelIndex = i;
-	};	
 };
 	
 };

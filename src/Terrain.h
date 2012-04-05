@@ -17,16 +17,9 @@ public:
   MLPoint *hillVertices;
   MLPoint *hillTexCoords;
   MLPoint *borderVertices;
-  /*
-  MLPoint hillKeyPoints[kMaxHillKeyPoints];
-  MLPoint hillVertices[kMaxHillVertices];
-  MLPoint hillTexCoords[kMaxHillVertices];
-  MLPoint borderVertices[kMaxBorderVertices];
-  */
 
   int nHillVertices;
   int nBorderVertices;
-  SpriteGun *stripes;
   b2World *world;
   b2Body *body;
   int screenW;
@@ -43,7 +36,7 @@ public:
   float offsetX;
   MLPoint position;
 
-  void Render();
+  void Render(StateFoo *sf);
 
   int m_TextureIndex;
 

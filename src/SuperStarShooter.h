@@ -1,6 +1,6 @@
 // Jon Bardin GPL
 
-class SuperStarShooter : public Engine {
+class SuperStarShooter : public Engine, public micropather::Graph {
 
 public:
 
@@ -13,14 +13,20 @@ public:
   void CreateFoos();
   void DestroyFoos();
 
-  void CreateCollider(float x, float y, float r, int f);
   void IndexToXY(int index, int *x, int *y);
   int XYToIndex(int x, int y);
+  void BlitIntoSpace(int layer, int bottom_left_start, int width, int height, int offset_x, int offset_y);
+
+	float LeastCostEstimate(void* nodeStart, void* nodeEnd);
+	void AdjacentCost(void* node, std::vector<micropather::StateCost> *neighbors);
+	void PrintStateInfo(void* node) {};
 
 	Octree<int> *m_Space;
 
   int m_GridStartIndex;
   int m_GridStopIndex;
+  int m_SecondGridStartIndex;
+  int m_SecondGridStopIndex;
 
   int m_GridCount;
   int *m_GridPositions;
@@ -34,10 +40,50 @@ public:
   float m_CameraActualOffsetX;
   float m_CameraActualOffsetY;
 
-  float m_PercentThere;
+  float m_LastCenterX;
+  float m_LastCenterY;
 
   float m_WarpTimeout;
 
-  float m_DebugTimeout;
+  int m_PlayerIndex;
+  int m_PlayerStartIndex;
+  int m_PlayerStopIndex;
+
+  unsigned int m_TrailCount;
+  int m_TrailStartIndex;
+  int m_TrailStopIndex;
+
+  int m_HoleIndex;
+
+  float m_TouchStartX;
+  float m_TouchStartY;
+
+  foofoo *m_GridFoo;
+  foofoo *m_BatchFoo;
+  foofoo **m_PlayerFoos;
+  foofoo *m_HoleFoo;
+  foofoo *m_TrailFoo;
+
+	micropather::MicroPather *m_Pather;
+	micropather::ModelOctree *m_ModelOctree;
+	std::vector<void *> *m_Steps;
+
+  int m_MaxStatePointers;
+  int m_StatePointer;
+  std::vector<nodexyz *>m_States;
+
+  int m_TargetX;
+  int m_TargetY;
+ 
+  int StatePointerFor(int x, int y, int z);
+
+  bool m_TargetIsDirty;
+
+  float m_GotLastSwipeAt;
+  bool m_SwipedBeforeUp;
+  bool m_StartedSwipe;
+
+  int m_CenterOfWorldX;
+  int m_CenterOfWorldY;
 
 };

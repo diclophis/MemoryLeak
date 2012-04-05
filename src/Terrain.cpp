@@ -29,8 +29,7 @@ Terrain::Terrain(b2World *w, GLuint t) {
 
 
 Terrain::~Terrain() {
-  //delete stripes;
-  LOGV("del;ete terrain\n");
+  LOGV("delloc terrain\n");
   free(hillKeyPoints);
   free(hillVertices);
   free(hillTexCoords);
@@ -149,8 +148,6 @@ void Terrain::ResetHillVertices() {
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
   float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
 
-  //LOGV("left right %f %f\n", leftSideX, rightSideX);
-
   while (hillKeyPoints[fromKeyPointI+1].x < leftSideX) {
     fromKeyPointI++;
     if (fromKeyPointI > nHillKeyPoints-1) {
@@ -168,7 +165,6 @@ void Terrain::ResetHillVertices() {
   }
     
   if (prevFromKeyPointI != fromKeyPointI || prevToKeyPointI != toKeyPointI) {
-  //LOGV("good!\n");
     // vertices for visible area
     nHillVertices = 0;
     MLPoint p0, p1, pt0, pt1;
@@ -193,7 +189,6 @@ void Terrain::ResetHillVertices() {
           hillTexCoords[nHillVertices++] = MLPointMake(pt0.x/(float)textureSize, (float)(k)/vSegments);
           hillVertices[nHillVertices] = MLPointMake(pt1.x, pt1.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt1.x/(float)textureSize, (float)(k)/vSegments);
-          //LOGV("WHA %d\n", nHillVertices);
         }
         pt0 = pt1;
       }
@@ -206,31 +201,47 @@ void Terrain::ResetHillVertices() {
   } else {
     LOGV("BADD!@#$!@#!@# %d %d %d %d\n", prevFromKeyPointI, fromKeyPointI, prevToKeyPointI, toKeyPointI);
   }
-
-  //LOGV("nHillVertices should be set here %d\n", nHillVertices);
 }
 
 
-void Terrain::Render() {
-  //glPushMatrix();
-  //{
-  //glEnableClientState(GL_VERTEX_ARRAY);
+void Terrain::Render(StateFoo *sf) {
+
+  if (false) {
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  }
+  
+	if (rt->name != sf->g_lastTexture) {
+		glBindTexture(GL_TEXTURE_2D, rt->name);
+		sf->g_lastTexture = rt->name;
+	}
+  
+#ifdef HAS_VAO  
+  sf->g_lastVertexArrayObject = -1; 
+  glBindVertexArrayOES(0);
+#else
+
+#endif
+  
+  sf->g_lastInterleavedBuffer = -1;
+  sf->g_lastElementBuffer = -1;
+  
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//Engine::CheckGL("Render in T2");
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  if (!sf->m_EnabledStates) {
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    sf->m_EnabledStates = true;
+  }
+  
   if (true) {
-    //glEnable(GL_TEXTURE_2D);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    //LOGV("bind: %d\n", rt->name);
-    //glBindTexture(GL_TEXTURE_2D, rt->name - 2);
-    glBindTexture(GL_TEXTURE_2D, rt->name);
     glVertexPointer(2, GL_FLOAT, 0, hillVertices);
     glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
-//Engine::CheckGL("Render in T1");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
-    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    //glBindTexture(GL_TEXTURE_2D, 0);
-    //glDisable(GL_TEXTURE_2D);
   } else {
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glColor4f(1.0, 1.0, 1.0, 0.5);
@@ -239,10 +250,12 @@ void Terrain::Render() {
     glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   }
-  //glDisableClientState(GL_VERTEX_ARRAY);
-  //Engine::CheckGL("Render in T");
-  //}
-  //glPopMatrix();
+
+  if (false) {
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisable(GL_TEXTURE_2D);
+  }
 }
 
 
@@ -250,7 +263,6 @@ GLuint Terrain::GenerateStripesTexture() {
   MLPoint texSize = MLPointMake(textureSize, textureSize);
 	// Calculate the adjustment ratios based on the old and new projections
 	MLPoint size = MLPointMake(320.0, 480.0);
-	
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
@@ -268,217 +280,192 @@ GLuint Terrain::GenerateStripesTexture() {
   
   rt = new RenderTexture(textureSize, textureSize);
 
-  //glPushMatrix();
-  //Engine::CheckGL("glPushMatrix in T");
-  //{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
-    //glMatrixMode(GL_MODELVIEW);
-    
-    glViewport(0, 0, texSize.x, texSize.y);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    glFinish();
+  glViewport(0, 0, texSize.x, texSize.y);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  //glFinish();
 
-    rt->Begin();
-    if (true) {      
-      // layer 1: stripes
-      if (random() % 2) {
-        dx = (float)textureSize*2 / (float)nStripes;
-        dy = 0;
-        x1 = -textureSize;
-        y1 = 0;
-        x2 = 0;
-        y2 = textureSize;
-        for (int i=0; i<nStripes/2; i++) {
-          c = GenerateColor();
-          for (int j=0; j<2; j++) {
-            vertices[nVertices] = MLPointMake(x1+j*textureSize, y1);
-            colors[nVertices++] = c;
-            vertices[nVertices] = MLPointMake(x1+j*textureSize+dx, y1);
-            colors[nVertices++] = c;
-            vertices[nVertices] = MLPointMake(x2+j*textureSize, y2);
-            colors[nVertices++] = c;
-            vertices[nVertices] = vertices[nVertices-2];
-            colors[nVertices++] = c;
-            vertices[nVertices] = vertices[nVertices-2];
-            colors[nVertices++] = c;
-            vertices[nVertices] = MLPointMake(x2+j*textureSize+dx, y2);
-            colors[nVertices++] = c;
-          }
-          x1 += dx;
-          x2 += dx;
-        }
-      } else {
-        // horizontal stripes
-        dx = 0;
-        dy = (float)textureSize / (float)nStripes;
-        x1 = 0;
-        y1 = 0;
-        x2 = textureSize;
-        y2 = 0;
-        for (int i=0; i<nStripes; i++) {
-          c = GenerateColor();
-          vertices[nVertices] = MLPointMake(x1, y1);
+  rt->Begin();
+  if (true) {      
+    // layer 1: stripes
+    if (random() % 2) {
+      dx = (float)textureSize*2 / (float)nStripes;
+      dy = 0;
+      x1 = -textureSize;
+      y1 = 0;
+      x2 = 0;
+      y2 = textureSize;
+      for (int i=0; i<nStripes/2; i++) {
+        c = GenerateColor();
+        for (int j=0; j<2; j++) {
+          vertices[nVertices] = MLPointMake(x1+j*textureSize, y1);
           colors[nVertices++] = c;
-          vertices[nVertices] = MLPointMake(x2, y2);
+          vertices[nVertices] = MLPointMake(x1+j*textureSize+dx, y1);
           colors[nVertices++] = c;
-          vertices[nVertices] = MLPointMake(x1, y1+dy);
+          vertices[nVertices] = MLPointMake(x2+j*textureSize, y2);
           colors[nVertices++] = c;
           vertices[nVertices] = vertices[nVertices-2];
           colors[nVertices++] = c;
           vertices[nVertices] = vertices[nVertices-2];
           colors[nVertices++] = c;
-          vertices[nVertices] = MLPointMake(x2, y2+dy);
+          vertices[nVertices] = MLPointMake(x2+j*textureSize+dx, y2);
           colors[nVertices++] = c;
-          y1 += dy;
-          y2 += dy;
         }
+        x1 += dx;
+        x2 += dx;
       }
-
-      //glEnableClientState(GL_VERTEX_ARRAY);
-      glEnableClientState(GL_COLOR_ARRAY);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      glColor4f(1, 1, 1, 1);
-      glVertexPointer(2, GL_FLOAT, 0, vertices);
-      glColorPointer(4, GL_FLOAT, 0, colors);
-      glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-      glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
-      
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-      glDisable(GL_BLEND);
-      glDisableClientState(GL_COLOR_ARRAY);
-      //glDisableClientState(GL_VERTEX_ARRAY);
-    }
-    
-
-    if (true) {
-      // layer: gradient
-      
-      float gradientAlpha = 0.5f;
-      float gradientWidth = textureSize;
-      nVertices = 0;
-      vertices[nVertices] = MLPointMake(0, 0);
-      colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
-      vertices[nVertices] = MLPointMake(textureSize, 0);
-      colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
-      vertices[nVertices] = MLPointMake(0, gradientWidth);
-      colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
-      vertices[nVertices] = MLPointMake(textureSize, gradientWidth);
-      colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
-      if (gradientWidth < textureSize) {
-        vertices[nVertices] = MLPointMake(0, textureSize);
-        colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
-        vertices[nVertices] = MLPointMake(textureSize, textureSize);
-        colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
+    } else {
+      // horizontal stripes
+      dx = 0;
+      dy = (float)textureSize / (float)nStripes;
+      x1 = 0;
+      y1 = 0;
+      x2 = textureSize;
+      y2 = 0;
+      for (int i=0; i<nStripes; i++) {
+        c = GenerateColor();
+        vertices[nVertices] = MLPointMake(x1, y1);
+        colors[nVertices++] = c;
+        vertices[nVertices] = MLPointMake(x2, y2);
+        colors[nVertices++] = c;
+        vertices[nVertices] = MLPointMake(x1, y1+dy);
+        colors[nVertices++] = c;
+        vertices[nVertices] = vertices[nVertices-2];
+        colors[nVertices++] = c;
+        vertices[nVertices] = vertices[nVertices-2];
+        colors[nVertices++] = c;
+        vertices[nVertices] = MLPointMake(x2, y2+dy);
+        colors[nVertices++] = c;
+        y1 += dy;
+        y2 += dy;
       }
-
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      //glEnableClientState(GL_VERTEX_ARRAY);
-      glEnableClientState(GL_COLOR_ARRAY);
-      glVertexPointer(2, GL_FLOAT, 0, vertices);
-      glColorPointer(4, GL_FLOAT, 0, colors);
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
-      glDisableClientState(GL_COLOR_ARRAY);
-
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-      //glDisableClientState(GL_VERTEX_ARRAY);
-      glDisable(GL_BLEND);
-      
-    }
-    
-    
-    if (true) {
-      // layer: highlight
-
-      float highlightAlpha = 0.5f;
-      nVertices = 0;
-      vertices[nVertices] = MLPointMake(0.0, 512.0);
-      colors[nVertices++] = (ccColor4F){1, 1, 0.5f, highlightAlpha}; // yellow
-      vertices[nVertices] = MLPointMake(textureSize, 512.0);
-      colors[nVertices++] = (ccColor4F){1, 1, 0.5f, highlightAlpha};
-      vertices[nVertices] = MLPointMake(0, 128.0);
-      colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
-      vertices[nVertices] = MLPointMake(textureSize, 128.0);
-      colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
-
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      //glEnableClientState(GL_VERTEX_ARRAY);
-      glEnableClientState(GL_COLOR_ARRAY);
-      glVertexPointer(2, GL_FLOAT, 0, vertices);
-      glColorPointer(4, GL_FLOAT, 0, colors);
-      
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-      glDisableClientState(GL_COLOR_ARRAY);
-      //glDisableClientState(GL_VERTEX_ARRAY);
-      glDisable(GL_BLEND);
-      
     }
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(1, 1, 1, 1);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glColorPointer(4, GL_FLOAT, 0, colors);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    if (true) {
-      // layer: top border
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
+    
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-      float borderAlpha = 0.5f;
-      float borderWidth = 10.0f;
-      nVertices = 0;
-      vertices[nVertices++] = MLPointMake(0, (borderWidth / 2.0) + 512.0 - borderWidth);
-      vertices[nVertices++] = MLPointMake(textureSize, (borderWidth / 2.0) + 512.0 - borderWidth);
+    glDisable(GL_BLEND);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+  }
+  
 
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      //glEnableClientState(GL_VERTEX_ARRAY);
-      glLineWidth(borderWidth);
-      glColor4f(1.0, 0.0, 0.0, borderAlpha);
-      glVertexPointer(2, GL_FLOAT, 0, vertices);
-      
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nVertices);
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-      glColor4f(1.0, 1.0, 1.0, 1.0);
-      //glDisableClientState(GL_VERTEX_ARRAY);
-      glDisable(GL_BLEND);
+  if (true) {
+    // layer: gradient
+    float gradientAlpha = 0.5f;
+    float gradientWidth = textureSize;
+    nVertices = 0;
+    vertices[nVertices] = MLPointMake(0, 0);
+    colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
+    vertices[nVertices] = MLPointMake(textureSize, 0);
+    colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
+    vertices[nVertices] = MLPointMake(0, gradientWidth);
+    colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
+    vertices[nVertices] = MLPointMake(textureSize, gradientWidth);
+    colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
+    if (gradientWidth < textureSize) {
+      vertices[nVertices] = MLPointMake(0, textureSize);
+      colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
+      vertices[nVertices] = MLPointMake(textureSize, textureSize);
+      colors[nVertices++] = (ccColor4F){0, 0, 0, gradientAlpha};
     }
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glColorPointer(4, GL_FLOAT, 0, colors);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisable(GL_BLEND);
+  }
+  
+  
+  if (true) {
+    // layer: highlight
+    float highlightAlpha = 0.5f;
+    nVertices = 0;
+    vertices[nVertices] = MLPointMake(0.0, 512.0);
+    colors[nVertices++] = (ccColor4F){1, 1, 0.5f, highlightAlpha}; // yellow
+    vertices[nVertices] = MLPointMake(textureSize, 512.0);
+    colors[nVertices++] = (ccColor4F){1, 1, 0.5f, highlightAlpha};
+    vertices[nVertices] = MLPointMake(0, 128.0);
+    colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
+    vertices[nVertices] = MLPointMake(textureSize, 128.0);
+    colors[nVertices++] = (ccColor4F){0, 0, 0, 0};
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glColorPointer(4, GL_FLOAT, 0, colors);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nVertices);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisable(GL_BLEND);
+  }
 
+
+  if (true) {
+    // layer: top border
+    float borderAlpha = 0.5f;
+    float borderWidth = 10.0f;
+    nVertices = 0;
+    vertices[nVertices++] = MLPointMake(0, (borderWidth / 2.0) + 512.0 - borderWidth);
+    vertices[nVertices++] = MLPointMake(textureSize, (borderWidth / 2.0) + 512.0 - borderWidth);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glLineWidth(borderWidth);
+    glColor4f(1.0, 0.0, 0.0, borderAlpha);
+    glVertexPointer(2, GL_FLOAT, 0, vertices);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nVertices);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisable(GL_BLEND);
+  }
+
+  
+  if (true) {
+    // layer: noise
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_DST_COLOR, GL_ZERO);
+    //stripes->SetPosition(textureSize / 2, textureSize / 2);
+    glColor4f(1, 1, 1, 1);
+    //render an AtlasSprite full "screen" here!
+    glDisable(GL_BLEND);
+  }
+  
+  rt->End();
     
-    if (true) {
-      // layer: noise
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_DST_COLOR, GL_ZERO);
-      //stripes->SetPosition(textureSize / 2, textureSize / 2);
-      glColor4f(1, 1, 1, 1);
-      //stripes->Render();
-      //stripes->Render();
-      //stripes->Render();
-      glDisable(GL_BLEND);
-    }
-    
-    rt->End();
-    
-  //}
-  //glPopMatrix();
 
   glViewport(0, 0, size.x, size.y);
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glFinish();
 
   return rt->name;
-  
 }
 
 
