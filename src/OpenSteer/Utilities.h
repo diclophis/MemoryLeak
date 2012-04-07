@@ -43,6 +43,8 @@
 #define OPENSTEER_UTILITIES_H
 
 
+#include <math.h>     // for sqrt, etc.
+
 #include <iostream>  // for ostream, <<, etc.
 #include <cstdlib>   // for rand, etc.
 #include <cfloat>    // for FLT_MAX, etc.

@@ -132,6 +132,8 @@
 #include "GLES-Render.h"
 #include "Engine.h"
 
+#define random rand
+
 #include "MLPoint.h"
 #include "Terrain.h"
 
