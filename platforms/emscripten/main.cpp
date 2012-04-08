@@ -47,7 +47,7 @@ void *pump_audio(void *) {
 
 void draw(void) {
   LOGV("Draw\n");
-  Engine::CurrentGameDrawScreen(0);
+  //Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
   glutPostRedisplay();
 }
