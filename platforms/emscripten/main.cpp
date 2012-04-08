@@ -283,7 +283,7 @@ int main(int argc, char** argv) {
   }
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
-  pthread_create(&audio_thread, 0, pump_audio, NULL);
+  //pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutMainLoop();
 

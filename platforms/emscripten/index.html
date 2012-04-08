@@ -17,11 +17,6 @@
           var element = document.getElementById('output');
           element.value = ''; // clear browser cache
           return function(text) {
-            // These replacements are necessary if you render to raw HTML
-            //text = text.replace(/&/g, "&amp;");
-            //text = text.replace(/</g, "&lt;");
-            //text = text.replace(/>/g, "&gt;");
-            //text = text.replace('\n', '<br>', 'g');
             element.value += text + "\n";
             element.scrollTop = 99999; // focus on bottom
           };
@@ -36,9 +31,15 @@
           Module.setStatus(left ? 'Downloading: ' + (this.totalDependencies-left) + '/' + this.totalDependencies : 'All downloads complete.');
         },
         preRun: function() {
+          console.log("making files");
           var assets = FS.createFolder('/', 'assets', true, false);
           var sounds = FS.createFolder(assets, 'sounds', true, false);
           FS.createDataFile(sounds, '0.wav', "wtf", true, false);
+          FS.createDataFile(sounds, '1.wav', "wtf", true, false);
+          var textures = FS.createFolder(assets, 'textures', true, false);
+          FS.createDataFile(textures, '0.png', "wtf", true, false);
+          var levels = FS.createFolder(assets, 'levels', true, false);
+          FS.createDataFile(levels, '0.wav', "wtf", true, false);
         }
       };
     </script>

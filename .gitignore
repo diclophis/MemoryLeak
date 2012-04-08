@@ -17,3 +17,4 @@ platforms/osx_glut/MemoryLeak.xcodeproj/xcuserdata
 private
 local.properties
 platforms/linux_glut/gmon.out
+platforms/emscripten/a.out

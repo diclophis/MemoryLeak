@@ -10,7 +10,7 @@ CXXFLAGS=\
 -DDESKTOP \
 -I../../src/Box2D \
 -I../../src/octree \
--O0 \
+-DMODPLUG_BASIC_SUPPORT \
 
 #-m64 -g -pg -DDESKTOP -DHAVE_SETENV -D_iPhoneVersion \
 -DMODPLUG_BASIC_SUPPORT \
@@ -18,8 +18,6 @@ CXXFLAGS=\
 -I../../src/OpenSteer
 
 CFLAGS=$(CXXFLAGS)
-
-#LDFLAGS=-lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLU -lm -lstdc++
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.bc, $(wildcard *.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/contrib/irrXML/*.cpp)))
@@ -40,25 +38,29 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard .
 
 #~/emscripten/emcc --llvm-opts 0 -O0 -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.js
 #~/emscripten/emcc --llvm-opts 0 -O0 --preload-file ../../assets -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.js
-
-raptor_island: $(build) $(objects)
-	#$(CXX) -s LINKABLE=1 --llvm-opts 0 -O0 $(objects) -o $(build)/raptor_island.bc
-	#~/emscripten/emcc --llvm-opts 0 -O0 -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.html
-	$(CXX) $(objects) -o $(build)/raptor_island.bc
-	~/emscripten/emcc $(build)/raptor_island.bc -o $(build)/raptor_island.js
-
+#$(CXX) -s LINKABLE=1 --llvm-opts 0 -O0 $(objects) -o $(build)/raptor_island.bc
+#~/emscripten/emcc --llvm-opts 0 -O0 -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.html
 #$(CXX) $(objects)
 #$(CXX) $(build)/raptor_island.bc -o $(build)/raptor_island.js
 #$(CXX) $(build)/raptor_island.bc -o $(build)/raptor_island.html
-  
+
+#EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.js -s LINKABLE=1
+#EMCC_DEBUG=1 ~/emscripten/emcc $(build)/raptor_island.bc -o $(build)/raptor_island.js -s LINKABLE=1
+#$(CXX) $(objects) -o $(build)/raptor_island.bc
+#EMCC_DEBUG=1 ~/emscripten/emcc $(build)/raptor_island.bc -o $(build)/raptor_island.js -s LINKABLE=1
+
+raptor_island: $(build) $(objects)
+	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
+	EMCC_DEBUG=1 $(CXX) $(build)/raptor_island.bc -o $(build)/raptor_island.js
+
 $(build)/%.bc: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(build)/%.bc: ../../src/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(build)/%.bc: ../../src/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	EMCC_DEBUG=1 $(CC) $(CFLAGS) -c $< -o $@
 
 $(build):
 	mkdir -p $(build)
@@ -79,6 +81,8 @@ $(build):
 	mkdir -p $(build)/OpenSteer
 
 clean:
+	rm -R /tmp/emscripten_temp
+	rm a.out
 	rm -Rf $(build)
 
 install:
