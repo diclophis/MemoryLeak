@@ -86,4 +86,6 @@ public:
   int m_CenterOfWorldX;
   int m_CenterOfWorldY;
 
+  void LoadMaze(int level_index);
+
 };
