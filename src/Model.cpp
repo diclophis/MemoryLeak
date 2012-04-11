@@ -243,11 +243,6 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
 
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  sf->m_LastBufferIndex++;
-  if (sf->m_LastBufferIndex > (foo->m_BufferCount - 1)) {
-    sf->m_LastBufferIndex = 0;
-  }
-
   if (false) {
     glDisable(GL_TEXTURE_2D);
     glColor4f(1.0, 1.0, 0.0, 1.0);
@@ -256,6 +251,14 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
+
+  sf->m_LastBufferIndex++;
+  if (sf->m_LastBufferIndex > (foo->m_BufferCount - 1)) {
+    sf->m_LastBufferIndex = 0;
+  }
+
+  foo->m_NumBatched = 0;
+
 }
 
 
