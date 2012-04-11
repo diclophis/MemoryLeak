@@ -96,17 +96,6 @@ void Engine::ResetStateFoo() {
 
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-  // dont change textures after upload
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  if (false) {
-    glEnable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  }
-
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;
   m_StateFoo->g_lastInterleavedBuffer = -1;
@@ -286,22 +275,9 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
   m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  //glClearColor(0.925, 0.890, 0.804, 1.0);
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  
-  //if (m_SetStates++ < 3) {
-    /*
-    glPointSize(10.0);
-    float eq[] = { 0.0, 0.0 };
-    glVertexPointer(2, GL_FLOAT, sizeof(float), eq);
-    glTexCoordPointer(2, GL_FLOAT, 0, eq);
-    glDrawArrays(GL_POINTS, 0, 1);
-    */
-  //} else {
-    m_IsScreenResized = true;
-  //}
-  
+  m_IsScreenResized = true;
 }
 
 
