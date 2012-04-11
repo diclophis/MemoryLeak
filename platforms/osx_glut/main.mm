@@ -29,6 +29,141 @@ static std::vector<foo*> levels;
 static int game_index = 1;
 static short int *outData;
 
+#ifdef USE_GLES2
+
+static const char vertex_shader[] =
+  "attribute vec3 position;\n"
+  "attribute vec3 normal;\n"
+  "\n"
+  "uniform mat4 ModelViewProjectionMatrix;\n"
+  "uniform mat4 NormalMatrix;\n"
+  "uniform vec4 LightSourcePosition;\n"
+  "uniform vec4 MaterialColor;\n"
+  "\n"
+  "varying vec4 Color;\n"
+  "\n"
+  "void main(void)\n"
+  "{\n"
+  " // Transform the normal to eye coordinates\n"
+  " vec3 N = normalize(vec3(NormalMatrix * vec4(normal, 1.0)));\n"
+  "\n"
+  " // The LightSourcePosition is actually its direction for directional light\n"
+  " vec3 L = normalize(LightSourcePosition.xyz);\n"
+  "\n"
+  " // Multiply the diffuse value by the vertex color (which is fixed in this case)\n"
+  " // to get the actual color that we will use to draw this vertex with\n"
+  " float diffuse = max(dot(N, L), 0.0);\n"
+  " Color = diffuse * MaterialColor;\n"
+  "\n"
+  " // Transform the position to clip coordinates\n"
+  " gl_Position = ModelViewProjectionMatrix * vec4(position, 1.0);\n"
+  "}";
+
+static const char fragment_shader[] =
+  "#ifdef GL_ES\n"
+  "precision mediump float;\n"
+  "#endif\n"
+  "varying vec4 Color;\n"
+  "\n"
+  "void main(void)\n"
+  "{\n"
+  " gl_FragColor = Color;\n"
+  "}";
+
+static GLuint ModelViewProjectionMatrix_location, NormalMatrix_location, LightSourcePosition_location, MaterialColor_location;
+/** The projection matrix */
+static GLfloat ProjectionMatrix[16];
+/** The direction of the directional light for the scene */
+static const GLfloat LightSourcePosition[4] = { 5.0, 5.0, 10.0, 1.0};
+
+#ifndef HAVE_BUILTIN_SINCOS
+#define sincos _sincos
+static void sincos (double a, double *s, double *c) {
+  *s = sin (a);
+  *c = cos (a);
+}
+#endif
+
+/**
+* Creates an identity 4x4 matrix.
+*
+* @param m the matrix make an identity matrix
+*/
+static void identity(GLfloat *m) {
+   GLfloat t[16] = {
+      1.0, 0.0, 0.0, 0.0,
+      0.0, 1.0, 0.0, 0.0,
+      0.0, 0.0, 1.0, 0.0,
+      0.0, 0.0, 0.0, 1.0,
+   };
+
+   memcpy(m, t, sizeof(t));
+}
+
+
+static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ) {
+
+  GLfloat deltaX = right - left;
+  GLfloat deltaY = top - bottom;
+  GLfloat deltaZ = farZ - nearZ;
+
+  GLfloat tmp[16];
+  identity(tmp);
+
+  if ((deltaX == 0) || (deltaY == 0) || (deltaZ == 0)) {
+    LOGV("Invalid ortho");
+    return;
+  }
+
+  tmp[0] = 2 / deltaX;
+  tmp[12] = -(right + left) / deltaX;
+  tmp[5] = 2 / deltaY;
+  tmp[13] = -(top + bottom) / deltaY;
+  tmp[10] = -2 / deltaZ;
+  tmp[14] = -(nearZ + farZ) / deltaZ;
+
+  memcpy(m, tmp, sizeof(tmp));
+
+}
+
+
+/**
+* Calculate a perspective projection transformation.
+*
+* @param m the matrix to save the transformation in
+* @param fovy the field of view in the y direction
+* @param aspect the view aspect ratio
+* @param zNear the near clipping plane
+* @param zFar the far clipping plane
+*/
+void perspective(GLfloat *m, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+   GLfloat tmp[16];
+   identity(tmp);
+
+   double sine, cosine, cotangent, deltaZ;
+   GLfloat radians = fovy / 2 * M_PI / 180;
+
+   deltaZ = zFar - zNear;
+   sincos(radians, &sine, &cosine);
+
+   if ((deltaZ == 0) || (sine == 0) || (aspect == 0))
+      return;
+
+   cotangent = cosine / sine;
+
+   tmp[0] = cotangent / aspect;
+   tmp[5] = cotangent;
+   tmp[10] = -(zFar + zNear) / deltaZ;
+   tmp[11] = -1;
+   tmp[14] = -2 * zNear * zFar / deltaZ;
+   tmp[15] = 0;
+
+   memcpy(m, tmp, sizeof(tmp));
+}
+
+
+#endif
+
 
 static void CheckError(OSStatus error, const char *operation) {
   if (error == noErr) return;
@@ -76,6 +211,30 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 
 
 void draw(void) {
+
+#ifdef USE_GLES2
+  //GLfloat transform[16];
+  //identity(transform);
+
+  //perspective(ProjectionMatrix, 60.0, width / (float)height, 1.0, 1024.0);
+  
+  //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+
+  float m_Zoom = 0.5;
+  float m_ScreenHalfHeight = (float)kWindowHeight / 2.0;
+  float m_ScreenAspect = (float)kWindowWidth / (float)kWindowHeight;
+
+  float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+  float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+  float c = (-m_ScreenHalfHeight) * m_Zoom;
+  float d = m_ScreenHalfHeight * m_Zoom;
+  float e = 1.0;
+  float f = -1.0;
+
+  ortho(ProjectionMatrix, a, b, c, d, e, f);
+
+#endif
+
   Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
   glutPostRedisplay();
@@ -83,9 +242,16 @@ void draw(void) {
 
 
 void resize(int width, int height) {
+
+#ifdef USE_GLES2
+  /* Update the projection matrix */
+  // maybe
+#endif
+
   kWindowWidth = width;
   kWindowHeight = height;
   Engine::CurrentGameResizeScreen(width, height);
+
 }
 
 
@@ -265,6 +431,7 @@ void audioUnitSetup() {
 
 int main(int argc, char** argv) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
@@ -277,6 +444,55 @@ int main(int argc, char** argv) {
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutReshapeFunc(resize);
+
+#ifdef USE_GLES2
+
+  
+  GLuint v, f, program;
+  const char *p;
+  char msg[512];
+
+  /* Compile the vertex shader */
+  p = vertex_shader;
+  v = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(v, 1, &p, NULL);
+  glCompileShader(v);
+  glGetShaderInfoLog(v, sizeof msg, NULL, msg);
+  LOGV("vertex shader info: %s\n", msg);
+
+  /* Compile the fragment shader */
+  p = fragment_shader;
+  f = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(f, 1, &p, NULL);
+  glCompileShader(f);
+  glGetShaderInfoLog(f, sizeof msg, NULL, msg);
+  LOGV("fragment shader info: %s\n", msg);
+
+  /* Create and link the shader program */
+  program = glCreateProgram();
+  glAttachShader(program, v);
+  glAttachShader(program, f);
+  glBindAttribLocation(program, 0, "position");
+  glBindAttribLocation(program, 1, "normal");
+
+  glLinkProgram(program);
+  glGetProgramInfoLog(program, sizeof msg, NULL, msg);
+  LOGV("info: %s\n", msg);
+
+  /* Enable the shaders */
+  glUseProgram(program);
+
+  /* Get the locations of the uniforms so we can access them */
+  ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
+  NormalMatrix_location = glGetUniformLocation(program, "NormalMatrix");
+  LightSourcePosition_location = glGetUniformLocation(program, "LightSourcePosition");
+  MaterialColor_location = glGetUniformLocation(program, "MaterialColor");
+
+  /* Set the LightSourcePosition uniform which is constant throught the program */
+  glUniform4fv(LightSourcePosition_location, 1, LightSourcePosition);
+
+#endif
+
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];
   NSString *model_path = [NSString stringWithCString:"../../../assets/models" encoding:NSUTF8StringEncoding];
