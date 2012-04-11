@@ -178,7 +178,11 @@ void Engine::DrawScreen(float rotation) {
 	if (m_IsSceneBuilt && m_IsScreenResized) {
     // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+#ifdef USE_GLES2
+#else
     glLoadIdentity();
+#endif
     
     // Render 3D
     //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
@@ -189,7 +193,12 @@ void Engine::DrawScreen(float rotation) {
     //glLoadIdentity();
     
     // Render 2D
+
+#ifdef USE_GLES2
+#else
     glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+#endif
+
     RenderSpritePhase();
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
