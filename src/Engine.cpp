@@ -289,6 +289,7 @@ void Engine::ResizeScreen(int width, int height) {
   m_IsScreenResized = true;
 }
 
+#ifndef USE_GLES2
 
 // This is a modified version of the function of the same name from 
 // the Mesa3D project ( http://mesa3d.org/ ), which is  licensed
@@ -389,6 +390,7 @@ void Engine::gluePerspective(float fovy, float aspect,
 
 }
 
+#endif
 
 void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void (theCleanup)()) {
   if (games.size() == 0) {
@@ -535,6 +537,8 @@ void Engine::LoadModel(int i, int s, int e) {
 }
 
 
+#ifndef USE_GLES2
+
 void Engine::CheckGL(const char *s) {
   // normally (when no error) just return
   const int lastGlError = glGetError();
@@ -551,3 +555,5 @@ void Engine::CheckGL(const char *s) {
     case GL_OUT_OF_MEMORY:     LOGV("GL_OUT_OF_MEMORY\n\n");     break;
   }
 }
+
+#endif

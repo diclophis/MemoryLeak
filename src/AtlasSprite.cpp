@@ -108,9 +108,13 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
-  
+
+#ifdef USE_GLES2
+#else
   glVertexPointer(2, GL_SHORT, foo->m_Stride, (char *)NULL + (0));
   glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+#endif
+
 #endif
 
   size_t interleaved_buffer_size = (foo->m_NumBatched * 4 * foo->m_Stride);
@@ -120,13 +124,19 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
+
+#ifdef USE_GLES2
+#else
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#endif
+
     sf->m_EnabledStates = true;
   }
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
+#ifndef USE_GLES2
   if (false) {
     glDisable(GL_TEXTURE_2D);
     glPointSize(1.0);
@@ -136,6 +146,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
+#endif
 
   foo->m_NumBatched = 0;
 
