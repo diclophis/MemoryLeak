@@ -28,14 +28,27 @@ static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 static int game_index = 1;
 static short int *outData;
+static GLuint program;
 
 #ifdef USE_GLES2
 
 static const char vertex_shader[] =
+"attribute vec2 Position;\n"
+"attribute vec2 InCoord;\n"
+"varying vec2 OutCoord;\n"
+"uniform mat4 ModelViewProjectionMatrix;\n"
+"void main()\n"
+"{\n"
+"OutCoord = InCoord;\n"
+"gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0, 1.0);\n"
+"}\n";
+
+// "gl_Position = vec4(Position, 0, 1);\n"
+
+/*
   "attribute vec3 position;\n"
   "attribute vec3 normal;\n"
   "\n"
-  "uniform mat4 ModelViewProjectionMatrix;\n"
   "uniform mat4 NormalMatrix;\n"
   "uniform vec4 LightSourcePosition;\n"
   "uniform vec4 MaterialColor;\n"
@@ -58,8 +71,17 @@ static const char vertex_shader[] =
   " // Transform the position to clip coordinates\n"
   " gl_Position = ModelViewProjectionMatrix * vec4(position, 1.0);\n"
   "}";
+*/
 
-static const char fragment_shader[] =
+static const char fragment_shader[] = 
+"varying vec2 OutCoord;\n"
+"uniform sampler2D Sampler;\n"
+"void main()\n"
+"{\n"
+"gl_FragColor = texture2D(Sampler, OutCoord);\n"
+"}\n";
+
+/*
   "#ifdef GL_ES\n"
   "precision mediump float;\n"
   "#endif\n"
@@ -69,6 +91,7 @@ static const char fragment_shader[] =
   "{\n"
   " gl_FragColor = Color;\n"
   "}";
+*/
 
 static GLuint ModelViewProjectionMatrix_location, NormalMatrix_location, LightSourcePosition_location, MaterialColor_location;
 /** The projection matrix */
@@ -213,15 +236,19 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 void draw(void) {
 
 #ifdef USE_GLES2
+
+  glUseProgram(program);
+
   //GLfloat transform[16];
   //identity(transform);
 
   //perspective(ProjectionMatrix, 60.0, width / (float)height, 1.0, 1024.0);
   
+  //static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ) {
   //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
 
   float m_Zoom = 0.5;
-  float m_ScreenHalfHeight = (float)kWindowHeight / 2.0;
+  float m_ScreenHalfHeight = ((float)kWindowHeight) / 2.0;
   float m_ScreenAspect = (float)kWindowWidth / (float)kWindowHeight;
 
   float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -232,6 +259,8 @@ void draw(void) {
   float f = -1.0;
 
   ortho(ProjectionMatrix, a, b, c, d, e, f);
+
+  glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
 #endif
 
@@ -447,12 +476,11 @@ int main(int argc, char** argv) {
 
 #ifdef USE_GLES2
 
-  
-  GLuint v, f, program;
+  GLuint v, f;
   const char *p;
   char msg[512];
 
-  /* Compile the vertex shader */
+  // Compile the vertex shader
   p = vertex_shader;
   v = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(v, 1, &p, NULL);
@@ -460,7 +488,7 @@ int main(int argc, char** argv) {
   glGetShaderInfoLog(v, sizeof msg, NULL, msg);
   LOGV("vertex shader info: %s\n", msg);
 
-  /* Compile the fragment shader */
+  // Compile the fragment shader
   p = fragment_shader;
   f = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(f, 1, &p, NULL);
@@ -468,28 +496,28 @@ int main(int argc, char** argv) {
   glGetShaderInfoLog(f, sizeof msg, NULL, msg);
   LOGV("fragment shader info: %s\n", msg);
 
-  /* Create and link the shader program */
+  // Create and link the shader program
   program = glCreateProgram();
   glAttachShader(program, v);
   glAttachShader(program, f);
-  glBindAttribLocation(program, 0, "position");
-  glBindAttribLocation(program, 1, "normal");
+  glBindAttribLocation(program, 0, "Position");
+  glBindAttribLocation(program, 1, "InCoord");
 
   glLinkProgram(program);
   glGetProgramInfoLog(program, sizeof msg, NULL, msg);
   LOGV("info: %s\n", msg);
 
-  /* Enable the shaders */
+  // Enable the shaders
   glUseProgram(program);
 
-  /* Get the locations of the uniforms so we can access them */
+  // Get the locations of the uniforms so we can access them
   ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
-  NormalMatrix_location = glGetUniformLocation(program, "NormalMatrix");
-  LightSourcePosition_location = glGetUniformLocation(program, "LightSourcePosition");
-  MaterialColor_location = glGetUniformLocation(program, "MaterialColor");
+  // NormalMatrix_location = glGetUniformLocation(program, "NormalMatrix");
+  // LightSourcePosition_location = glGetUniformLocation(program, "LightSourcePosition");
+  // MaterialColor_location = glGetUniformLocation(program, "MaterialColor");
 
-  /* Set the LightSourcePosition uniform which is constant throught the program */
-  glUniform4fv(LightSourcePosition_location, 1, LightSourcePosition);
+  // Set the LightSourcePosition uniform which is constant throught the program
+  // glUniform4fv(LightSourcePosition_location, 1, LightSourcePosition);
 
 #endif
 
