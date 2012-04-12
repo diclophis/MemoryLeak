@@ -11,6 +11,7 @@ CXXFLAGS=\
 -I../../src/Box2D \
 -I../../src/octree \
 -DMODPLUG_BASIC_SUPPORT \
+-DUSE_GLES2 \
 
 #-m64 -g -pg -DDESKTOP -DHAVE_SETENV -D_iPhoneVersion \
 -DMODPLUG_BASIC_SUPPORT \

@@ -34,12 +34,15 @@
           console.log("making files");
           var assets = FS.createFolder('/', 'assets', true, false);
           var sounds = FS.createFolder(assets, 'sounds', true, false);
+          var textures = FS.createFolder(assets, 'textures', true, false);
+          var levels = FS.createFolder(assets, 'levels', true, false);
           FS.createDataFile(sounds, '0.wav', "wtf", true, false);
           FS.createDataFile(sounds, '1.wav', "wtf", true, false);
-          var textures = FS.createFolder(assets, 'textures', true, false);
           FS.createDataFile(textures, '0.png', "wtf", true, false);
-          var levels = FS.createFolder(assets, 'levels', true, false);
-          FS.createDataFile(levels, '0.wav', "wtf", true, false);
+          FS.createDataFile(levels, '0.wav', "", true, false);
+          FS.createDataFile(levels, '1.wav', "", true, false);
+          FS.createDataFile(levels, '2.wav', "", true, false);
+          FS.createDataFile(levels, '3.wav', "", true, false);
         }
       };
     </script>
