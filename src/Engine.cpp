@@ -38,6 +38,9 @@ static const char vertex_shader[] =
 "}\n";
 
 static const char fragment_shader[] = 
+"#ifdef GL_ES\n"
+"precision mediump float;\n"
+"#endif\n"
 "varying vec2 OutCoord;\n"
 "uniform sampler2D Sampler;\n"
 "void main()\n"
