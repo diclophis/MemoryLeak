@@ -22,6 +22,119 @@ namespace OpenSteer {
 	bool drawPhaseActive = false;
 }
 
+#ifdef USE_GLES2
+
+static GLuint program;
+
+static const char vertex_shader[] =
+"attribute vec2 Position;\n"
+"attribute vec2 InCoord;\n"
+"varying vec2 OutCoord;\n"
+"uniform mat4 ModelViewProjectionMatrix;\n"
+"void main()\n"
+"{\n"
+"OutCoord = InCoord;\n"
+"gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0, 1.0);\n"
+"}\n";
+
+static const char fragment_shader[] = 
+"varying vec2 OutCoord;\n"
+"uniform sampler2D Sampler;\n"
+"void main()\n"
+"{\n"
+"gl_FragColor = texture2D(Sampler, OutCoord);\n"
+"}\n";
+
+static GLuint ModelViewProjectionMatrix_location;
+static GLfloat ProjectionMatrix[16];
+
+#ifndef HAVE_BUILTIN_SINCOS
+#define sincos _sincos
+static void sincos (double a, double *s, double *c) {
+  *s = sin (a);
+  *c = cos (a);
+}
+#endif
+
+/**
+* Creates an identity 4x4 matrix.
+*
+* @param m the matrix make an identity matrix
+*/
+static void identity(GLfloat *m) {
+   GLfloat t[16] = {
+      1.0, 0.0, 0.0, 0.0,
+      0.0, 1.0, 0.0, 0.0,
+      0.0, 0.0, 1.0, 0.0,
+      0.0, 0.0, 0.0, 1.0,
+   };
+
+   memcpy(m, t, sizeof(t));
+}
+
+
+static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ) {
+
+  GLfloat deltaX = right - left;
+  GLfloat deltaY = top - bottom;
+  GLfloat deltaZ = farZ - nearZ;
+
+  GLfloat tmp[16];
+  identity(tmp);
+
+  if ((deltaX == 0) || (deltaY == 0) || (deltaZ == 0)) {
+    LOGV("Invalid ortho");
+    return;
+  }
+
+  tmp[0] = 2 / deltaX;
+  tmp[12] = -(right + left) / deltaX;
+  tmp[5] = 2 / deltaY;
+  tmp[13] = -(top + bottom) / deltaY;
+  tmp[10] = -2 / deltaZ;
+  tmp[14] = -(nearZ + farZ) / deltaZ;
+
+  memcpy(m, tmp, sizeof(tmp));
+
+}
+
+/**
+* Calculate a perspective projection transformation.
+*
+* @param m the matrix to save the transformation in
+* @param fovy the field of view in the y direction
+* @param aspect the view aspect ratio
+* @param zNear the near clipping plane
+* @param zFar the far clipping plane
+*/
+void perspective(GLfloat *m, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+   GLfloat tmp[16];
+   identity(tmp);
+
+   double sine, cosine, cotangent, deltaZ;
+   GLfloat radians = fovy / 2 * M_PI / 180;
+
+   deltaZ = zFar - zNear;
+   sincos(radians, &sine, &cosine);
+
+   if ((deltaZ == 0) || (sine == 0) || (aspect == 0))
+      return;
+
+   cotangent = cosine / sine;
+
+   tmp[0] = cotangent / aspect;
+   tmp[5] = cotangent;
+   tmp[10] = -(zFar + zNear) / deltaZ;
+   tmp[11] = -1;
+   tmp[14] = -2 * zNear * zFar / deltaZ;
+   tmp[15] = 0;
+
+   memcpy(m, tmp, sizeof(tmp));
+}
+
+
+#endif
+
 
 Engine::~Engine() {
   LOGV("Engine::dealloc\n");
@@ -88,6 +201,47 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_CurrentSound = 0;
 
   m_SetStates = 0;
+
+#ifdef USE_GLES2
+
+  GLuint v, f;
+  const char *p;
+  char msg[512];
+
+  // Compile the vertex shader
+  p = vertex_shader;
+  v = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(v, 1, &p, NULL);
+  glCompileShader(v);
+  glGetShaderInfoLog(v, sizeof msg, NULL, msg);
+  LOGV("vertex shader info: %s\n", msg);
+
+  // Compile the fragment shader
+  p = fragment_shader;
+  f = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(f, 1, &p, NULL);
+  glCompileShader(f);
+  glGetShaderInfoLog(f, sizeof msg, NULL, msg);
+  LOGV("fragment shader info: %s\n", msg);
+
+  // Create and link the shader program
+  program = glCreateProgram();
+  glAttachShader(program, v);
+  glAttachShader(program, f);
+  glBindAttribLocation(program, 0, "Position");
+  glBindAttribLocation(program, 1, "InCoord");
+
+  glLinkProgram(program);
+  glGetProgramInfoLog(program, sizeof msg, NULL, msg);
+  LOGV("info: %s\n", msg);
+
+  // Enable the shaders
+  glUseProgram(program);
+
+  // Get the locations of the uniforms so we can access them
+  ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
+
+#endif
 
 }
 
@@ -176,6 +330,28 @@ int Engine::isExtensionSupported(const char *extension) {
 void Engine::DrawScreen(float rotation) {
   RunThread();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
+
+#ifdef USE_GLES2
+
+    glUseProgram(program);
+
+    float m_Zoom = 0.5;
+    //float m_ScreenHalfHeight = ((float)kWindowHeight) / 2.0;
+    //float m_ScreenAspect = (float)kWindowWidth / (float)kWindowHeight;
+
+    float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float c = (-m_ScreenHalfHeight) * m_Zoom;
+    float d = m_ScreenHalfHeight * m_Zoom;
+    float e = 1.0;
+    float f = -1.0;
+
+    ortho(ProjectionMatrix, a, b, c, d, e, f);
+
+    glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+
+#endif
+
     // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
