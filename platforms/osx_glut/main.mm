@@ -43,36 +43,6 @@ static const char vertex_shader[] =
 "gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0, 1.0);\n"
 "}\n";
 
-// "gl_Position = vec4(Position, 0, 1);\n"
-
-/*
-  "attribute vec3 position;\n"
-  "attribute vec3 normal;\n"
-  "\n"
-  "uniform mat4 NormalMatrix;\n"
-  "uniform vec4 LightSourcePosition;\n"
-  "uniform vec4 MaterialColor;\n"
-  "\n"
-  "varying vec4 Color;\n"
-  "\n"
-  "void main(void)\n"
-  "{\n"
-  " // Transform the normal to eye coordinates\n"
-  " vec3 N = normalize(vec3(NormalMatrix * vec4(normal, 1.0)));\n"
-  "\n"
-  " // The LightSourcePosition is actually its direction for directional light\n"
-  " vec3 L = normalize(LightSourcePosition.xyz);\n"
-  "\n"
-  " // Multiply the diffuse value by the vertex color (which is fixed in this case)\n"
-  " // to get the actual color that we will use to draw this vertex with\n"
-  " float diffuse = max(dot(N, L), 0.0);\n"
-  " Color = diffuse * MaterialColor;\n"
-  "\n"
-  " // Transform the position to clip coordinates\n"
-  " gl_Position = ModelViewProjectionMatrix * vec4(position, 1.0);\n"
-  "}";
-*/
-
 static const char fragment_shader[] = 
 "varying vec2 OutCoord;\n"
 "uniform sampler2D Sampler;\n"
@@ -81,23 +51,8 @@ static const char fragment_shader[] =
 "gl_FragColor = texture2D(Sampler, OutCoord);\n"
 "}\n";
 
-/*
-  "#ifdef GL_ES\n"
-  "precision mediump float;\n"
-  "#endif\n"
-  "varying vec4 Color;\n"
-  "\n"
-  "void main(void)\n"
-  "{\n"
-  " gl_FragColor = Color;\n"
-  "}";
-*/
-
-static GLuint ModelViewProjectionMatrix_location, NormalMatrix_location, LightSourcePosition_location, MaterialColor_location;
-/** The projection matrix */
+static GLuint ModelViewProjectionMatrix_location;
 static GLfloat ProjectionMatrix[16];
-/** The direction of the directional light for the scene */
-static const GLfloat LightSourcePosition[4] = { 5.0, 5.0, 10.0, 1.0};
 
 #ifndef HAVE_BUILTIN_SINCOS
 #define sincos _sincos
@@ -238,14 +193,6 @@ void draw(void) {
 #ifdef USE_GLES2
 
   glUseProgram(program);
-
-  //GLfloat transform[16];
-  //identity(transform);
-
-  //perspective(ProjectionMatrix, 60.0, width / (float)height, 1.0, 1024.0);
-  
-  //static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ) {
-  //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
 
   float m_Zoom = 0.5;
   float m_ScreenHalfHeight = ((float)kWindowHeight) / 2.0;
@@ -512,12 +459,6 @@ int main(int argc, char** argv) {
 
   // Get the locations of the uniforms so we can access them
   ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
-  // NormalMatrix_location = glGetUniformLocation(program, "NormalMatrix");
-  // LightSourcePosition_location = glGetUniformLocation(program, "LightSourcePosition");
-  // MaterialColor_location = glGetUniformLocation(program, "MaterialColor");
-
-  // Set the LightSourcePosition uniform which is constant throught the program
-  // glUniform4fv(LightSourcePosition_location, 1, LightSourcePosition);
 
 #endif
 
