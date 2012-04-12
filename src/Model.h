@@ -21,15 +21,6 @@ public:
 	void Render(StateFoo *sf, foofoo *batch_foo = NULL);
 	static void RenderFoo(StateFoo *sf, foofoo *foo, bool copy);
 	float Simulate(float st, float dt, bool pushing = false);
-	void Die(float dt);
-	void Live(float dt);
-	void Harm(Model *other);
-	void Help(Model *other, float dt);
-	void CollideWith(Model *other, float dt);
-	void Move(int direction);
-	bool MoveTo(float x, float y, float z, float dt);
-	bool ClimbTo(float y, float dt);
-	bool IsCollidedWith(Model *other);
 	
 	void SetPosition(float x,float y,float z) {
 		m_Position[0] = x;
@@ -74,43 +65,6 @@ public:
 		m_Scale[0] = m_Scale[0] - ((0.99 * dx) * dt);
 		m_Scale[1] = m_Scale[1] - ((0.99 * dy) * dt);
 		m_Scale[2] = m_Scale[2] - ((0.99 * dz) * dt);
-	}
-
-	bool IsMovable () {
-		if (m_IsMoving) {
-			return false;
-		} else if (m_IsStuck) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	bool IsClimbing () {
-		if (m_Climbing) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	bool IsClimbable (Model *other) {
-		if (m_IsStuck) {
-		return true;
-		} else {
-		return false;
-		}
-	}
-
-	void Climb(Model *other) {
-		if (m_IsStuck || m_Climbing) {
-		} else {
-		m_Climbing = other;
-		}
-	}
-
-	void Fall() {
-		m_IsFalling = true;
 	}
 
 	bool m_IsPushing;

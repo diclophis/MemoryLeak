@@ -26,7 +26,7 @@ static std::vector<GLuint> textures;
 static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
-static int game_index = 3;
+static int game_index = 1;
 static short int *outData;
 
 
@@ -265,6 +265,7 @@ void audioUnitSetup() {
 
 int main(int argc, char** argv) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
@@ -277,6 +278,8 @@ int main(int argc, char** argv) {
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutReshapeFunc(resize);
+
+
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];
   NSString *model_path = [NSString stringWithCString:"../../../assets/models" encoding:NSUTF8StringEncoding];

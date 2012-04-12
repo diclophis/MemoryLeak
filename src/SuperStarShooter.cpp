@@ -24,9 +24,37 @@
 #define MAX_SEARCH 10
 #define MAX_STATE_POINTERS 1024
 
+// Each cell in the maze is a bitfield. The bits that are set indicate which
+// passages exist leading AWAY from this cell. Bits in the low byte (corresponding
+// to the PRIMARY bitmask) represent passages on the normal plane. Bits
+// in the high byte (corresponding to the UNDER bitmask) represent passages
+// that are passing under this cell. (Under/over passages are controlled via the
+// :weave setting, and are not supported by all maze types.)
+#define N  = 0x01 // North
+#define S  = 0x02 // South
+#define E  = 0x04 // East
+#define W  = 0x08 // West
+#define NW = 0x10 // Northwest
+#define NE = 0x20 // Northeast
+#define SW = 0x40 // Southwest
+#define SE = 0x80 // Southeast
+
+// bitmask identifying directional bits on the primary plane
+#define PRIMARY 0x000000FF
+
+// bitmask identifying directional bits under the primary plane
+#define UNDER 0x0000FF00
+
+// bits reserved for use by individual algorithm implementations
+#define RESERVED 0xFFFF0000
+
+// The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
+#define UNDER_SHIFT 8
+
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
 
+  LoadMaze(3);
 
   m_CenterOfWorldX = 15;
   m_CenterOfWorldY = 15;
@@ -321,12 +349,16 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
+
+#ifdef USE_GLES2
+#else
   glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
+#endif
+
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
-  //RenderSpriteRange(m_HoleIndex, m_HoleIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
 }
 
@@ -754,4 +786,38 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
   }
 
   return found;
+}
+
+
+void SuperStarShooter::LoadMaze(int level_index) {
+	uint16_t *level = (uint16_t *)malloc(sizeof(char) * m_LevelFoos->at(level_index)->len);
+	fseek(m_LevelFoos->at(level_index)->fp, m_LevelFoos->at(level_index)->off, SEEK_SET);
+	fread(level, sizeof(char), m_LevelFoos->at(level_index)->len, m_LevelFoos->at(level_index)->fp);
+
+  int char_to_int_ratio = sizeof(uint16_t) / sizeof(char);
+  int int_count = m_LevelFoos->at(level_index)->len / char_to_int_ratio;
+  int width = level[0];
+  int height = level[1];
+  int cursor = 0;
+
+  LOGV("%d\n", int_count);
+
+  for (unsigned int i=2; i<int_count; i++) {
+    LOGV("%d %d\n", cursor, level[i]);
+    cursor++;
+    if (cursor > (width - 1)) {
+      cursor = 0;
+    }
+  }
+
+  /*
+	unsigned int i = 0;
+	unsigned int l = m_LevelFoos->at(level_index)->len;
+
+	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	int idx = -1;
+	int *data = (int *)malloc(sizeof(int) * l);
+	const char *code;
+	for (unsigned int j=0; j<l; j++) {
+  */
 }
