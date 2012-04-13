@@ -46,7 +46,6 @@ void *pump_audio(void *) {
 
 
 void draw(void) {
-  //LOGV("Draw\n");
   Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
   glutPostRedisplay();
@@ -142,11 +141,9 @@ int main(int argc, char** argv) {
   glutInit(&argc,argv);
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
-  //glutInitWindowPosition(0,0);
-  glutCreateWindow("simple");
+  glutCreateWindow("does emscripten GLUT wrapper set window.title?, do I need a title? //TODO");
   glutKeyboardFunc(processNormalKeys);
   glutKeyboardUpFunc(processNormalKeys);
-  //glutIgnoreKeyRepeat(true);
   glutMouseFunc(processMouse);
   glutMotionFunc(processMouseMotion);
   glutDisplayFunc(draw);
@@ -165,7 +162,7 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-        GLuint tex_2d = 0;
+        GLuint tex_2d = 1;
         //SOIL_load_OGL_texture(
         //  tmp,
         //  SOIL_LOAD_AUTO,

@@ -12,6 +12,14 @@
     </center>
     <hr>
     <script type='text/javascript'>
+
+      function initTextures() {
+
+      }  
+
+
+      initTextures();
+
       var Module = {
         print: (function() {
           var element = document.getElementById('output');
@@ -31,7 +39,6 @@
           Module.setStatus(left ? 'Downloading: ' + (this.totalDependencies-left) + '/' + this.totalDependencies : 'All downloads complete.');
         },
         preRun: function() {
-          console.log("making files");
           var assets = FS.createFolder('/', 'assets', true, false);
           var sounds = FS.createFolder(assets, 'sounds', true, false);
           var textures = FS.createFolder(assets, 'textures', true, false);
@@ -43,10 +50,37 @@
           FS.createDataFile(levels, '1.wav', "", true, false);
           FS.createDataFile(levels, '2.wav', "", true, false);
           FS.createDataFile(levels, '3.wav', "", true, false);
+
+          function handleTextureLoaded(image) {  
+            console.log(image);
+
+            console.log(GL.textures);
+
+            var textures;
+            _glGenTextures(1, textures);
+
+            console.log(textures);
+            console.log(GL.textures);
+
+            texture = GL.textures[1];
+            console.log(texture);
+
+            Module.ctx.bindTexture(Module.ctx.TEXTURE_2D, texture);  
+            Module.ctx.texImage2D(Module.ctx.TEXTURE_2D, 0, Module.ctx.RGBA, Module.ctx.RGBA, Module.ctx.UNSIGNED_BYTE, image);  
+            Module.ctx.texParameteri(Module.ctx.TEXTURE_2D, Module.ctx.TEXTURE_MAG_FILTER, Module.ctx.LINEAR);  
+            Module.ctx.texParameteri(Module.ctx.TEXTURE_2D, Module.ctx.TEXTURE_MIN_FILTER, Module.ctx.LINEAR_MIPMAP_NEAREST);  
+            Module.ctx.generateMipmap(Module.ctx.TEXTURE_2D);  
+
+            //Module.ctx.bindTexture(Module.ctx.TEXTURE_2D, null);  
+
+          }
+
+          image_element = new Image();  
+          image_element.onload = function() { handleTextureLoaded(image_element); }  
+          image_element.src = "assets/textures/0.png";  
         }
       };
     </script>
     <script src="raptor_island.js"></script>
   </body>
 </html>
-

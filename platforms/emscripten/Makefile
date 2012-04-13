@@ -87,5 +87,5 @@ clean:
 	rm -Rf $(build)
 
 install:
-	cp index.html ~/emscripten.risingcode.com/public/index.html
-	cp $(build)/raptor_island.js ~/emscripten.risingcode.com/public/raptor_island.js
+	install -C index.html ~/emscripten.risingcode.com/public
+	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public
