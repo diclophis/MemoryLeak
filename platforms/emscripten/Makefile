@@ -52,7 +52,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard .
 
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
-	EMCC_DEBUG=1 $(CXX) $(build)/raptor_island.bc -o $(build)/raptor_island.js
+	EMCC_DEBUG=1 $(CXX) -O2 --closure 0 $(build)/raptor_island.bc -o $(build)/raptor_island.js
 
 $(build)/%.bc: %.cpp
 	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@
