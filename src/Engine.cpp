@@ -136,6 +136,15 @@ void perspective(GLfloat *m, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloa
 }
 
 
+void Engine::glTranslatef(float tx, float ty, float tz) {
+  ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
+  ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
+  ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
+  ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
+  glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+}
+
+
 #endif
 
 
