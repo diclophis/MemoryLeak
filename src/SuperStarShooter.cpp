@@ -349,12 +349,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-
-#ifdef USE_GLES2
-#else
   glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
-#endif
-
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
   RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
