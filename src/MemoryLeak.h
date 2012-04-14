@@ -135,3 +135,5 @@
 #include "MLPoint.h"
 #include "Terrain.h"
 
+#include "pnglite.h"
+
