@@ -75,6 +75,30 @@ GLuint loadTexture(NSBitmapImageRep *image) {
 }
 
 
+GLuint LoadTexture(const char *path) {
+  png_t tex;
+  unsigned char* data;
+  GLuint textureHandle;
+
+  png_init(0, 0);
+  png_open_file_read(&tex, path);
+  data = (unsigned char*) malloc(tex.width * tex.height * tex.bpp);
+  png_get_data(&tex, data);
+
+  glGenTextures(1, &textureHandle);
+  glBindTexture(GL_TEXTURE_2D, textureHandle);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  png_close_file(&tex);
+  free(data);
+
+  return textureHandle;
+}
+
+
+
 void draw(void) {
   Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
@@ -302,14 +326,18 @@ int main(int argc, char** argv) {
   [model_path release];
 	NSArray *texture_names = [mainBundle pathsForResourcesOfType:nil inDirectory:textures_path];
 	for (NSString *path in texture_names) {
-    NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-    NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
-    if (image == nil) {
-      throw 1;
+    if (false) {
+      NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
+      NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
+      if (image == nil) {
+        throw 1;
+      }
+      textures.push_back(loadTexture(image));
+      [image release];
+      [texData release];
+    } else {
+      textures.push_back(LoadTexture([path UTF8String]));
     }
-	  textures.push_back(loadTexture(image));
-    [image release];
-    [texData release];
   }
   [texture_names release];
   [textures_path release];
