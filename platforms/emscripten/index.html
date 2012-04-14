@@ -27,17 +27,37 @@
           Module.setStatus(left ? 'Downloading: ' + (this.totalDependencies-left) + '/' + this.totalDependencies : 'All downloads complete.');
         },
         preRun: function() {
+          // this is odd, and is actually fixed in incoming branch of emscripten
+          window.SDL = {
+            structs: {
+              AudioSpec: Runtime.generateStructInfo([
+                ['i32', 'freq'],
+                ['i16', 'format'],
+                ['i8', 'channels'],
+                ['i8', 'silence'],
+                ['i16', 'samples'],
+                ['i32', 'size'],
+                ['void*', 'callback'],
+                ['void*', 'userdata']
+              ])
+            }
+          };
+          /*
           var assets = FS.createFolder('/', 'assets', true, false);
           var sounds = FS.createFolder(assets, 'sounds', true, false);
           var textures = FS.createFolder(assets, 'textures', true, false);
           var levels = FS.createFolder(assets, 'levels', true, false);
-          FS.createDataFile(sounds, '0.wav', "wtf", true, false);
-          FS.createDataFile(sounds, '1.wav', "wtf", true, false);
+          //FS.createDataFile(sounds, '0.wav', "wtf", true, false);
+          //FS.createDataFile(sounds, '1.wav', "wtf", true, false);
+          FS.createLazyFile(sounds, '0.wav', '/assets/sounds/0.wav', true, false);
+          FS.createLazyFile(sounds, '1.wav', '/assets/sounds/1.wav', true, false);
           FS.createDataFile(textures, '0.png', "wtf", true, false);
           FS.createDataFile(levels, '0.wav', "", true, false);
           FS.createDataFile(levels, '1.wav', "", true, false);
           FS.createDataFile(levels, '2.wav', "", true, false);
           FS.createDataFile(levels, '3.wav', "", true, false);
+          */
+          /*
           function handleTextureLoaded(image) {  
             var textures;
             _glGenTextures(1, textures);
@@ -48,9 +68,11 @@
             Module.ctx.texParameteri(Module.ctx.TEXTURE_2D, Module.ctx.TEXTURE_MIN_FILTER, Module.ctx.NEAREST);  
             Module.ctx.generateMipmap(Module.ctx.TEXTURE_2D);  
           }
+
           image_element = new Image();  
           image_element.onload = function() { handleTextureLoaded(image_element); }  
           image_element.src = "assets/textures/0.png";  
+          */
         }
       };
     </script>
