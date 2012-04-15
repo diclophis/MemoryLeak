@@ -1,16 +1,5 @@
 // Vanilla Linux OpenGL+GLUT+SOIL App
 
-/*
-#include <stdio.h>
-
-int main(int argc, char** argv) {
-
-  printf("fuck yea\n");
-
-  return 0;
-}
-*/
-
 #define GL_GLEXT_PROTOTYPES
 
 #include <GL/gl.h>
@@ -21,6 +10,9 @@ int main(int argc, char** argv) {
 
 #include <dirent.h>
 #include <vector>
+
+#include "SDL.h"
+#include "SDL_audio.h"
 
 #define kWindowWidth 320
 #define kWindowHeight 480
@@ -39,9 +31,9 @@ static bool reset_down = false;
 static bool debug_down = false;
 
 
-void *pump_audio(void *) {
-  LOGV("pump audio\n");
-  return NULL;
+void mixaudio(void *unused, Uint8 *stream, int len) {
+  memset(stream, 0, len * sizeof(short));
+  Engine::CurrentGameDoAudio((short *)stream, len * sizeof(short));
 }
 
 
@@ -279,8 +271,23 @@ int main(int argc, char** argv) {
     closedir(dir);
   }
 
+  // Set 16-bit stereo audio at 44.1Khz
+  SDL_AudioSpec fmt;
+  fmt.freq = 44100;
+  fmt.format = AUDIO_S16;
+  fmt.channels = 2;
+  fmt.samples = 1024;
+  fmt.callback = mixaudio;
+  fmt.userdata = NULL;
+
+  // Open the audio device and start playing sound!
+  if (SDL_OpenAudio(&fmt, NULL) < 0) {
+    LOGV("No audio: %s\n", SDL_GetError());
+  } else {
+    SDL_PauseAudio(0);
+  }
+
   Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
-  //pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutMainLoop();
 
