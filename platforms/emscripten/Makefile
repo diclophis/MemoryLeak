@@ -87,5 +87,6 @@ clean:
 	rm -Rf $(build)
 
 install:
+	ruby cache_manifest.rb ../../assets > ~/emscripten.risingcode.com/public/index.appcache
 	install -C index.html ~/emscripten.risingcode.com/public
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public

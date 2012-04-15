@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-us">
+<html lang="en-us" manifest="index.appcache">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="utf-8">
@@ -7,17 +7,93 @@
     <style>
       canvas { padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
     </style>
+    <script>
+
+      var isApplicationInstalled = false;
+
+      var installerTimeout = window.setTimeout(function() {
+        try {
+          window.applicationCache.update();
+        } catch (e) {
+          console.log("user is activly denying application install, the only option here is to reload()");
+          //window.location.reload();
+        }
+      }, 10000);
+
+
+      // Checking for an update. Always the first event fired in the sequence.
+      window.applicationCache.addEventListener("checking", function(e) {
+        window.clearTimeout(installerTimeout);
+        console.log("checking");
+      }, false);
+
+      // Fired after the first cache of the manifest.
+      window.applicationCache.addEventListener("cached", function(e) {
+        console.log("cached");
+      }, false);
+
+
+      // An update was found. The browser is fetching resources.
+      window.applicationCache.addEventListener('downloading', function(e) {
+        console.log("downloading");
+      }, false);
+
+      // The manifest returns 404 or 410, the download failed,
+      // or the manifest changed while the download was in progress.
+      window.applicationCache.addEventListener('error', function(e) {
+        console.log("error, not sure what to do here");
+      }, false);
+
+      // Fired after the first download of the manifest.
+      window.applicationCache.addEventListener('noupdate', function(e) {
+        console.log("no update required....");
+      }, false);
+
+      // Fired if the manifest file returns a 404 or 410.
+      // This results in the application cache being deleted.
+      window.applicationCache.addEventListener('obsolete', function(e) {
+        console.log("cache is obsolete");
+      }, false);
+
+      // Fired for each resource listed in the manifest as it is being fetched.
+      window.applicationCache.addEventListener('progress', function(e) {
+        console.log("progress");
+      }, false);
+
+      function onUpdateReady() {  
+        console.log("found new version!, SWAP()");  
+        window.applicationCache.swapCache();
+      }
+
+      window.applicationCache.addEventListener("updateready", onUpdateReady);  
+      if(window.applicationCache.status === window.applicationCache.UPDATEREADY) {  
+        onUpdateReady();  
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("js is done??");
+
+        var dataFile = new XMLHttpRequest();
+        dataFile.open('GET', document.getElementsByTagName("html").item(0).getAttribute("manifest"), true);
+        dataFile.responseType = 'arraybuffer';
+        dataFile.onload = function() {
+          console.log("got manifest");
+        }
+        dataFile.send(null);
+      });
+    </script>
   </head>
   <body>
-    <canvas id="canvas"></canvas>
+    <h1>foo</h1>
     <script>
       var Module = {
+        noInitialRun: true,
         print: (function() {
           return function(text) {
             console.log(text);
           };
         })(),
-        canvas: document.getElementById('canvas'),
+        canvas: document.createElement("canvas"),
         setStatus: function(text) {
           console.log(text);
         },
@@ -42,37 +118,6 @@
               ])
             }
           };
-          /*
-          var assets = FS.createFolder('/', 'assets', true, false);
-          var sounds = FS.createFolder(assets, 'sounds', true, false);
-          var textures = FS.createFolder(assets, 'textures', true, false);
-          var levels = FS.createFolder(assets, 'levels', true, false);
-          //FS.createDataFile(sounds, '0.wav', "wtf", true, false);
-          //FS.createDataFile(sounds, '1.wav', "wtf", true, false);
-          FS.createLazyFile(sounds, '0.wav', '/assets/sounds/0.wav', true, false);
-          FS.createLazyFile(sounds, '1.wav', '/assets/sounds/1.wav', true, false);
-          FS.createDataFile(textures, '0.png', "wtf", true, false);
-          FS.createDataFile(levels, '0.wav', "", true, false);
-          FS.createDataFile(levels, '1.wav', "", true, false);
-          FS.createDataFile(levels, '2.wav', "", true, false);
-          FS.createDataFile(levels, '3.wav', "", true, false);
-          */
-          /*
-          function handleTextureLoaded(image) {  
-            var textures;
-            _glGenTextures(1, textures);
-            texture = GL.textures[1];
-            Module.ctx.bindTexture(Module.ctx.TEXTURE_2D, texture);  
-            Module.ctx.texImage2D(Module.ctx.TEXTURE_2D, 0, Module.ctx.RGBA, Module.ctx.RGBA, Module.ctx.UNSIGNED_BYTE, image);  
-            Module.ctx.texParameteri(Module.ctx.TEXTURE_2D, Module.ctx.TEXTURE_MAG_FILTER, Module.ctx.NEAREST);  
-            Module.ctx.texParameteri(Module.ctx.TEXTURE_2D, Module.ctx.TEXTURE_MIN_FILTER, Module.ctx.NEAREST);  
-            Module.ctx.generateMipmap(Module.ctx.TEXTURE_2D);  
-          }
-
-          image_element = new Image();  
-          image_element.onload = function() { handleTextureLoaded(image_element); }  
-          image_element.src = "assets/textures/0.png";  
-          */
         }
       };
     </script>
