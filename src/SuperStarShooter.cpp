@@ -203,7 +203,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
   m_TargetX = -1;
   m_TargetY = -1;
 
-  m_TargetIsDirty = false;
+  m_TargetIsDirty = true;
 
   m_GotLastSwipeAt = -10.0;
   m_SwipedBeforeUp = false;
@@ -540,7 +540,7 @@ int SuperStarShooter::Simulate() {
 
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime);
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0);
   }
 
   if (m_TargetIsDirty) {
