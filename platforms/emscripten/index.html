@@ -73,18 +73,48 @@
       document.addEventListener("DOMContentLoaded", function () {
         console.log("js is done??");
 
-        var dataFile = new XMLHttpRequest();
-        dataFile.open('GET', document.getElementsByTagName("html").item(0).getAttribute("manifest"), true);
-        dataFile.responseType = 'arraybuffer';
-        dataFile.onload = function() {
-          console.log("got manifest");
+        var manifestFile = new XMLHttpRequest();
+        manifestFile.open("GET", document.getElementsByTagName("html").item(0).getAttribute("manifest"), true);
+        //dataFile.responseType = 'arraybuffer';
+        //console.log(byteArray);
+        manifestFile.onload = function(e) {
+          var assets = FS.createFolder('/', 'assets', true, false);
+          var sounds = FS.createFolder(assets, 'sounds', true, false);
+          var textures = FS.createFolder(assets, 'textures', true, false);
+          var levels = FS.createFolder(assets, 'levels', true, false);
+          var models = FS.createFolder(assets, 'models', true, false);
+          var lines = this.response.split("\n");
+          for (i in lines) {
+            (function() {
+              var line = lines[i];
+              if (line.indexOf("/assets") == 0) {
+                addRunDependency();
+                var lastSlashIndex = line.lastIndexOf("/");
+                var dirName = line.substr(0, lastSlashIndex);
+                var baseName = line.substr(lastSlashIndex + 1, line.length);
+                console.log(dirName);
+                console.log(baseName);
+                var dataFile = new XMLHttpRequest();
+                dataFile.open("GET", line, true);
+                dataFile.responseType = "arraybuffer";
+                dataFile.onload = function(e) {
+                  var arrayBuffer = this.response;
+                  var byteArray = arrayBuffer.byteLength ? new Uint8Array(arrayBuffer) : arrayBuffer;
+                  FS.createDataFile(dirName, baseName, byteArray, true, false);
+                  removeRunDependency();
+                }
+                dataFile.send(null);
+              }
+            })();
+          }
+          removeRunDependency();
         }
-        dataFile.send(null);
+        manifestFile.send(null);
       });
     </script>
   </head>
   <body>
-    <h1>foo</h1>
+    <canvas></canvas>
     <script>
       var Module = {
         noInitialRun: true,
@@ -93,7 +123,7 @@
             console.log(text);
           };
         })(),
-        canvas: document.createElement("canvas"),
+        canvas: document.getElementsByTagName("canvas").item(0), //document.createElement("canvas"),
         setStatus: function(text) {
           console.log(text);
         },
