@@ -8,9 +8,6 @@
       canvas { padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
     </style>
     <script>
-
-      var isApplicationInstalled = false;
-
       var installerTimeout = window.setTimeout(function() {
         try {
           window.applicationCache.update();
@@ -19,7 +16,6 @@
           //window.location.reload();
         }
       }, 10000);
-
 
       // Checking for an update. Always the first event fired in the sequence.
       window.applicationCache.addEventListener("checking", function(e) {
@@ -31,7 +27,6 @@
       window.applicationCache.addEventListener("cached", function(e) {
         console.log("cached");
       }, false);
-
 
       // An update was found. The browser is fetching resources.
       window.applicationCache.addEventListener('downloading', function(e) {
@@ -71,18 +66,14 @@
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        console.log("js is done??");
-
         var manifestFile = new XMLHttpRequest();
         manifestFile.open("GET", document.getElementsByTagName("html").item(0).getAttribute("manifest"), true);
-        //dataFile.responseType = 'arraybuffer';
-        //console.log(byteArray);
         manifestFile.onload = function(e) {
-          var assets = FS.createFolder('/', 'assets', true, false);
-          var sounds = FS.createFolder(assets, 'sounds', true, false);
-          var textures = FS.createFolder(assets, 'textures', true, false);
-          var levels = FS.createFolder(assets, 'levels', true, false);
-          var models = FS.createFolder(assets, 'models', true, false);
+          var assets = FS.createFolder("/", "assets", true, false);
+          var sounds = FS.createFolder(assets, "sounds", true, false);
+          var textures = FS.createFolder(assets, "textures", true, false);
+          var levels = FS.createFolder(assets, "levels", true, false);
+          var models = FS.createFolder(assets, "models", true, false);
           var lines = this.response.split("\n");
           for (i in lines) {
             (function() {
@@ -92,8 +83,6 @@
                 var lastSlashIndex = line.lastIndexOf("/");
                 var dirName = line.substr(0, lastSlashIndex);
                 var baseName = line.substr(lastSlashIndex + 1, line.length);
-                console.log(dirName);
-                console.log(baseName);
                 var dataFile = new XMLHttpRequest();
                 dataFile.open("GET", line, true);
                 dataFile.responseType = "arraybuffer";
@@ -123,7 +112,7 @@
             console.log(text);
           };
         })(),
-        canvas: document.getElementsByTagName("canvas").item(0), //document.createElement("canvas"),
+        canvas: document.getElementsByTagName("canvas").item(0),
         setStatus: function(text) {
           console.log(text);
         },
