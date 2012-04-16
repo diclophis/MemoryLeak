@@ -347,7 +347,7 @@ void Engine::DrawScreen(float rotation) {
 
     glUseProgram(program);
 
-    float m_Zoom = 0.5;
+    //float m_Zoom = 0.5;
     //float m_ScreenHalfHeight = ((float)kWindowHeight) / 2.0;
     //float m_ScreenAspect = (float)kWindowWidth / (float)kWindowHeight;
 
