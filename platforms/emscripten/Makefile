@@ -13,11 +13,6 @@ CXXFLAGS=\
 -DMODPLUG_BASIC_SUPPORT \
 -DUSE_GLES2 \
 
-#-m64 -g -pg -DDESKTOP -DHAVE_SETENV -D_iPhoneVersion \
--DMODPLUG_BASIC_SUPPORT \
--I/usr/include \
--I../../src/OpenSteer
-
 CFLAGS=$(CXXFLAGS)
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.bc, $(wildcard *.cpp)))
@@ -28,6 +23,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/assimp/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/libmodplug/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../../src/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Collision/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Collision/Shapes/*.cpp)))
@@ -36,19 +32,6 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard .
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Common/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/OpenSteer/*.cpp)))
-
-#~/emscripten/emcc --llvm-opts 0 -O0 -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.js
-#~/emscripten/emcc --llvm-opts 0 -O0 --preload-file ../../assets -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.js
-#$(CXX) -s LINKABLE=1 --llvm-opts 0 -O0 $(objects) -o $(build)/raptor_island.bc
-#~/emscripten/emcc --llvm-opts 0 -O0 -s LINKABLE=1 $(build)/raptor_island.bc -o $(build)/raptor_island.html
-#$(CXX) $(objects)
-#$(CXX) $(build)/raptor_island.bc -o $(build)/raptor_island.js
-#$(CXX) $(build)/raptor_island.bc -o $(build)/raptor_island.html
-
-#EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.js -s LINKABLE=1
-#EMCC_DEBUG=1 ~/emscripten/emcc $(build)/raptor_island.bc -o $(build)/raptor_island.js -s LINKABLE=1
-#$(CXX) $(objects) -o $(build)/raptor_island.bc
-#EMCC_DEBUG=1 ~/emscripten/emcc $(build)/raptor_island.bc -o $(build)/raptor_island.js -s LINKABLE=1
 
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
@@ -88,5 +71,7 @@ clean:
 
 install:
 	ruby cache_manifest.rb ../../assets > ~/emscripten.risingcode.com/public/index.appcache
+	cp -R ../../assets ~/emscripten.risingcode.com/public
+	touch ~/emscripten.risingcode.com/public/favicon.ico
 	install -C index.html ~/emscripten.risingcode.com/public
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public

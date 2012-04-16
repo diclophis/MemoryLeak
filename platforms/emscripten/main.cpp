@@ -128,6 +128,29 @@ int alphasort(const struct dirent **a, const struct dirent **b) {
 }
 
 
+GLuint LoadTexture(const char *path) {
+  png_t tex;
+  unsigned char* data;
+  GLuint textureHandle;
+
+  png_init(0, 0);
+  png_open_file_read(&tex, path);
+  data = (unsigned char*) malloc(tex.width * tex.height * tex.bpp);
+  png_get_data(&tex, data);
+
+  glGenTextures(1, &textureHandle);
+  glBindTexture(GL_TEXTURE_2D, textureHandle);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  png_close_file(&tex);
+  free(data);
+
+  return textureHandle;
+}
+
+
 int main(int argc, char** argv) {
 
   glutInit(&argc,argv);
@@ -154,7 +177,7 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-        GLuint tex_2d = 1;
+        GLuint tex_2d = LoadTexture(tmp);
         //SOIL_load_OGL_texture(
         //  tmp,
         //  SOIL_LOAD_AUTO,
