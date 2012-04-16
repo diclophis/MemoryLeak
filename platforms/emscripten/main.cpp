@@ -24,16 +24,40 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
-static int game_index = 1;
+static int game_index = 3;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
+static short int *outData;
+
+
+int start_game (int i) __attribute__((used));
+
+
+int start_game (int i) {
+  game_index = i;
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+  return game_index;
+}
 
 
 void mixaudio(void *unused, Uint8 *stream, int len) {
-  memset(stream, 0, len * sizeof(short));
-  Engine::CurrentGameDoAudio((short *)stream, len * sizeof(short));
+  memset(stream, 0, len);
+  Engine::CurrentGameDoAudio((short *)stream, len);
+
+  //memset(stream, 0, len * sizeof(short));
+  //Engine::CurrentGameDoAudio(stream, len * sizeof(short));
+
+  /*
+  //signal[i] = (samples[2*i] + samples[2*i+1]) / 2;
+  //buffer[j] = (float)outData[(j * 2) + iBuffer] / (float)INT16_MAX;
+  Engine::CurrentGameDoAudio(outData, len * sizeof(short));
+  for (int i=0; i<2; i++) {
+    for (int j=0; i<len; i++) {
+      stream[i] = outData[(i * 2) + j];
+    }
+  */
 }
 
 
@@ -178,12 +202,6 @@ int main(int argc, char** argv) {
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
         GLuint tex_2d = LoadTexture(tmp);
-        //SOIL_load_OGL_texture(
-        //  tmp,
-        //  SOIL_LOAD_AUTO,
-        //  SOIL_CREATE_NEW_ID,
-        //  SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA
-        //);
         textures.push_back(tex_2d);
       }
     }
@@ -293,6 +311,8 @@ int main(int argc, char** argv) {
     }
     closedir(dir);
   }
+
+  outData = (short int *)calloc(8192, sizeof(short int));
 
   // Set 16-bit stereo audio at 44.1Khz
   SDL_AudioSpec fmt;
