@@ -908,8 +908,11 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 	int idx = -1;
 	int *data = (int *)malloc(sizeof(int) * l);
 	const char *code;
+  char level_at[2];
+  level_at[1] = '\0';
 	for (unsigned int j=0; j<l; j++) {
-		const char *pos = index(dictionary, level[j]);
+    level_at[0] = level[j];
+		const char *pos = strstr(dictionary, level_at);
 		if (pos != NULL) {
 			idx = pos - dictionary;
 			data[j] = idx;
