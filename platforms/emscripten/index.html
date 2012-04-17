@@ -17,6 +17,13 @@
         }
       }, 10000);
 
+      var loaderInterval = window.setInterval(function() {
+        var loader = document.getElementById("loader");
+        if (loader) {
+          loader.innerHTML += ".";
+        }
+      }, 100);
+
       // Checking for an update. Always the first event fired in the sequence.
       window.applicationCache.addEventListener("checking", function(e) {
         window.clearTimeout(installerTimeout);
@@ -145,11 +152,14 @@
               ])
             }
           };
+
+          window.clearInterval(loaderInterval);
         }
       };
     </script>
     <button value="1">SuperStarShooter</button>
     <button value="3">SpaceShipDown</button>
+    <div id="loader"></div>
     <script src="raptor_island.js"></script>
   </body>
 </html>

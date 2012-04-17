@@ -24,7 +24,7 @@ static std::vector<foo*> models;
 static std::vector<foo*> sounds;
 static std::vector<foo*> levels;
 
-static int game_index = 3;
+static int game_index = 1;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
@@ -32,7 +32,7 @@ static bool debug_down = false;
 static short int *outData;
 
 
-int start_game (int i) __attribute__((used));
+int __attribute__((used)) start_game (int i);
 
 
 int start_game (int i) {
