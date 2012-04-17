@@ -97,7 +97,9 @@ void SpaceShipDown::CreateFoos() {
     }
   }
 
-  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 5000, 10);
+  //m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 5000, 10);
+  
+  LOGV("done create foos\n");
 }
 
 
