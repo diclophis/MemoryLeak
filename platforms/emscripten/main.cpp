@@ -32,7 +32,7 @@ static bool debug_down = false;
 static short int *outData;
 
 
-int __attribute__((used)) start_game (int i);
+__attribute__((used)) int start_game (int i);
 
 
 int start_game (int i) {
@@ -43,27 +43,12 @@ int start_game (int i) {
 
 
 void mixaudio(void *unused, Uint8 *stream, int len) {
-  memset(stream, 0, len);
   Engine::CurrentGameDoAudio((short *)stream, len);
-
-  //memset(stream, 0, len * sizeof(short));
-  //Engine::CurrentGameDoAudio(stream, len * sizeof(short));
-
-  /*
-  //signal[i] = (samples[2*i] + samples[2*i+1]) / 2;
-  //buffer[j] = (float)outData[(j * 2) + iBuffer] / (float)INT16_MAX;
-  Engine::CurrentGameDoAudio(outData, len * sizeof(short));
-  for (int i=0; i<2; i++) {
-    for (int j=0; i<len; i++) {
-      stream[i] = outData[(i * 2) + j];
-    }
-  */
 }
 
 
 void draw(void) {
   Engine::CurrentGameDrawScreen(0);
-  glutSwapBuffers();
   glutPostRedisplay();
 }
 
