@@ -98,7 +98,16 @@ public:
   int m_SetStates;
 
 #ifdef USE_GLES2
+
   void glTranslatef(float x, float y, float z);
+  GLuint program;
+  GLuint ModelViewProjectionMatrix_location;
+  GLfloat ProjectionMatrix[16];
+  GLuint v;
+  GLuint f;
+  const char *p;
+  char msg[512];
+
 #endif
 
 };

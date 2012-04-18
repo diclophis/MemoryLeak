@@ -24,8 +24,6 @@ namespace OpenSteer {
 
 #ifdef USE_GLES2
 
-static GLuint program;
-
 static const char vertex_shader[] =
 "attribute vec2 Position;\n"
 "attribute vec2 InCoord;\n"
@@ -47,9 +45,6 @@ static const char fragment_shader[] =
 "{\n"
 "gl_FragColor = texture2D(Sampler, OutCoord);\n"
 "}\n";
-
-static GLuint ModelViewProjectionMatrix_location;
-static GLfloat ProjectionMatrix[16];
 
 #ifndef HAVE_BUILTIN_SINCOS
 #define sincos _sincos
@@ -167,6 +162,17 @@ Engine::~Engine() {
 
 
   free(m_StateFoo);
+
+#ifdef USE_GLES2
+
+  glDetachShader(program, v);
+  glDetachShader(program, f);
+  glDeleteShader(v);
+  glDeleteShader(f);
+  glDeleteProgram(program);
+
+#endif
+
 }
 
 
@@ -215,10 +221,6 @@ Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::
   m_SetStates = 0;
 
 #ifdef USE_GLES2
-
-  GLuint v, f;
-  const char *p;
-  char msg[512];
 
   // Compile the vertex shader
   p = vertex_shader;
