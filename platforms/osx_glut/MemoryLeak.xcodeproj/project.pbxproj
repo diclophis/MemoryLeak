@@ -23,7 +23,7 @@
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = /Users/jon/iPhone/MemoryLeak/platforms/osx_glut;
+			buildWorkingDirectory = "~/MemoryLeak/platforms/osx_glut";
 			dependencies = (
 			);
 			name = raptor_island;
