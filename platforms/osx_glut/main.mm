@@ -45,59 +45,6 @@ static void CheckError(OSStatus error, const char *operation) {
 }
 
 
-/*
-GLuint loadTexture(NSBitmapImageRep *image) {
-  GLuint text = 0;
-  glEnable(GL_TEXTURE_2D);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-  glGenTextures(1, &text);
-  glBindTexture(GL_TEXTURE_2D, text);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  GLuint width = CGImageGetWidth(image.CGImage);
-  GLuint height = CGImageGetHeight(image.CGImage);
-  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-  void *imageData = malloc( height * width * 4 );
-  CGContextRef context2 = CGBitmapContextCreate( imageData, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
-  CGColorSpaceRelease( colorSpace );
-  CGContextClearRect( context2, CGRectMake( 0, 0, width, height ) );
-  CGContextTranslateCTM( context2, 0, height - height );
-  CGContextDrawImage( context2, CGRectMake( 0, 0, width, height ), image.CGImage );
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-  CGContextRelease(context2);
-  free(imageData);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisable(GL_TEXTURE_2D);
-  return text;
-}
-
-
-GLuint LoadTexture(const char *path) {
-  png_t tex;
-  unsigned char* data;
-  GLuint textureHandle;
-
-  png_init(0, 0);
-  png_open_file_read(&tex, path);
-  data = (unsigned char*) malloc(tex.width * tex.height * tex.bpp);
-  png_get_data(&tex, data);
-
-  glGenTextures(1, &textureHandle);
-  glBindTexture(GL_TEXTURE_2D, textureHandle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  png_close_file(&tex);
-  free(data);
-
-  return textureHandle;
-}
-
-*/
-
-
-
 void draw(void) {
   Engine::CurrentGameDrawScreen(0);
   glutSwapBuffers();
@@ -327,20 +274,6 @@ int main(int argc, char** argv) {
 		unsigned int len = ftell(fd);
 		rewind(fd);
     Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
-    /*
-    if (false) {
-      NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-      NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
-      if (image == nil) {
-        throw 1;
-      }
-      textures.push_back(loadTexture(image));
-      [image release];
-      [texData release];
-    } else {
-      textures.push_back(LoadTexture([path UTF8String]));
-    }
-    */
   }
   [texture_names release];
   [textures_path release];

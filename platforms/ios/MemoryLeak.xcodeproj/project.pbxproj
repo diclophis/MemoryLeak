@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C2E2EC991542A4770069C210 /* pnglite.c in Sources */ = {isa = PBXBuildFile; fileRef = C2E2EC971542A4760069C210 /* pnglite.c */; };
 		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
 		FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A320129E3EB70056E630 /* ModelOctree.cpp */; };
@@ -181,6 +182,9 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2E2EC961542A4760069C210 /* FileHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileHandle.h; sourceTree = "<group>"; };
+		C2E2EC971542A4760069C210 /* pnglite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pnglite.c; sourceTree = "<group>"; };
+		C2E2EC981542A4760069C210 /* pnglite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglite.h; sourceTree = "<group>"; };
 		FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FC10A31E129E3EB70056E630 /* micropather.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = micropather.cpp; sourceTree = "<group>"; };
 		FC10A31F129E3EB70056E630 /* micropather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = micropather.h; sourceTree = "<group>"; };
@@ -776,6 +780,9 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C2E2EC961542A4760069C210 /* FileHandle.h */,
+				C2E2EC971542A4760069C210 /* pnglite.c */,
+				C2E2EC981542A4760069C210 /* pnglite.h */,
 				FC4194F3147DB07700A63C6B /* OpenSteer */,
 				FC710BA1146C9B6A00800C95 /* SpaceShipDownContactListener.cpp */,
 				FC32AAFE14594448007FCB03 /* GLES-Render.cpp */,
@@ -1699,6 +1706,7 @@
 				FC419536147DB07700A63C6B /* Vec3.cpp in Sources */,
 				FC419537147DB07700A63C6B /* Vec3Utilities.cpp in Sources */,
 				FCAB716214E264F4008A34BC /* Audio.mm in Sources */,
+				C2E2EC991542A4770069C210 /* pnglite.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

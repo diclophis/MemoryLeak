@@ -57,19 +57,19 @@ void SpaceShipDown::CreateFoos() {
 
   ResetStateFoo();
 
-  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 1, 2, 0.0);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 3, 4, 1.0);
-  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 4, 5, 0.0);
-  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 6, 7, 0.0);
-  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 5, 6, 0.0);
-  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 7, 8, 1.0);
-  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 8, 16, 1.0);
-  m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 0, 1, 0.0);
-  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 2, 3, 1.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 1, 2, 0.0);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 3, 4, 1.0);
+  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 4, 5, 0.0);
+  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 6, 7, 0.0);
+  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 5, 6, 0.0);
+  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 7, 8, 1.0);
+  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 8, 16, 1.0);
+  m_PlatformFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 0, 1, 0.0);
+  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 2, 3, 1.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
 
-  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(0), 1, 1, 0, 1, 0.0);
-  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1);
+  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
 
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
@@ -97,7 +97,7 @@ void SpaceShipDown::CreateFoos() {
     }
   }
 
-  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 5000, 10);
+  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures.at(0), 5000, 10);
 }
 
 

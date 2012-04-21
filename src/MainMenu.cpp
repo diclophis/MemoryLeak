@@ -63,7 +63,7 @@ void MainMenu::CreateFoos() {
     //m_MaxHeight = 1.0;
   }
 
-  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
+  m_BatchFoo = Model::GetBatchFoo(m_Textures.at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
   ResetStateFoo();
   m_BatchFoo->m_NumBatched = 0;
   RenderModelRange(0, m_ModelCount, m_BatchFoo);
