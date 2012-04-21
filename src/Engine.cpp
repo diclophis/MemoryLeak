@@ -1,9 +1,4 @@
-//JonBardin GPL 2011
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// Jon Bardin GPL 2011
 
 
 #include "MemoryLeak.h"
@@ -15,12 +10,17 @@
 
 static std::vector<Game *> games;
 static Engine *m_CurrentGame;
-static pthread_mutex_t m_GameSwitchLock;
+static std::vector<FileHandle *> models;
+static std::vector<FileHandle *> sounds;
+static std::vector<FileHandle *> textures;
+static std::vector<FileHandle *> levels;
+
 
 namespace OpenSteer {
 	bool updatePhaseActive = false;
 	bool drawPhaseActive = false;
 }
+
 
 #ifdef USE_GLES2
 
@@ -194,18 +194,21 @@ void Engine::ClearModels() {
 }
 
 
-Engine::Engine(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_Textures(&t), m_ModelFoos(&m), m_LevelFoos(&l), m_SoundFoos(&s) {
+Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_TextureFileHandles(&t), m_ModelFileHandles(&m), m_LevelFileHandles(&l), m_SoundFileHandles(&s) {
+
   m_SpriteCount = 0;
   m_ModelCount = 0;
 
 	m_IsSceneBuilt = false;
 	m_IsScreenResized = false;
-	
+
+  /*
 	pthread_cond_init(&m_VsyncCond, NULL);
 	pthread_cond_init(&m_AudioSyncCond, NULL);
 	pthread_cond_init(&m_ResumeCond, NULL);
   pthread_mutex_init(&m_Mutex, NULL);
   pthread_mutex_init(&m_Mutex2, NULL);
+  */
 
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
@@ -275,7 +278,7 @@ void Engine::ResetStateFoo() {
 
 
 void Engine::CreateThread(void (theCleanup)()) {
-  m_SimulationThreadCleanup = theCleanup;
+  //m_SimulationThreadCleanup = theCleanup;
 
   /*
   pthread_attr_t attr; 
@@ -291,41 +294,42 @@ void Engine::CreateThread(void (theCleanup)()) {
 }
 
 
+/*
 void Engine::SetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
   m_Textures = &t;
   m_ModelFoos = &m;
   m_LevelFoos = &l;
   m_SoundFoos = &s;
 }
+*/
 
-
+/*
 void *Engine::EnterThread(void *obj) {
   //TODO: figure out how to fucking name a thread
   reinterpret_cast<Engine *>(obj)->RunThread();
   return NULL;
 }
+*/
 
-
+/*
 bool Engine::WaitVsync() {
   pthread_cond_wait(&m_VsyncCond, &m_Mutex2);
   return true;
 }
+*/
 
 
 int Engine::isExtensionSupported(const char *extension) {
   const GLubyte *extensions = NULL;
   const GLubyte *start;
   GLubyte *where, *terminator;
-
-  /* Extension names should not have spaces. */
+  // Extension names should not have spaces.
   where = (GLubyte *) strchr(extension, ' ');
   if (where || *extension == '\0')
     return 0;
   extensions = glGetString(GL_EXTENSIONS);
   LOGV("%s\n", extensions);
-  /* It takes a bit of care to be fool-proof about parsing the
-     OpenGL extensions string. Don't be fooled by sub-strings,
-     etc. */
+  // It takes a bit of care to be fool-proof about parsing the OpenGL extensions string. Don't be fooled by sub-strings, etc.
   start = extensions;
   for (;;) {
     where = (GLubyte *) strstr((const char *) start, extension);
@@ -426,19 +430,19 @@ void Engine::PauseSimulation() {
 
 
 void Engine::StopSimulation() {
-  pthread_mutex_lock(&m_Mutex);
+  //pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
   m_GameState = -1;
-  pthread_mutex_unlock(&m_Mutex);
+  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
   if (m_GameState == 2) {
-    pthread_mutex_lock(&m_Mutex);
+    //pthread_mutex_lock(&m_Mutex);
     m_GameState = 1;
-    pthread_cond_signal(&m_CurrentGame->m_ResumeCond);
-    pthread_mutex_unlock(&m_Mutex);
+    //pthread_cond_signal(&m_CurrentGame->m_ResumeCond);
+    //pthread_mutex_unlock(&m_Mutex);
   }
 }
 
@@ -491,38 +495,37 @@ void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat center
 	GLfloat x[3], y[3], z[3];
 	GLfloat mag;
 	
-	/* Make rotation matrix */
+	// Make rotation matrix
 	
-	/* Z vector */
+	// Z vector
 	z[0] = eyex - centerx;
 	z[1] = eyey - centery;
 	z[2] = eyez - centerz;
 	mag = sqrtf(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
-	if (mag) {			/* mpichler, 19950515 */
+	if (mag) {			// mpichler, 19950515
 		z[0] /= mag;
 		z[1] /= mag;
 		z[2] /= mag;
 	}
 	
-	/* Y vector */
+	// Y vector
 	y[0] = upx;
 	y[1] = upy;
 	y[2] = upz;
 	
-	/* X vector = Y cross Z */
+	// X vector = Y cross Z
 	x[0] = y[1] * z[2] - y[2] * z[1];
 	x[1] = -y[0] * z[2] + y[2] * z[0];
 	x[2] = y[0] * z[1] - y[1] * z[0];
 	
-	/* Recompute Y = Z cross X */
+	// Recompute Y = Z cross X
 	y[0] = z[1] * x[2] - z[2] * x[1];
 	y[1] = -z[0] * x[2] + z[2] * x[0];
 	y[2] = z[0] * x[1] - z[1] * x[0];
 	
-	/* mpichler, 19950515 */
-	/* cross product gives area of parallelogram, which is < 1.0 for
-	 * non-perpendicular unit-length vectors; so normalize x, y here
-	 */
+	// mpichler, 19950515
+	// cross product gives area of parallelogram, which is < 1.0 for
+	// non-perpendicular unit-length vectors; so normalize x, y here
 	
 	mag = sqrtf(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
 	if (mag) {
@@ -558,7 +561,8 @@ void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat center
 #undef M
 	glMultMatrixf(m);
 	
-	/* Translate Eye to Origin */
+	// Translate Eye to Origin
+
 	glTranslatef(-eyex, -eyey, -eyez);
 	
 }
@@ -582,30 +586,49 @@ void Engine::gluePerspective(float fovy, float aspect,
 
 #endif
 
-void Engine::Start(int i, int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s, void (theCleanup)()) {
+
+void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length) {
+  FileHandle *fh = new FileHandle;
+  fh->fp = file;
+  fh->off = offset;
+  fh->len = length;
+  switch(collection) {
+    case MODELS:
+      models.push_back(fh);
+      return;
+    case SOUNDS:
+      sounds.push_back(fh);
+      return;
+    case TEXTURES:
+      textures.push_back(fh);
+      return;
+    case LEVELS:
+      levels.push_back(fh);
+      return;
+  }
+}
+
+
+void Engine::Start(int i, int w, int h) {
   if (games.size() == 0) {
     games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SpaceShipDown>);
-    pthread_mutex_init(&m_GameSwitchLock, NULL);
   }
-
-  pthread_mutex_lock(&m_GameSwitchLock);
 
   if (m_CurrentGame) {
     m_CurrentGame->StopSimulation();
     delete m_CurrentGame;
   }
 
-  m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, t, m, l, s);
-  m_CurrentGame->CreateThread(theCleanup);
+  m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
+  m_CurrentGame->CreateThread(NULL);
   
-  pthread_mutex_unlock(&m_GameSwitchLock);
-
 }
 
 
+/*
 void Engine::CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->SetAssets(t, m, l, s);
@@ -613,6 +636,7 @@ void Engine::CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, 
     LOGV("current game is not to set assets\n");
   }
 }
+*/
 
 
 void Engine::CurrentGameDestroyFoos() {
@@ -646,7 +670,7 @@ void Engine::CurrentGameHit(float x, float y, int hitState) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->Hit(x, y, hitState);
   } else {
-    LOGV("\n\nFOOOOOOOOOOOOOOOOO\n\n\n");
+    LOGV("current game is not set to hit\n\n");
   }
 }
 
@@ -655,7 +679,7 @@ void Engine::CurrentGameResizeScreen(int width, int height) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->ResizeScreen(width, height);
   } else {
-    LOGV("really??\n\n");
+    LOGV("current game is not set to resize\n\n");
   }
 }
 
@@ -691,7 +715,7 @@ void Engine::CurrentGameStart() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->StartSimulation();
   } else {
-    LOGV("WTF!!!!!!!\n");
+    LOGV("current game not set to start\n");
   }
 }
 
@@ -702,11 +726,12 @@ bool Engine::Active() {
 
 
 void Engine::LoadSound(int i) {
-  void *buffer = (void *)malloc(sizeof(char) * m_SoundFoos->at(i)->len);
-  fseek(m_SoundFoos->at(i)->fp, m_SoundFoos->at(i)->off, SEEK_SET);
-  size_t r = fread(buffer, 1, m_SoundFoos->at(i)->len, m_SoundFoos->at(i)->fp);
-  if (r > 0) { 
-    m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFoos->at(i)->len));
+  void *buffer = (void *)malloc(sizeof(char) * m_SoundFileHandles->at(i)->len);
+  fseek(m_SoundFileHandles->at(i)->fp, m_SoundFileHandles->at(i)->off, SEEK_SET);
+  size_t r = fread(buffer, 1, m_SoundFileHandles->at(i)->len, m_SoundFileHandles->at(i)->fp);
+  if (r > 0) {
+    LOGV("123--- %d\n", m_SoundFileHandles->at(i)->len);
+    m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFileHandles->at(i)->len));
   }
   free(buffer);
   m_IsPushingAudio = true;
@@ -716,7 +741,7 @@ void Engine::LoadSound(int i) {
 void Engine::LoadModel(int i, int s, int e) {
   //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
   Assimp::Importer m_Importer;
-	m_Importer.SetIOHandler(new FooSystem(*m_Textures, *m_ModelFoos));
+	m_Importer.SetIOHandler(new FooSystem(*m_ModelFileHandles));
 	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
 	char path[128];
 	snprintf(path, sizeof(s), "%d", i);
@@ -724,6 +749,30 @@ void Engine::LoadModel(int i, int s, int e) {
   const aiScene *scene = m_Importer.GetScene();
 	m_FooFoos.push_back(Model::GetFoo(scene, s, e));
 	m_Importer.FreeScene();	
+}
+
+
+void Engine::LoadTexture(int i) { //const char *path) {
+  png_t tex;
+  unsigned char* data;
+  GLuint textureHandle;
+
+  png_init(0, 0);
+  //png_open_file_read(&tex, path);
+  png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
+  data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
+  png_get_data(&tex, data);
+
+  glGenTextures(1, &textureHandle);
+  glBindTexture(GL_TEXTURE_2D, textureHandle);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  png_close_file(&tex);
+  free(data);
+
+  m_Textures.push_back(textureHandle);
 }
 
 

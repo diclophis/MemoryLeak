@@ -7,12 +7,6 @@
  *
  */
 
-struct foo {
-	FILE *fp;
-	unsigned int off;
-	unsigned int len;
-};
-
 typedef struct
 {
   GLshort vertex[2];

@@ -22,10 +22,6 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static std::vector<GLuint> textures;
-static std::vector<foo*> models;
-static std::vector<foo*> sounds;
-static std::vector<foo*> levels;
 static int game_index = 1;
 static short int *outData;
 
@@ -49,6 +45,7 @@ static void CheckError(OSStatus error, const char *operation) {
 }
 
 
+/*
 GLuint loadTexture(NSBitmapImageRep *image) {
   GLuint text = 0;
   glEnable(GL_TEXTURE_2D);
@@ -97,6 +94,8 @@ GLuint LoadTexture(const char *path) {
   return textureHandle;
 }
 
+*/
+
 
 
 void draw(void) {
@@ -131,7 +130,7 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  //LOGV("key: %d %c\n", key, key);
+  LOGV("key: %d %c\n", key, key);
   if (key == 49) {
     if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
@@ -161,11 +160,11 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGamePause();
       } else if (key == 114) { // r
         Engine::CurrentGameDestroyFoos();
-        Engine::CurrentGameSetAssets(textures, models, levels, sounds);
+        //Engine::CurrentGameSetAssets(textures, models, levels, sounds);
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else if (key == 115) { // s
-        Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+        Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
       }
     }
     reset_down = !reset_down;
@@ -316,16 +315,19 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		models.push_back(firstModel);
+    Engine::PushBackFileHandle(MODELS, fd, 0, len);
 	}
   [model_names release];
   [model_path release];
+
 	NSArray *texture_names = [mainBundle pathsForResourcesOfType:nil inDirectory:textures_path];
 	for (NSString *path in texture_names) {
+		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+    Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
+    /*
     if (false) {
       NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
       NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
@@ -338,40 +340,36 @@ int main(int argc, char** argv) {
     } else {
       textures.push_back(LoadTexture([path UTF8String]));
     }
+    */
   }
   [texture_names release];
   [textures_path release];
+
 	NSArray *level_names = [mainBundle pathsForResourcesOfType:nil inDirectory:levels_path];
 	for (NSString *path in level_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		levels.push_back(firstModel);
+    Engine::PushBackFileHandle(LEVELS, fd, 0, len);
 	}
   [level_names release];
   [levels_path release];
+
 	NSArray *sound_names = [mainBundle pathsForResourcesOfType:nil inDirectory:sounds_path];
 	for (NSString *path in sound_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		sounds.push_back(firstModel);
+    Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
 	}
   [sound_names release];
   [sounds_path release];
+
   [mainBundle release];
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight);
 
   audioUnitSetup();
 

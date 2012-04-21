@@ -52,9 +52,12 @@
 #define UNDER_SHIFT 8
 
 
-SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
+  LoadTexture(0);
   LoadMaze(3);
+  LoadSound(0);
+  LoadSound(1);
 
   m_CenterOfWorldX = 15;
   m_CenterOfWorldY = 15;
@@ -64,11 +67,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::ve
 
   m_Zoom = 1.0;
 
-  LoadSound(0);
-  LoadSound(1);
-  m_CurrentSound = 0;
-  
-  m_IsPushingAudio = true;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
@@ -256,16 +254,16 @@ void SuperStarShooter::CreateFoos() {
 
   ResetStateFoo();
 
-  m_GridFoo = AtlasSprite::GetFoo(m_Textures->at(0), 16, 16, 0, 256, 0.0);
+  m_GridFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 256, 0.0);
 
   for (unsigned int i=0; i<4; i++) {
-    m_PlayerFoos[i] = AtlasSprite::GetFoo(m_Textures->at(0), 16, 14, 13 + (16 * i), 13 + (16 * i) + 3, 0.0);
+    m_PlayerFoos[i] = AtlasSprite::GetFoo(m_Textures.at(0), 16, 14, 13 + (16 * i), 13 + (16 * i) + 3, 0.0);
   }
 
-  m_HoleFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 24, 25, 0.0);
-  m_TrailFoo = AtlasSprite::GetFoo(m_Textures->at(0), 16, 16, 251, 256, 0.0);
+  m_HoleFoo = AtlasSprite::GetFoo(m_Textures.at(0), 8, 8, 24, 25, 0.0);
+  m_TrailFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 251, 256, 0.0);
 
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
   if (m_SimulationTime > 0.0) {
     for (int i=m_GridStartIndex; i<m_SecondGridStopIndex; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
@@ -785,12 +783,12 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
 
 
 void SuperStarShooter::LoadMaze(int level_index) {
-	uint16_t *level = (uint16_t *)malloc(sizeof(char) * m_LevelFoos->at(level_index)->len);
-	fseek(m_LevelFoos->at(level_index)->fp, m_LevelFoos->at(level_index)->off, SEEK_SET);
-	fread(level, sizeof(char), m_LevelFoos->at(level_index)->len, m_LevelFoos->at(level_index)->fp);
+	uint16_t *level = (uint16_t *)malloc(sizeof(char) * m_LevelFileHandles->at(level_index)->len);
+	fseek(m_LevelFileHandles->at(level_index)->fp, m_LevelFileHandles->at(level_index)->off, SEEK_SET);
+	fread(level, sizeof(char), m_LevelFileHandles->at(level_index)->len, m_LevelFileHandles->at(level_index)->fp);
 
   int char_to_int_ratio = sizeof(uint16_t) / sizeof(char);
-  int int_count = m_LevelFoos->at(level_index)->len / char_to_int_ratio;
+  int int_count = m_LevelFileHandles->at(level_index)->len / char_to_int_ratio;
   int width = level[0];
   int height = level[1];
   int cursor = 0;
