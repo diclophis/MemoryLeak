@@ -4,7 +4,7 @@ class RadiantFireEightSixOne : public Engine {
 
 public:
 
-	RadiantFireEightSixOne(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+	RadiantFireEightSixOne(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s);
 	~RadiantFireEightSixOne();
 	void Hit(float x, float y, int hitState);
 	int Simulate();

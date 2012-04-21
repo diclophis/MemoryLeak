@@ -4,7 +4,7 @@ class MainMenu : public Engine {
 
 public:
 
-	MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+	MainMenu(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s);
 	~MainMenu();
 	void Hit(float x, float y, int hitState);
 	int Simulate();

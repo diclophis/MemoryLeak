@@ -37,7 +37,7 @@ const float g_AvoidancePredictTimeMax  = 0.5;
 float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 
 
-SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+SpaceShipDown::SpaceShipDown(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc ssd\n");
   m_LevelLoaded = false;
   LoadSound(0);
@@ -57,19 +57,19 @@ void SpaceShipDown::CreateFoos() {
 
   ResetStateFoo();
 
-  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 1, 2, 0.0);
-  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 3, 4, 1.0);
-  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 4, 5, 0.0);
-  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 6, 7, 0.0);
-  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 5, 6, 0.0);
-  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 7, 8, 1.0);
-  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 8, 16, 1.0);
-  m_PlatformFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 0, 1, 0.0);
-  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures->at(0), 4, 4, 2, 3, 1.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 1, 2, 0.0);
+  m_PlayerAfterburnerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 3, 4, 1.0);
+  m_SpaceShipPartBaseFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 4, 5, 0.0);
+  m_SpaceShipPartTopFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 6, 7, 0.0);
+  m_SpaceShipPartMiddleFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 5, 6, 0.0);
+  m_SpaceShipPartAfterburnerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 7, 8, 1.0);
+  m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 8, 16, 1.0);
+  m_PlatformFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 0, 1, 0.0);
+  m_EnemyFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 2, 3, 1.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
 
-  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures->at(0), 1, 1, 0, 1, 0.0);
-  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1);
+  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
 
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
@@ -99,7 +99,6 @@ void SpaceShipDown::CreateFoos() {
 
   //m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures->at(0), 5000, 10);
   
-  LOGV("done create foos\n");
 }
 
 
@@ -128,7 +127,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   CreateFoos();
 
   m_LevelIndex = level_index;
-  if (m_LevelIndex > m_LevelFoos->size() - 1) {
+  if (m_LevelIndex > m_LevelFileHandles->size() - 1) {
     m_LevelIndex = 0;
   }
   m_SimulationTime = 0.0;
@@ -898,13 +897,13 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 
 	int current[4];
 	current[0] = current[1] = current[2] = current[3] = 0;
-	char *level = (char *)malloc(sizeof(char) * m_LevelFoos->at(level_index)->len);
+	char *level = (char *)malloc(sizeof(char) * m_LevelFileHandles->at(level_index)->len);
 
-	fseek(m_LevelFoos->at(level_index)->fp, m_LevelFoos->at(level_index)->off, SEEK_SET);
-	fread(level, sizeof(char), m_LevelFoos->at(level_index)->len, m_LevelFoos->at(level_index)->fp);
+	fseek(m_LevelFileHandles->at(level_index)->fp, m_LevelFileHandles->at(level_index)->off, SEEK_SET);
+	fread(level, sizeof(char), m_LevelFileHandles->at(level_index)->len, m_LevelFileHandles->at(level_index)->fp);
 
 	unsigned int i = 0;
-	unsigned int l = m_LevelFoos->at(level_index)->len;
+	unsigned int l = m_LevelFileHandles->at(level_index)->len;
 
 	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	int idx = -1;

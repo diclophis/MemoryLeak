@@ -5,17 +5,16 @@
 #include "RadiantFireEightSixOne.h"
 
 
-RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc RadiantFire\n");
   LoadSound(0);
-  m_IsPushingAudio = true;
   m_Zoom = 1.25;
   m_RequestedFullscreen = false;
   m_Touched = false;
   b2BodyDef spriteBodyDef;
   spriteBodyDef.type = b2_dynamicBody;
   CreateBox2DWorld();
-  m_Terrain = new Terrain(m_World, m_Textures->at(0));  
+  m_Terrain = new Terrain(m_World, m_Textures.at(0));  
   CreateFoos();
 
   m_PlayerIndex = 0;
@@ -46,8 +45,8 @@ RadiantFireEightSixOne::~RadiantFireEightSixOne() {
 void RadiantFireEightSixOne::CreateFoos() {
   LOGV("RadiantFire::CreateFoos\n");
   ResetStateFoo();
-  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures->at(0), 8, 8, 0, 64, 0.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures->at(0), 1);
+  m_PlayerFoo = AtlasSprite::GetFoo(m_Textures.at(0), 8, 8, 0, 64, 0.0);
+  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
       if (i == m_PlayerIndex) {

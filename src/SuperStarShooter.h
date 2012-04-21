@@ -4,7 +4,7 @@ class SuperStarShooter : public Engine, public micropather::Graph {
 
 public:
 
-	SuperStarShooter(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
+	SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s);
 	~SuperStarShooter();
 	void Hit(float x, float y, int hitState);
 	int Simulate();

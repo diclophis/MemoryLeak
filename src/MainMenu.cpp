@@ -5,7 +5,7 @@
 #include "MainMenu.h"
 
 
-MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
+MainMenu::MainMenu(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("main menu alloc\n");
 
   m_CameraX = 0.0;
@@ -63,7 +63,7 @@ void MainMenu::CreateFoos() {
     //m_MaxHeight = 1.0;
   }
 
-  m_BatchFoo = Model::GetBatchFoo(m_Textures->at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
+  m_BatchFoo = Model::GetBatchFoo(m_Textures.at(5), m_FooFoos[0]->m_numFaces, m_ModelCount);
   ResetStateFoo();
   m_BatchFoo->m_NumBatched = 0;
   RenderModelRange(0, m_ModelCount, m_BatchFoo);

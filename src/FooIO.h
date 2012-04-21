@@ -2,7 +2,7 @@
 
 class FooStream : public Assimp::IOStream {
   public:
-    FooStream(foo &a) : m_Foo(&a) {
+    FooStream(FileHandle &a) : m_Foo(&a) {
 	  };
 
 	  ~FooStream() {
@@ -64,7 +64,7 @@ exit(1);
 	
 	private:
 	
-		foo *m_Foo;
+		FileHandle *m_Foo;
 
 	};
 	
@@ -72,7 +72,7 @@ class FooSystem : public Assimp::IOSystem {
 
 	public:
 		
-		FooSystem(std::vector<GLuint> &a,std::vector<foo*> &b) : m_Textures(&a), m_Models(&b) {
+		FooSystem(std::vector<FileHandle *> &b) : m_Models(&b) {
 		};
 	
 	  ~FooSystem() {
@@ -102,6 +102,5 @@ class FooSystem : public Assimp::IOSystem {
 	  }
 	
 	private:
-		std::vector<GLuint> *m_Textures;
-		std::vector<foo*> *m_Models;
+		std::vector<FileHandle *> *m_Models;
 };

@@ -103,6 +103,7 @@
 #include "aiPostProcess.h"
 #include <include/IOStream.h>
 #include <include/IOSystem.h>
+#include "FileHandle.h"
 #include "foo.h"
 #include "nodexyz.h"
 

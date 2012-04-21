@@ -22,10 +22,6 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static std::vector<GLuint> textures;
-static std::vector<foo*> models;
-static std::vector<foo*> sounds;
-static std::vector<foo*> levels;
 static int game_index = 1;
 static short int *outData;
 
@@ -47,56 +43,6 @@ static void CheckError(OSStatus error, const char *operation) {
       
   exit(1);
 }
-
-
-GLuint loadTexture(NSBitmapImageRep *image) {
-  GLuint text = 0;
-  glEnable(GL_TEXTURE_2D);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-  glGenTextures(1, &text);
-  glBindTexture(GL_TEXTURE_2D, text);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  GLuint width = CGImageGetWidth(image.CGImage);
-  GLuint height = CGImageGetHeight(image.CGImage);
-  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-  void *imageData = malloc( height * width * 4 );
-  CGContextRef context2 = CGBitmapContextCreate( imageData, width, height, 8, 4 * width, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big );
-  CGColorSpaceRelease( colorSpace );
-  CGContextClearRect( context2, CGRectMake( 0, 0, width, height ) );
-  CGContextTranslateCTM( context2, 0, height - height );
-  CGContextDrawImage( context2, CGRectMake( 0, 0, width, height ), image.CGImage );
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-  CGContextRelease(context2);
-  free(imageData);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisable(GL_TEXTURE_2D);
-  return text;
-}
-
-
-GLuint LoadTexture(const char *path) {
-  png_t tex;
-  unsigned char* data;
-  GLuint textureHandle;
-
-  png_init(0, 0);
-  png_open_file_read(&tex, path);
-  data = (unsigned char*) malloc(tex.width * tex.height * tex.bpp);
-  png_get_data(&tex, data);
-
-  glGenTextures(1, &textureHandle);
-  glBindTexture(GL_TEXTURE_2D, textureHandle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  png_close_file(&tex);
-  free(data);
-
-  return textureHandle;
-}
-
 
 
 void draw(void) {
@@ -131,7 +77,7 @@ void processMouseMotion(int x, int y) {
 
 
 void processNormalKeys(unsigned char key, int x, int y) {
-  //LOGV("key: %d %c\n", key, key);
+  LOGV("key: %d %c\n", key, key);
   if (key == 49) {
     if (debug_down) {
       Engine::CurrentGameHit(0, 0, 2);
@@ -161,11 +107,11 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGamePause();
       } else if (key == 114) { // r
         Engine::CurrentGameDestroyFoos();
-        Engine::CurrentGameSetAssets(textures, models, levels, sounds);
+        //Engine::CurrentGameSetAssets(textures, models, levels, sounds);
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else if (key == 115) { // s
-        Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+        Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
       }
     }
     reset_down = !reset_down;
@@ -316,62 +262,47 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		models.push_back(firstModel);
+    Engine::PushBackFileHandle(MODELS, fd, 0, len);
 	}
   [model_names release];
   [model_path release];
+
 	NSArray *texture_names = [mainBundle pathsForResourcesOfType:nil inDirectory:textures_path];
 	for (NSString *path in texture_names) {
-    if (false) {
-      NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-      NSBitmapImageRep *image = [NSBitmapImageRep imageRepWithData:texData];
-      if (image == nil) {
-        throw 1;
-      }
-      textures.push_back(loadTexture(image));
-      [image release];
-      [texData release];
-    } else {
-      textures.push_back(LoadTexture([path UTF8String]));
-    }
+		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
+		fseek(fd, 0, SEEK_END);
+		unsigned int len = ftell(fd);
+		rewind(fd);
+    Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
   }
   [texture_names release];
   [textures_path release];
+
 	NSArray *level_names = [mainBundle pathsForResourcesOfType:nil inDirectory:levels_path];
 	for (NSString *path in level_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		levels.push_back(firstModel);
+    Engine::PushBackFileHandle(LEVELS, fd, 0, len);
 	}
   [level_names release];
   [levels_path release];
+
 	NSArray *sound_names = [mainBundle pathsForResourcesOfType:nil inDirectory:sounds_path];
 	for (NSString *path in sound_names) {
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-		foo *firstModel = new foo;
-		firstModel->fp = fd;
-		firstModel->off = 0;
-		firstModel->len = len;
-		sounds.push_back(firstModel);
+    Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
 	}
   [sound_names release];
   [sounds_path release];
+
   [mainBundle release];
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight);
 
   audioUnitSetup();
 
