@@ -758,6 +758,8 @@ void Engine::LoadTexture(int i) {
   GLuint textureHandle;
 
   png_init(0, 0);
+  LOGV("FOOO %x\n", m_TextureFileHandles->at(i)->fp);
+  rewind(m_TextureFileHandles->at(i)->fp);
   png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
   data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
   png_get_data(&tex, data);
@@ -768,7 +770,7 @@ void Engine::LoadTexture(int i) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-  png_close_file(&tex);
+  //png_close_file(&tex);
   free(data);
 
   m_Textures.push_back(textureHandle);
