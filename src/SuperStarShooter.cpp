@@ -813,4 +813,6 @@ void SuperStarShooter::LoadMaze(int level_index) {
 	const char *code;
 	for (unsigned int j=0; j<l; j++) {
   */
+
+  free(level);
 }
