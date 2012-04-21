@@ -93,13 +93,6 @@ static GLuint g_LastRenderBuffer = -1;
       unsigned int len = ftell(fd);
       rewind(fd);
       Engine::PushBackFileHandle(MODELS, fd, 0, len);
-      /*
-      foo *firstModel = new foo;
-      firstModel->fp = fd;
-      firstModel->off = 0;
-      firstModel->len = len;
-      models.push_back(firstModel);
-      */
     }
     
     NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
@@ -109,24 +102,11 @@ static GLuint g_LastRenderBuffer = -1;
       unsigned int len = ftell(fd);
       rewind(fd);
       Engine::PushBackFileHandle(LEVELS, fd, 0, len);
-
-      /*
-      foo *firstLevel = new foo;
-      firstLevel->fp = fd;
-      firstLevel->off = 0;
-      firstLevel->len = len;
-      levels.push_back(firstLevel);
-      */
     }
 
     
     NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
     for (NSString *path in texture_names) {
-      //NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
-      //UIImage *image = [[UIImage alloc] initWithData:texData];
-      //textures.push_back([self loadTexture2:image]);
-      //[image release];
-      //[texData release];
       FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
       fseek(fd, 0, SEEK_END);
       unsigned int len = ftell(fd);
@@ -142,13 +122,6 @@ static GLuint g_LastRenderBuffer = -1;
       unsigned int len = ftell(fd);
       rewind(fd);
       Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
-      /*
-      foo *firstSound = new foo;
-      firstSound->fp = fd;
-      firstSound->off = 0;
-      firstSound->len = len;
-      sounds.push_back(firstSound);
-      */
     }
   }
   return self;
@@ -237,8 +210,6 @@ static GLuint g_LastRenderBuffer = -1;
 
     //const GLenum discards_2[]  = {GL_COLOR_ATTACHMENT0_OES};
     //glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards_2);
-
-    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   }
 }
 
