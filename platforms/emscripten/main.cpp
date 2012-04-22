@@ -17,12 +17,6 @@
 #define kWindowWidth 320
 #define kWindowHeight 480
 
-static pthread_t audio_thread;
-
-static std::vector<GLuint> textures;
-static std::vector<foo*> models;
-static std::vector<foo*> sounds;
-static std::vector<foo*> levels;
 
 static int game_index = 1;
 static bool left_down = false;
@@ -37,7 +31,7 @@ __attribute__((used)) int start_game (int i);
 
 int start_game (int i) {
   game_index = i;
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
   return game_index;
 }
 
@@ -101,7 +95,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
   } else {
     if (reset_down) {
     } else {
-      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+      Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
     }
     reset_down = !reset_down;
   }
@@ -186,35 +180,17 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-        GLuint tex_2d = LoadTexture(tmp);
-        textures.push_back(tex_2d);
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+        Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
       }
+      free(tmp);
+      tmp=NULL;
     }
+    closedir(dir);
   }
-
-  /*
-  int dir_ents = 0; //scandir(dir_path, &dps, is_not_dot_or_dot_dot, alphasort);
-
-  if (dir_ents == -1) {
-    LOGV("wtf\n");
-    exit(1);
-  }
-
-  for (int i=0; i<dir_ents; i++) {
-    char *tmp;
-    tmp = path_cat(dir_path, dps[i]->d_name);
-    GLuint tex_2d = 0;
-    //SOIL_load_OGL_texture(
-    //  tmp,
-    //  SOIL_LOAD_AUTO,
-    //  SOIL_CREATE_NEW_ID,
-    //  SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA
-    //);
-    textures.push_back(tex_2d);
-    free(tmp);
-    tmp=NULL;
-  }
-  */
 
   dir_path="../../assets/models/";
   dir = opendir(dir_path);
@@ -228,13 +204,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-
-        foo *firstModel = new foo;
-        firstModel->fp = fd;
-        firstModel->off = 0;
-        firstModel->len = len;
-
-        models.push_back(firstModel);
+        Engine::PushBackFileHandle(MODELS, fd, 0, len);
       }
 
       free(tmp);
@@ -255,13 +225,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-
-        foo *firstModel = new foo;
-        firstModel->fp = fd;
-        firstModel->off = 0;
-        firstModel->len = len;
-
-        sounds.push_back(firstModel);
+        Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
       }
     
       free(tmp);
@@ -278,17 +242,11 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-      FILE *fd = fopen(tmp, "rb");
-      fseek(fd, 0, SEEK_END);
-      unsigned int len = ftell(fd);
-      rewind(fd);
-
-      foo *firstModel = new foo;
-      firstModel->fp = fd;
-      firstModel->off = 0;
-      firstModel->len = len;
-
-      levels.push_back(firstModel);
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+        Engine::PushBackFileHandle(LEVELS, fd, 0, len);
       }
 
       free(tmp);
@@ -297,14 +255,14 @@ int main(int argc, char** argv) {
     closedir(dir);
   }
 
-  outData = (short int *)calloc(8192, sizeof(short int));
+  outData = (short int *)calloc(512, sizeof(short int));
 
   // Set 16-bit stereo audio at 44.1Khz
   SDL_AudioSpec fmt;
   fmt.freq = 44100;
   fmt.format = AUDIO_S16;
   fmt.channels = 2;
-  fmt.samples = 1024;
+  fmt.samples = 512;
   fmt.callback = mixaudio;
   fmt.userdata = NULL;
 
@@ -315,7 +273,7 @@ int main(int argc, char** argv) {
     SDL_PauseAudio(0);
   }
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
 
   glutMainLoop();
 
