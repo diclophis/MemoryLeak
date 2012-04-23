@@ -68,12 +68,11 @@
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        //var startGame = cwrap('__Z10start_gamei', 'number', ['number']);
+        var startGame = cwrap('start_game', 'number', ['number']);
         var buttons = document.getElementsByTagName("button");
         for (i in buttons) {
           buttons[i].onclick = function(e) {
-            //startGame(this.value);
-            __Z10start_gamei(this.value);
+            startGame(this.value);
           };
         }
         var manifestFile = new XMLHttpRequest();
@@ -132,20 +131,6 @@
         },
         preRun: function() {
           // this is odd, and is actually fixed in incoming branch of emscripten
-          window.SDL = {
-            structs: {
-              AudioSpec: Runtime.generateStructInfo([
-                ['i32', 'freq'],
-                ['i16', 'format'],
-                ['i8', 'channels'],
-                ['i8', 'silence'],
-                ['i16', 'samples'],
-                ['i32', 'size'],
-                ['void*', 'callback'],
-                ['void*', 'userdata']
-              ])
-            }
-          };
         }
       };
     </script>

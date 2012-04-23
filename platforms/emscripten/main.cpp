@@ -25,14 +25,16 @@ static bool reset_down = false;
 static bool debug_down = false;
 static short int *outData;
 
+extern "C" {
 
-__attribute__((used)) int start_game (int i);
+int __attribute__((used)) start_game (int i);
 
-
-int start_game (int i) {
+int __attribute__((used)) start_game (int i) {
   game_index = i;
   Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
   return game_index;
+}
+
 }
 
 
