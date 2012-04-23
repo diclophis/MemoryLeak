@@ -54,7 +54,6 @@
 -(void)drawView:(id)sender;
 -(void)startGame:(id)i;
 -(BOOL)wasActive;
--(GLuint)loadTexture2:(UIImage *)image;
 
 
 @end
