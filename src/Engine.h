@@ -13,26 +13,21 @@ public:
 
   Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s);
   virtual ~Engine();
-  //void SetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   void ResetStateFoo();
   void ResizeScreen(int width, int height);
   void DrawScreen(float rotation);
-  int RunThread();
-  void CreateThread(void ());
-  //static void *EnterThread(void *);
+  int Run();
   virtual int Simulate() = 0;
   virtual void Hit(float x, float y, int hitState) = 0;
   virtual void RenderModelPhase() = 0;
   virtual void RenderSpritePhase() = 0;
   virtual void CreateFoos() = 0;
   virtual void DestroyFoos() = 0;
-  //bool WaitVsync();
   void DoAudio(short buffer[], int bytes);
   void RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
-  //void (*m_SimulationThreadCleanup)();
   bool Active();
   void StopSimulation();
   void StartSimulation();
@@ -46,7 +41,6 @@ public:
  
   static void PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length);
   static void Start(int i, int w, int h);
-  //static void CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s);
   static void CurrentGameDestroyFoos();
   static void CurrentGameCreateFoos();
   static void CurrentGamePause();
@@ -71,13 +65,6 @@ public:
   float m_CameraPosition[3];
   float m_CameraTarget[3];
 
-  //pthread_cond_t m_VsyncCond;
-  //pthread_cond_t m_AudioSyncCond;
-  //pthread_cond_t m_ResumeCond;
-  //pthread_mutex_t m_Mutex;
-  //pthread_mutex_t m_Mutex2;
-  //pthread_t m_Thread;
-
   std::vector<FileHandle *> *m_TextureFileHandles;
   std::vector<FileHandle *> *m_ModelFileHandles;
   std::vector<FileHandle *> *m_LevelFileHandles;
@@ -100,8 +87,6 @@ public:
   int m_CurrentSound;
   float m_Fov;
 	double t1, t2;
-
-  int m_SetStates;
 
 #ifdef USE_GLES2
 

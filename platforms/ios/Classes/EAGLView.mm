@@ -214,52 +214,6 @@ static GLuint g_LastRenderBuffer = -1;
 }
 
 
-- (GLuint)loadTexture2:(UIImage *)image {
-  unsigned int* inPixel32;
-  unsigned short* outPixel16;
-	GLuint text = 0;
-  CGImageRef textureImage = image.CGImage;
-  CGColorSpaceRef colorSpace;
-  GLuint textureWidth = CGImageGetWidth(textureImage);
-  GLuint textureHeight = CGImageGetHeight(textureImage);
-  colorSpace = CGColorSpaceCreateDeviceRGB();
-  
-  void *textureData = malloc(textureWidth * textureHeight * sizeof(unsigned int));
-  void *tempData = malloc(textureHeight * textureWidth * sizeof(unsigned short));
-
-  inPixel32 = (unsigned int *)textureData;
-  outPixel16 = (unsigned short *)tempData;
-  
-  //swizzle in all the bits for the to-be-created bitmap, because CGContextDrawImage/CGBitmapContextCreate doesnt like rgba
-  for(int i=0; i < textureWidth*textureHeight; ++i) {
-    inPixel32[i] = 0;
-  }
-
-  CGContextRef textureContext = CGBitmapContextCreate(textureData, textureWidth, textureHeight, 8, sizeof(int) * textureWidth, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); //
-  CGContextDrawImage(textureContext, CGRectMake(0, 0, textureWidth, textureHeight), textureImage);
-
-  //Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
-  for (int i=0; i<(textureHeight * textureWidth); i++) {
-    unsigned int inP = ((unsigned int *)textureData)[i];
-    outPixel16[i] = ((((inP >> 0) & 0xFF) >> 4) << 12) | ((((inP >> 8) & 0xFF) >> 4) << 8) | ((((inP >> 16) & 0xFF) >> 4) << 4) | ((((inP >> 24) & 0xFF) >> 4) << 0);
-  }
-  
-  free(textureData);
-  CGContextRelease(textureContext);
-  CGColorSpaceRelease(colorSpace);
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &text);
-	glBindTexture(GL_TEXTURE_2D, text);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, tempData);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_TEXTURE_2D);
-  free(tempData);
-	return text;
-}
-
-
 -(NSInteger)animationFrameInterval {
     return animationFrameInterval;
 }

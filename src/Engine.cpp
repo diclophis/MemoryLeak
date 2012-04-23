@@ -146,6 +146,11 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
 Engine::~Engine() {
   LOGV("Engine::dealloc\n");
   
+  for (std::vector<GLuint>::iterator i = m_Textures.begin(); i != m_Textures.end(); ++i) {
+    glDeleteTextures(1, &*i); // yea that happened
+  }
+  m_Textures.clear();
+
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
     delete *i;
   }
@@ -213,8 +218,6 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   m_CurrentSound = 0;
 
-  m_SetStates = 0;
-
 #ifdef USE_GLES2
 
   // Compile the vertex shader
@@ -269,48 +272,6 @@ void Engine::ResetStateFoo() {
 }
 
 
-void Engine::CreateThread(void (theCleanup)()) {
-  //m_SimulationThreadCleanup = theCleanup;
-
-  /*
-  pthread_attr_t attr; 
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-  pthread_create(&m_Thread, &attr, Engine::EnterThread, this);
-  */
-
-	timeval tim;
-	gettimeofday(&tim, NULL);
-	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  StartSimulation();
-}
-
-
-/*
-void Engine::SetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
-  m_Textures = &t;
-  m_ModelFoos = &m;
-  m_LevelFoos = &l;
-  m_SoundFoos = &s;
-}
-*/
-
-/*
-void *Engine::EnterThread(void *obj) {
-  //TODO: figure out how to fucking name a thread
-  reinterpret_cast<Engine *>(obj)->RunThread();
-  return NULL;
-}
-*/
-
-/*
-bool Engine::WaitVsync() {
-  //pthread_cond_wait(&m_VsyncCond, &m_Mutex2);
-  return true;
-}
-*/
-
-
 int Engine::isExtensionSupported(const char *extension) {
   const GLubyte *extensions = NULL;
   const GLubyte *start;
@@ -338,16 +299,12 @@ int Engine::isExtensionSupported(const char *extension) {
 
 
 void Engine::DrawScreen(float rotation) {
-  RunThread();
+  Run();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
 
 #ifdef USE_GLES2
 
     glUseProgram(program);
-
-    //float m_Zoom = 0.5;
-    //float m_ScreenHalfHeight = ((float)kWindowHeight) / 2.0;
-    //float m_ScreenAspect = (float)kWindowWidth / (float)kWindowHeight;
 
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -392,7 +349,7 @@ void Engine::DrawScreen(float rotation) {
 }
 
 
-int Engine::RunThread() {
+int Engine::Run() {
 	timeval tim;
   gettimeofday(&tim, NULL);
   t2=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -422,19 +379,17 @@ void Engine::PauseSimulation() {
 
 
 void Engine::StopSimulation() {
-  //pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
   m_GameState = -1;
-  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
-  if (m_GameState == 2) {
-    //pthread_mutex_lock(&m_Mutex);
+  if (m_GameState == 2) { // TODO: state machine
+    timeval tim;
+    gettimeofday(&tim, NULL);
+    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
     m_GameState = 1;
-    //pthread_cond_signal(&m_CurrentGame->m_ResumeCond);
-    //pthread_mutex_unlock(&m_Mutex);
   }
 }
 
@@ -615,20 +570,9 @@ void Engine::Start(int i, int w, int h) {
   }
 
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
-  m_CurrentGame->CreateThread(NULL);
+  m_CurrentGame->StartSimulation();
   
 }
-
-
-/*
-void Engine::CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
-  if (m_CurrentGame != NULL) {
-    m_CurrentGame->SetAssets(t, m, l, s);
-  } else {
-    LOGV("current game is not to set assets\n");
-  }
-}
-*/
 
 
 void Engine::CurrentGameDestroyFoos() {
@@ -750,7 +694,6 @@ void Engine::LoadTexture(int i) {
   GLuint textureHandle;
 
   png_init(0, 0);
-  LOGV("FOOO %x\n", m_TextureFileHandles->at(i)->fp);
   rewind(m_TextureFileHandles->at(i)->fp);
   png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
   data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
@@ -760,13 +703,60 @@ void Engine::LoadTexture(int i) {
   glBindTexture(GL_TEXTURE_2D, textureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  //TODO: investigate pixel swizzling
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-  //png_close_file(&tex);
   free(data);
 
   m_Textures.push_back(textureHandle);
 }
+
+/*
+- (GLuint)loadTexture2:(UIImage *)image {
+  unsigned int* inPixel32;
+  unsigned short* outPixel16;
+	GLuint text = 0;
+  CGImageRef textureImage = image.CGImage;
+  CGColorSpaceRef colorSpace;
+  GLuint textureWidth = CGImageGetWidth(textureImage);
+  GLuint textureHeight = CGImageGetHeight(textureImage);
+  colorSpace = CGColorSpaceCreateDeviceRGB();
+  
+  void *textureData = malloc(textureWidth * textureHeight * sizeof(unsigned int));
+  void *tempData = malloc(textureHeight * textureWidth * sizeof(unsigned short));
+
+  inPixel32 = (unsigned int *)textureData;
+  outPixel16 = (unsigned short *)tempData;
+  
+  //swizzle in all the bits for the to-be-created bitmap, because CGContextDrawImage/CGBitmapContextCreate doesnt like rgba
+  for(int i=0; i < textureWidth*textureHeight; ++i) {
+    inPixel32[i] = 0;
+  }
+
+  CGContextRef textureContext = CGBitmapContextCreate(textureData, textureWidth, textureHeight, 8, sizeof(int) * textureWidth, colorSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); //
+  CGContextDrawImage(textureContext, CGRectMake(0, 0, textureWidth, textureHeight), textureImage);
+
+  //Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
+  for (int i=0; i<(textureHeight * textureWidth); i++) {
+    unsigned int inP = ((unsigned int *)textureData)[i];
+    outPixel16[i] = ((((inP >> 0) & 0xFF) >> 4) << 12) | ((((inP >> 8) & 0xFF) >> 4) << 8) | ((((inP >> 16) & 0xFF) >> 4) << 4) | ((((inP >> 24) & 0xFF) >> 4) << 0);
+  }
+  
+  free(textureData);
+  CGContextRelease(textureContext);
+  CGColorSpaceRelease(colorSpace);
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &text);
+	glBindTexture(GL_TEXTURE_2D, text);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, tempData);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
+  free(tempData);
+	return text;
+}
+*/
 
 
 #ifndef USE_GLES2
