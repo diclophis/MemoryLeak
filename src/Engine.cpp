@@ -146,6 +146,11 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
 Engine::~Engine() {
   LOGV("Engine::dealloc\n");
   
+  for (std::vector<GLuint>::iterator i = m_Textures.begin(); i != m_Textures.end(); ++i) {
+    glDeleteTextures(1, &*i); // yea that happened
+  }
+  m_Textures.clear();
+
   for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
     delete *i;
   }
@@ -758,7 +763,6 @@ void Engine::LoadTexture(int i) {
   GLuint textureHandle;
 
   png_init(0, 0);
-  LOGV("FOOO %x\n", m_TextureFileHandles->at(i)->fp);
   rewind(m_TextureFileHandles->at(i)->fp);
   png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
   data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
@@ -772,6 +776,8 @@ void Engine::LoadTexture(int i) {
 
   //png_close_file(&tex);
   free(data);
+
+  LOGV("t: %d\n", textureHandle);
 
   m_Textures.push_back(textureHandle);
 }

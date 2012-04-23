@@ -41,6 +41,7 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<FileHandle *> &t, std::ve
   LOGV("alloc ssd\n");
   m_LevelLoaded = false;
   LoadSound(0);
+  LoadTexture(0);
   /*
   LoadModel(0, 0, 1);
   LoadModel(1, 0, 1);
