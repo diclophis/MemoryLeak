@@ -207,14 +207,6 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 	m_IsSceneBuilt = false;
 	m_IsScreenResized = false;
 
-  /*
-	pthread_cond_init(&m_VsyncCond, NULL);
-	pthread_cond_init(&m_AudioSyncCond, NULL);
-	pthread_cond_init(&m_ResumeCond, NULL);
-  pthread_mutex_init(&m_Mutex, NULL);
-  pthread_mutex_init(&m_Mutex2, NULL);
-  */
-
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
@@ -225,8 +217,6 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
   m_CurrentSound = 0;
-
-  m_SetStates = 0;
 
 #ifdef USE_GLES2
 
@@ -282,48 +272,6 @@ void Engine::ResetStateFoo() {
 }
 
 
-void Engine::CreateThread(void (theCleanup)()) {
-  //m_SimulationThreadCleanup = theCleanup;
-
-  /*
-  pthread_attr_t attr; 
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-  pthread_create(&m_Thread, &attr, Engine::EnterThread, this);
-  */
-
-	timeval tim;
-	gettimeofday(&tim, NULL);
-	t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  StartSimulation();
-}
-
-
-/*
-void Engine::SetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
-  m_Textures = &t;
-  m_ModelFoos = &m;
-  m_LevelFoos = &l;
-  m_SoundFoos = &s;
-}
-*/
-
-/*
-void *Engine::EnterThread(void *obj) {
-  //TODO: figure out how to fucking name a thread
-  reinterpret_cast<Engine *>(obj)->RunThread();
-  return NULL;
-}
-*/
-
-/*
-bool Engine::WaitVsync() {
-  pthread_cond_wait(&m_VsyncCond, &m_Mutex2);
-  return true;
-}
-*/
-
-
 int Engine::isExtensionSupported(const char *extension) {
   const GLubyte *extensions = NULL;
   const GLubyte *start;
@@ -351,16 +299,12 @@ int Engine::isExtensionSupported(const char *extension) {
 
 
 void Engine::DrawScreen(float rotation) {
-  RunThread();
+  Run();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
 
 #ifdef USE_GLES2
 
     glUseProgram(program);
-
-    //float m_Zoom = 0.5;
-    //float m_ScreenHalfHeight = ((float)kWindowHeight) / 2.0;
-    //float m_ScreenAspect = (float)kWindowWidth / (float)kWindowHeight;
 
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -405,7 +349,7 @@ void Engine::DrawScreen(float rotation) {
 }
 
 
-int Engine::RunThread() {
+int Engine::Run() {
 	timeval tim;
   gettimeofday(&tim, NULL);
   t2=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -435,19 +379,17 @@ void Engine::PauseSimulation() {
 
 
 void Engine::StopSimulation() {
-  //pthread_mutex_lock(&m_Mutex);
   m_IsSceneBuilt = false;
   m_GameState = -1;
-  //pthread_mutex_unlock(&m_Mutex);
 }
 
 
 void Engine::StartSimulation() {
-  if (m_GameState == 2) {
-    //pthread_mutex_lock(&m_Mutex);
+  if (m_GameState == 2) { // TODO: state machine
+    timeval tim;
+    gettimeofday(&tim, NULL);
+    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
     m_GameState = 1;
-    //pthread_cond_signal(&m_CurrentGame->m_ResumeCond);
-    //pthread_mutex_unlock(&m_Mutex);
   }
 }
 
@@ -628,20 +570,9 @@ void Engine::Start(int i, int w, int h) {
   }
 
   m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
-  m_CurrentGame->CreateThread(NULL);
+  m_CurrentGame->StartSimulation();
   
 }
-
-
-/*
-void Engine::CurrentGameSetAssets(std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) {
-  if (m_CurrentGame != NULL) {
-    m_CurrentGame->SetAssets(t, m, l, s);
-  } else {
-    LOGV("current game is not to set assets\n");
-  }
-}
-*/
 
 
 void Engine::CurrentGameDestroyFoos() {
@@ -772,12 +703,10 @@ void Engine::LoadTexture(int i) {
   glBindTexture(GL_TEXTURE_2D, textureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  //TODO: investigate pixel swizzling
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-  //png_close_file(&tex);
   free(data);
-
-  LOGV("t: %d\n", textureHandle);
 
   m_Textures.push_back(textureHandle);
 }
