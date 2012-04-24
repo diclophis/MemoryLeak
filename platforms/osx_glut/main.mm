@@ -23,7 +23,7 @@ static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
 static int game_index = 3;
-static short int *outData;
+static short *outData;
 
 
 static void CheckError(OSStatus error, const char *operation) {
@@ -111,6 +111,12 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else if (key == 115) { // s
+        if (game_index == 1) {
+          game_index = 3;
+        } else {
+          game_index = 1;
+        }
+
         Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
       }
     }
@@ -141,7 +147,7 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
 
 void audioUnitSetup() {
 
-  outData = (short int *)calloc(8192, sizeof(short int));
+  outData = (short *)calloc(8192, sizeof(short));
 
   AudioUnit outputUnit;
 
