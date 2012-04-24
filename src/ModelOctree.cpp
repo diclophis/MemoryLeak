@@ -65,7 +65,7 @@ namespace micropather {
       int nz = bz + dz[i];	
       bool passable = false;
       if (nx > 0 && nz > 0) {
-        colliding_index = m_Space->at(nx, by, nz);
+        //colliding_index = m_Space->at(nx, by, nz);
         passable = true;
         pass_cost = 1.0;
         /*
