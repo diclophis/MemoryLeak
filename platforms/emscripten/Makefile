@@ -35,7 +35,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard .
 
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
-	EMCC_DEBUG=1 $(CXX) --closure 0 $(build)/raptor_island.bc -o $(build)/raptor_island.js
+	EMCC_DEBUG=1 $(CXX) --closure 0 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
 
 $(build)/%.bc: %.cpp
 	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@
@@ -74,4 +74,6 @@ install:
 	cp -R ../../assets ~/emscripten.risingcode.com/public
 	touch ~/emscripten.risingcode.com/public/favicon.ico
 	install -C index.html ~/emscripten.risingcode.com/public
+	install -C sink.js ~/emscripten.risingcode.com/public
+	install -C library_sink.js ~/emscripten.risingcode.com/public
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public

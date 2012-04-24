@@ -8,6 +8,7 @@ puts "# built: " + Time.now.to_s
 #puts "NETWORK:"
 puts "CACHE:"
 puts "/index.html"
+puts "/sink.js"
 puts "/raptor_island.js"
 Find.find(ARGV[0]) do |path|
   if FileTest.directory?(path) # dont output it into the cache

@@ -57,7 +57,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   LoadTexture(0);
   LoadMaze(3);
   LoadSound(0);
-  LoadSound(1);
+
+  //LoadSound(1);
 
   m_CenterOfWorldX = 15;
   m_CenterOfWorldY = 15;

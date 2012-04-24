@@ -23,23 +23,28 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static short int *outData;
+
 
 extern "C" {
 
-int __attribute__((used)) start_game (int i);
 
+int __attribute__((used)) start_game (int i);
 int __attribute__((used)) start_game (int i) {
   game_index = i;
-  Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight);
   return game_index;
 }
 
+
+typedef void (__cdecl * SinkJs_writeCallback) (Uint8 *buffer, int size, int channels);
+void sinkJsInit(SinkJs_writeCallback writeFunc, int frames, int sizeOfFrames, int channels);
+
+
 }
 
 
-void mixaudio(void *unused, Uint8 *stream, int len) {
-  Engine::CurrentGameDoAudio((short *)stream, len);
+void sinkJsWriteFunc(Uint8 *buffer, int size, int channels) {
+  Engine::CurrentGameDoAudio((short *)buffer, size);
 }
 
 
@@ -97,7 +102,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
   } else {
     if (reset_down) {
     } else {
-      Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
+      Engine::Start(game_index, kWindowWidth, kWindowHeight);
     }
     reset_down = !reset_down;
   }
@@ -130,29 +135,6 @@ int is_not_dot_or_dot_dot(const struct dirent *dp) {
 
 int alphasort(const struct dirent **a, const struct dirent **b) {
   return strcmp((*a)->d_name,(*b)->d_name);
-}
-
-
-GLuint LoadTexture(const char *path) {
-  png_t tex;
-  unsigned char* data;
-  GLuint textureHandle;
-
-  png_init(0, 0);
-  png_open_file_read(&tex, path);
-  data = (unsigned char*) malloc(tex.width * tex.height * tex.bpp);
-  png_get_data(&tex, data);
-
-  glGenTextures(1, &textureHandle);
-  glBindTexture(GL_TEXTURE_2D, textureHandle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  png_close_file(&tex);
-  free(data);
-
-  return textureHandle;
 }
 
 
@@ -257,25 +239,9 @@ int main(int argc, char** argv) {
     closedir(dir);
   }
 
-  outData = (short int *)calloc(512, sizeof(short int));
+  sinkJsInit(sinkJsWriteFunc, 128, sizeof(short), 2);
 
-  // Set 16-bit stereo audio at 44.1Khz
-  SDL_AudioSpec fmt;
-  fmt.freq = 44100;
-  fmt.format = AUDIO_S16;
-  fmt.channels = 2;
-  fmt.samples = 512;
-  fmt.callback = mixaudio;
-  fmt.userdata = NULL;
-
-  // Open the audio device and start playing sound!
-  if (SDL_OpenAudio(&fmt, NULL) < 0) {
-    LOGV("No audio: %s\n", SDL_GetError());
-  } else {
-    SDL_PauseAudio(0);
-  }
-
-  Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight);
 
   glutMainLoop();
 
