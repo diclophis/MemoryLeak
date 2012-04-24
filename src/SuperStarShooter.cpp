@@ -328,7 +328,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     } else {
       if (cx >= 0 && cy >= 0) {
         collide_index_set = true;
-        collide_index = m_Space->at(cx, cy, 0);
+        //collide_index = m_Space->at(cx, cy, 0);
       }
 
       if (collide_index_set) {
@@ -653,7 +653,7 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-
+  /*
   float min_window_x = ((m_ScreenWidth * 1.5) - SUBDIVIDE * 0.5);
   float max_window_x = (((62 * SUBDIVIDE) * 1.5) + SUBDIVIDE);
   float min_window_y = ((m_ScreenHeight * 1.5) - SUBDIVIDE * 0.5);
@@ -676,7 +676,8 @@ int SuperStarShooter::Simulate() {
       m_CameraOffsetY = m_CameraActualOffsetY = max_window_y;
     }
   }
-
+  */
+  
   return 1;
 }
 
@@ -794,7 +795,7 @@ void SuperStarShooter::LoadMaze(int level_index) {
   int height = level[1];
   int cursor = 0;
 
-  LOGV("%d\n", int_count);
+  LOGV("%d %d %d\n", int_count, width, height);
 
   for (unsigned int i=2; i<int_count; i++) {
     LOGV("%d %d\n", cursor, level[i]);

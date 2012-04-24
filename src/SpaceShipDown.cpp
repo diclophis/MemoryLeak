@@ -334,15 +334,15 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
     build_count = ROCKET_AFTERBURNER_COUNT;
     //m_Models.push_back(new Model(m_FooFoos.at(4)));
-    scale = 1.6;
+    //scale = 1.6;
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
     //m_Models.push_back(new Model(m_FooFoos.at(2)));
-    scale = 2.2;
+    //scale = 2.2;
   } else {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartMiddleFoo, NULL));
     //m_Models.push_back(new Model(m_FooFoos.at(3)));
-    scale = 1.1;
+    //scale = 1.1;
   }
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_AtlasSprites[part_index]->SetScale(BLOCK_WIDTH / 2, BLOCK_WIDTH / 2);
