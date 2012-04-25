@@ -17,6 +17,7 @@ public:
   MLPoint *hillVertices;
   MLPoint *hillTexCoords;
   MLPoint *borderVertices;
+  GLshort *hillElements;
 
   int nHillVertices;
   int nBorderVertices;
@@ -51,4 +52,8 @@ public:
 
   int prevFromKeyPointI;
   int prevToKeyPointI;
+
+  GLuint m_InterleavedBuffer;
+  GLuint m_ElementBuffer;
+
 };
