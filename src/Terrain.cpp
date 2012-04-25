@@ -11,6 +11,7 @@
 Terrain::Terrain(b2World *w, GLuint t) {
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);
   hillVertices = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillVertices);
+  hillElements = (GLshort *) malloc(sizeof(GLshort) * kMaxHillVertices);
   hillTexCoords = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillVertices);
   borderVertices = (MLPoint *) malloc(sizeof(MLPoint) * kMaxBorderVertices);
   nHillVertices = 0;
@@ -20,6 +21,8 @@ Terrain::Terrain(b2World *w, GLuint t) {
   screenH = 480;
   offsetX = 0.0;
   textureSize = 512;
+  glGenBuffers(1, &m_InterleavedBuffer);
+  glGenBuffers(1, &m_ElementBuffer);
   GenerateStripesTexture();
   GenerateHillKeyPoints();
   GenerateBorderVertices();
@@ -146,7 +149,9 @@ void Terrain::ResetHillVertices() {
 
   // key points interval for drawing
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
-  float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
+  float rightSideX = offsetX + (screenW * 6); // * 7 / 8 / 1; //scale;
+
+  int element = 0;
 
   while (hillKeyPoints[fromKeyPointI+1].x < leftSideX) {
     fromKeyPointI++;
@@ -185,10 +190,16 @@ void Terrain::ResetHillVertices() {
         pt1.x = p0.x + j*dx;
         pt1.y = ymid + ampl * cosf(da*j);
         for (int k=0; k<vSegments+1; k++) {
+          //hillElements[element++] = nHillVertices;
           hillVertices[nHillVertices] = MLPointMake(pt0.x, pt0.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt0.x/(float)textureSize, (float)(k)/vSegments);
+          //hillElements[element++] = nHillVertices;
           hillVertices[nHillVertices] = MLPointMake(pt1.x, pt1.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt1.x/(float)textureSize, (float)(k)/vSegments);
+          //if ((nHillVertices % 3) == 0) {
+          //  hillElements[element] = element;
+          //  element++;
+          //}
         }
         pt0 = pt1;
       }
@@ -201,61 +212,120 @@ void Terrain::ResetHillVertices() {
   } else {
     LOGV("BADD!@#$!@#!@# %d %d %d %d\n", prevFromKeyPointI, fromKeyPointI, prevToKeyPointI, toKeyPointI);
   }
+
+  //hillElements[0] = 0;
+  //hillElements[1] = 1;
+  //hillElements[2] = 2;
+  for (int i=0; i<nHillVertices; i++) {
+    hillElements[i] = i;
+  }
+
+  glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
+  glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(nHillVertices), hillVertices);
+  glBufferSubData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint), nHillVertices * sizeof(MLPoint), hillTexCoords);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, nHillVertices * sizeof(GLshort), hillElements, GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 }
 
 
 void Terrain::Render(StateFoo *sf) {
 
-  if (false) {
-    glEnable(GL_TEXTURE_2D);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  }
-  
 	if (rt->name != sf->g_lastTexture) {
-		glBindTexture(GL_TEXTURE_2D, rt->name);
+		glBindTexture(GL_TEXTURE_2D, 1);
 		sf->g_lastTexture = rt->name;
 	}
   
 #ifdef HAS_VAO  
+
   sf->g_lastVertexArrayObject = -1; 
   glBindVertexArrayOES(0);
+
 #else
 
 #endif
   
   sf->g_lastInterleavedBuffer = -1;
   sf->g_lastElementBuffer = -1;
-  
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+ 
+  glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
 
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
+
+#ifdef USE_GLES2
+
+    glActiveTexture(GL_TEXTURE0);
+    glEnable(GL_TEXTURE_2D);
+
+#else
+
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+#endif
+
     sf->m_EnabledStates = true;
   }
   
   if (true) {
-    glVertexPointer(2, GL_FLOAT, 0, hillVertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, hillTexCoords);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, (GLsizei)nHillVertices);
+
+#ifdef USE_GLES2
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+#else
+
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
+    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (2 * sizeof(GLshort)));
+
+#endif
+
+    glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
   } else {
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glLineWidth(1.0);
+
+#ifdef USE_GLES2
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+
+    glEnableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+#else
+
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glColor4f(1.0, 1.0, 1.0, 0.5);
-    glLineWidth(2.0);
-    glVertexPointer(2, GL_FLOAT, 0, hillVertices);
-    glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
+
+#endif
+
+    glDrawElements(GL_LINE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
+#ifdef USE_GLES2
+
+    glEnableVertexAttribArray(1);
+
+#else
+
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+#endif
+
   }
 
-  if (false) {
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisable(GL_TEXTURE_2D);
-  }
 }
 
 

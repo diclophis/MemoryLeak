@@ -8,7 +8,9 @@
 RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc RadiantFire\n");
   LoadSound(0);
-  m_Zoom = 1.25;
+  LoadTexture(0);
+  m_Zoom = 3.0;
+
   m_RequestedFullscreen = false;
   m_Touched = false;
   b2BodyDef spriteBodyDef;

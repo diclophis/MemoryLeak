@@ -65,7 +65,6 @@ public:
   foofoo *m_TrailFoo;
 
 	micropather::MicroPather *m_Pather;
-	micropather::ModelOctree *m_ModelOctree;
 	std::vector<void *> *m_Steps;
 
   int m_MaxStatePointers;
