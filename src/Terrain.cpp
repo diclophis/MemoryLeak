@@ -149,7 +149,7 @@ void Terrain::ResetHillVertices() {
 
   // key points interval for drawing
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
-  float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
+  float rightSideX = offsetX + (screenW * 6); // * 7 / 8 / 1; //scale;
 
   int element = 0;
 
@@ -190,12 +190,16 @@ void Terrain::ResetHillVertices() {
         pt1.x = p0.x + j*dx;
         pt1.y = ymid + ampl * cosf(da*j);
         for (int k=0; k<vSegments+1; k++) {
-          hillElements[nHillVertices] = element++;
+          //hillElements[element++] = nHillVertices;
           hillVertices[nHillVertices] = MLPointMake(pt0.x, pt0.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt0.x/(float)textureSize, (float)(k)/vSegments);
-          hillElements[nHillVertices] = element++;
+          //hillElements[element++] = nHillVertices;
           hillVertices[nHillVertices] = MLPointMake(pt1.x, pt1.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt1.x/(float)textureSize, (float)(k)/vSegments);
+          //if ((nHillVertices % 3) == 0) {
+          //  hillElements[element] = element;
+          //  element++;
+          //}
         }
         pt0 = pt1;
       }
@@ -209,6 +213,12 @@ void Terrain::ResetHillVertices() {
     LOGV("BADD!@#$!@#!@# %d %d %d %d\n", prevFromKeyPointI, fromKeyPointI, prevToKeyPointI, toKeyPointI);
   }
 
+  //hillElements[0] = 0;
+  //hillElements[1] = 1;
+  //hillElements[2] = 2;
+  for (int i=0; i<nHillVertices; i++) {
+    hillElements[i] = i;
+  }
 
   glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
   glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_STATIC_DRAW);
@@ -227,13 +237,15 @@ void Terrain::ResetHillVertices() {
 void Terrain::Render(StateFoo *sf) {
 
 	if (rt->name != sf->g_lastTexture) {
-		glBindTexture(GL_TEXTURE_2D, rt->name);
+		glBindTexture(GL_TEXTURE_2D, 1);
 		sf->g_lastTexture = rt->name;
 	}
   
 #ifdef HAS_VAO  
+
   sf->g_lastVertexArrayObject = -1; 
   glBindVertexArrayOES(0);
+
 #else
 
 #endif
@@ -246,16 +258,18 @@ void Terrain::Render(StateFoo *sf) {
 
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
-    //glEnable(GL_TEXTURE_2D);
-    //glEnableClientState(GL_VERTEX_ARRAY);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 #ifdef USE_GLES2
+
     glActiveTexture(GL_TEXTURE0);
     glEnable(GL_TEXTURE_2D);
+
 #else
+
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 #endif
 
     sf->m_EnabledStates = true;
@@ -265,8 +279,6 @@ void Terrain::Render(StateFoo *sf) {
 
 #ifdef USE_GLES2
 
-//LOGV("%d %d\n", sizeof(hillVertices), nHillVertices);
-
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
@@ -275,12 +287,12 @@ void Terrain::Render(StateFoo *sf) {
 
 #else
 
-    glVertexPointer(2, GL_SHORT, 0, (char *)NULL + (0));
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
     glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (2 * sizeof(GLshort)));
 
 #endif
 
-    glDrawElements(GL_TRIANGLE_STRIP, nHillVertices, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   } else {
     glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -296,17 +308,20 @@ void Terrain::Render(StateFoo *sf) {
 #else
 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, hillVertices);
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
 
 #endif
 
-    //glDrawArrays(GL_LINE_STRIP, 0, (GLsizei)nHillVertices);
-    glDrawElements(GL_LINE_STRIP, nHillVertices, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_LINE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
 #ifdef USE_GLES2
+
     glEnableVertexAttribArray(1);
+
 #else
+
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 #endif
 
   }
