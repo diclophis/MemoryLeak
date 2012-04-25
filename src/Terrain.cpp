@@ -275,7 +275,7 @@ void Terrain::Render(StateFoo *sf) {
     sf->m_EnabledStates = true;
   }
   
-  if (false) {
+  if (true) {
 
 #ifdef USE_GLES2
 
