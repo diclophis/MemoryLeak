@@ -48,13 +48,15 @@ Terrain::Terrain(b2World *w, GLuint t) {
   screenH = 480;
   offsetX = 0.0;
   textureSize = 512;
-  glGenBuffers(1, &m_InterleavedBuffer);
-  glGenBuffers(1, &m_ElementBuffer);
   GenerateStripesTexture();
   GenerateHillKeyPoints();
   GenerateBorderVertices();
   CreateBox2DBody();
+
+  glGenBuffers(1, &m_InterleavedBuffer);
+  glGenBuffers(1, &m_ElementBuffer);
   SetOffsetX(0.0);
+
 }
 
 
@@ -248,12 +250,14 @@ void Terrain::ResetHillVertices() {
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
-  glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_STATIC_DRAW);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(nHillVertices), hillVertices);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+
+  glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_DYNAMIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(MLPoint), hillVertices);
   glBufferSubData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint), nHillVertices * sizeof(MLPoint), hillTexCoords);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, nHillVertices * sizeof(GLshort), hillElements, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, nHillVertices * sizeof(GLshort), NULL, GL_DYNAMIC_DRAW);
+  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, nHillVertices * sizeof(GLshort), hillElements);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -264,7 +268,7 @@ void Terrain::ResetHillVertices() {
 void Terrain::Render(StateFoo *sf) {
 
 	if (rt->name != sf->g_lastTexture) {
-		sf->g_lastTexture = rt->name;
+    sf->g_lastTexture = rt->name;
 		glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
 	}
   
@@ -315,7 +319,7 @@ void Terrain::Render(StateFoo *sf) {
 #else
 
     glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
-    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (2 * sizeof(GLshort)));
+    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
 #endif
 
@@ -363,7 +367,7 @@ GLuint Terrain::GenerateStripesTexture() {
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
-  int nStripes = random() % (maxStripes - minStripes) + minStripes;
+  int nStripes = 4; //random() % (maxStripes - minStripes) + minStripes;
   if (nStripes % 2) {
     nStripes++;
   }
@@ -375,7 +379,6 @@ GLuint Terrain::GenerateStripesTexture() {
   float x1, x2, y1, y2, dx, dy;
   ccColor4F c;
   
-  rt = new RenderTexture(textureSize, textureSize);
 
 #ifdef USE_GLES2
 
@@ -429,7 +432,9 @@ GLuint Terrain::GenerateStripesTexture() {
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
+  rt = new RenderTexture(textureSize, textureSize);
   rt->Begin();
+
 
 
   if (true) {      
@@ -492,41 +497,55 @@ GLuint Terrain::GenerateStripesTexture() {
 
     glColor4f(1.0, 1.0, 1.0, 1.0);
 
+    glGenBuffers(1, &m_TextureInterlacedBuffer);
+    glGenBuffers(1, &m_TextureElementBuffer);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_TextureInterlacedBuffer);
+    glBufferData(GL_ARRAY_BUFFER, (nVertices * sizeof(MLPoint)) + (nVertices * sizeof(ccColor4F)), NULL, GL_STATIC_DRAW);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, (nVertices * sizeof(MLPoint)), vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, (nVertices * sizeof(MLPoint)), nVertices * sizeof(ccColor4F), colors);
+
+    GLuint *textureElements = (GLuint *)malloc(nVertices * 2 * sizeof(GLuint));
+    for (int i=0; i<(nVertices * 2); i++) {
+      textureElements[i] = i;
+    }
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureElementBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, (nVertices * sizeof(GLuint)), textureElements, GL_STATIC_DRAW);
+
+    free(textureElements);
+
 #ifdef USE_GLES2
 
     // Specify that our coordinate data is going into attribute index 0, and contains two floats per vertex 
     // Specify that our color data is going into attribute index 1, and contains three floats per vertex
 
-    glGenBuffers(1, &m_TextureVerticeBuffer);
-    glGenBuffers(1, &m_TextureColorBuffer);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_TextureVerticeBuffer);
-    glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_TextureColorBuffer);
-    glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(GLfloat), colors, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
     glEnableVertexAttribArray(1);
-
 
 #else
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glColorPointer(4, GL_FLOAT, 0, colors);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
+    glColorPointer(4, GL_FLOAT, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
 
 #endif
 
-    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
+    glPointSize(10.0);
+    glDrawElements(GL_TRIANGLES, nVertices * 2, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+
+    //glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
 
 #ifdef USE_GLES2
     
-
 
 #else
 

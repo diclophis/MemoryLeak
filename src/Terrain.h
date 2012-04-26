@@ -55,8 +55,8 @@ public:
 
   GLuint m_InterleavedBuffer;
   GLuint m_ElementBuffer;
-  GLuint m_TextureVerticeBuffer;
-  GLuint m_TextureColorBuffer;
+  GLuint m_TextureInterlacedBuffer;
+  GLuint m_TextureElementBuffer;
 
 #ifdef USE_GLES2
 
