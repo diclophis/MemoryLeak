@@ -8,6 +8,33 @@
 #define kMaxBorderVertices 5000
 #define kHillSegmentWidth 15
 
+// in_Position was bound to attribute index 0 and in_Color was bound to attribute index 1
+// We output the ex_Color variable to the next shader in the chain
+// Since we are using flat lines, our input only had two points: x and y.
+// Set the Z coordinate to 0 and W coordinate to 1
+// GLSL allows shorthand use of vectors too, the following is also valid:
+// gl_Position = vec4(in_Position, 0.0, 1.0);
+// We're simply passing the color through unmodified
+static const char color_only_vertex_shader[] =
+"attribute vec2 in_Position;\n"
+"attribute vec3 in_Color;\n"
+"varying vec3 ex_Color;\n"
+"void main(void) {\n"
+"gl_Position = vec4(in_Position.x, in_Position.y, 0.0, 1.0);\n"
+"ex_Color = in_Color;\n"
+"}\n";
+
+// It was expressed that some drivers required this next line to function properly
+// Pass through our original color with full opacity.
+static const char color_only_fragment_shader[] =
+"#ifdef GL_ES\n"
+"precision mediump float;\n"
+"#endif\n"
+"varying vec3 ex_Color;\n"
+"void main(void) {\n"
+"gl_FragColor = vec4(ex_Color,1.0);\n"
+"}\n";
+
 Terrain::Terrain(b2World *w, GLuint t) {
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);
   hillVertices = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillVertices);
@@ -237,8 +264,8 @@ void Terrain::ResetHillVertices() {
 void Terrain::Render(StateFoo *sf) {
 
 	if (rt->name != sf->g_lastTexture) {
-		glBindTexture(GL_TEXTURE_2D, 1);
 		sf->g_lastTexture = rt->name;
+		glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
 	}
   
 #ifdef HAS_VAO  
@@ -350,16 +377,61 @@ GLuint Terrain::GenerateStripesTexture() {
   
   rt = new RenderTexture(textureSize, textureSize);
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
+#ifdef USE_GLES2
+
+    float m_ScreenHalfHeight = 512.0 / 2.0;
+    float m_ScreenAspect = 1.0;
+    float m_Zoom = 1.0;
+    float aa = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float bb = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float cc = (-m_ScreenHalfHeight) * m_Zoom;
+    float dd = m_ScreenHalfHeight * m_Zoom;
+    float ee = 1.0;
+    float ff = -1.0;
+
+    //ortho(Engine::GetProjectionMatrix(), aa, bb, cc, dd, ee, ff);
+    //glUniformMatrix4fv(Engine::GetProjectionMatrixLocation(), 1, GL_FALSE, Engine::GetProjectionMatrix());
+
+    const GLchar *source = color_only_vertex_shader;
+    vertexshader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexshader, 1, &source, NULL);
+    glCompileShader(vertexshader);
+    glGetShaderInfoLog(vertexshader, sizeof msg, NULL, msg);
+    LOGV("vertex shader info: %s\n", msg);
+
+    source = color_only_fragment_shader;
+    fragmentshader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentshader, 1, &source, NULL);
+    glCompileShader(fragmentshader);
+    glGetShaderInfoLog(fragmentshader, sizeof msg, NULL, msg);
+    LOGV("fragment shader info: %s\n", msg);
+
+    shaderprogram = glCreateProgram();
+    glAttachShader(shaderprogram, vertexshader);
+    glAttachShader(shaderprogram, fragmentshader);
+    glBindAttribLocation(shaderprogram, 0, "in_Position");
+    glBindAttribLocation(shaderprogram, 1, "in_Color");
+    glLinkProgram(shaderprogram);
+    glGetProgramInfoLog(shaderprogram, sizeof msg, NULL, msg);
+    LOGV("info: %s\n", msg);
+    glUseProgram(shaderprogram);
+
+#else
+
+  //glMatrixMode(GL_PROJECTION);
+  //glLoadIdentity();
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
+
+#endif
+
 
   glViewport(0, 0, texSize.x, texSize.y);
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  //glFinish();
 
   rt->Begin();
+
+
   if (true) {      
     // layer 1: stripes
     if (random() % 2) {
@@ -415,27 +487,62 @@ GLuint Terrain::GenerateStripesTexture() {
       }
     }
 
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+
+#ifdef USE_GLES2
+
+    // Specify that our coordinate data is going into attribute index 0, and contains two floats per vertex 
+    // Specify that our color data is going into attribute index 1, and contains three floats per vertex
+
+    glGenBuffers(1, &m_TextureVerticeBuffer);
+    glGenBuffers(1, &m_TextureColorBuffer);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_TextureVerticeBuffer);
+    glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_TextureColorBuffer);
+    glBufferData(GL_ARRAY_BUFFER, nVertices * sizeof(GLfloat), colors, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+
+
+#else
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(1, 1, 1, 1);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
     glColorPointer(4, GL_FLOAT, 0, colors);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
-    
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#endif
 
-    glDisable(GL_BLEND);
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
+    //glDrawArrays(GL_TRIANGLES, 0, 3);
+
+#ifdef USE_GLES2
+    
+
+
+#else
+
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
+
+#endif
+
+    glDisable(GL_BLEND);
+
   }
+
   
 
-  if (true) {
+  if (false) {
     // layer: gradient
     float gradientAlpha = 0.5f;
     float gradientWidth = textureSize;
@@ -469,7 +576,7 @@ GLuint Terrain::GenerateStripesTexture() {
   }
   
   
-  if (true) {
+  if (false) {
     // layer: highlight
     float highlightAlpha = 0.5f;
     nVertices = 0;
@@ -496,7 +603,7 @@ GLuint Terrain::GenerateStripesTexture() {
   }
 
 
-  if (true) {
+  if (false) {
     // layer: top border
     float borderAlpha = 0.5f;
     float borderWidth = 10.0f;
@@ -518,7 +625,7 @@ GLuint Terrain::GenerateStripesTexture() {
   }
 
   
-  if (true) {
+  if (false) {
     // layer: noise
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_COLOR, GL_ZERO);

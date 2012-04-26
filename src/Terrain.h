@@ -55,5 +55,19 @@ public:
 
   GLuint m_InterleavedBuffer;
   GLuint m_ElementBuffer;
+  GLuint m_TextureVerticeBuffer;
+  GLuint m_TextureColorBuffer;
+
+#ifdef USE_GLES2
+
+  char *vertexInfoLog;
+  char *fragmentInfoLog;
+  char *shaderProgramInfoLog;
+  GLuint vertexshader;
+  GLuint fragmentshader;
+  GLuint shaderprogram;
+  char msg[512];
+
+#endif
 
 };

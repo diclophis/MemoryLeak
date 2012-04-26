@@ -10,7 +10,6 @@
 		C2E2EC991542A4770069C210 /* pnglite.c in Sources */ = {isa = PBXBuildFile; fileRef = C2E2EC971542A4760069C210 /* pnglite.c */; };
 		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
-		FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A320129E3EB70056E630 /* ModelOctree.cpp */; };
 		FC14176B1285413100166578 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417631285413100166578 /* EAGLView.mm */; };
 		FC14176C1285413100166578 /* MemoryLeakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1417651285413100166578 /* MemoryLeakAppDelegate.m */; };
 		FC14176D1285413100166578 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1417661285413100166578 /* Default.png */; };
@@ -184,8 +183,6 @@
 		FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FC10A31E129E3EB70056E630 /* micropather.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = micropather.cpp; sourceTree = "<group>"; };
 		FC10A31F129E3EB70056E630 /* micropather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = micropather.h; sourceTree = "<group>"; };
-		FC10A320129E3EB70056E630 /* ModelOctree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelOctree.cpp; sourceTree = "<group>"; };
-		FC10A321129E3EB70056E630 /* ModelOctree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelOctree.h; sourceTree = "<group>"; };
 		FC1417621285413100166578 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		FC1417631285413100166578 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		FC1417641285413100166578 /* MemoryLeakAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeakAppDelegate.h; sourceTree = "<group>"; };
@@ -796,8 +793,6 @@
 				FC1419B61285415900166578 /* foo.h */,
 				FC10A31E129E3EB70056E630 /* micropather.cpp */,
 				FC10A31F129E3EB70056E630 /* micropather.h */,
-				FC10A320129E3EB70056E630 /* ModelOctree.cpp */,
-				FC10A321129E3EB70056E630 /* ModelOctree.h */,
 				FC141A871285415900166578 /* MemoryLeak.h */,
 				FC141A8A1285415900166578 /* OpenGLCommon.h */,
 				FC1419B51285415900166578 /* Engine.h */,
@@ -1599,7 +1594,6 @@
 				FC141C361285415900166578 /* Model.cpp in Sources */,
 				FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */,
 				FC10A322129E3EB70056E630 /* micropather.cpp in Sources */,
-				FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */,
 				FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */,
 				FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */,
 				FCDE089712D924A3004CE9B7 /* load_it.cpp in Sources */,
