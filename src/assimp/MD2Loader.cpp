@@ -343,7 +343,7 @@ void MD2Importer::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
     unsigned int iCurrent = 0;
 
     float fDivisorU = 1.0f,fDivisorV = 1.0f;
-    if (m_pcHeader->numTexCoords)	{
+    if (m_pcHeader->numTexCoords && (pcMesh->mNumVertices > 0))	{
       // allocate storage for texture coordinates, too
       pcMesh->mTextureCoords[0] = (aiVector3D *)malloc(pcMesh->mNumVertices * sizeof(aiVector3D)); //new aiVector3D[pcMesh->mNumVertices];
       //pcMesh->mTextureCoords[0] = new aiVector3D[pcMesh->mNumVertices];

@@ -538,8 +538,8 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #endif
 
-    glPointSize(10.0);
-    glDrawElements(GL_TRIANGLES, nVertices * 2, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glPointSize(10.0);
+    glDrawElements(GL_TRIANGLES, nVertices, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
     //glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
