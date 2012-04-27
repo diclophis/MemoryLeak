@@ -3,14 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		C2E2EC991542A4770069C210 /* pnglite.c in Sources */ = {isa = PBXBuildFile; fileRef = C2E2EC971542A4760069C210 /* pnglite.c */; };
 		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
-		FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A320129E3EB70056E630 /* ModelOctree.cpp */; };
 		FC14176B1285413100166578 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FC1417631285413100166578 /* EAGLView.mm */; };
 		FC14176C1285413100166578 /* MemoryLeakAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1417651285413100166578 /* MemoryLeakAppDelegate.m */; };
 		FC14176D1285413100166578 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FC1417661285413100166578 /* Default.png */; };
@@ -184,8 +183,6 @@
 		FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FC10A31E129E3EB70056E630 /* micropather.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = micropather.cpp; sourceTree = "<group>"; };
 		FC10A31F129E3EB70056E630 /* micropather.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = micropather.h; sourceTree = "<group>"; };
-		FC10A320129E3EB70056E630 /* ModelOctree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelOctree.cpp; sourceTree = "<group>"; };
-		FC10A321129E3EB70056E630 /* ModelOctree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelOctree.h; sourceTree = "<group>"; };
 		FC1417621285413100166578 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		FC1417631285413100166578 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
 		FC1417641285413100166578 /* MemoryLeakAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryLeakAppDelegate.h; sourceTree = "<group>"; };
@@ -796,8 +793,6 @@
 				FC1419B61285415900166578 /* foo.h */,
 				FC10A31E129E3EB70056E630 /* micropather.cpp */,
 				FC10A31F129E3EB70056E630 /* micropather.h */,
-				FC10A320129E3EB70056E630 /* ModelOctree.cpp */,
-				FC10A321129E3EB70056E630 /* ModelOctree.h */,
 				FC141A871285415900166578 /* MemoryLeak.h */,
 				FC141A8A1285415900166578 /* OpenGLCommon.h */,
 				FC1419B51285415900166578 /* Engine.h */,
@@ -1480,8 +1475,11 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MemoryLeak" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1599,7 +1597,6 @@
 				FC141C361285415900166578 /* Model.cpp in Sources */,
 				FC1C46D4129CD4B0004E3CE6 /* MD2Loader.cpp in Sources */,
 				FC10A322129E3EB70056E630 /* micropather.cpp in Sources */,
-				FC10A323129E3EB70056E630 /* ModelOctree.cpp in Sources */,
 				FCDFB0E212B1A7B400A0B4E1 /* AtlasSprite.cpp in Sources */,
 				FC8A93F012C9D8EB006E9C83 /* SpriteGun.cpp in Sources */,
 				FCDE089712D924A3004CE9B7 /* load_it.cpp in Sources */,
@@ -1717,7 +1714,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -1778,7 +1775,7 @@
 				);
 				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../src/",
@@ -1812,14 +1809,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jon Bardin (W6CH2N775F)";
+				COMPRESS_PNG_FILES = NO;
+				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_PROFILING_CODE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				PREBINDING = NO;
-				SDKROOT = iphoneos4.3;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D0130CED-1079-4039-AE59-8B32C78B86A7";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = iphoneos;
+				STRIP_INSTALLED_PRODUCT = NO;
 			};
 			name = Debug;
 		};
@@ -1827,13 +1830,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jon Bardin (W6CH2N775F)";
+				COMPRESS_PNG_FILES = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				PREBINDING = NO;
-				SDKROOT = iphoneos4.3;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D0130CED-1079-4039-AE59-8B32C78B86A7";
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -1841,13 +1845,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jon Bardin (W6CH2N775F)";
+				COMPRESS_PNG_FILES = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				PREBINDING = NO;
-				SDKROOT = iphoneos4.3;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D0130CED-1079-4039-AE59-8B32C78B86A7";
+				SDKROOT = iphoneos;
 			};
 			name = "Ad Hoc";
 		};
@@ -1870,7 +1875,7 @@
 				);
 				GCC_THUMB_SUPPORT = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../src/",
