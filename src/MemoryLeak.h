@@ -79,6 +79,22 @@
 #endif
 
 #ifdef DESKTOP
+  #ifdef EMSCRIPTEN
+    #define glGenFramebuffersOES glGenFramebuffers
+    #define glBindFramebufferOES glBindFramebuffer
+    #define glGenRenderbuffersOES glGenRenderbuffers
+    #define glBindRenderbufferOES glBindRenderbuffer
+    #define glFramebufferRenderbufferOES glFramebufferRenderbuffer
+    #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING
+    #define GL_RENDERBUFFER_BINDING_OES GL_RENDERBUFFER_BINDING
+    #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER
+    #define GL_RENDERBUFFER_OES GL_RENDERBUFFER
+    #define GL_COLOR_ATTACHMENT0_OES GL_COLOR_ATTACHMENT0
+    #define glCheckFramebufferStatusOES glCheckFramebufferStatus
+    #define glFramebufferTexture2DOES glFramebufferTexture2D
+    #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE
+    #define glDeleteFramebuffersOES glDeleteFramebuffers
+  #else
     #define glGenFramebuffersOES glGenFramebuffersEXT
     #define glBindFramebufferOES glBindFramebufferEXT
     #define glGenRenderbuffersOES glGenRenderbuffersEXT
@@ -93,6 +109,7 @@
     #define glFramebufferTexture2DOES glFramebufferTexture2DEXT
     #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE_EXT
     #define glDeleteFramebuffersOES glDeleteFramebuffersEXT
+  #endif
  #endif
 
 
