@@ -28,8 +28,8 @@ RenderTexture::RenderTexture(int width, int height) {
   //  assert(false);
   //}
 
-  glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
-  glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
+  //glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
+  //glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
 }
 
 

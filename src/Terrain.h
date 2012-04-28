@@ -73,4 +73,8 @@ public:
 
 #endif
 
+#ifdef HAS_VAO
+  GLuint m_VertexArrayObject;
+#endif
+
 };
