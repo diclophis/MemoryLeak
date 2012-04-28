@@ -251,7 +251,7 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
   //hillElements[0] = 0;
   //hillElements[1] = 1;
   //hillElements[2] = 2;
-  for (int i=0; i<nHillVertices; i++) {
+  for (int i=0; i<(nHillVertices); i++) {
     hillElements[i] = i;
   }
 
@@ -370,7 +370,11 @@ void Terrain::Render(StateFoo *sf) {
 
 #endif
 
-    glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glColor4f(1.0, 1.0, 1.0, 1.0);
+    glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glColor4f(1.0, 0.0, 0.0, 0.0);
+    //glLineWidth(4.0);
+    //glDrawElements(GL_LINE_STRIP, (nHillVertices), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   } else {
 
@@ -429,24 +433,16 @@ GLuint Terrain::GenerateStripesTexture() {
   float x1, x2, y1, y2, dx, dy;
   ccColor4F c;
   
+  glViewport(0, 0, texSize.x, texSize.y);
+  glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
   rt = new RenderTexture(textureSize, textureSize);
   rt->Begin();
 
-  glViewport(0, 0, texSize.x, texSize.y);
-  //glClearColor(1.0, 1.0, 1.0, 1.0);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 #ifdef USE_GLES2
 
-    float m_ScreenHalfHeight = 512.0 / 2.0;
-    float m_ScreenAspect = 1.0;
-    float m_Zoom = 1.0;
-    float aa = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
-    float bb = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
-    float cc = (-m_ScreenHalfHeight) * m_Zoom;
-    float dd = m_ScreenHalfHeight * m_Zoom;
-    float ee = 1.0;
-    float ff = -1.0;
 
     //ortho(Engine::GetProjectionMatrix(), aa, bb, cc, dd, ee, ff);
     //glUniformMatrix4fv(Engine::GetProjectionMatrixLocation(), 1, GL_FALSE, Engine::GetProjectionMatrix());
@@ -468,20 +464,26 @@ GLuint Terrain::GenerateStripesTexture() {
     shaderprogram = glCreateProgram();
     glAttachShader(shaderprogram, vertexshader);
     glAttachShader(shaderprogram, fragmentshader);
-    //glBindAttribLocation(shaderprogram, 0, "in_Position");
-    //glBindAttribLocation(shaderprogram, 20, "in_Color");
     glLinkProgram(shaderprogram);
     glGetProgramInfoLog(shaderprogram, sizeof msg, NULL, msg);
     LOGV("info: %s\n", msg);
 
     glUseProgram(shaderprogram);
 
+    float m_ScreenHalfHeight = 512.0 / 2.0;
+    float m_ScreenAspect = 1.0;
+    float m_Zoom = 1.0;
+    float aa = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float bb = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float cc = (-m_ScreenHalfHeight) * m_Zoom;
+    float dd = m_ScreenHalfHeight * m_Zoom;
+    float ee = 1.0;
+    float ff = -1.0;
+
     ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
-
-    ortho(ProjectionMatrix, aa, bb, cc, dd, ee, ff);
-
+    //ortho(ProjectionMatrix, aa, bb, cc, dd, ee, ff);
+    ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
-
 
 #else
 
@@ -490,6 +492,7 @@ GLuint Terrain::GenerateStripesTexture() {
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
 #endif
+
 
   if (true) {      
     // layer 1: stripes
@@ -596,7 +599,7 @@ GLuint Terrain::GenerateStripesTexture() {
 #endif
 
     //glPointSize(10.0);
-    glDrawElements(GL_TRIANGLES, nVertices, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_TRIANGLES, nVertices * 2, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
     //glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
