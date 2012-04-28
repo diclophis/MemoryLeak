@@ -42,7 +42,10 @@ Terrain::Terrain(b2World *w, GLuint t) {
   m_ElementBuffer = 0;
 
 #ifdef HAS_VAO
+
   m_VertexArrayObject = 0;
+  nHillVertices_Last = 0;
+
 #endif
 
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);
@@ -271,6 +274,42 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
   //glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
   //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
 
+#ifdef HAS_VAO
+
+  if (m_VertexArrayObject == 0) {
+    glGenVertexArraysOES(1, &m_VertexArrayObject);
+  }
+
+  //if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
+
+  if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
+    sf->g_lastVertexArrayObject = m_VertexArrayObject;
+    glBindVertexArrayOES(sf->g_lastVertexArrayObject);
+  }
+
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    LOGV("terrain element: %d\n", sf->g_lastElementBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
+
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    LOGV("terrain interleaved: %d\n", sf->g_lastInterleavedBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
+
+  if (nHillVertices_Last == 0) {
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
+  }
+
+  if (nHillVertices != nHillVertices_Last) { 
+    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+    nHillVertices_Last = nHillVertices;
+  }
+
+#else
+
   if (m_ElementBuffer != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = m_ElementBuffer;
     LOGV("terrain B element: %d\n", sf->g_lastElementBuffer);
@@ -282,6 +321,8 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
     LOGV("terrain B interleaved: %d\n", sf->g_lastInterleavedBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
+
+#endif
 
   glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(MLPoint), hillVertices);
@@ -316,24 +357,6 @@ void Terrain::Render(StateFoo *sf) {
   //}
 
   if (m_VertexArrayObject == 0) {
-    glGenVertexArraysOES(1, &m_VertexArrayObject);
-    sf->g_lastVertexArrayObject = m_VertexArrayObject;
-    glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-
-    if (m_ElementBuffer != sf->g_lastElementBuffer) {
-      sf->g_lastElementBuffer = m_ElementBuffer;
-      LOGV("terrain element: %d\n", sf->g_lastElementBuffer);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-    }
-
-    if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
-      sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
-      LOGV("terrain interleaved: %d\n", sf->g_lastInterleavedBuffer);
-      glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-    }
-
-    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
-    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
   } else {
     if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {

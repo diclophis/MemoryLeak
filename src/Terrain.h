@@ -75,6 +75,7 @@ public:
 
 #ifdef HAS_VAO
   GLuint m_VertexArrayObject;
+  int nHillVertices_Last;
 #endif
 
 };
