@@ -105,7 +105,7 @@ int RadiantFireEightSixOne::Simulate() {
   
   float new_x = m_Terrain->position.x;
 
-  m_CameraPosition[0] += (0.999 * (new_x - old_x));
+  m_CameraPosition[0] += (0.99 * (new_x - old_x));
   
   return 1;
 }
