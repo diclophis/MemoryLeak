@@ -289,13 +289,11 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
 
   if (m_ElementBuffer != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = m_ElementBuffer;
-    LOGV("terrain element: %d\n", sf->g_lastElementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
   if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
-    LOGV("terrain interleaved: %d\n", sf->g_lastInterleavedBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -312,13 +310,11 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
 
   if (m_ElementBuffer != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = m_ElementBuffer;
-    LOGV("terrain B element: %d\n", sf->g_lastElementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
   if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
-    LOGV("terrain B interleaved: %d\n", sf->g_lastInterleavedBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -351,43 +347,30 @@ void Terrain::Render(StateFoo *sf) {
   
 #ifdef HAS_VAO  
 
-  //if (sf->g_lastVertexArrayObject != 0) {
-  //  sf->g_lastVertexArrayObject = 0; 
-  //  glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-  //}
+  if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
+    sf->g_lastVertexArrayObject = m_VertexArrayObject;
+    glBindVertexArrayOES(sf->g_lastVertexArrayObject);
+  }
 
-  if (m_VertexArrayObject == 0) {
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
 
-  } else {
-    if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
-      sf->g_lastVertexArrayObject = m_VertexArrayObject;
-      glBindVertexArrayOES(sf->g_lastVertexArrayObject);
-    }
-
-    if (m_ElementBuffer != sf->g_lastElementBuffer) {
-      sf->g_lastElementBuffer = m_ElementBuffer;
-      LOGV("terrain element: %d\n", sf->g_lastElementBuffer);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-    }
-
-    if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
-      sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
-      LOGV("terrain interleaved: %d\n", sf->g_lastInterleavedBuffer);
-      glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-    }
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
 #else
 
   if (m_ElementBuffer != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = m_ElementBuffer;
-    LOGV("terrain element: %d\n", sf->g_lastElementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
   if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
-    LOGV("terrain interleaved: %d\n", sf->g_lastInterleavedBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -408,16 +391,6 @@ void Terrain::Render(StateFoo *sf) {
 
 #endif
  
-  
-  //sf->g_lastInterleavedBuffer = -1;
-  //sf->g_lastElementBuffer = -1;
- 
-  /*
-  glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
-  */
-
-
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
 
@@ -438,14 +411,7 @@ void Terrain::Render(StateFoo *sf) {
   }
   
   if (true) {
-
-
-    //glColor4f(1.0, 1.0, 1.0, 1.0);
     glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-    //glColor4f(1.0, 0.0, 0.0, 0.0);
-    //glLineWidth(4.0);
-    //glDrawElements(GL_LINE_STRIP, (nHillVertices), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-
   } else {
 
     glColor4f(1.0, 1.0, 1.0, 1.0);

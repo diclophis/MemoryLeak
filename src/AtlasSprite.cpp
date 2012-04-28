@@ -81,15 +81,18 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
 
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
-      LOGV("atlas element: %d\n", sf->g_lastElementBuffer);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     }
     
     if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
       sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
-      LOGV("atlas interleaved: %d\n", sf->g_lastInterleavedBuffer);
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     }
 
@@ -103,13 +106,11 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
-      LOGV("atlas element 2: %d\n", sf->g_lastElementBuffer);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     }
     
     if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
       sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
-      LOGV("atlas interleaved 2: %d\n", sf->g_lastInterleavedBuffer);
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     }
   }
@@ -118,13 +119,11 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
-    LOGV("atlas A element: %d\n", sf->g_lastElementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
   if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
-    LOGV("atlas B interleaved: %d\n", sf->g_lastInterleavedBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
