@@ -468,11 +468,13 @@ GLuint Terrain::GenerateStripesTexture() {
     shaderprogram = glCreateProgram();
     glAttachShader(shaderprogram, vertexshader);
     glAttachShader(shaderprogram, fragmentshader);
-    glBindAttribLocation(shaderprogram, 0, "in_Position");
-    glBindAttribLocation(shaderprogram, 20, "in_Color");
+    //glBindAttribLocation(shaderprogram, 0, "in_Position");
+    //glBindAttribLocation(shaderprogram, 20, "in_Color");
     glLinkProgram(shaderprogram);
     glGetProgramInfoLog(shaderprogram, sizeof msg, NULL, msg);
     LOGV("info: %s\n", msg);
+
+    glUseProgram(shaderprogram);
 
     ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
 
@@ -480,7 +482,6 @@ GLuint Terrain::GenerateStripesTexture() {
 
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
-    glUseProgram(shaderprogram);
 
 #else
 
@@ -489,10 +490,6 @@ GLuint Terrain::GenerateStripesTexture() {
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
 #endif
-
-
-
-
 
   if (true) {      
     // layer 1: stripes
@@ -578,11 +575,14 @@ GLuint Terrain::GenerateStripesTexture() {
     // Specify that our coordinate data is going into attribute index 0, and contains two floats per vertex 
     // Specify that our color data is going into attribute index 1, and contains three floats per vertex
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-    glEnableVertexAttribArray(0);
+    GLuint pL = glGetAttribLocation(shaderprogram, "in_Position");
+    GLuint cL = glGetAttribLocation(shaderprogram, "in_Color");
 
-    glVertexAttribPointer(20, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
-    glEnableVertexAttribArray(20);
+    glEnableVertexAttribArray(pL);
+    glVertexAttribPointer(pL, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+
+    glEnableVertexAttribArray(cL);
+    glVertexAttribPointer(cL, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
 
 #else
 
