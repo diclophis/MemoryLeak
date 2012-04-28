@@ -75,6 +75,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   }
   
 #ifdef HAS_VAO
+
   if (foo->m_VertexArrayObjects[0] == 0) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
@@ -82,30 +83,50 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+      LOGV("atlas element: %d\n", sf->g_lastElementBuffer);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     }
     
     if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
       sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
+      LOGV("atlas interleaved: %d\n", sf->g_lastInterleavedBuffer);
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     }
 
     glVertexPointer(2, GL_SHORT, foo->m_Stride, (char *)NULL + (0));
     glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
   } else {
+
     if (foo->m_VertexArrayObjects[0] != sf->g_lastVertexArrayObject) {
       sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
       glBindVertexArrayOES(sf->g_lastVertexArrayObject);
     }
+
+    if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
+      sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+      LOGV("atlas element 2: %d\n", sf->g_lastElementBuffer);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+    }
+    
+    if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
+      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
+      LOGV("atlas interleaved 2: %d\n", sf->g_lastInterleavedBuffer);
+      glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+    }
+
   }
+
 #else
+
   if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+    LOGV("atlas A element: %d\n", sf->g_lastElementBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
   if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
+    LOGV("atlas B interleaved: %d\n", sf->g_lastInterleavedBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -118,8 +139,10 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glEnableVertexAttribArray(1);
 
 #else
+  
   glVertexPointer(2, GL_SHORT, foo->m_Stride, (char *)NULL + (0));
   glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+
 #endif
 
 #endif

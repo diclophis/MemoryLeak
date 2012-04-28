@@ -31,8 +31,8 @@ public:
   void GenerateHillKeyPoints();
   void GenerateBorderVertices();
   void CreateBox2DBody();
-  void ResetHillVertices();
-  void SetOffsetX(float x);
+  void ResetHillVertices(StateFoo *sf);
+  void SetOffsetX(float x, StateFoo *sf);
 
   float offsetX;
   MLPoint position;

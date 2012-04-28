@@ -36,6 +36,9 @@ static const char color_only_fragment_shader[] =
 "}\n";
 
 Terrain::Terrain(b2World *w, GLuint t) {
+  m_InterleavedBuffer = 0;
+  m_ElementBuffer = 0;
+
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);
   hillVertices = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillVertices);
   hillElements = (GLshort *) malloc(sizeof(GLshort) * kMaxHillVertices);
@@ -55,7 +58,8 @@ Terrain::Terrain(b2World *w, GLuint t) {
 
   glGenBuffers(1, &m_InterleavedBuffer);
   glGenBuffers(1, &m_ElementBuffer);
-  SetOffsetX(0.0);
+
+  //SetOffsetX(0.0);
 
 }
 
@@ -162,17 +166,17 @@ void Terrain::CreateBox2DBody() {
   body->CreateFixture(&shape, 0);
 }
 
-void Terrain::SetOffsetX(float x) {
+void Terrain::SetOffsetX(float x, StateFoo *sf) {
   firstTime = true;
   if (offsetX != x || firstTime) {
     offsetX = x;
     firstTime = false;
     position = MLPointMake(320 / 8 - offsetX * 1, 0);
-    ResetHillVertices();
+    ResetHillVertices(sf);
   }
 }
 
-void Terrain::ResetHillVertices() {
+void Terrain::ResetHillVertices(StateFoo *sf) {
   prevFromKeyPointI = -1;
   prevToKeyPointI = -1;
 
@@ -180,7 +184,7 @@ void Terrain::ResetHillVertices() {
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
   float rightSideX = offsetX + (screenW * 6); // * 7 / 8 / 1; //scale;
 
-  int element = 0;
+  //int element = 0;
 
   while (hillKeyPoints[fromKeyPointI+1].x < leftSideX) {
     fromKeyPointI++;
@@ -249,8 +253,29 @@ void Terrain::ResetHillVertices() {
     hillElements[i] = i;
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+  //if (m_InterleavedBuffer != 0) {
+  //  glDeleteBuffers(1, &m_InterleavedBuffer);
+  //}
+
+  //if (m_ElementBuffer != 0) {
+  //  glDeleteBuffers(1, &m_ElementBuffer);
+  //}
+
+
+  //glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    LOGV("terrain B element: %d\n", sf->g_lastElementBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
+
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    LOGV("terrain B interleaved: %d\n", sf->g_lastInterleavedBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
 
   glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(MLPoint), hillVertices);
@@ -259,8 +284,11 @@ void Terrain::ResetHillVertices() {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, nHillVertices * sizeof(GLshort), NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, nHillVertices * sizeof(GLshort), hillElements);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  //glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
 
 }
 
@@ -274,18 +302,35 @@ void Terrain::Render(StateFoo *sf) {
   
 #ifdef HAS_VAO  
 
-  sf->g_lastVertexArrayObject = -1; 
-  glBindVertexArrayOES(0);
+  if (sf->g_lastVertexArrayObject != 0) {
+    sf->g_lastVertexArrayObject = 0; 
+    glBindVertexArrayOES(sf->g_lastVertexArrayObject);
+  }
 
 #else
 
 #endif
-  
-  sf->g_lastInterleavedBuffer = -1;
-  sf->g_lastElementBuffer = -1;
  
+  
+  //sf->g_lastInterleavedBuffer = -1;
+  //sf->g_lastElementBuffer = -1;
+ 
+  /*
   glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+  */
+
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    LOGV("terrain element: %d\n", sf->g_lastElementBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
+
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    LOGV("terrain interleaved: %d\n", sf->g_lastInterleavedBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
 
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
@@ -326,15 +371,18 @@ void Terrain::Render(StateFoo *sf) {
     glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   } else {
+
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glLineWidth(1.0);
 
 #ifdef USE_GLES2
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
     glEnableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+    glEnableVertexAttribArray(1);
+    //glDisableVertexAttribArray(1);
 
 #else
 
@@ -367,7 +415,7 @@ GLuint Terrain::GenerateStripesTexture() {
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
-  int nStripes = 4; //random() % (maxStripes - minStripes) + minStripes;
+  int nStripes = random() % (maxStripes - minStripes) + minStripes;
   if (nStripes % 2) {
     nStripes++;
   }
@@ -379,6 +427,12 @@ GLuint Terrain::GenerateStripesTexture() {
   float x1, x2, y1, y2, dx, dy;
   ccColor4F c;
   
+  rt = new RenderTexture(textureSize, textureSize);
+  rt->Begin();
+
+  glViewport(0, 0, texSize.x, texSize.y);
+  //glClearColor(1.0, 1.0, 1.0, 1.0);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 #ifdef USE_GLES2
 
@@ -428,12 +482,6 @@ GLuint Terrain::GenerateStripesTexture() {
 #endif
 
 
-  glViewport(0, 0, texSize.x, texSize.y);
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-  rt = new RenderTexture(textureSize, textureSize);
-  rt->Begin();
 
 
 
@@ -655,10 +703,9 @@ GLuint Terrain::GenerateStripesTexture() {
   }
   
   rt->End();
-    
 
   glViewport(0, 0, size.x, size.y);
-  glClearColor(1.0, 1.0, 1.0, 1.0);
+  //glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
   return rt->name;
