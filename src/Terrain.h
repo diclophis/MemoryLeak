@@ -68,6 +68,9 @@ public:
   GLuint shaderprogram;
   char msg[512];
 
+  GLuint ModelViewProjectionMatrix_location;
+  GLfloat ProjectionMatrix[16];
+
 #endif
 
 };

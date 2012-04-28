@@ -83,16 +83,20 @@
     #define glBindFramebufferOES glBindFramebufferEXT
     #define glGenRenderbuffersOES glGenRenderbuffersEXT
     #define glBindRenderbufferOES glBindRenderbufferEXT
+    #define glRenderbufferStorageOES glRenderbufferStorageEXT
     #define glFramebufferRenderbufferOES glFramebufferRenderbufferEXT
     #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING_EXT
     #define GL_RENDERBUFFER_BINDING_OES GL_RENDERBUFFER_BINDING_EXT
     #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER_EXT
     #define GL_RENDERBUFFER_OES GL_RENDERBUFFER_EXT
     #define GL_COLOR_ATTACHMENT0_OES GL_COLOR_ATTACHMENT0_EXT
+    #define GL_DEPTH_ATTACHMENT_OES GL_DEPTH_ATTACHMENT
+    #define GL_DEPTH_COMPONENT16_OES GL_DEPTH_COMPONENT16
     #define glCheckFramebufferStatusOES glCheckFramebufferStatusEXT
     #define glFramebufferTexture2DOES glFramebufferTexture2DEXT
     #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE_EXT
     #define glDeleteFramebuffersOES glDeleteFramebuffersEXT
+    #define GL_RGBA8_OES GL_RGBA8
  #endif
 
 

@@ -17,10 +17,12 @@
 // We're simply passing the color through unmodified
 static const char color_only_vertex_shader[] =
 "attribute vec2 in_Position;\n"
-"attribute vec3 in_Color;\n"
-"varying vec3 ex_Color;\n"
+"attribute vec4 in_Color;\n"
+"varying vec4 ex_Color;\n"
+"uniform mat4 ModelViewProjectionMatrix;\n"
 "void main(void) {\n"
-"gl_Position = vec4(in_Position.x, in_Position.y, 0.0, 1.0);\n"
+//"gl_Position = vec4(in_Position.x, in_Position.y, 0.0, 1.0);\n"
+"gl_Position = ModelViewProjectionMatrix * vec4(in_Position, 1.0, 1.0);\n"
 "ex_Color = in_Color;\n"
 "}\n";
 
@@ -30,9 +32,9 @@ static const char color_only_fragment_shader[] =
 "#ifdef GL_ES\n"
 "precision mediump float;\n"
 "#endif\n"
-"varying vec3 ex_Color;\n"
+"varying vec4 ex_Color;\n"
 "void main(void) {\n"
-"gl_FragColor = vec4(ex_Color,1.0);\n"
+"gl_FragColor = ex_Color;\n"
 "}\n";
 
 Terrain::Terrain(b2World *w, GLuint t) {
@@ -467,10 +469,17 @@ GLuint Terrain::GenerateStripesTexture() {
     glAttachShader(shaderprogram, vertexshader);
     glAttachShader(shaderprogram, fragmentshader);
     glBindAttribLocation(shaderprogram, 0, "in_Position");
-    glBindAttribLocation(shaderprogram, 1, "in_Color");
+    glBindAttribLocation(shaderprogram, 20, "in_Color");
     glLinkProgram(shaderprogram);
     glGetProgramInfoLog(shaderprogram, sizeof msg, NULL, msg);
     LOGV("info: %s\n", msg);
+
+    ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
+
+    ortho(ProjectionMatrix, aa, bb, cc, dd, ee, ff);
+
+    glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+
     glUseProgram(shaderprogram);
 
 #else
@@ -572,8 +581,8 @@ GLuint Terrain::GenerateStripesTexture() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
-    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(20, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
+    glEnableVertexAttribArray(20);
 
 #else
 
