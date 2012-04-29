@@ -39,4 +39,6 @@ public:
   foofoo *m_PlayerFoo;
   foofoo *m_BatchFoo;
 
+  int m_FrameCount;
+
 };

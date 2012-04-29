@@ -6,6 +6,7 @@
 
 
 RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
+  m_FrameCount = 0;
   LOGV("alloc RadiantFire\n");
   LoadSound(0);
   LoadTexture(0);
@@ -33,6 +34,8 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHan
   PlayerCreateBox2DBody();
   PlayerUpdateNodePosition();
   PlayerSleep();
+
+  m_Terrain->SetOffsetX(m_PlayerPosition.x, m_StateFoo);
 }
 
 
@@ -83,9 +86,11 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
 
 
 int RadiantFireEightSixOne::Simulate() {
-  int32 velocityIterations = 1;
-  int32 positionIterations = 1;
+  int32 velocityIterations = 2;
+  int32 positionIterations = 8;
 
+  float old_x = m_Terrain->position.x;
+  
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
 
   if (!m_PlayerIsAwake) {
@@ -96,8 +101,12 @@ int RadiantFireEightSixOne::Simulate() {
   }
   PlayerLimitVelocity();
   PlayerUpdateNodePosition();
-  m_Terrain->SetOffsetX(m_PlayerPosition.x);
+  m_Terrain->SetOffsetX(m_PlayerPosition.x, m_StateFoo);
+  
+  float new_x = m_Terrain->position.x;
 
+  m_CameraPosition[0] += (0.95 * (new_x - old_x));
+  
   return 1;
 }
 
@@ -108,7 +117,7 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
   //glTranslatef(m_Terrain->position.x - 128.0, -175.0, 0.0);
-  glTranslatef(m_Terrain->position.x, 0.0, 0.0);
+  glTranslatef(m_CameraPosition[0], 0.0, 0.0);
   m_Terrain->Render(m_StateFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);

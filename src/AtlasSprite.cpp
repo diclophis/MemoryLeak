@@ -75,11 +75,17 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   }
   
 #ifdef HAS_VAO
+
   if (foo->m_VertexArrayObjects[0] == 0) {
     glGenVertexArraysOES(1, &foo->m_VertexArrayObjects[0]);
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
 
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
@@ -90,6 +96,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     }
 
+
     glVertexPointer(2, GL_SHORT, foo->m_Stride, (char *)NULL + (0));
     glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
   } else {
@@ -97,8 +104,24 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
       sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
       glBindVertexArrayOES(sf->g_lastVertexArrayObject);
     }
+
+    /*
+    if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
+      sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+    }
+    
+    */
+
+    if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
+      sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
+      glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+    }
+
   }
+
 #else
+
   if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
@@ -118,8 +141,10 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glEnableVertexAttribArray(1);
 
 #else
+  
   glVertexPointer(2, GL_SHORT, foo->m_Stride, (char *)NULL + (0));
   glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+
 #endif
 
 #endif

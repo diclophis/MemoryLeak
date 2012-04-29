@@ -17,10 +17,12 @@
 // We're simply passing the color through unmodified
 static const char color_only_vertex_shader[] =
 "attribute vec2 in_Position;\n"
-"attribute vec3 in_Color;\n"
-"varying vec3 ex_Color;\n"
+"attribute vec4 in_Color;\n"
+"varying vec4 ex_Color;\n"
+"uniform mat4 ModelViewProjectionMatrix;\n"
 "void main(void) {\n"
-"gl_Position = vec4(in_Position.x, in_Position.y, 0.0, 1.0);\n"
+//"gl_Position = vec4(in_Position.x, in_Position.y, 0.0, 1.0);\n"
+"gl_Position = ModelViewProjectionMatrix * vec4(in_Position, 1.0, 1.0);\n"
 "ex_Color = in_Color;\n"
 "}\n";
 
@@ -30,12 +32,22 @@ static const char color_only_fragment_shader[] =
 "#ifdef GL_ES\n"
 "precision mediump float;\n"
 "#endif\n"
-"varying vec3 ex_Color;\n"
+"varying vec4 ex_Color;\n"
 "void main(void) {\n"
-"gl_FragColor = vec4(ex_Color,1.0);\n"
+"gl_FragColor = ex_Color;\n"
 "}\n";
 
 Terrain::Terrain(b2World *w, GLuint t) {
+  m_InterleavedBuffer = 0;
+  m_ElementBuffer = 0;
+
+#ifdef HAS_VAO
+
+  m_VertexArrayObject = 0;
+  nHillVertices_Last = 0;
+
+#endif
+
   hillKeyPoints = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillKeyPoints);
   hillVertices = (MLPoint *) malloc(sizeof(MLPoint) * kMaxHillVertices);
   hillElements = (GLshort *) malloc(sizeof(GLshort) * kMaxHillVertices);
@@ -55,7 +67,8 @@ Terrain::Terrain(b2World *w, GLuint t) {
 
   glGenBuffers(1, &m_InterleavedBuffer);
   glGenBuffers(1, &m_ElementBuffer);
-  SetOffsetX(0.0);
+
+  //SetOffsetX(0.0);
 
 }
 
@@ -162,17 +175,17 @@ void Terrain::CreateBox2DBody() {
   body->CreateFixture(&shape, 0);
 }
 
-void Terrain::SetOffsetX(float x) {
+void Terrain::SetOffsetX(float x, StateFoo *sf) {
   firstTime = true;
   if (offsetX != x || firstTime) {
     offsetX = x;
     firstTime = false;
     position = MLPointMake(320 / 8 - offsetX * 1, 0);
-    ResetHillVertices();
+    ResetHillVertices(sf);
   }
 }
 
-void Terrain::ResetHillVertices() {
+void Terrain::ResetHillVertices(StateFoo *sf) {
   prevFromKeyPointI = -1;
   prevToKeyPointI = -1;
 
@@ -180,7 +193,7 @@ void Terrain::ResetHillVertices() {
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
   float rightSideX = offsetX + (screenW * 6); // * 7 / 8 / 1; //scale;
 
-  int element = 0;
+  //int element = 0;
 
   while (hillKeyPoints[fromKeyPointI+1].x < leftSideX) {
     fromKeyPointI++;
@@ -245,12 +258,67 @@ void Terrain::ResetHillVertices() {
   //hillElements[0] = 0;
   //hillElements[1] = 1;
   //hillElements[2] = 2;
-  for (int i=0; i<nHillVertices; i++) {
+  for (int i=0; i<(nHillVertices); i++) {
     hillElements[i] = i;
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+  //if (m_InterleavedBuffer != 0) {
+  //  glDeleteBuffers(1, &m_InterleavedBuffer);
+  //}
+
+  //if (m_ElementBuffer != 0) {
+  //  glDeleteBuffers(1, &m_ElementBuffer);
+  //}
+
+
+  //glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+
+#ifdef HAS_VAO
+
+  if (m_VertexArrayObject == 0) {
+    glGenVertexArraysOES(1, &m_VertexArrayObject);
+  }
+
+  //if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
+
+  if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
+    sf->g_lastVertexArrayObject = m_VertexArrayObject;
+    glBindVertexArrayOES(sf->g_lastVertexArrayObject);
+  }
+
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
+
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
+
+  if (nHillVertices_Last == 0) {
+    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
+  }
+
+  if (nHillVertices != nHillVertices_Last) { 
+    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+    nHillVertices_Last = nHillVertices;
+  }
+
+#else
+
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
+
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
+
+#endif
 
   glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(MLPoint), hillVertices);
@@ -259,8 +327,13 @@ void Terrain::ResetHillVertices() {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, nHillVertices * sizeof(GLshort), NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, nHillVertices * sizeof(GLshort), hillElements);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  //sf->g_lastInterleavedBuffer = 0;
+  //sf->g_lastElementBuffer = 0;
+  //glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
 
 }
 
@@ -274,19 +347,53 @@ void Terrain::Render(StateFoo *sf) {
   
 #ifdef HAS_VAO  
 
-  sf->g_lastVertexArrayObject = -1; 
-  glBindVertexArrayOES(0);
+  if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
+    sf->g_lastVertexArrayObject = m_VertexArrayObject;
+    glBindVertexArrayOES(sf->g_lastVertexArrayObject);
+  }
+
+  /*
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
+
+  */
+
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
 
 #else
 
-#endif
-  
-  sf->g_lastInterleavedBuffer = -1;
-  sf->g_lastElementBuffer = -1;
- 
-  glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
+  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
+  }
 
+  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
+  }
+
+#ifdef USE_GLES2
+
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+
+#else
+
+  glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
+  glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+
+#endif
+
+#endif
+ 
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
 
@@ -307,6 +414,11 @@ void Terrain::Render(StateFoo *sf) {
   }
   
   if (true) {
+    glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+  } else {
+
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    glLineWidth(1.0);
 
 #ifdef USE_GLES2
 
@@ -315,26 +427,7 @@ void Terrain::Render(StateFoo *sf) {
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-
-#else
-
-    glVertexPointer(2, GL_FLOAT, 0, (char *)NULL + (0));
-    glTexCoordPointer(2, GL_FLOAT, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
-
-#endif
-
-    glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices / 2), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-
-  } else {
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    glLineWidth(1.0);
-
-#ifdef USE_GLES2
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-
-    glEnableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+    //glDisableVertexAttribArray(1);
 
 #else
 
@@ -367,7 +460,7 @@ GLuint Terrain::GenerateStripesTexture() {
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
-  int nStripes = 4; //random() % (maxStripes - minStripes) + minStripes;
+  int nStripes = random() % (maxStripes - minStripes) + minStripes;
   if (nStripes % 2) {
     nStripes++;
   }
@@ -379,18 +472,14 @@ GLuint Terrain::GenerateStripesTexture() {
   float x1, x2, y1, y2, dx, dy;
   ccColor4F c;
   
+  glViewport(0, 0, texSize.x, texSize.y);
+
+  rt = new RenderTexture(textureSize, textureSize);
+  rt->Begin();
+
 
 #ifdef USE_GLES2
 
-    float m_ScreenHalfHeight = 512.0 / 2.0;
-    float m_ScreenAspect = 1.0;
-    float m_Zoom = 1.0;
-    float aa = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
-    float bb = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
-    float cc = (-m_ScreenHalfHeight) * m_Zoom;
-    float dd = m_ScreenHalfHeight * m_Zoom;
-    float ee = 1.0;
-    float ff = -1.0;
 
     //ortho(Engine::GetProjectionMatrix(), aa, bb, cc, dd, ee, ff);
     //glUniformMatrix4fv(Engine::GetProjectionMatrixLocation(), 1, GL_FALSE, Engine::GetProjectionMatrix());
@@ -412,12 +501,26 @@ GLuint Terrain::GenerateStripesTexture() {
     shaderprogram = glCreateProgram();
     glAttachShader(shaderprogram, vertexshader);
     glAttachShader(shaderprogram, fragmentshader);
-    glBindAttribLocation(shaderprogram, 0, "in_Position");
-    glBindAttribLocation(shaderprogram, 1, "in_Color");
     glLinkProgram(shaderprogram);
     glGetProgramInfoLog(shaderprogram, sizeof msg, NULL, msg);
     LOGV("info: %s\n", msg);
+
     glUseProgram(shaderprogram);
+
+    float m_ScreenHalfHeight = 512.0 / 2.0;
+    float m_ScreenAspect = 1.0;
+    float m_Zoom = 1.0;
+    float aa = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float bb = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
+    float cc = (-m_ScreenHalfHeight) * m_Zoom;
+    float dd = m_ScreenHalfHeight * m_Zoom;
+    float ee = 1.0;
+    float ff = -1.0;
+
+    ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
+    //ortho(ProjectionMatrix, aa, bb, cc, dd, ee, ff);
+    ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
+    glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
 #else
 
@@ -427,15 +530,8 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #endif
 
-
-  glViewport(0, 0, texSize.x, texSize.y);
   glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-  rt = new RenderTexture(textureSize, textureSize);
-  rt->Begin();
-
-
 
   if (true) {      
     // layer 1: stripes
@@ -521,11 +617,14 @@ GLuint Terrain::GenerateStripesTexture() {
     // Specify that our coordinate data is going into attribute index 0, and contains two floats per vertex 
     // Specify that our color data is going into attribute index 1, and contains three floats per vertex
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-    glEnableVertexAttribArray(0);
+    GLuint pL = glGetAttribLocation(shaderprogram, "in_Position");
+    GLuint cL = glGetAttribLocation(shaderprogram, "in_Color");
 
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
-    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(pL);
+    glVertexAttribPointer(pL, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+
+    glEnableVertexAttribArray(cL);
+    glVertexAttribPointer(cL, 4, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nVertices * sizeof(MLPoint)));
 
 #else
 
@@ -539,7 +638,7 @@ GLuint Terrain::GenerateStripesTexture() {
 #endif
 
     //glPointSize(10.0);
-    glDrawElements(GL_TRIANGLES, nVertices, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_TRIANGLES, nVertices * 2, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
     //glDrawArrays(GL_TRIANGLES, 0, (GLsizei)nVertices);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -655,10 +754,9 @@ GLuint Terrain::GenerateStripesTexture() {
   }
   
   rt->End();
-    
 
-  glViewport(0, 0, size.x, size.y);
-  glClearColor(1.0, 1.0, 1.0, 1.0);
+  //glViewport(0, 0, size.x, size.y);
+  //glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
   return rt->name;

@@ -10,6 +10,7 @@ public:
 
   GLuint fbo;
   GLuint rbo;
+  GLuint depthRenderbuffer;
 
   GLint oldFBO;
   GLint oldRBO;
