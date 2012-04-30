@@ -85,6 +85,7 @@
     #define glBindFramebufferOES glBindFramebuffer
     #define glGenRenderbuffersOES glGenRenderbuffers
     #define glBindRenderbufferOES glBindRenderbuffer
+    #define glRenderbufferStorageOES glRenderbufferStorage
     #define glFramebufferRenderbufferOES glFramebufferRenderbuffer
     #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING
     #define GL_RENDERBUFFER_BINDING_OES GL_RENDERBUFFER_BINDING
