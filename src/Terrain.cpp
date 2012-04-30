@@ -191,7 +191,7 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
 
   // key points interval for drawing
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
-  float rightSideX = offsetX + (screenW * 6); // * 7 / 8 / 1; //scale;
+  float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
 
   //int element = 0;
 
