@@ -191,7 +191,7 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
 
   // key points interval for drawing
   float leftSideX = offsetX - (screenW * 2); // / 8 / 1; //scale;
-  float rightSideX = offsetX + (screenW * 6); // * 7 / 8 / 1; //scale;
+  float rightSideX = offsetX + (screenW * 2); // * 7 / 8 / 1; //scale;
 
   //int element = 0;
 
@@ -778,6 +778,7 @@ ccColor4F Terrain::GenerateColor() {
   const int minSum = 450;
   const int minDelta = 150;
   int r, g, b, min, max;
+  /*
   while (true) {
     r = random()%256;
     g = random()%256;
@@ -789,4 +790,7 @@ ccColor4F Terrain::GenerateColor() {
     break;
   }
   return ccc4FFromccc3B(ccc3(r, g, b));
+  */
+  return ccc4FFromccc3B(ccc3(256, 125, 125));
+
 }
