@@ -87,4 +87,7 @@ public:
   static foofoo *GetFoo(GLuint t, int spr, int rows, int s, int e, float m);
   static foofoo *GetBatchFoo(GLuint t, int m);
 
+  bool m_IsNinePatch;
+  void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty);
+
 };

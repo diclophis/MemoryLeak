@@ -12,4 +12,7 @@ public:
 	void RenderSpritePhase();
   void CreateFoos();
   void DestroyFoos();
+  foofoo *m_NinePatchFoo;
+  foofoo *m_BatchFoo;
+  float m_SwapTimeout;
 };
