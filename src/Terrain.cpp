@@ -411,7 +411,7 @@ void Terrain::Render(StateFoo *sf) {
 #ifdef USE_GLES2
 
     glActiveTexture(GL_TEXTURE0);
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
 
 #else
 
