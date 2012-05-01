@@ -68,7 +68,7 @@ Terrain::Terrain(b2World *w, GLuint t) {
   glGenBuffers(1, &m_InterleavedBuffer);
   glGenBuffers(1, &m_ElementBuffer);
 
-  //SetOffsetX(0.0);
+  LOGV("WTF!@#!@#!@#!@#!@#!@# %d\n", m_InterleavedBuffer);
 
 }
 
@@ -77,8 +77,19 @@ Terrain::~Terrain() {
   LOGV("delloc terrain\n");
   free(hillKeyPoints);
   free(hillVertices);
-  free(hillTexCoords);
   free(borderVertices);
+  free(hillElements);
+  free(hillTexCoords);
+
+  glDeleteBuffers(1, &m_InterleavedBuffer);
+  glDeleteBuffers(1, &m_ElementBuffer);
+
+#ifdef HAS_VAO
+
+    glDeleteVertexArraysOES(1, &m_VertexArrayObject);
+
+#endif
+
   delete rt;
 }
 
@@ -644,7 +655,13 @@ GLuint Terrain::GenerateStripesTexture() {
     //glDrawArrays(GL_TRIANGLES, 0, 3);
 
 #ifdef USE_GLES2
-    
+
+  LOGV("wtf!@#!@#!@#!@#!@#!@#!@#!@#!@#!@# %d\n", shaderprogram);
+  glDetachShader(shaderprogram, vertexshader);
+  glDetachShader(shaderprogram, fragmentshader);
+  glDeleteShader(vertexshader);
+  glDeleteShader(fragmentshader);
+  glDeleteProgram(shaderprogram);
 
 #else
 
@@ -653,6 +670,9 @@ GLuint Terrain::GenerateStripesTexture() {
     glDisableClientState(GL_VERTEX_ARRAY);
 
 #endif
+
+    glDeleteBuffers(1, &m_TextureInterlacedBuffer);
+    glDeleteBuffers(1, &m_TextureElementBuffer);
 
     glDisable(GL_BLEND);
 

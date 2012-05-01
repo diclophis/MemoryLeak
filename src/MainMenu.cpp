@@ -8,7 +8,7 @@
 MainMenu::MainMenu(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("main menu alloc\n");
 
-  LoadTexture(1);
+  LoadTexture(0);
   LoadSound(1);
   CreateFoos();
 
@@ -25,16 +25,19 @@ MainMenu::MainMenu(int w, int h, std::vector<FileHandle *> &t, std::vector<FileH
 
 MainMenu::~MainMenu() {
   LOGV("main menu dealloc\n");
+  DestroyFoos();
 }
 
 
 void MainMenu::CreateFoos() {
-  m_NinePatchFoo = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  m_NinePatchFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 254, 255, 0.0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 9);
 }
 
 
 void MainMenu::DestroyFoos() {
+  delete m_NinePatchFoo;
+  delete m_BatchFoo;
 }
 
 
@@ -43,11 +46,11 @@ void MainMenu::Hit(float x, float y, int hitState) {
 
 
 int MainMenu::Simulate() {
-  if ((m_SwapTimeout += m_DeltaTime) > 1.0) {
-    m_AtlasSprites[0]->m_IsNinePatch = !m_AtlasSprites[0]->m_IsNinePatch;
-    m_SwapTimeout = 0;
-  }
-  m_AtlasSprites[0]->m_Rotation += 0.5 * m_DeltaTime;
+  //if ((m_SwapTimeout += m_DeltaTime) > 3.0) {
+  //  m_AtlasSprites[0]->m_IsNinePatch = !m_AtlasSprites[0]->m_IsNinePatch;
+  //  m_SwapTimeout = 0;
+  //}
+  m_AtlasSprites[0]->m_Rotation += 0.1 * m_DeltaTime;
   return 1;
 }
 

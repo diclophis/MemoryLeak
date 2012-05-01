@@ -303,17 +303,20 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-  if (true) {
+  if (false) {
     glDisable(GL_TEXTURE_2D);
+    //glPointSize(10.0);
 
-#ifndef USE_GLES2
+#ifdef USE_GLES2
 
-    glPointSize(10.0);
+    glActiveTexture(0);
+    glDisableVertexAttribArray(1);
 
 #endif
 
     glColor4f(1.0, 0.0, 0.0, 1.0);
-    glDrawElements(GL_POINTS, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glDrawElements(GL_POINTS, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_LINES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
