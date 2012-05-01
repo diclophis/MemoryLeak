@@ -68,7 +68,7 @@ Terrain::Terrain(b2World *w, GLuint t) {
   glGenBuffers(1, &m_InterleavedBuffer);
   glGenBuffers(1, &m_ElementBuffer);
 
-  //SetOffsetX(0.0);
+  LOGV("WTF!@#!@#!@#!@#!@#!@# %d\n", m_InterleavedBuffer);
 
 }
 
@@ -77,8 +77,19 @@ Terrain::~Terrain() {
   LOGV("delloc terrain\n");
   free(hillKeyPoints);
   free(hillVertices);
-  free(hillTexCoords);
   free(borderVertices);
+  free(hillElements);
+  free(hillTexCoords);
+
+  glDeleteBuffers(1, &m_InterleavedBuffer);
+  glDeleteBuffers(1, &m_ElementBuffer);
+
+#ifdef HAS_VAO
+
+    glDeleteVertexArraysOES(1, &m_VertexArrayObject);
+
+#endif
+
   delete rt;
 }
 
@@ -379,11 +390,11 @@ void Terrain::Render(StateFoo *sf) {
 
 #ifdef USE_GLES2
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+  glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+  glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(sf->g_PositionAttribute);
+  glEnableVertexAttribArray(sf->g_TextureAttribute);
 
 #else
 
@@ -422,12 +433,11 @@ void Terrain::Render(StateFoo *sf) {
 
 #ifdef USE_GLES2
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+    glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+    glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    //glDisableVertexAttribArray(1);
+    glEnableVertexAttribArray(sf->g_PositionAttribute);
+    glEnableVertexAttribArray(sf->g_TextureAttribute);
 
 #else
 
@@ -480,10 +490,6 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #ifdef USE_GLES2
 
-
-    //ortho(Engine::GetProjectionMatrix(), aa, bb, cc, dd, ee, ff);
-    //glUniformMatrix4fv(Engine::GetProjectionMatrixLocation(), 1, GL_FALSE, Engine::GetProjectionMatrix());
-
     const GLchar *source = color_only_vertex_shader;
     vertexshader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexshader, 1, &source, NULL);
@@ -518,14 +524,11 @@ GLuint Terrain::GenerateStripesTexture() {
     float ff = -1.0;
 
     ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
-    //ortho(ProjectionMatrix, aa, bb, cc, dd, ee, ff);
     ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
 #else
 
-  //glMatrixMode(GL_PROJECTION);
-  //glLoadIdentity();
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
 #endif
@@ -644,7 +647,13 @@ GLuint Terrain::GenerateStripesTexture() {
     //glDrawArrays(GL_TRIANGLES, 0, 3);
 
 #ifdef USE_GLES2
-    
+
+    LOGV("wtf!@#!@#!@#!@#!@#!@#!@#!@#!@#!@# %d\n", shaderprogram);
+    glDetachShader(shaderprogram, vertexshader);
+    glDetachShader(shaderprogram, fragmentshader);
+    glDeleteShader(vertexshader);
+    glDeleteShader(fragmentshader);
+    glDeleteProgram(shaderprogram);
 
 #else
 
@@ -653,6 +662,9 @@ GLuint Terrain::GenerateStripesTexture() {
     glDisableClientState(GL_VERTEX_ARRAY);
 
 #endif
+
+    glDeleteBuffers(1, &m_TextureInterlacedBuffer);
+    glDeleteBuffers(1, &m_TextureElementBuffer);
 
     glDisable(GL_BLEND);
 

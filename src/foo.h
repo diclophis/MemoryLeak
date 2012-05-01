@@ -28,6 +28,14 @@ typedef struct {
   GLuint g_lastVertexArrayObject;
   int m_LastBufferIndex;
   bool m_EnabledStates;
+
+#ifdef USE_GLES2
+
+  GLuint g_PositionAttribute;
+  GLuint g_TextureAttribute;
+
+#endif
+
 } StateFoo;
 
 #ifdef __cplusplus
@@ -68,42 +76,52 @@ struct foofoo {
     glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
     glDeleteBuffers(m_numTextureBuffers, m_TextureBuffer);
     glDeleteBuffers(m_numInterleavedBuffers, m_InterleavedBuffers);
+
     if (m_numBuffers > 0) {
       free(m_VerticeBuffers);
     }
+
     if (m_numIndexBuffers > 0) {
       free(m_IndexBuffers);
     }
+
     if (m_numNormalBuffers > 0) {
       free(m_NormalBuffers);
     }
+
     if (m_numTextureBuffers > 0) {
       free(m_TextureBuffer);
     }
+
     if (m_numInterleavedBuffers > 0) {
       free(m_InterleavedBuffers);
     }
+
     if (m_numSpriteFoos > 0) {
       free(m_SpriteFoos);
     }
+
     if (m_numModelFoos > 0) {
-    LOGV("freeing m_ModelFoos in foofoo\n");
       free(m_ModelFoos);
     }
+
     if (m_numFaces > 0) {
-    LOGV("freeing m_IndexFoo in foofoo\n");
       free(m_IndexFoo);
     }
+
 #ifdef HAS_VAO
+
     glDeleteVertexArraysOES(m_numVertexArrayObjects, m_VertexArrayObjects);
-#endif
+
     if (m_numVertexArrayObjects > 0) {
       free(m_VertexArrayObjects);
     }
-	}
 
 #endif
 
+	}
+
+#endif
 
 	int m_numBuffers;
 	GLuint *m_VerticeBuffers;
@@ -133,6 +151,8 @@ struct foofoo {
   ModelFoo *m_ModelFoos;
   GLshort *m_IndexFoo;
   int m_BufferCount;
+
+
 };
 
 #ifdef __cplusplus

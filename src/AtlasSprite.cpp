@@ -41,6 +41,7 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
   m_AnimationLife = 0.0;
   m_IsAlive = true;
   m_Frame = 0;
+  m_IsNinePatch = false;
 }
 
 
@@ -54,16 +55,148 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     return;
   }
 
-  //TODO: document why 4 has to be 4
-  for (unsigned int i=0; i<4; i++) {
-    int x = ((cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) - (sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1])) * m_Scale[0];
-    int y = ((sin(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]) + (cos(m_Rotation) * m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1])) * m_Scale[1];
-    batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = (x + m_Position[0]);
-    batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = (y + m_Position[1]);
-    batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[0] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0];
-    batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[1] = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1];
+  float vx, vy, tx, ty;
+
+  if (m_IsNinePatch) {
+    float percent_square = 3.0 / 8.0;
+    float percent_narrow = 2.0 / 8.0;
+    float row_height_square = percent_square * m_Scale[0] * 2.0;
+    float row_height_narrow = percent_narrow * m_Scale[0] * 2.0;
+    float row_height = row_height_square;
+    float row_offset = 0;
+    float texture_offset = 0;
+    float half_scale_x = m_Scale[0];
+    float half_scale_y = m_Scale[1];
+    int i;
+
+    for (unsigned int j=0; j<3; j++) {
+      // left
+      i = 0;
+      vx = -half_scale_x;
+      vy = -half_scale_y + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+      
+      vx = (-half_scale_x + row_height_square);
+      vy = -half_scale_y + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]) - (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0] * (percent_square + percent_narrow));
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      vx = (-half_scale_x + row_height_square);
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]) - (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0] * (percent_square + percent_narrow));
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      vx = -half_scale_x;
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      batch_foo->m_NumBatched++;
+
+      // middle
+      i = 0;
+      vx = (-half_scale_x + row_height_square);
+      vy = -half_scale_y + row_offset;
+      tx = ((percent_square));
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+      
+      vx = (-half_scale_x + row_height_square) + row_height_narrow;
+      vy = -half_scale_y + row_offset;
+      tx = percent_square + percent_narrow;
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      vx = (-half_scale_x + row_height_square) + row_height_narrow;
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square + percent_narrow;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      vx = (-half_scale_x + row_height_square);
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      batch_foo->m_NumBatched++;
+
+      // right
+      i = 0;
+      vx = (-half_scale_x + row_height_square) + row_height_narrow;
+      vy = -half_scale_y + row_offset;
+      tx = ((percent_square) + (percent_narrow));
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+      
+      vx = (-half_scale_x + row_height_square) + (row_height_narrow + row_height_square);
+      vy = -half_scale_y + row_offset;
+      tx = percent_square + percent_narrow + percent_square;
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      vx = (-half_scale_x + row_height_square) + (row_height_narrow + row_height_square);
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square + percent_narrow + percent_square;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      vx = (-half_scale_x + row_height_square) + row_height_narrow;
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square + percent_narrow;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+
+      batch_foo->m_NumBatched++;
+
+      if (row_height == row_height_square) {
+        row_offset += row_height_square;
+        row_height = row_height_narrow;
+        texture_offset += percent_square;
+      } else {
+        row_offset += row_height_narrow;
+        row_height = row_height_square;
+        texture_offset += percent_narrow;
+      }
+    }
+  } else {
+    //TODO: document why 4 has to be 4
+    for (unsigned int i=0; i<4; i++) {
+      vx = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0] * m_Scale[0];
+      vy = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1] * m_Scale[1];
+      tx = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0];
+      ty = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1];
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+    }
+    batch_foo->m_NumBatched++;
   }
-  batch_foo->m_NumBatched++;
+}
+
+
+void AtlasSprite::BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty) {
+  int x = ((cos(m_Rotation) * vx) - (sin(m_Rotation) * vy));
+  int y = ((sin(m_Rotation) * vx) + (cos(m_Rotation) * vy));
+  batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[0] = (x + m_Position[0]);
+  batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].vertex[1] = (y + m_Position[1]);
+  batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[0] = tx;
+  batch_foo->m_SpriteFoos[(batch_foo->m_NumBatched * 4) + i].texture[1] = ty;
 }
 
 
@@ -134,11 +267,11 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 #ifdef USE_GLES2
 
-  glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, foo->m_Stride, (char *)NULL + (0));
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+  glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_SHORT, GL_FALSE, foo->m_Stride, (char *)NULL + (0));
+  glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(sf->g_PositionAttribute);
+  glEnableVertexAttribArray(sf->g_TextureAttribute);
 
 #else
   
@@ -170,17 +303,23 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
-#ifndef USE_GLES2
   if (false) {
     glDisable(GL_TEXTURE_2D);
-    glPointSize(1.0);
-    glLineWidth(1.0);
-    glColor4f(0.0, 1.0, 0.0, 1.0);
+    //glPointSize(10.0);
+
+#ifdef USE_GLES2
+
+    glActiveTexture(0);
+    glDisableVertexAttribArray(sf->g_TextureAttribute);
+
+#endif
+
+    glColor4f(1.0, 0.0, 0.0, 1.0);
+    //glDrawElements(GL_POINTS, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glDrawElements(GL_LINES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
   }
-#endif
 
   foo->m_NumBatched = 0;
 
