@@ -3,33 +3,9 @@
 #include "MemoryLeak.h"
 
 RenderTexture::RenderTexture(int width, int height) {
-  //glFinish();
-  //glEnable(GL_TEXTURE_2D);
-
   name = 0;
-
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
-
-
-  // setup color render buffer
-  //glGenRenderbuffersOES(1, &rbo);
-  //glBindRenderbufferOES(GL_RENDERBUFFER_OES, rbo);
-  //glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_RGBA8_OES, width, height);
-  //glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, rbo);
-
-
-  // check if it worked (probably worth doing :) )
-  //Engine::CheckGL("wtf");
-  
-  //GLuint status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
-  //if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
-  //  LOGV("INVALID GL CONTEXT CANT MAKE BUFFER\n");
-  //  assert(false);
-  //}
-
-  //glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
-  //glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
 }
 
 
@@ -39,8 +15,6 @@ RenderTexture::~RenderTexture() {
   glDeleteBuffers(1, &fbo);
   glDeleteBuffers(1, &rbo);
   glDeleteBuffers(1, &depthRenderbuffer);
-  //glClearColor(1.0, 1.0, 1.0, 1.0);
-  //glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
@@ -51,9 +25,6 @@ void RenderTexture::Begin() {
   // generate FBO
   glGenFramebuffersOES(1, &fbo);
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, fbo);
-
-  //glActiveTexture(GL_TEXTURE0);
-  //glEnable(GL_TEXTURE_2D);
 
   glGenTextures(1, &name);
   if (name == 0) {
@@ -79,21 +50,11 @@ void RenderTexture::Begin() {
     LOGV("2222 INVALID GL CONTEXT CANT MAKE BUFFER\n");
     assert(false);
   }
-
-  //glClearColor(1.0, 1.0, 1.0, 1.0);
-  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  //glFlush();
-  //glFinish();
-  //glBindTexture(GL_TEXTURE_2D, name);
 }
 
 
 void RenderTexture::End() {
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
-  //glClearColor(1.0, 1.0, 1.0, 1.0);
-  //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  //glFlush();
-  //glFinish();
   glBindTexture(GL_TEXTURE_2D, 0);
 }

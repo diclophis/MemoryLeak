@@ -491,10 +491,6 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #ifdef USE_GLES2
 
-
-    //ortho(Engine::GetProjectionMatrix(), aa, bb, cc, dd, ee, ff);
-    //glUniformMatrix4fv(Engine::GetProjectionMatrixLocation(), 1, GL_FALSE, Engine::GetProjectionMatrix());
-
     const GLchar *source = color_only_vertex_shader;
     vertexshader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexshader, 1, &source, NULL);
@@ -529,14 +525,11 @@ GLuint Terrain::GenerateStripesTexture() {
     float ff = -1.0;
 
     ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
-    //ortho(ProjectionMatrix, aa, bb, cc, dd, ee, ff);
     ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
 #else
 
-  //glMatrixMode(GL_PROJECTION);
-  //glLoadIdentity();
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
 #endif
@@ -656,12 +649,12 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #ifdef USE_GLES2
 
-  LOGV("wtf!@#!@#!@#!@#!@#!@#!@#!@#!@#!@# %d\n", shaderprogram);
-  glDetachShader(shaderprogram, vertexshader);
-  glDetachShader(shaderprogram, fragmentshader);
-  glDeleteShader(vertexshader);
-  glDeleteShader(fragmentshader);
-  glDeleteProgram(shaderprogram);
+    LOGV("wtf!@#!@#!@#!@#!@#!@#!@#!@#!@#!@# %d\n", shaderprogram);
+    glDetachShader(shaderprogram, vertexshader);
+    glDetachShader(shaderprogram, fragmentshader);
+    glDeleteShader(vertexshader);
+    glDeleteShader(fragmentshader);
+    glDeleteProgram(shaderprogram);
 
 #else
 
