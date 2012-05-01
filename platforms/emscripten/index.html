@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-us" manifest="index.appcache">
+<html lang="en-us">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="utf-8">
@@ -71,12 +71,25 @@
         var startGame = cwrap('start_game', 'number', ['number']);
         var buttons = document.getElementsByTagName("button");
         for (i in buttons) {
-          buttons[i].onclick = function(e) {
-            startGame(this.value);
-          };
+          console.log(buttons[i].className);
+          if (buttons[i].className == "game") {
+            buttons[i].onclick = function(e) {
+              startGame(this.value);
+            };
+          } else if (buttons[i].className == "system") {
+            if (buttons[i].value == "offline") {
+              buttons[i].onclick = function(e) {
+                console.log("set offline");
+                document.getElementsByTagName("html").item(0).setAttribute("manifest", "/index.appcache");
+                window.applicationCache.update();
+              }
+            }
+          }
         }
         var manifestFile = new XMLHttpRequest();
-        manifestFile.open("GET", document.getElementsByTagName("html").item(0).getAttribute("manifest"), true);
+        //var manifestUrl = document.getElementsByTagName("html").item(0).getAttribute("manifest");
+        var manifestUrl = "/index.appcache";
+        manifestFile.open("GET", manifestUrl, true);
         manifestFile.onload = function(e) {
           var assets = FS.createFolder("/", "assets", true, false);
           var sounds = FS.createFolder(assets, "sounds", true, false);
@@ -134,9 +147,11 @@
         }
       };
     </script>
-    <button value="1">SuperStarShooter</button>
-    <button value="2">RadiantFireEightSixOne</button>
-    <button value="3">SpaceShipDown</button>
+    <button class="game" value="0">MainMenu</button>
+    <button class="game" value="1">SuperStarShooter</button>
+    <button class="game" value="2">RadiantFireEightSixOne</button>
+    <button class="game" value="3">SpaceShipDown</button>
+    <button class="system" value="offline">offline</button>
     <script src="sink.js"></script>
     <script src="raptor_island.js"></script>
   </body>
