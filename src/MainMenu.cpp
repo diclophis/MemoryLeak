@@ -15,7 +15,7 @@ MainMenu::MainMenu(int w, int h, std::vector<FileHandle *> &t, std::vector<FileH
   m_AtlasSprites.push_back(new SpriteGun(m_NinePatchFoo, NULL));
   m_AtlasSprites[m_SpriteCount]->m_IsNinePatch = true;
   m_AtlasSprites[m_SpriteCount]->SetPosition(0, 0);
-  m_AtlasSprites[m_SpriteCount]->SetScale(32, 32);
+  m_AtlasSprites[m_SpriteCount]->SetScale(128, 128);
   m_AtlasSprites[m_SpriteCount]->Build(0);
   m_SpriteCount++;
 
@@ -47,6 +47,7 @@ int MainMenu::Simulate() {
     m_AtlasSprites[0]->m_IsNinePatch = !m_AtlasSprites[0]->m_IsNinePatch;
     m_SwapTimeout = 0;
   }
+  m_AtlasSprites[0]->m_Rotation += 0.5 * m_DeltaTime;
   return 1;
 }
 
