@@ -68,103 +68,122 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
   if (m_IsNinePatch) {
     float percent_square = 3.0 / 8.0;
     float percent_narrow = 2.0 / 8.0;
+    float row_height_square = 24;
+    float row_height_narrow = 16;
+    float row_height = row_height_square;
+    float row_offset = 0;
+    float texture_offset = 0;
+    float half_scale_x = m_Scale[0] * 0.5;
+    float half_scale_y = m_Scale[1] * 0.5;
     int i;
 
-    // bottom left
-    i = 0;
-    vx = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
-    ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
-    
-    vx = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]) - (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0] * (percent_square + percent_narrow));
-    ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+    for (unsigned int j=0; j<3; j++) {
+      // bottom left
+      i = 0;
+      vx = -half_scale_x;
+      vy = -half_scale_y + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+      
+      vx = (-half_scale_x + 24);
+      vy = -half_scale_y + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]) - (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0] * (percent_square + percent_narrow));
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    vx = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]) - (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0] * (percent_square + percent_narrow));
-    ty = (percent_square + percent_narrow);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      vx = (-half_scale_x + 24);
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]) - (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0] * (percent_square + percent_narrow));
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    vx = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
-    ty = (percent_square + percent_narrow);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      vx = -half_scale_x;
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    batch_foo->m_NumBatched++;
+      batch_foo->m_NumBatched++;
 
-    // bottom middle
-    i = 0;
-    vx = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = ((percent_square));
-    ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
-    
-    vx = (-32 + 24) + 16; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = percent_square + percent_narrow;
-    ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      // bottom middle
+      i = 0;
+      vx = (-half_scale_x + 24);
+      vy = -half_scale_y + row_offset;
+      tx = ((percent_square));
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+      
+      vx = (-half_scale_x + 24) + 16;
+      vy = -half_scale_y + row_offset;
+      tx = percent_square + percent_narrow;
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    vx = (-32 + 24) + 16; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = percent_square + percent_narrow;
-    ty = (percent_square + percent_narrow);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      vx = (-half_scale_x + 24) + 16;
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square + percent_narrow;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    vx = (-32 + 24); // (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = percent_square;
-    ty = (percent_square + percent_narrow);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      vx = (-half_scale_x + 24);
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    batch_foo->m_NumBatched++;
+      batch_foo->m_NumBatched++;
 
-    // bottom right
-    i = 0;
-    vx = (-32 + 24) + 16; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = ((percent_square) + (percent_narrow));
-    ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
-    
-    vx = (-32 + 24) + (16 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = -32; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = percent_square + percent_narrow + percent_square;
-    ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      // bottom right
+      i = 0;
+      vx = (-half_scale_x + 24) + 16;
+      vy = -half_scale_y + row_offset;
+      tx = ((percent_square) + (percent_narrow));
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
+      
+      vx = (-half_scale_x + 24) + (16 + 24);
+      vy = -half_scale_y + row_offset;
+      tx = percent_square + percent_narrow + percent_square;
+      ty = (m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    vx = (-32 + 24) + (16 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = percent_square + percent_narrow + percent_square;
-    ty = (percent_square + percent_narrow);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      vx = (-half_scale_x + 24) + (16 + 24);
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square + percent_narrow + percent_square;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    vx = (-32 + 24) + 16; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0]);
-    vy = (-32 + 24); //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1]);
-    tx = percent_square + percent_narrow;
-    ty = (percent_square + percent_narrow);
-    BlitVertice(batch_foo, i, vx, vy, tx, ty);
-    i++;
+      vx = (-half_scale_x + 24) + 16;
+      vy = (-half_scale_y + row_height) + row_offset;
+      tx = percent_square + percent_narrow;
+      ty = (percent_square + percent_narrow) - texture_offset;
+      BlitVertice(batch_foo, i, vx, vy, tx, ty);
+      i++;
 
-    batch_foo->m_NumBatched++;
+      batch_foo->m_NumBatched++;
+
+      if (row_height == row_height_square) {
+        row_offset += row_height_square;
+        row_height = row_height_narrow;
+        texture_offset += percent_square;
+      } else {
+        row_offset += row_height_narrow;
+        row_height = row_height_square;
+        texture_offset += percent_narrow;
+      }
+    }
   } else {
     //TODO: document why 4 has to be 4
     for (unsigned int i=0; i<4; i++) {
