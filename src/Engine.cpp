@@ -164,6 +164,8 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glGetProgramInfoLog(program, sizeof msg, NULL, msg);
   LOGV("info: %s\n", msg);
 
+  glUseProgram(program);
+
   // Get the locations of the uniforms so we can access them
   ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
 
@@ -225,6 +227,7 @@ void Engine::DrawScreen(float rotation) {
 
 #ifdef USE_GLES2
 
+    glUseProgram(program);
 
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -236,8 +239,6 @@ void Engine::DrawScreen(float rotation) {
     ortho(ProjectionMatrix, a, b, c, d, e, f);
 
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
-
-    glUseProgram(program);
 
 #endif
 
