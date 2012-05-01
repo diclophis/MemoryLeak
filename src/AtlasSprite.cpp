@@ -291,7 +291,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 #ifdef USE_GLES2
     glActiveTexture(GL_TEXTURE0);
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
 #else
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -318,7 +318,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     //glDrawElements(GL_POINTS, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glDrawElements(GL_LINES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
   }
 
   foo->m_NumBatched = 0;
