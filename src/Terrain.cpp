@@ -390,11 +390,11 @@ void Terrain::Render(StateFoo *sf) {
 
 #ifdef USE_GLES2
 
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+  glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+  glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(sf->g_PositionAttribute);
+  glEnableVertexAttribArray(sf->g_TextureAttribute);
 
 #else
 
@@ -433,12 +433,11 @@ void Terrain::Render(StateFoo *sf) {
 
 #ifdef USE_GLES2
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
+    glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (0));
+    glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, 0, (char *)NULL + (nHillVertices * sizeof(MLPoint)));
 
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    //glDisableVertexAttribArray(1);
+    glEnableVertexAttribArray(sf->g_PositionAttribute);
+    glEnableVertexAttribArray(sf->g_TextureAttribute);
 
 #else
 

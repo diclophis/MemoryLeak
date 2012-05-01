@@ -267,11 +267,11 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 #ifdef USE_GLES2
 
-  glVertexAttribPointer(0, 2, GL_SHORT, GL_FALSE, foo->m_Stride, (char *)NULL + (0));
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+  glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_SHORT, GL_FALSE, foo->m_Stride, (char *)NULL + (0));
+  glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(sf->g_PositionAttribute);
+  glEnableVertexAttribArray(sf->g_TextureAttribute);
 
 #else
   
@@ -310,7 +310,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #ifdef USE_GLES2
 
     glActiveTexture(0);
-    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(sf->g_TextureAttribute);
 
 #endif
 

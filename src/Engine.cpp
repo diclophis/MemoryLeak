@@ -56,17 +56,6 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
   glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 }
 
-/*
-GLuint Engine::GetProjectionMatrixLocation() {
-  return m_CurrentGame->ModelViewProjectionMatrix_location;
-}
-
-
- Engine::GetProjectionMatrix() {
-  return &m_CurrentGame->ProjectionMatrix;
-}
-*/
-
 
 #endif
 
@@ -168,15 +157,12 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   program = glCreateProgram();
   glAttachShader(program, v);
   glAttachShader(program, f);
-  glBindAttribLocation(program, 0, "Position");
-  glBindAttribLocation(program, 1, "InCoord");
+  //glBindAttribLocation(program, 0, "Position");
+  //glBindAttribLocation(program, 1, "InCoord");
 
   glLinkProgram(program);
   glGetProgramInfoLog(program, sizeof msg, NULL, msg);
   LOGV("info: %s\n", msg);
-
-  // Enable the shaders
-  //glUseProgram(program);
 
   // Get the locations of the uniforms so we can access them
   ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
@@ -196,6 +182,13 @@ void Engine::ResetStateFoo() {
   m_StateFoo->g_lastVertexArrayObject = -1;
   m_StateFoo->m_EnabledStates = false;
   m_StateFoo->m_LastBufferIndex = 0;
+
+#ifdef USE_GLES2
+  
+  m_StateFoo->g_PositionAttribute = glGetAttribLocation(program, "Position");
+  m_StateFoo->g_TextureAttribute = glGetAttribLocation(program, "InCoord");
+  
+#endif
 
 }
 

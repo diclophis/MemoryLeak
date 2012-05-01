@@ -30,6 +30,7 @@ MainMenu::~MainMenu() {
 
 
 void MainMenu::CreateFoos() {
+  ResetStateFoo();
   m_NinePatchFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 254, 255, 0.0);
   m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 9);
 }
