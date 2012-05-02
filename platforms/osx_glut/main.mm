@@ -22,7 +22,7 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static int game_index = 0;
+static int game_index = 3;
 static short *outData;
 
 
@@ -111,16 +111,16 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameCreateFoos();
         Engine::CurrentGameStart();
       } else if (key == 115) { // s
-        //if (game_index == 1) {
-        //  game_index = 3;
-        //} else {
-        //  game_index = 1;
-        //}
-
-        game_index++;
-        if (game_index == 4) {
-          game_index = 0;
+        if (game_index == 2) {
+          game_index = 3;
+        } else {
+          game_index = 2;
         }
+
+        //game_index++;
+        //if (game_index == 4) {
+        //  game_index = 0;
+        //}
 
         Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
       }
