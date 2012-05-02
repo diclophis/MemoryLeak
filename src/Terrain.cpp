@@ -38,9 +38,11 @@ static const char color_only_fragment_shader[] =
 "}\n";
 
 Terrain::Terrain(b2World *w, GLuint t) {
-  m_InterleavedBuffer = 0;
-  m_ElementBuffer = 0;
-
+  m_InterleavedBuffer = (GLuint *)malloc(1 * sizeof(GLuint));
+  m_ElementBuffer = (GLuint *)malloc(1 * sizeof(GLuint));
+  m_TextureInterlacedBuffer = (GLuint *)malloc(1 * sizeof(GLuint));
+  m_TextureElementBuffer = (GLuint *)malloc(1 * sizeof(GLuint));
+  
 #ifdef HAS_VAO
 
   m_VertexArrayObject = 0;
@@ -65,8 +67,8 @@ Terrain::Terrain(b2World *w, GLuint t) {
   GenerateBorderVertices();
   CreateBox2DBody();
 
-  glGenBuffers(1, &m_InterleavedBuffer);
-  glGenBuffers(1, &m_ElementBuffer);
+  glGenBuffers(1, m_InterleavedBuffer);
+  glGenBuffers(1, m_ElementBuffer);
 
   LOGV("WTF!@#!@#!@#!@#!@#!@# %d\n", m_InterleavedBuffer);
 
@@ -81,8 +83,8 @@ Terrain::~Terrain() {
   free(hillElements);
   free(hillTexCoords);
 
-  glDeleteBuffers(1, &m_InterleavedBuffer);
-  glDeleteBuffers(1, &m_ElementBuffer);
+  glDeleteBuffers(1, m_InterleavedBuffer);
+  glDeleteBuffers(1, m_ElementBuffer);
 
 #ifdef HAS_VAO
 
@@ -299,12 +301,12 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
   }
 
   if (m_ElementBuffer != sf->g_lastElementBuffer) {
-    sf->g_lastElementBuffer = m_ElementBuffer;
+    sf->g_lastElementBuffer = m_ElementBuffer[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
   if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
-    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -319,13 +321,13 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
 
 #else
 
-  if (m_ElementBuffer != sf->g_lastElementBuffer) {
-    sf->g_lastElementBuffer = m_ElementBuffer;
+  if (m_ElementBuffer[0] != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
-  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
-    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+  if (m_InterleavedBuffer[0] != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -338,14 +340,6 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, nHillVertices * sizeof(GLshort), NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, nHillVertices * sizeof(GLshort), hillElements);
 
-  //glBindBuffer(GL_ARRAY_BUFFER, 0);
-  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  //sf->g_lastInterleavedBuffer = 0;
-  //sf->g_lastElementBuffer = 0;
-  //glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
-  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-
 }
 
 
@@ -354,7 +348,7 @@ void Terrain::Render(StateFoo *sf) {
 	if (rt->name != sf->g_lastTexture) {
     sf->g_lastTexture = rt->name;
 		glBindTexture(GL_TEXTURE_2D, sf->g_lastTexture);
-	}
+  }	
   
 #ifdef HAS_VAO  
 
@@ -378,13 +372,13 @@ void Terrain::Render(StateFoo *sf) {
 
 #else
 
-  if (m_ElementBuffer != sf->g_lastElementBuffer) {
-    sf->g_lastElementBuffer = m_ElementBuffer;
+  if (m_ElementBuffer[0] != sf->g_lastElementBuffer) {
+    sf->g_lastElementBuffer = m_ElementBuffer[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
-  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
-    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+  if (m_InterleavedBuffer[0] != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
@@ -596,10 +590,10 @@ GLuint Terrain::GenerateStripesTexture() {
 
     glColor4f(1.0, 1.0, 1.0, 1.0);
 
-    glGenBuffers(1, &m_TextureInterlacedBuffer);
-    glGenBuffers(1, &m_TextureElementBuffer);
+    glGenBuffers(1, m_TextureInterlacedBuffer);
+    glGenBuffers(1, m_TextureElementBuffer);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_TextureInterlacedBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_TextureInterlacedBuffer[0]);
     glBufferData(GL_ARRAY_BUFFER, (nVertices * sizeof(MLPoint)) + (nVertices * sizeof(ccColor4F)), NULL, GL_STATIC_DRAW);
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, (nVertices * sizeof(MLPoint)), vertices);
@@ -610,7 +604,7 @@ GLuint Terrain::GenerateStripesTexture() {
       textureElements[i] = i;
     }
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureElementBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextureElementBuffer[0]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, (nVertices * sizeof(GLuint)), textureElements, GL_STATIC_DRAW);
 
     free(textureElements);
@@ -648,7 +642,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #ifdef USE_GLES2
 
-    LOGV("wtf!@#!@#!@#!@#!@#!@#!@#!@#!@#!@# %d\n", shaderprogram);
+    LOGV("terrain texture shader ID: %d\n", shaderprogram);
     glDetachShader(shaderprogram, vertexshader);
     glDetachShader(shaderprogram, fragmentshader);
     glDeleteShader(vertexshader);
@@ -663,8 +657,11 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #endif
 
-    glDeleteBuffers(1, &m_TextureInterlacedBuffer);
-    glDeleteBuffers(1, &m_TextureElementBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    glDeleteBuffers(1, m_TextureInterlacedBuffer);
+    glDeleteBuffers(1, m_TextureElementBuffer);
 
     glDisable(GL_BLEND);
 
@@ -770,6 +767,9 @@ GLuint Terrain::GenerateStripesTexture() {
   //glViewport(0, 0, size.x, size.y);
   //glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glFlush();
+  glFinish();
+
 
   return rt->name;
 }

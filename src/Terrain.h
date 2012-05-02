@@ -53,10 +53,10 @@ public:
   int prevFromKeyPointI;
   int prevToKeyPointI;
 
-  GLuint m_InterleavedBuffer;
-  GLuint m_ElementBuffer;
-  GLuint m_TextureInterlacedBuffer;
-  GLuint m_TextureElementBuffer;
+  GLuint *m_InterleavedBuffer;
+  GLuint *m_ElementBuffer;
+  GLuint *m_TextureInterlacedBuffer;
+  GLuint *m_TextureElementBuffer;
 
 #ifdef USE_GLES2
 

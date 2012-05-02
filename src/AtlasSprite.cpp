@@ -283,19 +283,22 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #endif
 
   size_t interleaved_buffer_size = (foo->m_NumBatched * 4 * foo->m_Stride);
-  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW); // GL_STATIC_DRAW might be faster...
+  //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW); // GL_STATIC_DRAW might be faster...
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
   
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
 
 #ifdef USE_GLES2
+
     glActiveTexture(GL_TEXTURE0);
-    //glEnable(GL_TEXTURE_2D);
+
 #else
+
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 #endif
 
     sf->m_EnabledStates = true;
@@ -362,19 +365,29 @@ foofoo *AtlasSprite::GetBatchFoo(GLuint texture_index, int max_frame_count) {
   ff->m_numFrames = max_frame_count;
   ff->m_numSpriteFoos = ff->m_numFrames * 4;
   ff->m_SpriteFoos = (SpriteFoo *)malloc(ff->m_numSpriteFoos * sizeof(SpriteFoo));
+
+#ifdef HAS_VAO
+
   ff->m_numVertexArrayObjects = 1;
   ff->m_VertexArrayObjects = (GLuint*)calloc((ff->m_numVertexArrayObjects), sizeof(GLuint));
+
+#endif
+
   ff->m_numInterleavedBuffers = 1;
   ff->m_InterleavedBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numInterleavedBuffers));
-  ff->m_Stride = size_of_sprite_foo;
+
   ff->m_numIndexBuffers = 1;
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
 
-  glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
-  LOGV("MADE BUFFER: %d\n", ff->m_InterleavedBuffers[0]);
-  glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
+  ff->m_Stride = size_of_sprite_foo;
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
+
+
+  glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
+  glBindBuffer(GL_ARRAY_BUFFER, ff->m_InterleavedBuffers[0]);
+  glBufferData(GL_ARRAY_BUFFER, max_frame_count * 4 * ff->m_Stride, NULL, GL_DYNAMIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
   for (unsigned int i=0; i<max_frame_count; i++) {
     indices[(i * 6) + 0] = (i * 4) + 1;
     indices[(i * 6) + 1] = (i * 4) + 2;
@@ -384,10 +397,15 @@ foofoo *AtlasSprite::GetBatchFoo(GLuint texture_index, int max_frame_count) {
     indices[(i * 6) + 5] = (i * 4) + 3;
   }
 
+  glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_frame_count * 6 * sizeof(GLshort), indices, GL_DYNAMIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   free(indices);
+
+  LOGV("atlassprite batch buffers: %d %d\n", ff->m_InterleavedBuffers[0], ff->m_IndexBuffers[0]);
+  LOGV("atlassprite batch buffers: %d %d\n", ff->m_IndexBuffers[0], ff->m_InterleavedBuffers[0]);
   
   return ff;
 }

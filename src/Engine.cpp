@@ -155,6 +155,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   // Create and link the shader program
   program = glCreateProgram();
+  LOGV("engine shader ID: %d\n", program);
   glAttachShader(program, v);
   glAttachShader(program, f);
   //glBindAttribLocation(program, 0, "Position");
