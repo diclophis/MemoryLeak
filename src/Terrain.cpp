@@ -119,14 +119,14 @@ void Terrain::GenerateHillKeyPoints() {
   hillKeyPoints[nHillKeyPoints++] = MLPointMake(x, y);
 
   int minDX = 160, rangeDX = 80;
-  int minDY = 60,  rangeDY = 60;
+  int minDY = 30,  rangeDY = 100;
   float sign = -1; // +1 - going up, -1 - going  down
   float maxHeight = screenH;
   float minHeight = 0;
   while (nHillKeyPoints < kMaxHillKeyPoints-1) {
     dx = random() % rangeDX + minDX;
     x += dx;
-    dy = minDY; //random() % rangeDY + minDY;
+    dy = random() % rangeDY + minDY;
     ny = y + dy * sign;
     if(ny > maxHeight) ny = maxHeight;
     if(ny < minHeight) ny = minHeight;
@@ -245,16 +245,10 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
         pt1.x = p0.x + j*dx;
         pt1.y = ymid + ampl * cosf(da*j);
         for (int k=0; k<vSegments+1; k++) {
-          //hillElements[element++] = nHillVertices;
           hillVertices[nHillVertices] = MLPointMake(pt0.x, pt0.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt0.x/(float)textureSize, (float)(k)/vSegments);
-          //hillElements[element++] = nHillVertices;
           hillVertices[nHillVertices] = MLPointMake(pt1.x, pt1.y-(float)textureSize/vSegments*k);
           hillTexCoords[nHillVertices++] = MLPointMake(pt1.x/(float)textureSize, (float)(k)/vSegments);
-          //if ((nHillVertices % 3) == 0) {
-          //  hillElements[element] = element;
-          //  element++;
-          //}
         }
         pt0 = pt1;
       }
@@ -268,32 +262,15 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
     LOGV("BADD!@#$!@#!@# %d %d %d %d\n", prevFromKeyPointI, fromKeyPointI, prevToKeyPointI, toKeyPointI);
   }
 
-  //hillElements[0] = 0;
-  //hillElements[1] = 1;
-  //hillElements[2] = 2;
   for (int i=0; i<(nHillVertices); i++) {
     hillElements[i] = i;
   }
-
-  //if (m_InterleavedBuffer != 0) {
-  //  glDeleteBuffers(1, &m_InterleavedBuffer);
-  //}
-
-  //if (m_ElementBuffer != 0) {
-  //  glDeleteBuffers(1, &m_ElementBuffer);
-  //}
-
-
-  //glBindBuffer(GL_ARRAY_BUFFER, m_InterleavedBuffer);
-  //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ElementBuffer);
 
 #ifdef HAS_VAO
 
   if (m_VertexArrayObject == 0) {
     glGenVertexArraysOES(1, &m_VertexArrayObject);
   }
-
-  //if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
 
   if (m_VertexArrayObject != sf->g_lastVertexArrayObject) {
     sf->g_lastVertexArrayObject = m_VertexArrayObject;
@@ -765,12 +742,7 @@ GLuint Terrain::GenerateStripesTexture() {
   
   rt->End();
 
-  //glViewport(0, 0, size.x, size.y);
-  //glClearColor(1.0, 1.0, 1.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  glFlush();
-  glFinish();
-
 
   return rt->name;
 }
