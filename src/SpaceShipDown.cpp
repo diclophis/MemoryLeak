@@ -329,7 +329,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   int build_count = 0;
-  float scale = 1.0;
+  //float scale = 1.0;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
     build_count = ROCKET_AFTERBURNER_COUNT;
