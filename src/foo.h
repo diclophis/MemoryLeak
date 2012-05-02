@@ -70,12 +70,13 @@ struct foofoo {
 
 	~foofoo()
 	{
-    LOGV("dealloc foofoo\n");
+    LOGV("dealloc foofoo %d %d\n", m_numInterleavedBuffers, m_numIndexBuffers);
     glDeleteBuffers(m_numBuffers, m_VerticeBuffers);
     glDeleteBuffers(m_numBuffers, m_IndexBuffers);
     glDeleteBuffers(m_numNormalBuffers, m_NormalBuffers);
     glDeleteBuffers(m_numTextureBuffers, m_TextureBuffer);
     glDeleteBuffers(m_numInterleavedBuffers, m_InterleavedBuffers);
+    glDeleteBuffers(m_numIndexBuffers, m_IndexBuffers);
 
     if (m_numBuffers > 0) {
       free(m_VerticeBuffers);

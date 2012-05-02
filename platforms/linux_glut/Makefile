@@ -1,4 +1,4 @@
-# OSX Makefile, needs to know where the main src root is
+# Linux Makefile
 
 build=build
 CXXFLAGS=\
@@ -13,31 +13,13 @@ CXXFLAGS=\
 -I../../src/Box2D \
 -I../../src/OpenSteer
 
-#CC=gcc
-
-#-Wno-unknown-pragmas \
-
-#-I../../src/include/curl \
-#-I../../src/include/ares \
-#-I../../src/yajl \
-#-I../../src/yajl/api \
-#-I../../src/lua \
-#-I../../src/oolua \
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/lua/*.c)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/oolua/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/ares/*.c)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/curl/*.c)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajil/*.c)))
-
 CFLAGS=$(CXXFLAGS)
 
-LDFLAGS=-lpthread -lresolv -lGL -lglut -lSOIL -lasound -lGLU -lm -lstdc++
-
-#LDFLAGS=-lm -lstdc++
-#-lEGL -lX11 -lGLESv1_CM
+LDFLAGS=-lpthread -lresolv -lGL -lglut -lasound -lGLU -lm -lstdc++
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.o, $(wildcard *.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/assimp/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/contrib/irrXML/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/ConvertUTF/*.c)))
@@ -56,8 +38,6 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 raptor_island: $(build) $(objects)
 	$(CXX) -o $(build)/raptor_island $(objects) $(LDFLAGS)
   
-# $(objects)
-
 $(build)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

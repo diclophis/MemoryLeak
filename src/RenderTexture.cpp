@@ -13,7 +13,6 @@ RenderTexture::~RenderTexture() {
   LOGV("dealloc rendertexture %d\n", name);
   glDeleteTextures(1, &name);
   glDeleteBuffers(1, &fbo);
-  glDeleteBuffers(1, &rbo);
   glDeleteBuffers(1, &depthRenderbuffer);
 }
 
@@ -31,8 +30,8 @@ void RenderTexture::Begin() {
     LOGV("INVALID GL_CONTEXT CANT MAKE TEXTURE\n");
     assert(false);
   }
-  glBindTexture(GL_TEXTURE_2D, name);
 
+  glBindTexture(GL_TEXTURE_2D, name);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

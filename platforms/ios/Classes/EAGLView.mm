@@ -197,8 +197,6 @@ static GLuint g_LastRenderBuffer = -1;
     Engine::CurrentGameDrawScreen(0);		
     
     const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES};
-    //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT_OES, GL_COLOR_ATTACHMENT0_OES};
-    //const GLenum discards[]  = {GL_DEPTH_EXT, GL_COLOR_EXT};
     glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards);
     
     if (g_LastRenderBuffer != colorRenderbuffer) {
@@ -207,9 +205,6 @@ static GLuint g_LastRenderBuffer = -1;
     }
     
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
-
-    //const GLenum discards_2[]  = {GL_COLOR_ATTACHMENT0_OES};
-    //glDiscardFramebufferEXT(GL_FRAMEBUFFER_OES, 1, discards_2);
   }
 }
 

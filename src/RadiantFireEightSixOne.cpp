@@ -17,7 +17,6 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHan
   b2BodyDef spriteBodyDef;
   spriteBodyDef.type = b2_dynamicBody;
   CreateBox2DWorld();
-  m_Terrain = new Terrain(m_World, m_Textures.at(0));  
   CreateFoos();
 
   m_PlayerIndex = 0;
@@ -35,7 +34,8 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHan
   PlayerUpdateNodePosition();
   PlayerSleep();
 
-  m_Terrain->SetOffsetX(m_PlayerPosition.x, m_StateFoo);
+  m_Terrain = new Terrain(m_World, m_Textures.at(0));  
+  m_Terrain->SetOffsetX(0, m_StateFoo);
 }
 
 
@@ -88,8 +88,6 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
 int RadiantFireEightSixOne::Simulate() {
   int32 velocityIterations = 2;
   int32 positionIterations = 8;
-
-  float old_x = m_Terrain->position.x;
   
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
 
@@ -103,9 +101,7 @@ int RadiantFireEightSixOne::Simulate() {
   PlayerUpdateNodePosition();
   m_Terrain->SetOffsetX(m_PlayerPosition.x, m_StateFoo);
   
-  float new_x = m_Terrain->position.x;
 
-  m_CameraPosition[0] += (0.95 * (new_x - old_x));
   
   return 1;
 }
@@ -116,7 +112,6 @@ void RadiantFireEightSixOne::RenderModelPhase() {
 
 
 void RadiantFireEightSixOne::RenderSpritePhase() {
-  //glTranslatef(m_Terrain->position.x - 128.0, -175.0, 0.0);
   glTranslatef(m_CameraPosition[0], 0.0, 0.0);
   m_Terrain->Render(m_StateFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
@@ -143,7 +138,7 @@ void RadiantFireEightSixOne::PlayerDive() {
 
 
 void RadiantFireEightSixOne::PlayerLimitVelocity() {
-  const float minVelocityX = 1;
+  const float minVelocityX = 10;
   const float minVelocityY = -20;
   b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
   if (vel.x < minVelocityX) {
@@ -168,6 +163,10 @@ void RadiantFireEightSixOne::PlayerUpdateNodePosition() {
     PlayerSleep();
   }
   m_AtlasSprites[m_PlayerIndex]->SetPosition(m_PlayerPosition.x, m_PlayerPosition.y);
+
+  //float new_x = m_Terrain->position.x;
+  //m_CameraPosition[0] += (0.95 * (new_x - old_x));
+  m_CameraPosition[0] = -m_PlayerPosition.x;
 }
 
 

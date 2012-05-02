@@ -329,7 +329,7 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   int build_count = 0;
-  float scale = 1.0;
+  //float scale = 1.0;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
     build_count = ROCKET_AFTERBURNER_COUNT;
@@ -930,8 +930,9 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 		if ( code[4] == '1' ) current[3] += data[i++] - 32;
 		if ( code[0] == '1' ) {
 			
-			int ii = 0;
+			//int ii = 0;
 			
+      /*
 			if (current[3] == 8) {
 				ii = 1;
 			} else if (current[3] == 1) {
@@ -942,6 +943,7 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
 				ii = 2;
 			} else {
 			}
+      */
 			
       float world_x = current[0] * 50.0;
       float world_y = current[2] * -50.0;
