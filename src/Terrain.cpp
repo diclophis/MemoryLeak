@@ -21,7 +21,6 @@ static const char color_only_vertex_shader[] =
 "varying vec4 ex_Color;\n"
 "uniform mat4 ModelViewProjectionMatrix;\n"
 "void main(void) {\n"
-//"gl_Position = vec4(in_Position.x, in_Position.y, 0.0, 1.0);\n"
 "gl_Position = ModelViewProjectionMatrix * vec4(in_Position, 1.0, 1.0);\n"
 "ex_Color = in_Color;\n"
 "}\n";
@@ -310,6 +309,7 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
 
 #endif
 
+  // TODO: interlace/interleave this shit
   glBufferData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint) * 2, NULL, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, nHillVertices * sizeof(MLPoint), hillVertices);
   glBufferSubData(GL_ARRAY_BUFFER, nHillVertices * sizeof(MLPoint), nHillVertices * sizeof(MLPoint), hillTexCoords);
@@ -333,14 +333,6 @@ void Terrain::Render(StateFoo *sf) {
     sf->g_lastVertexArrayObject = m_VertexArrayObject;
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
   }
-
-  /*
-  if (m_ElementBuffer != sf->g_lastElementBuffer) {
-    sf->g_lastElementBuffer = m_ElementBuffer;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-  }
-
-  */
 
   if (m_InterleavedBuffer[0] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = m_InterleavedBuffer[0];
@@ -382,7 +374,6 @@ void Terrain::Render(StateFoo *sf) {
 #ifdef USE_GLES2
 
     glActiveTexture(GL_TEXTURE0);
-    //glEnable(GL_TEXTURE_2D);
 
 #else
 

@@ -283,7 +283,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #endif
 
   size_t interleaved_buffer_size = (foo->m_NumBatched * 4 * foo->m_Stride);
-  //glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW); // GL_STATIC_DRAW might be faster...
+  glBufferData(GL_ARRAY_BUFFER, interleaved_buffer_size, NULL, GL_DYNAMIC_DRAW); // GL_STATIC_DRAW might be faster...
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
   
   if (!sf->m_EnabledStates) {
