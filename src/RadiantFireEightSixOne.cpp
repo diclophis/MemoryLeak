@@ -17,7 +17,6 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHan
   b2BodyDef spriteBodyDef;
   spriteBodyDef.type = b2_dynamicBody;
   CreateBox2DWorld();
-  m_Terrain = new Terrain(m_World, m_Textures.at(0));  
   CreateFoos();
 
   m_PlayerIndex = 0;
@@ -35,7 +34,8 @@ RadiantFireEightSixOne::RadiantFireEightSixOne(int w, int h, std::vector<FileHan
   PlayerUpdateNodePosition();
   PlayerSleep();
 
-  m_Terrain->SetOffsetX(m_PlayerPosition.x, m_StateFoo);
+  m_Terrain = new Terrain(m_World, m_Textures.at(0));  
+  m_Terrain->SetOffsetX(0, m_StateFoo);
 }
 
 
@@ -103,9 +103,7 @@ int RadiantFireEightSixOne::Simulate() {
   PlayerUpdateNodePosition();
   m_Terrain->SetOffsetX(m_PlayerPosition.x, m_StateFoo);
   
-  float new_x = m_Terrain->position.x;
 
-  m_CameraPosition[0] += (0.95 * (new_x - old_x));
   
   return 1;
 }
@@ -143,7 +141,7 @@ void RadiantFireEightSixOne::PlayerDive() {
 
 
 void RadiantFireEightSixOne::PlayerLimitVelocity() {
-  const float minVelocityX = 1;
+  const float minVelocityX = 10;
   const float minVelocityY = -20;
   b2Vec2 vel = m_PlayerBody->GetLinearVelocity();
   if (vel.x < minVelocityX) {
@@ -168,6 +166,10 @@ void RadiantFireEightSixOne::PlayerUpdateNodePosition() {
     PlayerSleep();
   }
   m_AtlasSprites[m_PlayerIndex]->SetPosition(m_PlayerPosition.x, m_PlayerPosition.y);
+
+  //float new_x = m_Terrain->position.x;
+  //m_CameraPosition[0] += (0.95 * (new_x - old_x));
+  m_CameraPosition[0] = -m_PlayerPosition.x;
 }
 
 
