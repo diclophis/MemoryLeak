@@ -277,12 +277,12 @@ void Terrain::ResetHillVertices(StateFoo *sf) {
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
   }
 
-  if (m_ElementBuffer != sf->g_lastElementBuffer) {
+  if (m_ElementBuffer[0] != sf->g_lastElementBuffer) {
     sf->g_lastElementBuffer = m_ElementBuffer[0];
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
   }
 
-  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
+  if (m_InterleavedBuffer[0] != sf->g_lastInterleavedBuffer) {
     sf->g_lastInterleavedBuffer = m_InterleavedBuffer[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
@@ -342,8 +342,8 @@ void Terrain::Render(StateFoo *sf) {
 
   */
 
-  if (m_InterleavedBuffer != sf->g_lastInterleavedBuffer) {
-    sf->g_lastInterleavedBuffer = m_InterleavedBuffer;
+  if (m_InterleavedBuffer[0] != sf->g_lastInterleavedBuffer) {
+    sf->g_lastInterleavedBuffer = m_InterleavedBuffer[0];
     glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
   }
 
