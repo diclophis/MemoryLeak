@@ -88,8 +88,6 @@ void RadiantFireEightSixOne::Hit(float x, float y, int hitState) {
 int RadiantFireEightSixOne::Simulate() {
   int32 velocityIterations = 2;
   int32 positionIterations = 8;
-
-  float old_x = m_Terrain->position.x;
   
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
 

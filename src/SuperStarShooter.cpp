@@ -295,7 +295,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 	float collide_y = (dy);
   int cx = (collide_x / SUBDIVIDE);
   int cy = (collide_y / SUBDIVIDE);
-  int collide_index = -1;
   bool collide_index_set = false;
 
   if (hitState == 0) {
