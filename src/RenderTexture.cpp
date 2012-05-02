@@ -13,7 +13,6 @@ RenderTexture::~RenderTexture() {
   LOGV("dealloc rendertexture %d\n", name);
   glDeleteTextures(1, &name);
   glDeleteBuffers(1, &fbo);
-  //glDeleteBuffers(1, &rbo);
   glDeleteBuffers(1, &depthRenderbuffer);
 }
 

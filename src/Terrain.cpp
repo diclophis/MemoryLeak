@@ -70,7 +70,7 @@ Terrain::Terrain(b2World *w, GLuint t) {
   glGenBuffers(1, m_InterleavedBuffer);
   glGenBuffers(1, m_ElementBuffer);
 
-  LOGV("WTF!@#!@#!@#!@#!@#!@# %d\n", m_InterleavedBuffer);
+  LOGV("WTF!@#!@#!@#!@#!@#!@# %d\n", m_InterleavedBuffer[0]);
 
 }
 
