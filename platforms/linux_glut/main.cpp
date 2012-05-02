@@ -35,7 +35,7 @@ snd_pcm_hw_params_t *hwparams;
 // the second number is the number of the device.
 char *pcm_name;
 
-static int game_index = 1;
+static int game_index = 0;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;

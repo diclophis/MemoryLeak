@@ -371,6 +371,7 @@ foofoo *AtlasSprite::GetBatchFoo(GLuint texture_index, int max_frame_count) {
   ff->m_IndexBuffers = (GLuint*)malloc(sizeof(GLuint) * (ff->m_numIndexBuffers));
 
   glGenBuffers(ff->m_numInterleavedBuffers, ff->m_InterleavedBuffers);
+  LOGV("MADE BUFFER: %d\n", ff->m_InterleavedBuffers[0]);
   glGenBuffers(ff->m_numIndexBuffers, ff->m_IndexBuffers);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ff->m_IndexBuffers[0]);

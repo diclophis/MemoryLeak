@@ -86,7 +86,7 @@ Terrain::~Terrain() {
 
 #ifdef HAS_VAO
 
-    glDeleteVertexArraysOES(1, &m_VertexArrayObject);
+  glDeleteVertexArraysOES(1, &m_VertexArrayObject);
 
 #endif
 
