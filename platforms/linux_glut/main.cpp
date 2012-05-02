@@ -8,7 +8,6 @@
 
 #include "MemoryLeak.h"
 
-#include <SOIL/SOIL.h>
 #include <dirent.h>
 #include <alsa/asoundlib.h>
 #include <vector>
@@ -17,11 +16,6 @@
 #define kWindowHeight 480
 
 static pthread_t audio_thread;
-
-static std::vector<GLuint> textures;
-static std::vector<foo*> models;
-static std::vector<foo*> sounds;
-static std::vector<foo*> levels;
 
 static int min_buffer;
 
@@ -124,7 +118,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
   } else {
     if (reset_down) {
     } else {
-      Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+      Engine::Start(game_index, kWindowWidth, kWindowHeight);
     }
     reset_down = !reset_down;
   }
@@ -145,9 +139,6 @@ char *path_cat (const char *str1, char *str2) {
 	return result;
 }
 
-//int scandir(const char *dirp, struct dirent ***namelist,
-//int (*filter)(const struct dirent *),
-//int (*compar)(const struct dirent **, const struct dirent **));
 
 int is_not_dot_or_dot_dot(const struct dirent *dp) {
   if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
@@ -177,7 +168,7 @@ int main(int argc, char** argv) {
   struct dirent **dps;
 
   const char *dir_path="../../assets/textures/";
-  DIR *dir; // = opendir(dir_path);
+  DIR *dir;
   int dir_ents = scandir(dir_path, &dps, is_not_dot_or_dot_dot, alphasort);
 
   if (dir_ents == -1) {
@@ -188,14 +179,11 @@ int main(int argc, char** argv) {
   for (int i=0; i<dir_ents; i++) {
     char *tmp;
     tmp = path_cat(dir_path, dps[i]->d_name);
-    GLuint tex_2d = SOIL_load_OGL_texture(
-      tmp,
-      SOIL_LOAD_AUTO,
-      SOIL_CREATE_NEW_ID,
-      SOIL_FLAG_MIPMAPS | SOIL_FLAG_MULTIPLY_ALPHA
-    );
-    textures.push_back(tex_2d);
-
+    FILE *fd = fopen(tmp, "rb");
+    fseek(fd, 0, SEEK_END);
+    unsigned int len = ftell(fd);
+    rewind(fd);
+    Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
     free(tmp);
     tmp=NULL;
   }
@@ -212,13 +200,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-
-        foo *firstModel = new foo;
-        firstModel->fp = fd;
-        firstModel->off = 0;
-        firstModel->len = len;
-
-        models.push_back(firstModel);
+        Engine::PushBackFileHandle(MODELS, fd, 0, len);
       }
 
       free(tmp);
@@ -239,13 +221,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-
-        foo *firstModel = new foo;
-        firstModel->fp = fd;
-        firstModel->off = 0;
-        firstModel->len = len;
-
-        sounds.push_back(firstModel);
+        Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
       }
     
       free(tmp);
@@ -262,17 +238,11 @@ int main(int argc, char** argv) {
       tmp = path_cat(dir_path, dp->d_name);
       if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
       } else {
-      FILE *fd = fopen(tmp, "rb");
-      fseek(fd, 0, SEEK_END);
-      unsigned int len = ftell(fd);
-      rewind(fd);
-
-      foo *firstModel = new foo;
-      firstModel->fp = fd;
-      firstModel->off = 0;
-      firstModel->len = len;
-
-      levels.push_back(firstModel);
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+        Engine::PushBackFileHandle(LEVELS, fd, 0, len);
       }
 
       free(tmp);
@@ -379,7 +349,7 @@ int main(int argc, char** argv) {
 
   min_buffer = periodsize2 * 16;
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight, textures, models, levels, sounds, NULL);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight);
   pthread_create(&audio_thread, 0, pump_audio, NULL);
 
   glutMainLoop();
