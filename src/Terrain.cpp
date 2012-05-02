@@ -523,6 +523,7 @@ GLuint Terrain::GenerateStripesTexture() {
 
 #else
 
+  glLoadIdentity();
   glOrthof(512.0, 0.0, 512.0, 0.0, -1.0, 1.0);
 
 #endif
