@@ -16,13 +16,13 @@
 #define kOutputBus 0
 
 
-static int kWindowWidth = 500;
-static int kWindowHeight = 500;
+static int kWindowWidth = 256;
+static int kWindowHeight = 256;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static int game_index = 2;
+static int game_index = 0;
 static short *outData;
 
 

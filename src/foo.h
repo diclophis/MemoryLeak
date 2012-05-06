@@ -39,7 +39,9 @@ typedef struct {
 } StateFoo;
 
 #ifdef __cplusplus
+
 extern "C" {
+
 #endif
 
 struct foofoo {
@@ -152,10 +154,13 @@ struct foofoo {
   ModelFoo *m_ModelFoos;
   GLshort *m_IndexFoo;
   int m_BufferCount;
-
+  float m_texCoordWidth;
+  float m_texCoordHeight;
 
 };
 
 #ifdef __cplusplus
+
 }
+
 #endif
