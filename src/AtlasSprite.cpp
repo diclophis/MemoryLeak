@@ -65,7 +65,7 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     float row_height = row_height_square;
     float row_offset = 0;
     float texture_base_x = m_FooFoo->m_SpriteFoos[(m_Frame)].texture[0];
-    float texture_base_y = m_FooFoo->m_SpriteFoos[(m_Frame)].texture[0];
+    float texture_base_y = m_FooFoo->m_SpriteFoos[(m_Frame)].texture[1];
     float texture_offset_x = 0.0;
     float texture_offset = 0.0, texture_offset_y = 0.0;
     float half_scale_x = m_Scale[0];
@@ -73,7 +73,7 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     float percent_height = percent_square;
     int i;
 
-    LOGV("%f %f\n", m_FooFoo->m_SpriteFoos[(m_Frame)].texture[0], m_FooFoo->m_texCoordHeight);
+    //LOGV("%f %f\n", m_FooFoo->m_SpriteFoos[(m_Frame)].texture[0], m_FooFoo->m_texCoordHeight);
 
     //m_FooFoo->m_texCoordWidth = 1.0;
     //m_FooFoo->m_texCoordHeight = 1.0;
@@ -86,6 +86,7 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
       vy = -half_scale_y + row_offset;
       tx = texture_base_x; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0]);
       ty = texture_base_y - texture_offset_y; //(m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1]) - texture_offset;
+      //LOGV("%f\n", ty);
       BlitVertice(batch_foo, i, vx, vy, tx, ty);
       i++;
 
@@ -214,11 +215,13 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     }
   } else {
     //TODO: document why 4 has to be 4
+    //LOGV("\n");
     for (unsigned int i=0; i<4; i++) {
       vx = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[0] * m_Scale[0];
       vy = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].vertex[1] * m_Scale[1];
       tx = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[0];
       ty = m_FooFoo->m_SpriteFoos[(m_Frame * 4) + i].texture[1];
+      //LOGV("%f\n", ty);
       BlitVertice(batch_foo, i, vx, vy, tx, ty);
     }
     batch_foo->m_NumBatched++;
