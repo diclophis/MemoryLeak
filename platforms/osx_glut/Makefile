@@ -23,6 +23,7 @@ CXXFLAGS=\
 
 #-DUSE_GLES2 \
 
+
 CFLAGS=$(CXXFLAGS)
 LDFLAGS=-m64 -arch x86_64 -framework OpenGL -framework GLUT -framework Foundation -framework ApplicationServices -framework AppKit -framework AudioToolbox -framework AudioUnit -framework CoreAudio -framework Accelerate
 
