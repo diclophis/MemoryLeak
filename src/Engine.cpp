@@ -6,7 +6,7 @@
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
 #include "SpaceShipDown.h"
-#include "AncientDawn.h"
+//#include "AncientDawn.h"
 
 
 static std::vector<Game *> games;
@@ -464,19 +464,29 @@ void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset,
   fh->fp = file;
   fh->off = offset;
   fh->len = length;
+  std::vector<FileHandle *> *collectionHandle = NULL;
   switch(collection) {
     case MODELS:
-      models.push_back(fh);
-      return;
+      collectionHandle = &models;
+      break;
     case SOUNDS:
-      sounds.push_back(fh);
-      return;
+      collectionHandle = &sounds;
+      break;
     case TEXTURES:
-      textures.push_back(fh);
-      return;
+      collectionHandle = &textures;
+      break;
     case LEVELS:
-      levels.push_back(fh);
-      return;
+      collectionHandle = &levels;
+      break;
+    default:
+      break;
+  }
+
+  if (collectionHandle != NULL) {
+    collectionHandle->push_back(fh);
+  } else {
+    LOGV("this should not happen\n");
+    assert(0);
   }
 }
 
@@ -487,7 +497,7 @@ void Engine::Start(int i, int w, int h) {
     games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SpaceShipDown>);
-    games.push_back(new GameImpl<AncientDawn>);
+    //games.push_back(new GameImpl<AncientDawn>);
   }
 
   if (m_CurrentGame) {
