@@ -76,9 +76,9 @@ public:
   void CreateWorld();
   void CreateDebugDraw();
   void CreateContactListener();
-  int CreatePlayer();
-  int CreateSpaceShip();
-  int CreateLandscape();
+  void CreatePlayer();
+  void CreateSpaceShip();
+  void CreateLandscape();
 
   // When stopping a level do
   // * Destroy foos

@@ -21,7 +21,7 @@ AncientDawn::~AncientDawn() {
 
 
 void AncientDawn::CreateFoos() {
-  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 128, 132, 0.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
@@ -122,14 +122,13 @@ void AncientDawn::StopLevel() {
 }
 
 
-int AncientDawn::CreatePlayer() {
-  float radius = 30.0;
-
+void AncientDawn::CreatePlayer() {
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerDraw, NULL));
-  m_AtlasSprites[m_PlayerIndex]->m_Fps = 1;
+  m_AtlasSprites[m_PlayerIndex]->m_Fps = 10;
+  m_AtlasSprites[m_PlayerIndex]->m_IsAlive = 30;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 0.0);
-  m_AtlasSprites[m_PlayerIndex]->SetScale(50.0, 50.0);
+  m_AtlasSprites[m_PlayerIndex]->SetScale(16.0, 16.0);
   m_AtlasSprites[m_PlayerIndex]->Build(0);
   m_SpriteCount++;
 }
@@ -139,7 +138,7 @@ void AncientDawn::DestroyPlayer() {
 }
 
 
-int AncientDawn::CreateSpaceShip() {
+void AncientDawn::CreateSpaceShip() {
 }
 
 
@@ -147,31 +146,11 @@ void AncientDawn::DestroySpaceShip() {
 }
 
 
-int AncientDawn::CreateLandscape() {
+void AncientDawn::CreateLandscape() {
 }
 
 
 void AncientDawn::DestroyLandscape() {
-}
-
-
-void AncientDawn::Hit(float x, float y, int hitState) {
-}
-
-
-int AncientDawn::Simulate() {
-  switch(LevelProgress()) {
-    case CONTINUE_LEVEL:
-      return 1;
-
-    case RESTART_LEVEL:
-      RestartLevel();
-      return 1;
-
-    case START_NEXT_LEVEL:
-      StartNextLevel();
-      return 1;
-  }
 }
 
 
@@ -206,9 +185,34 @@ int AncientDawn::FirstLevel() {
 }
 
 
+void AncientDawn::Hit(float x, float y, int hitState) {
+}
+
+
+int AncientDawn::Simulate() {
+
+  m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+
+  switch(LevelProgress()) {
+    case CONTINUE_LEVEL:
+      return 1;
+
+    case RESTART_LEVEL:
+      RestartLevel();
+      return 1;
+
+    case START_NEXT_LEVEL:
+      StartNextLevel();
+      return 1;
+  }
+}
+
+
 void AncientDawn::RenderModelPhase() {
 }
 
 
 void AncientDawn::RenderSpritePhase() {
+  RenderSpriteRange(0, m_SpriteCount, m_FirstBatch);
+  AtlasSprite::RenderFoo(m_StateFoo, m_FirstBatch);
 }
