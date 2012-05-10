@@ -6,7 +6,7 @@
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
 #include "SpaceShipDown.h"
-//#include "AncientDawn.h"
+#include "AncientDawn.h"
 
 
 static std::vector<Game *> games;
@@ -497,7 +497,7 @@ void Engine::Start(int i, int w, int h) {
     games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SpaceShipDown>);
-    //games.push_back(new GameImpl<AncientDawn>);
+    games.push_back(new GameImpl<AncientDawn>);
   }
 
   if (m_CurrentGame) {
