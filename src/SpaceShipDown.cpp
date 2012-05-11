@@ -40,7 +40,7 @@ float g_AvoidancePredictTime = g_AvoidancePredictTimeMin;
 SpaceShipDown::SpaceShipDown(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, std::vector<foo*> &l, std::vector<foo*> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc ssd\n");
   m_LevelLoaded = false;
-  LoadSound(0);
+  LoadSound(1);
   LoadModel(0, 0, 1);
   LoadModel(1, 0, 1);
   LoadModel(2, 0, 1);
@@ -282,7 +282,7 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
 
   m_PlayerStopIndex = m_SpriteCount;
 
-  m_Models.push_back(new Model(m_FooFoos.at(0)));
+  m_Models.push_back(new Model(m_FooFoos.at(1)));
   m_Models[m_PlayerIndex]->m_Scale[0] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[1] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[2] = 2.0;
@@ -849,7 +849,7 @@ int SpaceShipDown::Simulate() {
 
   m_CameraPosition[0] = m_CameraTarget[0];
   m_CameraPosition[1] = m_CameraTarget[1];
-  m_CameraPosition[2] = 20.0;
+  m_CameraPosition[2] = 5.0;
 
   //float space_ship_height = m_AtlasSprites[m_SpaceShipPartsStartIndex + 1]->m_Position[1];
   //if (space_ship_height > m_WorldHeight * 1.5) {
