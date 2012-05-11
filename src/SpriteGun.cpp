@@ -31,6 +31,7 @@ void SpriteGun::Build(int n) {
 	m_FrameCounter = 0;
 	for (unsigned int idx=0; idx<m_NumParticles; idx++) {
 		m_AtlasSprites.push_back(new AtlasSprite(m_ShotFooFoo));
+	  m_AtlasSprites[idx]->m_Parent = this;
 		ResetParticle(idx);
 	}
 }
@@ -71,6 +72,7 @@ void SpriteGun::Fire() {
   int shot = 0;
   for (unsigned int i=0; i<m_NumParticles; i++) {
     if (shot == 0 && (m_TimeSinceLastShot > (1.0 / 20.0) && !m_AtlasSprites[i]->m_IsAlive)) {
+      LOGV("shoot\n");
       ResetParticle(i);
       ShootParticle(i);
       shot++;
@@ -82,10 +84,11 @@ void SpriteGun::Fire() {
 void SpriteGun::Simulate(float deltaTime) {	
   m_TimeSinceLastShot += deltaTime;
   for (unsigned int i=0; i<m_NumParticles; i++) {
-    m_AtlasSprites[i]->m_Rotation = m_Rotation;
-    if ((m_AtlasSprites[i]->m_Life > m_ShotFooFoo->m_AnimationDuration)) {
-      ResetParticle(i);
-    }
+    //m_AtlasSprites[i]->m_Rotation = m_Rotation;
+    //if ((m_AtlasSprites[i]->m_Life > m_ShotFooFoo->m_AnimationDuration)) {
+    //  LOGV("recycle\n");
+    //  ResetParticle(i);
+    //}
     
     m_AtlasSprites[i]->Simulate(deltaTime);
   }

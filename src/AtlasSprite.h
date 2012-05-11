@@ -90,4 +90,6 @@ public:
   bool m_IsNinePatch;
   void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty);
 
+  AtlasSprite *m_Parent;
+
 };
