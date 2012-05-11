@@ -43,9 +43,9 @@ public:
 
   // Every tick update these things
   // * Step physics
-  // * For every sprite
+  // * For every physical object
   // * * Recycle Bullet if lived past lifetime
-  // * * Update physical position
+  // * * Update physical position of sprite
   // * For every collision, Detect if between bullet and player
   // * * If bullet and player collide, cause damage to player
   // * Change level based on current level progress
@@ -109,18 +109,18 @@ public:
   foofoo *m_SecondBatch;
   foofoo *m_ThirdBatch;
 
-  //
+  // level
   int m_CurrentLevel;
 
+  // physics
   b2World *m_World;
   GLESDebugDraw *m_DebugDraw;
   SpaceShipDownContactListener *m_ContactListener;
-
   b2Body *m_PlayerBody;
+
+  // drawing
   int m_PlayerIndex;
-
   int m_LandscapeIndex;
-
   int m_SpaceShipsStartIndex;
   int m_SpaceShipsStopIndex;
 
@@ -128,6 +128,9 @@ public:
   bool m_TouchedLeft;
   bool m_TouchedRight;
   bool m_DebugDrawToggle;
+
+  float m_ShootTimeout;
+  float m_PhysicsTimeout;
 
 
 };

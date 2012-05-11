@@ -21,11 +21,11 @@ AncientDawn::~AncientDawn() {
 
 
 void AncientDawn::CreateFoos() {
-  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 128, 132, 0.0);
+  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 128, 132, 5.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  m_FirstBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
+  m_FirstBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 256);
   m_SecondBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
   m_ThirdBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
 }
@@ -61,6 +61,8 @@ void AncientDawn::StartLevel(int level_index) {
 
 void AncientDawn::ResetGame() {
   m_SimulationTime = 0.0;
+  m_ShootTimeout = 0.0;
+  m_PhysicsTimeout = 0.0;
   m_DebugDrawToggle = false;
   m_TouchedLeft = false;
   m_TouchedRight = false;
@@ -72,7 +74,7 @@ void AncientDawn::ResetGame() {
 void AncientDawn::CreateWorld() {
   b2Vec2 gravity;
   gravity.Set(0.0, 0.0);
-  m_World = new b2World(gravity, false);
+  m_World = new b2World(gravity, true);
 }
 
 
@@ -101,7 +103,7 @@ void AncientDawn::DestroyDebugDraw() {
 
 void AncientDawn::CreateContactListener() {
   m_ContactListener = new SpaceShipDownContactListener();
-  m_World->SetContactListener(m_ContactListener);
+  //m_World->SetContactListener(m_ContactListener);
 }
 
 
@@ -123,14 +125,63 @@ void AncientDawn::StopLevel() {
 
 
 void AncientDawn::CreatePlayer() {
+  float radius = 1.0;
   m_PlayerIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_PlayerDraw, NULL));
+  m_AtlasSprites.push_back(new SpriteGun(m_PlayerDraw, m_PlayerDraw));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 10;
-  m_AtlasSprites[m_PlayerIndex]->m_IsAlive = 30;
+  m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 0.0);
   m_AtlasSprites[m_PlayerIndex]->SetScale(16.0, 16.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(0);
+  m_AtlasSprites[m_PlayerIndex]->Build(255);
   m_SpriteCount++;
+
+  MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
+
+  for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
+    AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
+    bullet->m_IsAlive = true;
+    bullet->SetScale(8.0, 8.0);
+    //LOGV("%p %p\n", m_AtlasSprites[m_PlayerIndex], bullet);
+    b2BodyDef bd2;
+    bd2.type = b2_dynamicBody;
+    bd2.linearDamping = 0.0;
+    bd2.fixedRotation = true;
+    bd2.position.Set(startPosition.x, startPosition.y);
+    b2CircleShape shape2;
+    shape2.m_radius = radius / PTM_RATIO;
+    b2FixtureDef fd2;
+    fd2.shape = &shape2;
+    fd2.isSensor = true;
+    //fd.density = 1.0;
+    //fd.restitution = 0.0;
+    //fd.friction = 0.0;
+    //fd2.filter.categoryBits = 0x0002;
+    fd2.filter.groupIndex = -1;
+    b2Body *bullet_body = m_World->CreateBody(&bd2);
+    bullet_body->SetUserData(bullet);
+    bullet_body->CreateFixture(&fd2);
+    bullet_body->SetActive(true);
+  }
+
+  b2BodyDef bd;
+  bd.type = b2_dynamicBody;
+  bd.linearDamping = 0.0;
+  bd.fixedRotation = true;
+  bd.position.Set(startPosition.x, startPosition.y);
+  b2CircleShape shape;
+  shape.m_radius = radius / PTM_RATIO;
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.isSensor = true;
+  //fd.density = 1.0;
+  //fd.restitution = 0.0;
+  //fd.friction = 0.0;
+  //fd.filter.categoryBits = 0x0002;
+  fd.filter.groupIndex = -1;
+  m_PlayerBody = m_World->CreateBody(&bd);
+  m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
+  m_PlayerBody->CreateFixture(&fd);
+  m_PlayerBody->SetActive(true);
 }
 
 
@@ -155,7 +206,7 @@ void AncientDawn::DestroyLandscape() {
 
 
 int AncientDawn::LevelProgress() {
-  if (m_SimulationTime > 5.0) {
+  if (m_SimulationTime > 60.0) {
     return RESTART_LEVEL;
   }
 
@@ -185,13 +236,63 @@ int AncientDawn::FirstLevel() {
 }
 
 
+void AncientDawn::StepPhysics() {
+  int velocityIterations = 1;
+  int positionIterations = 1;
+  m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
+}
+
+
+void AncientDawn::UpdatePhysicialPositionOfSprite(AtlasSprite *sprite, float x, float y) {
+  sprite->SetPosition(x, y);
+}
+
+
+b2Body *AncientDawn::BodyCollidingWithPlayer(b2Body *a, b2Body *b) {
+}
+
+
 void AncientDawn::Hit(float x, float y, int hitState) {
 }
 
 
 int AncientDawn::Simulate() {
 
-  m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
+  //m_PhysicsTimeout += m_DeltaTime;
+  //if (m_PhysicsTimeout > (1.0 / 30.0)) {
+    StepPhysics();
+  //  m_PhysicsTimeout = 0.0;
+  //}
+
+  int shot_this_tick = 0;
+  m_ShootTimeout += m_DeltaTime;
+
+  for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
+    AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
+    float x = body->GetPosition().x * PTM_RATIO;
+    float y = body->GetPosition().y * PTM_RATIO;
+    UpdatePhysicialPositionOfSprite(sprite, x, y);
+    sprite->Simulate(m_DeltaTime);
+    //if (sprite->m_NumParticles > 0) {
+    if (sprite == m_AtlasSprites[m_PlayerIndex]) {
+    } else {
+      if (sprite->m_IsAlive && (sprite->m_Life > 4.0)) {
+        body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+        body->SetAwake(false);
+        // x = r cos theta,
+        // y = r sin theta, 
+        if (m_ShootTimeout > 0.025 && shot_this_tick < 1) {
+          float fx = 2.0 * fastSinf((M_PI / 2.0) - (m_SimulationTime * 6.0));
+          float fy = 2.0 * fastSinf((m_SimulationTime * 6.0));
+          body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
+          //body->ApplyForce(b2Vec2(10.0, 0), body->GetPosition());
+          sprite->m_Life = 0.0;
+          shot_this_tick++;
+          m_ShootTimeout = 0.0;
+        }
+      }
+    }
+  }
 
   switch(LevelProgress()) {
     case CONTINUE_LEVEL:
