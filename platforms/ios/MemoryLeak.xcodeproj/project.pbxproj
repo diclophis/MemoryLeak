@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C29A2CFB155CE772007B500C /* AncientDawn.cpp */; };
 		C2E2EC991542A4770069C210 /* pnglite.c in Sources */ = {isa = PBXBuildFile; fileRef = C2E2EC971542A4760069C210 /* pnglite.c */; };
 		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
@@ -177,6 +178,8 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C29A2CFB155CE772007B500C /* AncientDawn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AncientDawn.cpp; sourceTree = "<group>"; };
+		C29A2CFC155CE772007B500C /* AncientDawn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AncientDawn.h; sourceTree = "<group>"; };
 		C2E2EC961542A4760069C210 /* FileHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileHandle.h; sourceTree = "<group>"; };
 		C2E2EC971542A4760069C210 /* pnglite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pnglite.c; sourceTree = "<group>"; };
 		C2E2EC981542A4760069C210 /* pnglite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglite.h; sourceTree = "<group>"; };
@@ -761,6 +764,8 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C29A2CFB155CE772007B500C /* AncientDawn.cpp */,
+				C29A2CFC155CE772007B500C /* AncientDawn.h */,
 				C2E2EC971542A4760069C210 /* pnglite.c */,
 				FCDFB0E112B1A7B400A0B4E1 /* AtlasSprite.cpp */,
 				FC1419B41285415900166578 /* Engine.cpp */,
@@ -1688,6 +1693,7 @@
 				FC419537147DB07700A63C6B /* Vec3Utilities.cpp in Sources */,
 				FCAB716214E264F4008A34BC /* Audio.mm in Sources */,
 				C2E2EC991542A4770069C210 /* pnglite.c in Sources */,
+				C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
