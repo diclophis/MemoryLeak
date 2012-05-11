@@ -561,3 +561,8 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
 
   return done;
 }
+
+void AtlasSprite::SetPosition(float x,float y) {
+  m_Position[0] = x;
+  m_Position[1] = y;
+}

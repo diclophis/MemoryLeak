@@ -51,10 +51,7 @@ public:
 	
 	unsigned int m_Count;
 		
-	void SetPosition(float x,float y) {
-		m_Position[0] = x;
-		m_Position[1] = y;
-	}
+	void SetPosition(float x,float y);
 
 	void SetScale(float x,float y) {
 		m_Scale[0] = x;
