@@ -25,7 +25,7 @@ void AncientDawn::CreateFoos() {
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 6, (8 * (16 * 4)) + 7, 5.0);
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  m_FirstBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 241);
+  m_FirstBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 401);
   m_SecondBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
   m_ThirdBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
 }
@@ -132,13 +132,14 @@ void AncientDawn::CreatePlayer() {
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 0.0);
   m_AtlasSprites[m_PlayerIndex]->SetScale(16.0, 16.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(240);
+  m_AtlasSprites[m_PlayerIndex]->Build(400);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
 
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
+    bullet->m_Fps = 6; 
     //bullet->m_IsAlive = true;
     bullet->SetScale(8.0, 8.0);
     //LOGV("%p %p\n", m_AtlasSprites[m_PlayerIndex], bullet);
@@ -187,6 +188,17 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   m_PlayerBody->SetActive(true);
+
+  
+  b2Body *center_body = m_World->CreateBody(&bd);
+  b2MouseJointDef mouse_joint_def;
+  mouse_joint_def.bodyA = center_body;
+  mouse_joint_def.bodyB = m_PlayerBody;
+  mouse_joint_def.target = b2Vec2(0.0, 0.0);
+  mouse_joint_def.maxForce = 2000.0f * m_PlayerBody->GetMass();
+  mouse_joint_def.dampingRatio = 10.0;
+  mouse_joint_def.frequencyHz = 100.0;
+  m_PlayerMouseJoint = (b2MouseJoint *)m_World->CreateJoint(&mouse_joint_def);
 }
 
 
@@ -244,7 +256,7 @@ int AncientDawn::FirstLevel() {
 void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
-  m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
+  m_World->Step(m_DeltaTime / 8.0, velocityIterations, positionIterations);
 }
 
 
@@ -254,10 +266,16 @@ void AncientDawn::UpdatePhysicialPositionOfSprite(AtlasSprite *sprite, float x, 
 
 
 b2Body *AncientDawn::BodyCollidingWithPlayer(b2Body *a, b2Body *b) {
+  return NULL;
 }
 
 
 void AncientDawn::Hit(float x, float y, int hitState) {
+  float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
+	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
+  //if (hitState == 1) {
+    m_PlayerMouseJoint->SetTarget(b2Vec2(xx / PTM_RATIO, yy / PTM_RATIO));
+  //}
 }
 
 
@@ -268,39 +286,41 @@ int AncientDawn::Simulate() {
   int shot_this_tick = 0;
   m_ShootTimeout += m_DeltaTime;
   float theta = 0.0;
-  bool shoot_this_tick = (m_ShootTimeout > 0.5);
+  bool shoot_this_tick = (m_ShootTimeout > 0.175);
   if (shoot_this_tick) {
     m_ShootTimeout = 0.0;
   }
 
   for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
     AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
-    float x = body->GetPosition().x * PTM_RATIO;
-    float y = body->GetPosition().y * PTM_RATIO;
-    UpdatePhysicialPositionOfSprite(sprite, x, y);
-    sprite->Simulate(m_DeltaTime);
-    if (sprite == m_AtlasSprites[m_PlayerIndex]) {
-    } else {
-      if (sprite->m_IsAlive) {
-        if ((sprite->m_Life > 6.0)) {
-          body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-          body->SetAwake(false);
-          sprite->m_IsAlive = false;
-        }
+    if (sprite != NULL) {
+      float x = body->GetPosition().x * PTM_RATIO;
+      float y = body->GetPosition().y * PTM_RATIO;
+      UpdatePhysicialPositionOfSprite(sprite, x, y);
+      sprite->Simulate(m_DeltaTime);
+      if (sprite == m_AtlasSprites[m_PlayerIndex]) {
       } else {
-        if (shoot_this_tick && shot_this_tick < 8) {
-          // x = r cos theta,
-          // y = r sin theta, 
-          float off = fastSinf(m_SimulationTime * 0.5) * 0.75;
-          //float off = 0.0;
-          float fx = 2.0 * fastSinf((M_PI / 2.0) - (theta + off));
-          float fy = 2.0 * fastSinf((theta + off));
-          body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
-          //body->ApplyForce(b2Vec2(10.0, 0), body->GetPosition());
-          sprite->m_IsAlive = true;
-          sprite->m_Life = 0.0;
-          shot_this_tick++;
-          theta += ((M_PI * 2.0) / 8.0);
+        if (sprite->m_IsAlive) {
+          if ((sprite->m_Life > 3.0)) {
+            body->SetAwake(false);
+            sprite->m_IsAlive = false;
+          }
+        } else {
+          if (shoot_this_tick && shot_this_tick < 10) {
+            body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+            // x = r cos theta,
+            // y = r sin theta, 
+            float off = fastSinf(m_SimulationTime * 0.5) * 0.5;
+            //float off = 0.0;
+            float fx = 20.0 * fastSinf((M_PI / 2.0) - (theta + off));
+            float fy = 20.0 * fastSinf((theta + off));
+            body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
+            //body->ApplyForce(b2Vec2(10.0, 0), body->GetPosition());
+            sprite->m_IsAlive = true;
+            sprite->m_Life = 0.0;
+            shot_this_tick++;
+            theta += ((M_PI * 2.0) / 10.0);
+          }
         }
       }
     }

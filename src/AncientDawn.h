@@ -117,6 +117,7 @@ public:
   GLESDebugDraw *m_DebugDraw;
   SpaceShipDownContactListener *m_ContactListener;
   b2Body *m_PlayerBody;
+  b2MouseJoint *m_PlayerMouseJoint;
 
   // drawing
   int m_PlayerIndex;
