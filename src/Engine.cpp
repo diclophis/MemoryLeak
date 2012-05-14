@@ -641,10 +641,7 @@ void Engine::LoadTexture(int i) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   //TODO: investigate pixel swizzling
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-  //glEnable(GL_TEXTURE_2D);
-  //glGenerateMipmapOES(GL_TEXTURE_2D);
-  //glDisable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   free(data);
 

@@ -300,6 +300,11 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
   
   if (!sf->m_EnabledStates) {
+#ifdef HAS_VAO
+
+    //states are enabled via VAO
+
+#else
     glEnable(GL_BLEND);
 
 #ifdef USE_GLES2
@@ -311,6 +316,8 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+#endif
 
 #endif
 
