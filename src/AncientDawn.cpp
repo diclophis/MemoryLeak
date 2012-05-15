@@ -25,7 +25,7 @@ void AncientDawn::CreateFoos() {
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 6, (8 * (16 * 4)) + 7, 5.0);
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  m_FirstBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 401);
+  m_FirstBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 801);
   m_SecondBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
   m_ThirdBatch = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
 }
@@ -132,7 +132,7 @@ void AncientDawn::CreatePlayer() {
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
   m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 0.0);
   m_AtlasSprites[m_PlayerIndex]->SetScale(16.0, 16.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(400);
+  m_AtlasSprites[m_PlayerIndex]->Build(24);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
@@ -195,9 +195,9 @@ void AncientDawn::CreatePlayer() {
   mouse_joint_def.bodyA = center_body;
   mouse_joint_def.bodyB = m_PlayerBody;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
-  mouse_joint_def.maxForce = 2000.0f * m_PlayerBody->GetMass();
-  mouse_joint_def.dampingRatio = 10.0;
-  mouse_joint_def.frequencyHz = 100.0;
+  mouse_joint_def.maxForce = 5000.0f * m_PlayerBody->GetMass();
+  mouse_joint_def.dampingRatio = 5.0;
+  mouse_joint_def.frequencyHz = 30.0;
   m_PlayerMouseJoint = (b2MouseJoint *)m_World->CreateJoint(&mouse_joint_def);
 }
 
@@ -256,7 +256,7 @@ int AncientDawn::FirstLevel() {
 void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
-  m_World->Step(m_DeltaTime / 8.0, velocityIterations, positionIterations);
+  m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
 }
 
 
@@ -286,7 +286,7 @@ int AncientDawn::Simulate() {
   int shot_this_tick = 0;
   m_ShootTimeout += m_DeltaTime;
   float theta = 0.0;
-  bool shoot_this_tick = (m_ShootTimeout > 0.175);
+  bool shoot_this_tick = (m_ShootTimeout > 0.01);
   if (shoot_this_tick) {
     m_ShootTimeout = 0.0;
   }
@@ -296,33 +296,34 @@ int AncientDawn::Simulate() {
     if (sprite != NULL) {
       float x = body->GetPosition().x * PTM_RATIO;
       float y = body->GetPosition().y * PTM_RATIO;
-      UpdatePhysicialPositionOfSprite(sprite, x, y);
-      sprite->Simulate(m_DeltaTime);
       if (sprite == m_AtlasSprites[m_PlayerIndex]) {
       } else {
         if (sprite->m_IsAlive) {
-          if ((sprite->m_Life > 3.0)) {
+          if ((sprite->m_Life > 0.5)) {
+            body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
             body->SetAwake(false);
             sprite->m_IsAlive = false;
           }
         } else {
-          if (shoot_this_tick && shot_this_tick < 10) {
+          if (shoot_this_tick && shot_this_tick < 12) {
             body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
             // x = r cos theta,
             // y = r sin theta, 
-            float off = fastSinf(m_SimulationTime * 0.5) * 0.5;
+            float off = fastSinf(m_SimulationTime * 1.0) * 0.5;
             //float off = 0.0;
-            float fx = 20.0 * fastSinf((M_PI / 2.0) - (theta + off));
-            float fy = 20.0 * fastSinf((theta + off));
+            float fx = 10.0 * fastSinf((M_PI / 2.0) - (theta + off));
+            float fy = 10.0 * fastSinf((theta + off));
             body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
             //body->ApplyForce(b2Vec2(10.0, 0), body->GetPosition());
             sprite->m_IsAlive = true;
             sprite->m_Life = 0.0;
             shot_this_tick++;
-            theta += ((M_PI * 2.0) / 10.0);
+            theta += ((M_PI * 2.0) / 12.0);
           }
         }
       }
+      UpdatePhysicialPositionOfSprite(sprite, x, y);
+      sprite->Simulate(m_DeltaTime);
     }
   }
 
