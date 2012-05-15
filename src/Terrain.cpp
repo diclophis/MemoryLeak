@@ -390,8 +390,8 @@ void Terrain::Render(StateFoo *sf) {
     glDrawElements(GL_TRIANGLE_STRIP, (nHillVertices), GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
   } else {
 
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    glLineWidth(1.0);
+    //glColor4f(1.0, 1.0, 1.0, 1.0);
+    //glLineWidth(1.0);
 
 #ifdef USE_GLES2
 
@@ -557,7 +557,7 @@ GLuint Terrain::GenerateStripesTexture() {
     //glEnable(GL_BLEND);
     //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    glColor4f(1.0, 1.0, 1.0, 1.0);
+    //glColor4f(1.0, 1.0, 1.0, 1.0);
 
     glGenBuffers(1, m_TextureInterlacedBuffer);
     glGenBuffers(1, m_TextureElementBuffer);

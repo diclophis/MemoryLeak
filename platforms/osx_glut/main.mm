@@ -16,13 +16,13 @@
 #define kOutputBus 0
 
 
-static int kWindowWidth = 256;
-static int kWindowHeight = 256;
+static int kWindowWidth = 320;
+static int kWindowHeight = 480;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static int game_index = 0;
+static int game_index = 4;
 static short *outData;
 
 
@@ -118,7 +118,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         //}
 
         game_index++;
-        if (game_index == 4) {
+        if (game_index == 5) {
           game_index = 0;
         }
 
@@ -152,6 +152,7 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
 
 void audioUnitSetup() {
 
+  //TODO: this uses 16kb, could it be smaller?
   outData = (short *)calloc(8192, sizeof(short));
 
   AudioUnit outputUnit;

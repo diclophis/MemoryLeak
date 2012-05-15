@@ -6,7 +6,7 @@
 #include "SuperStarShooter.h"
 #include "RadiantFireEightSixOne.h"
 #include "SpaceShipDown.h"
-//#include "AncientDawn.h"
+#include "AncientDawn.h"
 
 
 static std::vector<Game *> games;
@@ -497,7 +497,7 @@ void Engine::Start(int i, int w, int h) {
     games.push_back(new GameImpl<SuperStarShooter>);
     games.push_back(new GameImpl<RadiantFireEightSixOne>);
     games.push_back(new GameImpl<SpaceShipDown>);
-    //games.push_back(new GameImpl<AncientDawn>);
+    games.push_back(new GameImpl<AncientDawn>);
   }
 
   if (m_CurrentGame) {
@@ -641,10 +641,7 @@ void Engine::LoadTexture(int i) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   //TODO: investigate pixel swizzling
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-  //glEnable(GL_TEXTURE_2D);
-  //glGenerateMipmapOES(GL_TEXTURE_2D);
-  //glDisable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   free(data);
 

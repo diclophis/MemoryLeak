@@ -51,10 +51,7 @@ public:
 	
 	unsigned int m_Count;
 		
-	void SetPosition(float x,float y) {
-		m_Position[0] = x;
-		m_Position[1] = y;
-	}
+	void SetPosition(float x,float y);
 
 	void SetScale(float x,float y) {
 		m_Scale[0] = x;
@@ -88,6 +85,8 @@ public:
   static foofoo *GetBatchFoo(GLuint t, int m);
 
   bool m_IsNinePatch;
-  void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty);
+  void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty, float cos_r, float sin_r);
+
+  AtlasSprite *m_Parent;
 
 };
