@@ -1,4 +1,4 @@
-var Sink = this.Sink = (function(global){
+var Sink = this.Sink = function (global) {
 
 /**
  * Creates a Sink according to specified parameters, if possible.
@@ -166,8 +166,8 @@ global.Sink = Sink;
 
 return Sink;
 
-}(function (){ return this; }()));
-(function (Sink) {
+}(function (){ return this; }());
+void function (Sink) {
 
 /**
  * A light event emitter.
@@ -249,8 +249,8 @@ Sink.EventEmitter = EventEmitter;
 
 EventEmitter.call(Sink);
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /**
  * Creates a timer with consistent (ie. not clamped) intervals even in background tabs.
@@ -306,8 +306,8 @@ Sink.doInterval = function (callback, timeout) {
 	};
 };
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /*
  * A Sink-specific error class.
@@ -367,11 +367,11 @@ SinkError[0x12] = {
 
 Sink.Error = SinkError;
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 var	BlobBuilder	= typeof window === 'undefined' ? undefined :
-	window.BlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder,
+	window.Blob || window.BlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder,
 	URL		= typeof window === 'undefined' ? undefined : (window.URL || window.MozURL || window.webkitURL || window.MSURL || window.OURL);
 
 /**
@@ -459,8 +459,8 @@ Sink.inlineWorker = inlineWorker;
 
 inlineWorker.test();
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /**
  * A Sink class for the Mozilla Audio Data API.
@@ -555,8 +555,8 @@ Sink.sinks('audiodata', function () {
 
 Sink.sinks.moz = Sink.sinks.audiodata;
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /**
  * A dummy Sink. (No output)
@@ -581,7 +581,7 @@ Sink.sinks('dummy', function () {
 	}
 }, true);
 
-}(this.Sink));
+}(this.Sink);
 (function (Sink, sinks) {
 
 sinks = Sink.sinks;
@@ -1226,7 +1226,7 @@ Sink.resample	= function (buffer, fromRate /* or speed */, fromFrequency /* or t
 };
 
 }(this.Sink));
-(function (Sink) {
+void function (Sink) {
 
 Sink.on('init', function (sink) {
 	sink.activeRecordings = [];
@@ -1339,8 +1339,8 @@ Recording.prototype = {
 
 Sink.Recording = Recording;
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 function processRingBuffer () {
 	if (this.ringBuffer) {
@@ -1400,8 +1400,8 @@ Sink.prototype.ringSpinDeinterleaved = function (buffer) {
 	this.ringOffset = n;
 };
 
-}(this.Sink));
-(function (Sink, proto) {
+}(this.Sink);
+void function (Sink, proto) {
 
 proto = Sink.prototype;
 
@@ -1542,4 +1542,4 @@ proto.getSyncWriteOffset = function () {
 	return offset;
 };
 
-} (this.Sink));
+} (this.Sink);
