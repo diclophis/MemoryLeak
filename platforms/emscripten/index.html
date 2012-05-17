@@ -8,6 +8,7 @@
       canvas { width: 320px; height: 480px; background-color: blue; padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
     </style>
     <script>
+      /*
       var installerTimeout = window.setTimeout(function() {
         try {
           window.applicationCache.update();
@@ -16,49 +17,50 @@
           //window.location.reload();
         }
       }, 10000);
+      */
 
       // Checking for an update. Always the first event fired in the sequence.
       window.applicationCache.addEventListener("checking", function(e) {
         window.clearTimeout(installerTimeout);
-        console.log("checking");
+        //console.log("checking");
       }, false);
 
       // Fired after the first cache of the manifest.
       window.applicationCache.addEventListener("cached", function(e) {
-        console.log("cached");
+        //console.log("cached");
       }, false);
 
       // An update was found. The browser is fetching resources.
       window.applicationCache.addEventListener('downloading', function(e) {
-        console.log("downloading");
+        //console.log("downloading");
       }, false);
 
       // The manifest returns 404 or 410, the download failed,
       // or the manifest changed while the download was in progress.
       window.applicationCache.addEventListener('error', function(e) {
         window.clearTimeout(installerTimeout);
-        console.log("error, not sure what to do here");
+        //console.log("error, not sure what to do here");
       }, false);
 
       // Fired after the first download of the manifest.
       window.applicationCache.addEventListener('noupdate', function(e) {
         window.clearTimeout(installerTimeout);
-        console.log("no update required....");
+        //console.log("no update required....");
       }, false);
 
       // Fired if the manifest file returns a 404 or 410.
       // This results in the application cache being deleted.
       window.applicationCache.addEventListener('obsolete', function(e) {
-        console.log("cache is obsolete");
+        //console.log("cache is obsolete");
       }, false);
 
       // Fired for each resource listed in the manifest as it is being fetched.
       window.applicationCache.addEventListener('progress', function(e) {
-        console.log("progress");
+        //console.log("progress");
       }, false);
 
       function onUpdateReady() {  
-        console.log("found new version!, SWAP()");  
+        //console.log("found new version!, SWAP()");  
         //window.applicationCache.swapCache();
       }
 
@@ -71,7 +73,6 @@
         var startGame = cwrap('start_game', 'number', ['number']);
         var buttons = document.getElementsByTagName("button");
         for (i in buttons) {
-          console.log(buttons[i].className);
           if (buttons[i].className == "game") {
             buttons[i].onclick = function(e) {
               startGame(this.value);
@@ -79,7 +80,6 @@
           } else if (buttons[i].className == "system") {
             if (buttons[i].value == "offline") {
               buttons[i].onclick = function(e) {
-                console.log("set offline");
                 document.getElementsByTagName("html").item(0).setAttribute("manifest", "/index.appcache");
                 window.applicationCache.update();
               }
@@ -130,12 +130,14 @@
         noInitialRun: true,
         print: (function() {
           return function(text) {
-            console.log(text);
+            //console.log(text);
+            document.getElementById("wham").innerHTML += text + "<br/>";
           };
         })(),
         canvas: (function() { var canvas = document.createElement("canvas"); document.body.appendChild(canvas); return canvas; })(), //document.getElementsByTagName("canvas").item(0),
         setStatus: function(text) {
-          console.log(text);
+          //console.log(text);
+          document.getElementById("wham").innerHTML += text + "<br/>";
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
@@ -151,7 +153,9 @@
     <button class="game" value="1">SuperStarShooter</button>
     <button class="game" value="2">RadiantFireEightSixOne</button>
     <button class="game" value="3">SpaceShipDown</button>
+    <button class="game" value="4">RadiantDawn</button>
     <button class="system" value="offline">offline</button>
+    <div id="wham"></div>
     <script src="sink.js"></script>
     <script src="raptor_island.js"></script>
   </body>
