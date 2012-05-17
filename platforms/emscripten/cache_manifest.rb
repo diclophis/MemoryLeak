@@ -7,9 +7,9 @@ puts "CACHE MANIFEST"
 puts "# built: " + Time.now.to_s
 #puts "NETWORK:"
 puts "CACHE:"
-puts "/index.html"
-puts "/sink.js"
-puts "/raptor_island.js"
+puts "index.html"
+puts "sink.js"
+puts "raptor_island.js"
 Find.find(ARGV[0]) do |path|
   if FileTest.directory?(path) # dont output it into the cache
     if File.basename(path)[0] == ?.
@@ -18,7 +18,7 @@ Find.find(ARGV[0]) do |path|
       next
     end
   else
-    puts File.realpath(path).gsub(dir_prefix, "")
+    puts File.realpath(path).gsub(dir_prefix + "/", "")
   end
 end
 

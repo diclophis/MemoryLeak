@@ -33,6 +33,9 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard .
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Common/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/OpenSteer/*.cpp)))
 
+HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
+hash_dir=~/emscripten.risingcode.com/public/$(HASH)
+
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
 	EMCC_DEBUG=1 $(CXX) --closure 0 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
@@ -69,11 +72,15 @@ clean:
 	rm a.out
 	rm -Rf $(build)
 
-install:
-	ruby cache_manifest.rb ../../assets > ~/emscripten.risingcode.com/public/index.appcache
-	cp -R ../../assets ~/emscripten.risingcode.com/public
-	touch ~/emscripten.risingcode.com/public/favicon.ico
-	install -C index.html ~/emscripten.risingcode.com/public
-	install -C sink.js ~/emscripten.risingcode.com/public
-	install -C library_sink.js ~/emscripten.risingcode.com/public
-	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public
+$(hash_dir):
+	mkdir $(hash_dir)
+
+install: $(hash_dir)
+	ln -nsf $(hash_dir) ~/emscripten.risingcode.com/public/latest
+	ruby cache_manifest.rb ../../assets > ~/emscripten.risingcode.com/public/latest/index.appcache
+	cp -R ../../assets ~/emscripten.risingcode.com/public/latest
+	touch ~/emscripten.risingcode.com/public/latest/favicon.ico
+	install -C index.html ~/emscripten.risingcode.com/public/latest
+	install -C sink.js ~/emscripten.risingcode.com/public/latest
+	install -C library_sink.js ~/emscripten.risingcode.com/public/latest
+	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public/latest

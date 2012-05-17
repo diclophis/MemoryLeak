@@ -5,20 +5,9 @@
     <meta charset="utf-8">
     <title>MemoryLeak</title>
     <style>
-      canvas { width: 320px; height: 480px; background-color: blue; padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      canvas { background-color: blue; padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
     </style>
     <script>
-      /*
-      var installerTimeout = window.setTimeout(function() {
-        try {
-          window.applicationCache.update();
-        } catch (e) {
-          console.log("user is activly denying application install, the only option here is to reload()");
-          //window.location.reload();
-        }
-      }, 10000);
-      */
-
       // Checking for an update. Always the first event fired in the sequence.
       window.applicationCache.addEventListener("checking", function(e) {
         window.clearTimeout(installerTimeout);
@@ -77,18 +66,11 @@
             buttons[i].onclick = function(e) {
               startGame(this.value);
             };
-          } else if (buttons[i].className == "system") {
-            if (buttons[i].value == "offline") {
-              buttons[i].onclick = function(e) {
-                document.getElementsByTagName("html").item(0).setAttribute("manifest", "/index.appcache");
-                window.applicationCache.update();
-              }
-            }
           }
         }
         var manifestFile = new XMLHttpRequest();
         //var manifestUrl = document.getElementsByTagName("html").item(0).getAttribute("manifest");
-        var manifestUrl = "/index.appcache";
+        var manifestUrl = "index.appcache";
         manifestFile.open("GET", manifestUrl, true);
         manifestFile.onload = function(e) {
           var assets = FS.createFolder("/", "assets", true, false);
@@ -100,7 +82,7 @@
           for (i in lines) {
             (function() {
               var line = lines[i];
-              if (line.indexOf("/assets") == 0) {
+              if (line.indexOf("assets") == 0) {
                 addRunDependency();
                 var lastSlashIndex = line.lastIndexOf("/");
                 var dirName = line.substr(0, lastSlashIndex);
@@ -130,22 +112,19 @@
         noInitialRun: true,
         print: (function() {
           return function(text) {
-            //console.log(text);
-            document.getElementById("wham").innerHTML += text + "<br/>";
+            console.log(text);
+            //document.getElementById("wham").innerHTML += text + "<br/>";
           };
         })(),
-        canvas: (function() { var canvas = document.createElement("canvas"); document.body.appendChild(canvas); return canvas; })(), //document.getElementsByTagName("canvas").item(0),
+        canvas: (function() { var canvas = document.createElement("canvas"); document.body.appendChild(canvas); return canvas; })(),
         setStatus: function(text) {
-          //console.log(text);
-          document.getElementById("wham").innerHTML += text + "<br/>";
+          console.log(text);
+          //document.getElementById("wham").innerHTML += text + "<br/>";
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
           Module.setStatus(left ? 'Downloading: ' + (this.totalDependencies-left) + '/' + this.totalDependencies : 'All downloads complete.');
-        },
-        preRun: function() {
-          // this is odd, and is actually fixed in incoming branch of emscripten
         }
       };
     </script>
@@ -154,8 +133,6 @@
     <button class="game" value="2">RadiantFireEightSixOne</button>
     <button class="game" value="3">SpaceShipDown</button>
     <button class="game" value="4">RadiantDawn</button>
-    <button class="system" value="offline">offline</button>
-    <div id="wham"></div>
     <script src="sink.js"></script>
     <script src="raptor_island.js"></script>
   </body>
