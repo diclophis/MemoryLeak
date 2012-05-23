@@ -134,6 +134,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
+
   m_CurrentSound = 0;
 
 #ifdef USE_GLES2
@@ -177,8 +178,6 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
 
 void Engine::ResetStateFoo() {
-
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
   m_StateFoo->g_lastTexture = -1;
   m_StateFoo->g_lastElementBuffer = -1;

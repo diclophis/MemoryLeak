@@ -353,6 +353,7 @@ void SuperStarShooter::RenderSpritePhase() {
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
+  m_BatchFoo->m_NumBatched = 0;
 }
 
 
