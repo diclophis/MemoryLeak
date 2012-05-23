@@ -227,8 +227,15 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
 
-    glEnable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE, GL_ONE);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
    
@@ -305,7 +312,13 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     //states are enabled via VAO
 
 #else
+
     glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE, GL_ONE);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_ALWAYS);
 
 #ifdef USE_GLES2
 
@@ -346,7 +359,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
   }
 
-  foo->m_NumBatched = 0;
 
 }
 
@@ -357,7 +369,8 @@ void AtlasSprite::Simulate(float deltaTime) {
   if (m_IsAlive) {
     if (m_Fps > 0) {
       if (m_AnimationLife > (1.0 / (float)m_Fps)) {
-        m_Frame--;
+        //LOGV("m_Frame: %d\n", m_Frame);
+        m_Frame++;
         m_AnimationLife = 0.0;
       }
       
@@ -369,10 +382,10 @@ void AtlasSprite::Simulate(float deltaTime) {
         m_Frame = 0;
       }
     } else {
-      m_Frame = fastAbs((((m_Life) / m_FooFoo->m_AnimationDuration) * m_FooFoo->m_numFrames));
-      if (m_Frame >= m_FooFoo->m_numFrames) {
-        m_Frame = m_FooFoo->m_numFrames - 1;
-      }
+      //m_Frame = fastAbs((((m_Life) / m_FooFoo->m_AnimationDuration) * m_FooFoo->m_numFrames));
+      //if (m_Frame >= m_FooFoo->m_numFrames) {
+      //  m_Frame = m_FooFoo->m_numFrames - 1;
+      //}
     }
   }
 }

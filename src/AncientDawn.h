@@ -101,6 +101,9 @@ public:
 	void RenderSpritePhase();
 
   // Draw foos, really need a better name than foofoo
+  std::vector<StateFoo *> m_States;
+  std::vector<foofoo *> m_Batches;
+
   foofoo *m_PlayerDraw;
   foofoo *m_SpaceShipDraw;
   foofoo *m_BulletDraw;
@@ -132,6 +135,10 @@ public:
 
   float m_ShootTimeout;
   float m_PhysicsTimeout;
+  float m_BulletSpeed;
+
+  int m_Batch;
+  bool m_Force;
 
 
 };
