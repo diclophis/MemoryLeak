@@ -69,7 +69,6 @@ $(build):
 
 clean:
 	rm -R /tmp/emscripten_temp
-	rm a.out
 	rm -Rf $(build)
 
 $(hash_dir):
