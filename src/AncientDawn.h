@@ -100,9 +100,6 @@ public:
 	void RenderModelPhase();
 	void RenderSpritePhase();
 
-  // Draw foos, really need a better name than foofoo
-  std::vector<StateFoo *> m_States;
-  std::vector<foofoo *> m_Batches;
 
   foofoo *m_PlayerDraw;
   foofoo *m_SpaceShipDraw;

@@ -35,13 +35,14 @@ void MainMenu::CreateFoos() {
   m_NinePatchFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 254, 255, 0.0);
   //m_NinePatchFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 1, 0.0);
   //m_NinePatchFoo = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 9);
+  //m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 9);
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 9));
 }
 
 
 void MainMenu::DestroyFoos() {
   delete m_NinePatchFoo;
-  delete m_BatchFoo;
+  //delete m_BatchFoo;
 }
 
 
@@ -66,6 +67,7 @@ void MainMenu::RenderModelPhase() {
 
 
 void MainMenu::RenderSpritePhase() {
-  RenderSpriteRange(0, m_SpriteCount, m_BatchFoo);
-  AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
+  m_Batches[0]->m_NumBatched = 0;
+  RenderSpriteRange(0, m_SpriteCount, m_Batches[0]);
+  AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
 }

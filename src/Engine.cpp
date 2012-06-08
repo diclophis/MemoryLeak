@@ -178,21 +178,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
 
 void Engine::ResetStateFoo() {
-
-  m_StateFoo->g_lastTexture = -1;
-  m_StateFoo->g_lastElementBuffer = -1;
-  m_StateFoo->g_lastInterleavedBuffer = -1;
-  m_StateFoo->g_lastVertexArrayObject = -1;
-  m_StateFoo->m_EnabledStates = false;
-  m_StateFoo->m_LastBufferIndex = 0;
-
-#ifdef USE_GLES2
-  
-  m_StateFoo->g_PositionAttribute = glGetAttribLocation(program, "Position");
-  m_StateFoo->g_TextureAttribute = glGetAttribLocation(program, "InCoord");
-  
-#endif
-
+  m_StateFoo->Reset(program);
 }
 
 

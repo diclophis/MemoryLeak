@@ -108,6 +108,7 @@
 #include <include/IOStream.h>
 #include <include/IOSystem.h>
 #include "FileHandle.h"
+#include "StateFoo.h"
 #include "foo.h"
 #include "nodexyz.h"
 
