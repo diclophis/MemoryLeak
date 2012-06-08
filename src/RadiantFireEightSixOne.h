@@ -37,7 +37,6 @@ public:
   int m_PlayerIndex;
 
   foofoo *m_PlayerFoo;
-  foofoo *m_BatchFoo;
 
   int m_FrameCount;
 

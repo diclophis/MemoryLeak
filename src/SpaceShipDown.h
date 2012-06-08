@@ -114,9 +114,5 @@ public:
   foofoo *m_PlatformFoo;
   foofoo *m_LandscapeFoo;
   foofoo *m_EnemyFoo;
-  foofoo *m_BatchFoo;
-  foofoo *m_SecondBatchFoo;
-  foofoo *m_ThirdBatchFoo;
-  
 
 };

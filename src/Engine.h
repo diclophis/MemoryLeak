@@ -131,6 +131,9 @@ public:
   std::vector<foofoo *> m_FooFoos;
   std::vector<ModPlugFile *> m_Sounds;
 
+  // Draw foos, really need a better name than foofoo
+  std::vector<foofoo *> m_Batches;
+
   bool m_IsPushingAudio;
   float m_Zoom;
 
@@ -143,10 +146,11 @@ public:
   float m_Fov;
 	double t1, t2;
 
+  GLuint program;
+
 #ifdef USE_GLES2
 
   void glTranslatef(float x, float y, float z);
-  GLuint program;
   GLuint ModelViewProjectionMatrix_location;
   GLfloat ProjectionMatrix[16];
   //static GLuint GetProjectionMatrixLocation();

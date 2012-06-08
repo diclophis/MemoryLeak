@@ -21,22 +21,6 @@ typedef struct
   GLshort xyz[3];
 } ModelFoo;
 
-typedef struct {
-  GLuint g_lastTexture;
-  GLuint g_lastElementBuffer;
-  GLuint g_lastInterleavedBuffer;
-  GLuint g_lastVertexArrayObject;
-  int m_LastBufferIndex;
-  bool m_EnabledStates;
-
-#ifdef USE_GLES2
-
-  GLuint g_PositionAttribute;
-  GLuint g_TextureAttribute;
-
-#endif
-
-} StateFoo;
 
 #ifdef __cplusplus
 

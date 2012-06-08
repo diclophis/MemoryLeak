@@ -67,10 +67,14 @@ void SpaceShipDown::CreateFoos() {
   m_DropZoneFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 8, 16, 1.0);
   m_PlatformFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 0, 1, 0.0);
   m_EnemyFoo = AtlasSprite::GetFoo(m_Textures.at(0), 4, 4, 2, 3, 1.0);
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
 
-  m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
+  //m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT));
+  //m_LandscapeFoo = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  //m_SecondBatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), 1);
+
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 1024 + (PLAYER_AFTERBURNER_COUNT + ROCKET_AFTERBURNER_COUNT)));
+  m_Batches.push_back(AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 1));
 
   if (m_SimulationTime > 0.0) {
     for (unsigned int i=0; i<m_SpriteCount; i++) {
@@ -114,8 +118,8 @@ void SpaceShipDown::DestroyFoos() {
   delete m_PlatformFoo;
   delete m_LandscapeFoo;
   delete m_EnemyFoo;
-  delete m_BatchFoo;
-  delete m_SecondBatchFoo;
+  //delete m_BatchFoo;
+  //delete m_SecondBatchFoo;
   //delete m_ThirdBatchFoo;
 }
 
@@ -1079,15 +1083,16 @@ void SpaceShipDown::RenderSpritePhase() {
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_TEXTURE_2D);
   } else {
+    m_Batches[0]->m_NumBatched = 0;
     //RenderSpriteRange(m_LandscapeIndex, m_LandscapeIndex + 1, m_SecondBatchFoo);
     //RenderSpriteRange(m_DropZonesStartIndex, m_DropZonesStopIndex, m_BatchFoo);
-    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_BatchFoo);
-    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_BatchFoo);
-    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_BatchFoo);
+    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[0]);
+    RenderSpriteRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_Batches[0]);
+    RenderSpriteRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_Batches[0]);
+    RenderSpriteRange(m_EnemiesStartIndex, m_EnemiesStopIndex, m_Batches[0]);
 
     //AtlasSprite::RenderFoo(m_StateFoo, m_SecondBatchFoo);
-    AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
+    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
   }
 }
 
