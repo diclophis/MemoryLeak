@@ -193,7 +193,7 @@ public:
 	/// Get the current profile.
 	const b2Profile& GetProfile() const;
 
-private:
+//private:
 
 	// m_flags
 	enum

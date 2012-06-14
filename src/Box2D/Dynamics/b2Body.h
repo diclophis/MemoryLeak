@@ -371,7 +371,10 @@ public:
 	b2World* GetWorld();
 	const b2World* GetWorld() const;
 
-private:
+  b2Body(const b2BodyDef* bd, b2World* world);
+	~b2Body();
+
+//private:
 
 	friend class b2World;
 	friend class b2Island;
@@ -401,9 +404,6 @@ private:
 		e_activeFlag		= 0x0020,
 		e_toiFlag			= 0x0040
 	};
-
-	b2Body(const b2BodyDef* bd, b2World* world);
-	~b2Body();
 
 	void SynchronizeFixtures();
 	void SynchronizeTransform();
