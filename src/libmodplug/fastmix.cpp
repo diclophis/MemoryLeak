@@ -573,8 +573,9 @@ CzWINDOWEDFIR sfir;
 // Interfaces
 
 typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
-
+//this seems like a hack to define and implement right next to each other
 #define BEGIN_MIX_INTERFACE(func)\
+  VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax);\
 	VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax)\
 	{\
 		LONG nPos;

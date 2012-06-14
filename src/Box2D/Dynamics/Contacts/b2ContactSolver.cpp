@@ -749,7 +749,7 @@ bool b2ContactSolver::SolveTOIPositionConstraints(int32 toiIndexA, int32 toiInde
 		int32 indexB = pc->indexB;
 		b2Vec2 localCenterA = pc->localCenterA;
 		b2Vec2 localCenterB = pc->localCenterB;
-		int32 pointCount = pc->pointCount;
+		//int32 pointCount = pc->pointCount;
 
 		float32 mA = 0.0f;
 		float32 iA = 0.0f;

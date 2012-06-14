@@ -428,7 +428,7 @@ void Terrain::Render(StateFoo *sf) {
 GLuint Terrain::GenerateStripesTexture() {  
   MLPoint texSize = MLPointMake(textureSize, textureSize);
 	// Calculate the adjustment ratios based on the old and new projections
-	MLPoint size = MLPointMake(320.0, 480.0);
+	//MLPoint size = MLPointMake(320.0, 480.0);
   // random number of stripes (even)
   const int minStripes = 20;
   const int maxStripes = 30;
@@ -751,9 +751,10 @@ static inline ccColor4F ccc4FFromccc3B(ccColor3B c) {
 
 
 ccColor4F Terrain::GenerateColor() {
-  const int minSum = 450;
-  const int minDelta = 150;
-  int r, g, b, min, max;
+  //const int minSum = 450;
+  //const int minDelta = 150;
+  //int r, g, b, min, max;
+  
   /*
   while (true) {
     r = random()%256;

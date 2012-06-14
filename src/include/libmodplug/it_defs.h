@@ -131,4 +131,8 @@ typedef struct ITSAMPLESTRUCT
 extern BYTE autovibit2xm[8];
 extern BYTE autovibxm2it[8];
 
+void ITUnpack16Bit(signed char *pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
+DWORD ITReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
+void ITUnpack8Bit(signed char *pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
+
 #endif
