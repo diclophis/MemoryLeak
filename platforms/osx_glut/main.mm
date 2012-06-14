@@ -22,7 +22,7 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static int game_index = 0;
+static int game_index = 4;
 static short *outData;
 
 
@@ -117,7 +117,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         //  game_index = 2;
         //}
 
-        game_index++;
+        //game_index++;
         if (game_index == 5) {
           game_index = 0;
         }

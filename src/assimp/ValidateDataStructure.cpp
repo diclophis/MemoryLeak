@@ -460,6 +460,7 @@ void ValidateDSProcess::Validate( const aiMesh* pMesh)
 		{
 			ReportError("aiMesh::mBones is NULL (aiMesh::mNumBones is %i)",
 				pMesh->mNumBones);
+      return;
 		}
 		boost::scoped_array<float> afSum(NULL);
 		if (pMesh->mNumVertices)
@@ -541,6 +542,7 @@ void ValidateDSProcess::Validate( const aiAnimation* pAnimation)
 		if (!pAnimation->mChannels)	{
 			ReportError("aiAnimation::mChannels is NULL (aiAnimation::mNumChannels is %i)",
 				pAnimation->mNumChannels);
+      return;
 		}
 		for (unsigned int i = 0; i < pAnimation->mNumChannels;++i)
 		{
@@ -680,10 +682,12 @@ void ValidateDSProcess::Validate( const aiMaterial* pMaterial)
 		if (!prop)	{
 			ReportError("aiMaterial::mProperties[%i] is NULL (aiMaterial::mNumProperties is %i)",
 				i,pMaterial->mNumProperties);
+      return;
 		}
 		if (!prop->mDataLength || !prop->mData)	{
 			ReportError("aiMaterial::mProperties[%i].mDataLength or "
 				"aiMaterial::mProperties[%i].mData is 0",i,i);
+      return;
 		}
 		// check all predefined types
 		if (aiPTI_String == prop->mType)	{

@@ -15,8 +15,8 @@ public:
   GLuint g_PositionAttribute;
   GLuint g_TextureAttribute;
 
-  StateFoo();
+  StateFoo(GLuint program);
   ~StateFoo();
-  void Reset(GLuint program);
+  void Reset();
 
 };

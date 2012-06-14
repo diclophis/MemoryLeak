@@ -70,7 +70,7 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     float row_offset = 0;
     float texture_base_x = m_FooFoo->m_SpriteFoos[(m_Frame)].texture[0];
     float texture_base_y = m_FooFoo->m_SpriteFoos[(m_Frame)].texture[1];
-    float texture_offset_x = 0.0;
+    //float texture_offset_x = 0.0;
     float texture_offset = 0.0, texture_offset_y = 0.0;
     float half_scale_x = m_Scale[0];
     float half_scale_y = m_Scale[1];

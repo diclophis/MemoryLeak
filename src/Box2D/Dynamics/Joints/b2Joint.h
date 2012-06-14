@@ -142,7 +142,7 @@ public:
 	/// the flag is only checked when fixture AABBs begin to overlap.
 	bool GetCollideConnected() const;
 
-protected:
+//protected:
 	friend class b2World;
 	friend class b2Body;
 	friend class b2Island;

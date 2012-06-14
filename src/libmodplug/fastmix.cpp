@@ -573,8 +573,9 @@ CzWINDOWEDFIR sfir;
 // Interfaces
 
 typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
-
+//this seems like a hack to define and implement right next to each other
 #define BEGIN_MIX_INTERFACE(func)\
+  VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax);\
 	VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax)\
 	{\
 		LONG nPos;
@@ -1486,13 +1487,13 @@ UINT CSoundFile::CreateStereoMix(int count)
 	{
 		const LPMIXINTERFACE *pMixFuncTable;
 		MODCHANNEL * const pChannel = &Chn[ChnMix[nChn]];
-		UINT nFlags, nMasterCh;
+		UINT nFlags; //, nMasterCh;
 		LONG nSmpCount;
 		int nsamples;
 		int *pbuffer;
 
 		if (!pChannel->pCurrentSample) continue;
-		nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
+		//nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
 		pOfsR = &gnDryROfsVol;
 		pOfsL = &gnDryLOfsVol;
 		nFlags = 0;

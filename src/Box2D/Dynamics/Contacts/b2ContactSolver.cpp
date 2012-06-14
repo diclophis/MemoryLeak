@@ -473,7 +473,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 				//
 				x.x = - cp1->normalMass * b.x;
 				x.y = 0.0f;
-				vn1 = 0.0f;
+				//vn1 = 0.0f;
 				vn2 = vc->K.ex.y * x.x + b.y;
 
 				if (x.x >= 0.0f && vn2 >= 0.0f)
@@ -516,7 +516,7 @@ void b2ContactSolver::SolveVelocityConstraints()
 				x.x = 0.0f;
 				x.y = - cp2->normalMass * b.y;
 				vn1 = vc->K.ey.x * x.y + b.x;
-				vn2 = 0.0f;
+				//vn2 = 0.0f;
 
 				if (x.y >= 0.0f && vn1 >= 0.0f)
 				{
@@ -749,7 +749,7 @@ bool b2ContactSolver::SolveTOIPositionConstraints(int32 toiIndexA, int32 toiInde
 		int32 indexB = pc->indexB;
 		b2Vec2 localCenterA = pc->localCenterA;
 		b2Vec2 localCenterB = pc->localCenterB;
-		int32 pointCount = pc->pointCount;
+		//int32 pointCount = pc->pointCount;
 
 		float32 mA = 0.0f;
 		float32 iA = 0.0f;

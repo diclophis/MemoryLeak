@@ -5,7 +5,7 @@
 #include "SpaceShipDownContactListener.h"
 #include "AncientDawn.h"
 
-#define COUNT 12 * 7
+#define COUNT 400
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc AncientDawn %d %d %d\n", CONTINUE_LEVEL, RESTART_LEVEL, START_NEXT_LEVEL);
@@ -22,13 +22,16 @@ AncientDawn::~AncientDawn() {
 
 
 void AncientDawn::CreateFoos() {
-
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), COUNT + 1));
-
   m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 3, 5.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 7, (8 * (16 * 4)) + 8, 5.0);
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  if (m_SimulationTime > 0.0) {
+    for (int i=0; i<m_SpriteCount; i++) {
+      m_AtlasSprites[i]->ResetFoo(m_PlayerDraw, m_BulletDraw);
+    }
+  }
 }
 
 
@@ -37,6 +40,11 @@ void AncientDawn::DestroyFoos() {
   delete m_SpaceShipDraw;
   delete m_BulletDraw;
   delete m_LandscapeDraw;
+  for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
+    delete (*i);
+  }
+  m_Batches.clear();
+  ResetStateFoo();
 }
 
 
@@ -59,7 +67,7 @@ void AncientDawn::StartLevel(int level_index) {
 
 void AncientDawn::ResetGame() {
   m_Batch = 0;
-  m_BulletSpeed = 10.0;
+  m_BulletSpeed = 2.5;
   m_SimulationTime = 0.0;
   m_ShootTimeout = 0.0;
   m_PhysicsTimeout = 0.0;
@@ -75,7 +83,7 @@ void AncientDawn::ResetGame() {
 void AncientDawn::CreateWorld() {
   b2Vec2 gravity;
   gravity.Set(0.0, 0.0);
-  m_World = new b2World(gravity, true);
+  m_World = new BulletHellWorld(gravity, false);
 }
 
 
@@ -146,7 +154,7 @@ void AncientDawn::CreatePlayer() {
     //LOGV("%p %p\n", m_AtlasSprites[m_PlayerIndex], bullet);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
-    bd2.allowSleep = true;
+    bd2.allowSleep = false;
     bd2.awake = false;
     bd2.linearDamping = 0.0;
     bd2.fixedRotation = true;
@@ -196,8 +204,8 @@ void AncientDawn::CreatePlayer() {
   mouse_joint_def.bodyA = center_body;
   mouse_joint_def.bodyB = m_PlayerBody;
   mouse_joint_def.target = b2Vec2(0.0, 0.0);
-  mouse_joint_def.maxForce = 100.0f * m_PlayerBody->GetMass();
-  mouse_joint_def.dampingRatio = 100.0;
+  mouse_joint_def.maxForce = 2000.0f * m_PlayerBody->GetMass();
+  mouse_joint_def.dampingRatio = 10.0;
   mouse_joint_def.frequencyHz = 100.0;
   m_PlayerMouseJoint = (b2MouseJoint *)m_World->CreateJoint(&mouse_joint_def);
 }
@@ -234,6 +242,11 @@ int AncientDawn::LevelProgress() {
 
 void AncientDawn::RestartLevel() {
   StopLevel();
+  //if (m_CurrentLevel > 0) {
+  //  StopLevel();
+  //} else {
+  //  m_CurrentLevel = -1;
+  //}
   StartLevel(m_CurrentLevel);
 }
 
@@ -291,15 +304,67 @@ void AncientDawn::Hit(float x, float y, int hitState) {
 
 int AncientDawn::Simulate() {
 
+  int chosen_state = 0;
+  
+  switch(LevelProgress()) {
+    case CONTINUE_LEVEL:
+      chosen_state = 1;
+      break;
+      
+    case RESTART_LEVEL:
+      RestartLevel();
+      chosen_state = 1;
+      return chosen_state;
+      
+    case START_NEXT_LEVEL:
+      chosen_state = 1;
+      return chosen_state;
+      
+    default:
+      return chosen_state;
+  }
+  
   StepPhysics();
 
   int shot_this_tick = 0;
   m_ShootTimeout += m_DeltaTime;
   float theta = 0.0;
-  bool shoot_this_tick = (m_ShootTimeout > (1.0 / 6.0));
+  bool shoot_this_tick = (m_ShootTimeout > (1.0 / 10.0));
   if (shoot_this_tick) {
     m_ShootTimeout = 0.0;
   }
+
+  //float spread = 0;
+
+
+        if (shoot_this_tick) {
+          for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
+            AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
+            if (sprite != NULL) {
+              if (sprite == m_AtlasSprites[m_PlayerIndex]) {
+              } else {
+                if (!sprite->m_IsAlive && shot_this_tick < 5) {
+                  body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+                  // x = r cos theta,
+                  // y = r sin theta, 
+                  float off = ((sinf(m_SimulationTime * 1.0) * (M_PI * 0.5)));
+                  //float off = 0.0;
+                  float fx = m_BulletSpeed * fastSinf((M_PI / 2.0) - (theta + off));
+                  float fy = m_BulletSpeed * fastSinf((theta + off));
+                  body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
+                  //body->ApplyForce(b2Vec2(10.0, 0), body->GetPosition());
+                  sprite->m_IsAlive = true;
+                  sprite->m_Life = 0.0;
+                  sprite->m_Frame = 0;
+                  shot_this_tick++;
+                  //theta += ((M_PI * 2.0) / 12.0);
+                  //spread += 0.1;
+                  theta += (M_PI * 2.0) / 5.0;
+                }
+              }
+            }
+          }
+        }
 
   for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
     AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
@@ -309,50 +374,20 @@ int AncientDawn::Simulate() {
       if (sprite == m_AtlasSprites[m_PlayerIndex]) {
       } else {
         if (sprite->m_IsAlive) {
-          if ((sprite->m_Life > (1.0))) {
+          if ((sprite->m_Life > (4.0))) {
             body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
             body->SetAwake(false);
             sprite->m_IsAlive = false;
           }
         } else {
-          if (shoot_this_tick && shot_this_tick < (12)) {
-            body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-            // x = r cos theta,
-            // y = r sin theta, 
-            float off = fastSinf(m_SimulationTime * 0.1) * 0.33;
-            //float off = 0.0;
-            float fx = m_BulletSpeed * fastSinf((M_PI / 2.0) - (theta + off));
-            float fy = m_BulletSpeed * fastSinf((theta + off));
-            body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
-            //body->ApplyForce(b2Vec2(10.0, 0), body->GetPosition());
-            sprite->m_IsAlive = true;
-            sprite->m_Life = 0.0;
-            sprite->m_Frame = 0;
-            shot_this_tick++;
-            theta += ((M_PI * 2.0) / 12.0);
-          }
         }
       }
       UpdatePhysicialPositionOfSprite(sprite, x, y);
       sprite->Simulate(m_DeltaTime);
     }
   }
-
-  switch(LevelProgress()) {
-    case CONTINUE_LEVEL:
-      return 1;
-
-    case RESTART_LEVEL:
-      RestartLevel();
-      return 1;
-
-    case START_NEXT_LEVEL:
-      StartNextLevel();
-      return 1;
-      
-    default:
-      return 0;
-  }
+  
+  return chosen_state;
 }
 
 

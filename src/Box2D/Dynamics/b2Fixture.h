@@ -188,7 +188,7 @@ public:
 	/// the body transform.
 	const b2AABB& GetAABB(int32 childIndex) const;
 
-protected:
+//protected:
 
 	friend class b2Body;
 	friend class b2World;

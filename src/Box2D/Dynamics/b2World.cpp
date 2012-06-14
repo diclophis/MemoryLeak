@@ -1067,7 +1067,13 @@ void b2World::DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Color
 			m_debugDraw->DrawSolidPolygon(vertices, vertexCount, color);
 		}
 		break;
-	}
+	
+  default:
+      printf("Enumeration values 'e_unknown' and 'e_typeCount' not handled in switch");
+      assert(false);
+      break;
+  }
+  
 }
 
 void b2World::DrawJoint(b2Joint* joint)

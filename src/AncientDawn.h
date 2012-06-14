@@ -113,7 +113,7 @@ public:
   int m_CurrentLevel;
 
   // physics
-  b2World *m_World;
+  BulletHellWorld *m_World;
   GLESDebugDraw *m_DebugDraw;
   SpaceShipDownContactListener *m_ContactListener;
   b2Body *m_PlayerBody;
