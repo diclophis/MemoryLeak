@@ -132,7 +132,6 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
 	m_IsPushingAudio = false;
 
-  m_StateFoo = (StateFoo *)malloc(1 * sizeof(StateFoo));
 
 
   m_CurrentSound = 0;
@@ -174,11 +173,13 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
 #endif
 
+  m_StateFoo = new StateFoo(program); //(StateFoo *)malloc(1 * sizeof(StateFoo));
+
 }
 
 
 void Engine::ResetStateFoo() {
-  m_StateFoo->Reset(program);
+  m_StateFoo->Reset();
 }
 
 
@@ -263,7 +264,7 @@ int Engine::Run() {
 	timeval tim;
   gettimeofday(&tim, NULL);
   t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-  m_DeltaTime = t2 - t1;
+  float step = t2 - t1;
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
   int times = 1;
@@ -271,9 +272,12 @@ int Engine::Run() {
     if (m_GameState > 1) {
       //paused
     } else {
-      m_SimulationTime += (m_DeltaTime);
-      if (Active()) {
-        Simulate();
+      m_DeltaTime = step / 3.0;
+      m_SimulationTime += (step);
+      for (int j=0; j< 3; j++) {
+        if (Active()) {
+          Simulate();
+        }
       }
     }
   }
