@@ -117,7 +117,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         //  game_index = 2;
         //}
 
-        game_index++;
+        //game_index++;
         if (game_index == 5) {
           game_index = 0;
         }
