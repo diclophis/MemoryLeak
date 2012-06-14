@@ -224,7 +224,7 @@ void AncientDawn::DestroyLandscape() {
 
 
 int AncientDawn::LevelProgress() {
-  if (m_SimulationTime > 60.0) {
+  if (m_SimulationTime > 5.0) {
     return RESTART_LEVEL;
   }
 
@@ -234,7 +234,7 @@ int AncientDawn::LevelProgress() {
 
 void AncientDawn::RestartLevel() {
   StopLevel();
-  StartLevel(m_CurrentLevel);
+  //StartLevel(m_CurrentLevel);
 }
 
 
