@@ -802,7 +802,7 @@ int SpaceShipDown::Simulate() {
             m_PollJointDef->bodyB = bodyB;
             m_PollJointDef->localAxisA.Set(0.0f, 1.0f);
             b2PrismaticJointDef *uneeded = (b2PrismaticJointDef *)world->CreateJoint(m_PollJointDef);
-            uneeded = NULL;
+            if (!uneeded) { }
             if (m_RequiredPartIndex == m_SpaceShipPartsStartIndex) {
               m_RequiredPartIndex += 2;
             } else if (m_RequiredPartIndex == m_SpaceShipPartsStopIndex - 1) {

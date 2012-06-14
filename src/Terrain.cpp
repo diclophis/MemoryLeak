@@ -768,6 +768,7 @@ ccColor4F Terrain::GenerateColor() {
   }
   return ccc4FFromccc3B(ccc3(r, g, b));
   */
-  return ccc4FFromccc3B(ccc3(256, 125, 125));
+  GLubyte r = (GLubyte)256;
+  return ccc4FFromccc3B(ccc3(r, 125, 125));
 
 }

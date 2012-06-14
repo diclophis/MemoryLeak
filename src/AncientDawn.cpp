@@ -233,7 +233,11 @@ int AncientDawn::LevelProgress() {
 
 
 void AncientDawn::RestartLevel() {
-  StopLevel();
+  if (m_CurrentLevel > 0) {
+    StopLevel();
+  } else {
+    m_CurrentLevel = -1;
+  }
   //StartLevel(m_CurrentLevel);
 }
 
@@ -290,7 +294,27 @@ void AncientDawn::Hit(float x, float y, int hitState) {
 
 
 int AncientDawn::Simulate() {
-
+  
+  int chosen_state = 0;
+  
+  switch(LevelProgress()) {
+    case CONTINUE_LEVEL:
+      chosen_state = 1;
+      break;
+      
+    case RESTART_LEVEL:
+      RestartLevel();
+      chosen_state = 1;
+      return chosen_state;
+      
+    case START_NEXT_LEVEL:
+      chosen_state = 1;
+      return chosen_state;
+      
+    default:
+      return chosen_state;
+  }
+  
   StepPhysics();
 
   int shot_this_tick = 0;
@@ -337,22 +361,8 @@ int AncientDawn::Simulate() {
       sprite->Simulate(m_DeltaTime);
     }
   }
-
-  switch(LevelProgress()) {
-    case CONTINUE_LEVEL:
-      return 1;
-
-    case RESTART_LEVEL:
-      RestartLevel();
-      return 1;
-
-    case START_NEXT_LEVEL:
-      StartNextLevel();
-      return 1;
-      
-    default:
-      return 0;
-  }
+  
+  return chosen_state;
 }
 
 

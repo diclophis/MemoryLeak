@@ -92,7 +92,7 @@ ModPlugFile* ModPlug_Load(const void* data, int size)
 	}
 	else
 	{
-		delete result;
+		//delete result;
 		return NULL;
 	}
 }

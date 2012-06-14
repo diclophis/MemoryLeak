@@ -769,6 +769,8 @@ UINT CSoundFile::GetBestSaveFormat() const
 UINT CSoundFile::GetSaveFormats() const
 //-------------------------------------
 {
+  return MOD_TYPE_MOD;
+  /* // we dont need to save sound
 	UINT n = 0;
 	if ((!m_nSamples) || (!m_nChannels) || (m_nType == MOD_TYPE_NONE)) return 0;
 	switch(m_nType)
@@ -776,13 +778,16 @@ UINT CSoundFile::GetSaveFormats() const
 	case MOD_TYPE_MOD:	n = MOD_TYPE_MOD;
 	case MOD_TYPE_S3M:	n = MOD_TYPE_S3M;
 	}
+  if (n) {}
 	n |= MOD_TYPE_XM | MOD_TYPE_IT;
 	if (!m_nInstruments)
 	{
 		if (m_nSamples < 32) n |= MOD_TYPE_MOD;
 		n |= MOD_TYPE_S3M;
 	}
+  if (n) {}
 	return n;
+  */
 }
 
 
@@ -1762,7 +1767,10 @@ void CSoundFile::CheckCPUUsage(UINT nCPU)
 BOOL CSoundFile::SetPatternName(UINT nPat, LPCSTR lpszName)
 //---------------------------------------------------------
 {
-        char szName[MAX_PATTERNNAME] = "";   // changed from CHAR
+  if (lpszName == NULL) {
+    return false;
+  }
+  char szName[MAX_PATTERNNAME] = "";   // changed from CHAR
 	if (nPat >= MAX_PATTERNS) return FALSE;
 	if (lpszName) lstrcpyn(szName, lpszName, MAX_PATTERNNAME);
 	szName[MAX_PATTERNNAME-1] = 0;

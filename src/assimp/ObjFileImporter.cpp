@@ -488,13 +488,13 @@ void ObjFileImporter::appendChildToParentNode(aiNode *pParent, aiNode *pChild)
 
 	// Assign parent to child
 	pChild->mParent = pParent;
-	size_t sNumChildren = 0;
+	//size_t sNumChildren = 0;
 	
 	// If already children was assigned to the parent node, store them in a 
 	std::vector<aiNode*> temp;
 	if (pParent->mChildren != NULL)
 	{
-		sNumChildren = pParent->mNumChildren;
+		//sNumChildren = pParent->mNumChildren;
 		ai_assert( 0 != sNumChildren );
 		for (size_t index = 0; index < pParent->mNumChildren; index++)
 		{
