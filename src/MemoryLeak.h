@@ -140,5 +140,7 @@
 #include "MLPoint.h"
 #include "Terrain.h"
 
+#include "BulletHellWorld.h"
+
 #include "pnglite.h"
 
