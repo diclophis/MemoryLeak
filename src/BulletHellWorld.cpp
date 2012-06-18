@@ -5,6 +5,7 @@
 
 
 BulletHellWorld::BulletHellWorld(const b2Vec2& gravity, bool doSleep) : b2World(gravity, doSleep) {
+  m_Solve = false;
 }
 
 
@@ -226,6 +227,7 @@ void BulletHellWorld::Solve(const b2TimeStep& step)
     
     m_stackAllocator.Free(stack);
     
+    if (m_Solve)
     {
       b2Timer timer;
       // Synchronize fixtures, check for out of range bodies.
@@ -243,7 +245,7 @@ void BulletHellWorld::Solve(const b2TimeStep& step)
         }
         
         // Update fixtures (for broad-phase).
-        //b->SynchronizeFixtures();
+        b->SynchronizeFixtures();
       }
       
       // Look for new contacts.
