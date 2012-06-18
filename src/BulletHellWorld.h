@@ -28,6 +28,7 @@ public:
 	bool IsLocked() const;
   //b2BulletHellBody* CreateBody(const b2BodyDef* def);
 	void Solve(const b2TimeStep& step);
+  bool m_Solve;
 };
 
 inline bool BulletHellWorld::IsLocked() const

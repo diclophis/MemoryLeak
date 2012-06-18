@@ -8,7 +8,7 @@ enum {
 };
 
 
-class AncientDawn : public Engine {
+class AncientDawn : public Engine, b2QueryCallback {
 
 public:
 
@@ -104,6 +104,7 @@ public:
   foofoo *m_PlayerDraw;
   foofoo *m_SpaceShipDraw;
   foofoo *m_BulletDraw;
+  foofoo *m_SpaceShipBulletDraw;
   foofoo *m_LandscapeDraw;
   foofoo *m_FirstBatch;
   foofoo *m_SecondBatch;
@@ -121,21 +122,27 @@ public:
 
   // drawing
   int m_PlayerIndex;
+  int m_SpaceShipIndex;
   int m_LandscapeIndex;
   int m_SpaceShipsStartIndex;
   int m_SpaceShipsStopIndex;
+  int m_LastRecycledIndex;
 
   // input mechanics
   bool m_TouchedLeft;
   bool m_TouchedRight;
   bool m_DebugDrawToggle;
+  float m_TouchOffsetX;
+  float m_TouchOffsetY;
 
+  float m_SolveTimeout;
+  float m_BossShootTimeout;
   float m_ShootTimeout;
   float m_PhysicsTimeout;
   float m_BulletSpeed;
-
   int m_Batch;
   bool m_Force;
 
+  bool ReportFixture(b2Fixture* fixture);
 
 };

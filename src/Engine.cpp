@@ -272,9 +272,9 @@ int Engine::Run() {
     if (m_GameState > 1) {
       //paused
     } else {
-      m_DeltaTime = step / 3.0;
+      m_DeltaTime = step / 1.0;
       m_SimulationTime += (step);
-      for (int j=0; j< 3; j++) {
+      for (int j=0; j<1; j++) {
         if (Active()) {
           Simulate();
         }
