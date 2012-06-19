@@ -158,8 +158,8 @@ void AncientDawn::CreatePlayer() {
 
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
-    bullet->m_Fps = 0; 
-    bullet->SetScale(8.0, 8.0);
+    bullet->m_Fps = 24; 
+    bullet->SetScale(10.0, 50.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;
@@ -423,8 +423,8 @@ int AncientDawn::Simulate() {
               body->SetAwake(false);
               body->SetAwake(true);
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-              float fx = spread + (0.5 * M_PI * ((float)shot_this_tick));
-              float fy = 10.0;
+              float fx = (spread + (0.5 * M_PI * ((float)shot_this_tick))) * 2.0;
+              float fy = 50.0;
               body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
               sprite->m_IsAlive = true;
               sprite->m_Life = 0.0;
@@ -434,7 +434,7 @@ int AncientDawn::Simulate() {
               if (m_LastRecycledIndex >= (COUNT)) {
                 m_LastRecycledIndex = -1;
               }
-            } else if ((sprite->m_Life > (3.0))) {
+            } else if ((sprite->m_Life > (0.33))) {
               sprite->m_IsAlive = false;
             }
 

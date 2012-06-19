@@ -231,7 +231,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_ONE, GL_ONE);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
@@ -315,7 +314,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_ONE, GL_ONE);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
