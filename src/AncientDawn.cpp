@@ -10,7 +10,9 @@
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc AncientDawn %d %d %d\n", CONTINUE_LEVEL, RESTART_LEVEL, START_NEXT_LEVEL);
   LoadSound(0);
+  LOGV("got to load sound\n");
   LoadTexture(1);
+  LOGV("got to load texture\n");
   StartLevel(FirstLevel());
 }
 
@@ -321,7 +323,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 5.0));
+  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 10.0));
   if (m_World->m_Solve) {
     m_SolveTimeout = 0.0;
   }
@@ -422,7 +424,7 @@ int AncientDawn::Simulate() {
               body->SetAwake(true);
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
               float fx = spread + (0.5 * M_PI * ((float)shot_this_tick));
-              float fy = 5.0;
+              float fy = 10.0;
               body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
               sprite->m_IsAlive = true;
               sprite->m_Life = 0.0;

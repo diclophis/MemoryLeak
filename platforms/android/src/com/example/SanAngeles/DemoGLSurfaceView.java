@@ -128,6 +128,6 @@ class DemoGLSurfaceView extends GLSurfaceView {
   private static native void nativePause();
   private static native void nativeResume();
   private static native void nativeTouch(float x, float y, int hitState);
-  private static native void nativeStartGame(int i);
+  //private static native void nativeStartGame(int i);
 
 }
