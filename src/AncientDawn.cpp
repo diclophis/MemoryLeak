@@ -10,7 +10,9 @@
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LOGV("alloc AncientDawn %d %d %d\n", CONTINUE_LEVEL, RESTART_LEVEL, START_NEXT_LEVEL);
   LoadSound(0);
+  LOGV("got to load sound\n");
   LoadTexture(1);
+  LOGV("got to load texture\n");
   StartLevel(FirstLevel());
 }
 
@@ -156,8 +158,8 @@ void AncientDawn::CreatePlayer() {
 
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
-    bullet->m_Fps = 0; 
-    bullet->SetScale(8.0, 8.0);
+    bullet->m_Fps = 24; 
+    bullet->SetScale(10.0, 50.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;
@@ -321,7 +323,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 5.0));
+  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 10.0));
   if (m_World->m_Solve) {
     m_SolveTimeout = 0.0;
   }
@@ -421,8 +423,8 @@ int AncientDawn::Simulate() {
               body->SetAwake(false);
               body->SetAwake(true);
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-              float fx = spread + (0.5 * M_PI * ((float)shot_this_tick));
-              float fy = 5.0;
+              float fx = (spread + (0.5 * M_PI * ((float)shot_this_tick))) * 2.0;
+              float fy = 50.0;
               body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
               sprite->m_IsAlive = true;
               sprite->m_Life = 0.0;
@@ -432,7 +434,7 @@ int AncientDawn::Simulate() {
               if (m_LastRecycledIndex >= (COUNT)) {
                 m_LastRecycledIndex = -1;
               }
-            } else if ((sprite->m_Life > (3.0))) {
+            } else if ((sprite->m_Life > (0.33))) {
               sprite->m_IsAlive = false;
             }
 
