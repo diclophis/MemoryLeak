@@ -309,6 +309,78 @@ Sink.doInterval = function (callback, timeout) {
 }(this.Sink);
 void function (Sink) {
 
+var _Blob, _BlobBuilder, _URL, _btoa;
+
+void function (prefixes, urlPrefixes) {
+	function find (name, prefixes) {
+		var b, a = prefixes.slice();
+
+		for (b=a.shift(); typeof b !== 'undefined'; b=a.shift()) {
+			b = Function('return typeof ' + b + name + 
+				'=== "undefined" ? undefined : ' +
+				b + name)();
+
+			if (b) return b;
+		}
+	}
+
+	_Blob = find('Blob', prefixes);
+	_BlobBuilder = find('BlobBuilder', prefixes);
+	_URL = find('URL', urlPrefixes);
+	_btoa = find('btoa', ['']);
+}([
+	'',
+	'Moz',
+	'WebKit',
+	'MS'
+], [
+	'',
+	'webkit'
+]);
+
+var createBlob = _Blob && _URL && function (content, type) {
+	return _URL.createObjectURL(new _Blob([content], { type: type }));
+};
+
+var createBlobBuilder = _BlobBuilder && _URL && function (content, type) {
+	var bb = new _BlobBuilder();
+	bb.append(content);
+
+	return _URL.createObjectURL(bb.getBlob(type));
+};
+
+var createData = _btoa && function (content, type) {
+	return 'data:' + type + ';base64,' + _btoa(content);
+};
+
+var createDynURL =
+	createBlob ||
+	createBlobBuilder ||
+	createData;
+
+if (!createDynURL) return;
+
+if (createBlob) createDynURL.createBlob = createBlob;
+if (createBlobBuilder) createDynURL.createBlobBuilder = createBlobBuilder;
+if (createData) createDynURL.createData = createData;
+
+if (_Blob) createDynURL.Blob = _Blob;
+if (_BlobBuilder) createDynURL.BlobBuilder = _BlobBuilder;
+if (_URL) createDynURL.URL = _URL;
+
+Sink.createDynURL = createDynURL;
+
+Sink.revokeDynURL = function (url) {
+	if (typeof url === 'string' && url.indexOf('data:') === 0) {
+		return false;
+	} else {
+		return _URL.revokeObjectURL(url);
+	}
+};
+
+}(this.Sink);
+void function (Sink) {
+
 /*
  * A Sink-specific error class.
  *
@@ -370,10 +442,6 @@ Sink.Error = SinkError;
 }(this.Sink);
 void function (Sink) {
 
-var	BlobBuilder	= typeof window === 'undefined' ? undefined :
-	window.Blob || window.BlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder,
-	URL		= typeof window === 'undefined' ? undefined : (window.URL || window.MozURL || window.webkitURL || window.MSURL || window.OURL);
-
 /**
  * Creates an inline worker using a data/blob URL, if possible.
  *
@@ -384,54 +452,80 @@ var	BlobBuilder	= typeof window === 'undefined' ? undefined :
  * @return {Worker} A web worker, or null if impossible to create.
 */
 
+var define = Object.defineProperty ? function (obj, name, value) {
+	Object.defineProperty(obj, name, {
+		value: value,
+		configurable: true,
+		writable: true
+	});
+} : function (obj, name, value) {
+	obj[name] = value;
+};
+
+function terminate () {
+	define(this, 'terminate', this._terminate);
+
+	Sink.revokeDynURL(this._url);
+
+	delete this._url;
+	delete this._terminate;
+	return this.terminate();
+}
+
 function inlineWorker (script) {
-	var	worker	= null,
-		url, bb;
-	try {
-		bb	= new BlobBuilder();
-		bb.append(script);
-		url	= URL.createObjectURL(bb.getBlob());
-		worker	= new Worker(url);
+	function wrap (type, content, typeName) {
+		try {
+			var url = type(content, 'text/javascript');
+			var worker = new Worker(url);
 
-		worker._terminate	= worker.terminate;
-		worker._url		= url;
-		bb			= null;
+			define(worker, '_url', url);
+			define(worker, '_terminate', worker.terminate);
+			define(worker, 'terminate', terminate);
 
-		worker.terminate = function () {
-			this._terminate();
-			URL.revokeObjectURL(this._url);
-		};
+			if (inlineWorker.type) return worker;
 
-		inlineWorker.type = 'blob';
+			inlineWorker.type = typeName;
+			inlineWorker.createURL = type;
 
-		return worker;
+			return worker;
+		} catch (e) {
+			return null;
+		}
+	}
 
-	} catch (e) {}
+	var createDynURL = Sink.createDynURL;
+	var worker;
 
-	try {
-		worker			= new Worker('data:text/javascript;base64,' + btoa(script));
-		inlineWorker.type	= 'data';
+	if (inlineWorker.createURL) {
+		return wrap(inlineWorker.createURL, script, inlineWorker.type);
+	}
 
-		return worker;
+	worker = wrap(createDynURL.createBlob, script, 'blob');
+	if (worker) return worker;
 
-	} catch (e) {}
+	worker = wrap(createDynURL.createBlobBuilder, script, 'blobbuilder');
+	if (worker) return worker;
+
+	worker = wrap(createDynURL.createData, script, 'data');
 
 	return worker;
 }
 
-inlineWorker.ready = inlineWorker.working = false;
-
 Sink.EventEmitter.call(inlineWorker);
 
 inlineWorker.test = function () {
-	var	worker	= inlineWorker('this.onmessage=function (e){postMessage(e.data)}'),
-		data	= 'inlineWorker';
 	inlineWorker.ready = inlineWorker.working = false;
+	inlineWorker.type = '';
+	inlineWorker.createURL = null;
+
+	var worker = inlineWorker('this.onmessage=function(e){postMessage(e.data)}');
+	var data = 'inlineWorker';
 
 	function ready (success) {
 		if (inlineWorker.ready) return;
-		inlineWorker.ready	= true;
-		inlineWorker.working	= success;
+
+		inlineWorker.ready = true;
+		inlineWorker.working = success;
 		inlineWorker.emit('ready', [success]);
 		inlineWorker.off('ready');
 
@@ -443,12 +537,16 @@ inlineWorker.test = function () {
 	}
 
 	if (!worker) {
-		ready(false);
+		setTimeout(function () {
+			ready(false);
+		}, 0);
 	} else {
 		worker.onmessage = function (e) {
 			ready(e.data === data);
 		};
+
 		worker.postMessage(data);
+
 		setTimeout(function () {
 			ready(false);
 		}, 1000);
