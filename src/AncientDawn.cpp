@@ -323,7 +323,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 10.0));
+  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 20.0));
   if (m_World->m_Solve) {
     m_SolveTimeout = 0.0;
   }
@@ -384,9 +384,11 @@ int AncientDawn::Simulate() {
   StepPhysics();
 
   b2AABB aabb;
-  aabb.lowerBound.Set((-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-  aabb.upperBound.Set((1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-  m_World->QueryAABB(this, aabb);
+  if (m_World->m_Solve) {
+    aabb.lowerBound.Set((-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+    aabb.upperBound.Set((1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+    m_World->QueryAABB(this, aabb);
+  }
   
   int shot_this_tick = 0;
   int boss_shot_this_tick = 0;
