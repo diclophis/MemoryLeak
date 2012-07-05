@@ -63,7 +63,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   int xx = 0;
   int yy = 0;
 
-  m_Zoom = 1.0;
+  m_Zoom = 0.33;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
@@ -109,7 +109,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_TrailCount = 4;
 
-  LoadMaze(4);
+  LoadMaze(5);
   LoadSound(0);
   LoadSound(1);
   CreateFoos();
@@ -122,8 +122,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
     float px = ((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
     float py = ((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
-    int sx = (int)floor(px / SUBDIVIDE);
-    int sy = (int)floor(py / SUBDIVIDE);
+    int sx = (int)(px / SUBDIVIDE);
+    int sy = (int)(py / SUBDIVIDE);
 
     m_GridPositions[(i * 2)] = sx;
     m_GridPositions[(i * 2) + 1] = sy;
@@ -368,24 +368,9 @@ int SuperStarShooter::Simulate() {
       needs_next_step = true;  
       m_WarpTimeout = 0.0;
     }
-    //m_Zoom -= (m_DeltaTime * 0.1);
   } else {
-    //m_Zoom += (m_DeltaTime * 0.2);
-
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
   }
-
-  /*
-  if (m_Zoom < 5.0) {
-    m_Zoom = 5.0;
-  }
-
-  if (m_Zoom > 6.0) {
-    m_Zoom = 6.0;
-  }
- 
-  //m_Zoom = 0.25;
-  */
 
   m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
@@ -449,13 +434,13 @@ int SuperStarShooter::Simulate() {
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = round(m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = round(m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = (m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = (m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = round(m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = round(m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = (m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = (m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
@@ -495,22 +480,25 @@ int SuperStarShooter::Simulate() {
     switch (solved) {
       case micropather::MicroPather::SOLVED:
         m_Steps->erase(m_Steps->begin());
+        m_TargetIsDirty = false;
+        m_Zoom = 0.33;
         break;
       case micropather::MicroPather::NO_SOLUTION:
         //LOGV("none\n");
         m_TargetX = selected_x;
         m_TargetY = selected_y;
         m_Steps->clear();
+        m_Zoom = 1.33;
         break;
       case micropather::MicroPather::START_END_SAME:
         //LOGV("same\n");
         m_TargetX = selected_x;
         m_TargetY = selected_y;
+        m_TargetIsDirty = false;
         break;	
       default:
         break;
     }
-    m_TargetIsDirty = false;
   }
 
 
