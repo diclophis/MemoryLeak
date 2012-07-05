@@ -87,4 +87,6 @@ public:
 
   void LoadMaze(int level_index);
 
+  void BlitMazeCell(int row, int col, int mask);
+
 };
