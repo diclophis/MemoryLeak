@@ -109,7 +109,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_TrailCount = 4;
 
-  LoadMaze(3);
+  LoadMaze(5);
   LoadSound(0);
   LoadSound(1);
   CreateFoos();
@@ -774,10 +774,10 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
       break;
     case 14:
-      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
-      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // ##
-      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
-      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
+      BlitIntoSpace(0, 60, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
+      BlitIntoSpace(0, 60, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // ##
+      BlitIntoSpace(0, 60, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, 60, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     default:
       if (mask > 0) {
