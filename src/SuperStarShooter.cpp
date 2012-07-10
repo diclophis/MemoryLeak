@@ -57,18 +57,18 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   LoadTexture(0);
 
-  m_CenterOfWorldX = 1;
-  m_CenterOfWorldY = 1;
+  m_CenterOfWorldX = 4;
+  m_CenterOfWorldY = 4;
 
   int xx = 0;
   int yy = 0;
 
-  m_Zoom = 0.5;
+  m_Zoom = 1.5;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
-  m_Space = new Octree<int>(32 * 32, BLANK);
+  m_Space = new Octree<int>(64 * 64, BLANK);
 
   for (unsigned int i=0; i<124; i++) {
     for (unsigned int ii=0; ii<124; ii++) {
@@ -109,7 +109,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_TrailCount = 4;
 
-  LoadMaze(5);
+  LoadMaze(3);
   LoadSound(0);
   LoadSound(1);
   CreateFoos();
@@ -350,7 +350,7 @@ void SuperStarShooter::RenderModelPhase() {
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
   RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
-  RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
+  //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
   RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
   RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
   AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
@@ -638,7 +638,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
     if (nx >= 0 && ny >= 0) {
       int colliding_index = m_Space->at(nx, ny, 0);
       //if (colliding_index != (68 + 16 + 16 + 16 + 16)) {
-      if (colliding_index == 0) {
+      if (true || colliding_index == 0) {
         if (nx == m_States[1]->x && ny == m_States[1]->y) {
           passable = true;
           pass_cost = 0.0;
@@ -721,68 +721,68 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
 
   switch(mask) {
     case 5:
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 2);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
       break;
     case 6:
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 2);
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 7:
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 2);
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 3075: //above ground
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 3:
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 9:
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 0);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
       break;
     case 10:
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 0);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 11:
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 0);
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 12:
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 0);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 2);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
       break;
     case 13:
-      BlitIntoSpace(0, 0, 1, 1, x + 0, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 0);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 2);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
       break;
     case 14:
-      BlitIntoSpace(0, 0, 1, 1, x + 2, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 0);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 1);
-      BlitIntoSpace(0, 0, 1, 1, x + 1, y + 2);
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
+      BlitIntoSpace(0, 56, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // ##
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, 56, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     default:
       if (mask > 0) {
         LOGV("%d %d %d\n", row, col, mask);
-        BlitIntoSpace(0, 0, 1, 1, x, y);
+        BlitIntoSpace(0, 56, 3, 3, x, y);
       }
       break;
   };
