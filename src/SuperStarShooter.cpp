@@ -63,7 +63,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   int xx = 0;
   int yy = 0;
 
-  m_Zoom = 0.33;
+  m_Zoom = 0.5;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
@@ -481,14 +481,14 @@ int SuperStarShooter::Simulate() {
       case micropather::MicroPather::SOLVED:
         m_Steps->erase(m_Steps->begin());
         m_TargetIsDirty = false;
-        m_Zoom = 0.33;
+        //m_Zoom = 0.33;
         break;
       case micropather::MicroPather::NO_SOLUTION:
         //LOGV("none\n");
         m_TargetX = selected_x;
         m_TargetY = selected_y;
         m_Steps->clear();
-        m_Zoom = 1.33;
+        //m_Zoom = 1.33;
         break;
       case micropather::MicroPather::START_END_SAME:
         //LOGV("same\n");
