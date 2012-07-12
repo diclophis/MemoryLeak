@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-
-#define SUBDIVIDE (16.0) 
+#define ZOOM (3.0)
+#define SUBDIVIDE (32.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 24
-#define GRID_Y 24
+#define GRID_X 60
+#define GRID_Y 60
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -21,7 +21,7 @@
 #define OVER PURE
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define MAX_WAIT_BEFORE_WARP 0.075
-#define MAX_SEARCH 10
+#define MAX_SEARCH 100
 #define MAX_STATE_POINTERS 1024
 
 
@@ -63,7 +63,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   int xx = 0;
   int yy = 0;
 
-  m_Zoom = 0.4321;
+  m_Zoom = ZOOM; //0.4321;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
@@ -109,7 +109,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 10;
+  m_TrailCount = MAX_SEARCH;
 
   LoadMaze(5);
   LoadSound(0);
@@ -173,7 +173,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 15;
     m_AtlasSprites[sub_index]->m_Frame = 0;
-    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE));
+    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.25, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.25);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
     m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
@@ -379,7 +379,7 @@ int SuperStarShooter::Simulate() {
 
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
-  float s = 10.0;
+  float s = 0.5;
 
   float mx = (tx * s * m_DeltaTime);
   float my = (ty * s * m_DeltaTime);
@@ -388,7 +388,7 @@ int SuperStarShooter::Simulate() {
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
 
-  if (true) {
+  if (false) {
     m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
     m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
   }
@@ -505,7 +505,7 @@ int SuperStarShooter::Simulate() {
   }
 
 
-    int stacked = 10;
+    int stacked = MAX_SEARCH;
     bool top_of_stack = false;
     for (unsigned int i=0; i<m_TrailCount; i++) {
       if (i < m_Steps->size() && i < stacked) {
