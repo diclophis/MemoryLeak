@@ -384,10 +384,11 @@ int SuperStarShooter::Simulate() {
   float mx = (tx * s * m_DeltaTime);
   float my = (ty * s * m_DeltaTime);
 
+  // this causes seaming problems
   m_CameraActualOffsetX -= (mx);
   m_CameraActualOffsetY -= (my);
 
-  if (false) {
+  if (true) {
     m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
     m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
   }
@@ -579,6 +580,24 @@ int SuperStarShooter::Simulate() {
         m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1];
       }
     }
+  }
+
+  if (m_Steps->size() == 0) {
+    switch (m_PlayerIndex - m_PlayerStartIndex) {
+      case (0):
+        m_TargetY++;
+        break;
+      case (1):
+        m_TargetX++;
+        break;
+      case (2):
+        m_TargetY--;
+        break;
+      case (3):
+        m_TargetX--;
+        break;
+    }
+    m_TargetIsDirty = true;
   }
   
   return 1;
