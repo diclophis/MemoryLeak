@@ -272,15 +272,14 @@ int Engine::Run() {
     if (m_GameState > 1) {
       //paused
     } else {
-      //m_DeltaTime = step / 1.0;
-      //m_SimulationTime += (step);
-      //for (int j=0; j<1; j++) {
-      m_DeltaTime = step;
-      m_SimulationTime += m_DeltaTime;
+      float steps = 5.0;
+      m_DeltaTime = step / steps;
+      for (int j=0; j<(int)steps; j++) {
         if (Active()) {
+          m_SimulationTime += m_DeltaTime;
           Simulate();
         }
-      //}
+      }
     }
   }
 
@@ -341,7 +340,8 @@ void Engine::ResizeScreen(int width, int height) {
   m_ScreenAspect = (float)m_ScreenWidth / (float)m_ScreenHeight;
   m_ScreenHalfHeight = (float)m_ScreenHeight * 0.5;
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
-  glClearColor(0.0, 0.0, 0.0, 0.0);
+  //glClearColor(0.0, 0.0, 0.0, 0.0);
+  glClearColor(0.0, 1.0, 0.0, 1.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   m_IsScreenResized = true;
 }
@@ -616,24 +616,16 @@ void Engine::LoadModel(int i, int s, int e) {
 
 
 void Engine::LoadTexture(int i) {
-LOGV("111\n");
   png_t tex;
   unsigned char* data;
   GLuint textureHandle;
 
-LOGV("222\n");
-
   png_init(0, 0);
-LOGV("333\n");
   //rewind(m_TextureFileHandles->at(i)->fp);
   fseek(m_TextureFileHandles->at(i)->fp, m_TextureFileHandles->at(i)->off, 0);
-LOGV("444\n");
   png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
-LOGV("555\n");
   data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
-LOGV("666 %d %d %d\n", tex.width, tex.height, tex.bpp);
   png_get_data(&tex, data);
-LOGV("777\n");
 
   glGenTextures(1, &textureHandle);
   glBindTexture(GL_TEXTURE_2D, textureHandle);
@@ -643,12 +635,9 @@ LOGV("777\n");
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-LOGV("888\n");
-
   free(data);
 
   m_Textures.push_back(textureHandle);
-LOGV("999\n");
 }
 
 /*

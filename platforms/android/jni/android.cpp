@@ -235,7 +235,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
     //Engine::CurrentGameCreateFoos();
     //Engine::CurrentGameStart();
   } else {
-    Engine::Start(4, sWindowWidth, sWindowHeight);
+    Engine::Start(1, sWindowWidth, sWindowHeight);
     create_audio_thread();
   }
 }
