@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-#define ZOOM (3.0)
+#define ZOOM (3.3)
 #define SUBDIVIDE (64.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 55 
-#define GRID_Y 55
+#define GRID_X 65 
+#define GRID_Y 65
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -21,7 +21,7 @@
 #define OVER PURE
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define MAX_WAIT_BEFORE_WARP 0.075
-#define MAX_SEARCH 100
+#define MAX_SEARCH 50
 #define MAX_STATE_POINTERS 1024
 
 
@@ -487,19 +487,24 @@ int SuperStarShooter::Simulate() {
     m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0);
   }
 
+  bool stuck = false;
+  
   if (m_TargetIsDirty) {
-    m_StatePointer = 0;
+    m_TargetIsDirty = false;
 
-    int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
+
 
     int startState = -1;
     int selected_x = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE);
     int selected_y = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE);
 
-    LOGV("wtf: %d\n", m_TargetX);
-    int colliding_index = m_Space->at(selected_x, selected_y, 0);
+    //LOGV("wtf: %d\n", m_TargetX);
+    int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
     if (colliding_index != BLANK) {
-    LOGV("%d\n", colliding_index);
+      m_StatePointer = 0;
+      
+      int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
+    //LOGV("%d == %d\n", BLANK, colliding_index);
       int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
       startState = startStateTarget;
       float totalCost;
@@ -513,23 +518,21 @@ int SuperStarShooter::Simulate() {
           break;
         case micropather::MicroPather::NO_SOLUTION:
           //LOGV("none\n");
-          m_TargetX = selected_x;
-          m_TargetY = selected_y;
+          //m_TargetX = selected_x;
+          //m_TargetY = selected_y;
+          stuck = true;
           m_Steps->clear();
           //m_Zoom = 1.33;
           break;
         case micropather::MicroPather::START_END_SAME:
           //LOGV("same\n");
-          m_TargetX = selected_x;
-          m_TargetY = selected_y;
+          //m_TargetX = selected_x;
+          //m_TargetY = selected_y;
           m_TargetIsDirty = false;
           break;	
         default:
           break;
       }
-    } else {
-    LOGV("wtf\n");
-      m_TargetIsDirty = false;
     }
   }
 
@@ -557,8 +560,8 @@ int SuperStarShooter::Simulate() {
         stacked--;
         m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
         m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = m_TargetX * SUBDIVIDE;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = m_TargetY * SUBDIVIDE;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]; //m_TargetX * SUBDIVIDE;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]m_TargetY * SUBDIVIDE;
       }
     }
 
@@ -611,7 +614,7 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  if (m_Steps->size() == 0) {
+  if (false && m_Steps->size() == 0 && !stuck) {
     switch (m_PlayerIndex - m_PlayerStartIndex) {
       case (0):
         m_TargetY++;
