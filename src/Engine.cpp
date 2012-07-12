@@ -215,7 +215,7 @@ void Engine::DrawScreen(float rotation) {
 
 #ifdef USE_GLES2
 
-    glUseProgram(program);
+    //glUseProgram(program);
 
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -688,7 +688,7 @@ void Engine::LoadTexture(int i) {
 */
 
 
-#ifndef USE_GLES2
+//#ifndef USE_GLES2
 
 void Engine::CheckGL(const char *s) {
   // normally (when no error) just return
@@ -707,4 +707,4 @@ void Engine::CheckGL(const char *s) {
   }
 }
 
-#endif
+//#endif

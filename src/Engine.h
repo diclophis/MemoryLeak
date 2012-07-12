@@ -31,7 +31,7 @@ static void identity(GLfloat *m) {
    memcpy(m, t, sizeof(t));
 }
 
-
+//TODO
 static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ) {
 
   GLfloat deltaX = right - left;
@@ -56,6 +56,7 @@ static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLflo
   memcpy(m, tmp, sizeof(tmp));
 
 }
+
 
 #endif
 

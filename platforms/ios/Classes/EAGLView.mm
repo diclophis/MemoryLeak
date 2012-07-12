@@ -35,7 +35,7 @@ static GLuint g_LastRenderBuffer = -1;
 
     eaglLayer.opaque = TRUE; //kEAGLColorFormatRGBA8
     eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGB565, kEAGLDrawablePropertyColorFormat, nil];
-    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:glShareGroup];
+    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:glShareGroup];
     
     if (!context || ![EAGLContext setCurrentContext:context]) {
       [self release];
@@ -49,7 +49,7 @@ static GLuint g_LastRenderBuffer = -1;
       return nil;
     }
     
-    glWorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1 sharegroup:glShareGroup];
+    glWorkingContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:glShareGroup];
     
     // Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
     glGenFramebuffersOES(1, &defaultFramebuffer);
