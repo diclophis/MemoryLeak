@@ -5,12 +5,12 @@
 #include "SuperStarShooter.h"
 
 #define ZOOM (3.0)
-#define SUBDIVIDE (32.0) 
+#define SUBDIVIDE (64.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 60
-#define GRID_Y 60
+#define GRID_X 55 
+#define GRID_Y 55
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -55,6 +55,8 @@
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
+  m_NeedsTerrainRebatched = true;
+
   LoadTexture(0);
 
   m_CenterOfWorldX = 4;
@@ -68,7 +70,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
-  m_Space = new Octree<int>(64 * 64, BLANK);
+  m_Space = new Octree<int>(512, BLANK);
 
   if (false) {
     for (unsigned int i=0; i<124; i++) {
@@ -168,7 +170,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(1000.0, 1000.0);
+    m_AtlasSprites[sub_index]->SetVelocity(5000.0, 5000.0);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 15;
@@ -202,8 +204,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_States.push_back(new nodexyz());
   }
 
-  m_TargetX = -1;
-  m_TargetY = -1;
+  m_TargetX = 4;
+  m_TargetY = 4;
 
   m_TargetIsDirty = true;
 
@@ -267,7 +269,10 @@ void SuperStarShooter::CreateFoos() {
   m_HoleFoo = AtlasSprite::GetFoo(m_Textures.at(0), 8, 8, 24, 25, 0.0);
   m_TrailFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 251, 256, 0.0);
 
-  m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
+  //m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount * 2)));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 1 + 1 + m_TrailCount));
+
   if (m_SimulationTime > 0.0) {
     for (int i=m_GridStartIndex; i<m_SecondGridStopIndex; i++) {
       m_AtlasSprites[i]->ResetFoo(m_GridFoo, NULL);
@@ -285,7 +290,7 @@ void SuperStarShooter::DestroyFoos() {
   free(m_PlayerFoos);
   delete m_HoleFoo;
   delete m_TrailFoo;
-  delete m_BatchFoo;
+  //delete m_BatchFoo;
 
 }
 
@@ -308,6 +313,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   }
 
   if (hitState == 1) {
+    /*
     if (m_SwipedBeforeUp) {
       m_CameraOffsetX = (m_CameraStopOffsetX - xx);
       m_CameraOffsetY = (m_CameraStopOffsetY - yy);
@@ -321,10 +327,11 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     if ((m_GotLastSwipeAt > 0.0) && ((m_SimulationTime - m_GotLastSwipeAt) > 0.0655)) {
       m_SwipedBeforeUp = true;
     }
+    */
   }
 
 
-  if (hitState == 2) {
+  if (hitState != 0) {
     if (m_SwipedBeforeUp) {
       //end swipe
     } else {
@@ -351,12 +358,22 @@ void SuperStarShooter::RenderModelPhase() {
 
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
-  RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_BatchFoo);
-  RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_BatchFoo);
-  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_BatchFoo);
-  RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
-  AtlasSprite::RenderFoo(m_StateFoo, m_BatchFoo);
-  m_BatchFoo->m_NumBatched = 0;
+
+  if (m_NeedsTerrainRebatched) {
+    m_Batches[0]->m_NumBatched = 0;
+    RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0]);
+    //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
+    m_NeedsTerrainRebatched = false;
+  }
+
+  m_Batches[1]->m_NumBatched = 0;
+  RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[1]);
+  RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[1]);
+
+  AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
+  AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
+
+  //m_BatchFoo->m_NumBatched = 0;
 }
 
 
@@ -379,7 +396,7 @@ int SuperStarShooter::Simulate() {
 
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
-  float s = 0.5;
+  float s = 2.0;
 
   float mx = (tx * s * m_DeltaTime);
   float my = (ty * s * m_DeltaTime);
@@ -400,11 +417,11 @@ int SuperStarShooter::Simulate() {
   float dx = (m_LastCenterX - m_CameraActualOffsetX);
   float dy = (m_LastCenterY - m_CameraActualOffsetY);
 
-  if (fastAbs(dx) > (SUBDIVIDE)) {
+  if (fastAbs(dx / 5.0) > (SUBDIVIDE)) {
     recenter_x = true;
   }
   
-  if (fastAbs(dy) > (SUBDIVIDE)) {
+  if (fastAbs(dy / 5.0) > (SUBDIVIDE)) {
     recenter_y = true;
   }
 
@@ -422,7 +439,8 @@ int SuperStarShooter::Simulate() {
   int xx = 0;
   int yy = 0;
 
-  if (true && (recenter_x || recenter_y)) {
+  if ((recenter_x || recenter_y)) {
+    m_NeedsTerrainRebatched = true;
     for (int i=m_GridStartIndex; i<m_GridStopIndex; i++) {
       int sx = -1;
       int sy = -1;
@@ -448,6 +466,7 @@ int SuperStarShooter::Simulate() {
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
       if (nsx >= 0 && nsy >= 0) {
+      //LOGV("do this less %f %f %f\n", fastAbs(dx), fastAbs(dy), m_SimulationTime);
         m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
         m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
       } else {
@@ -460,6 +479,7 @@ int SuperStarShooter::Simulate() {
         yy++;
       }
     }
+  } else {
   }
 
   for (unsigned int i=0; i<m_TrailCount; i++) {
@@ -475,32 +495,41 @@ int SuperStarShooter::Simulate() {
     int startState = -1;
     int selected_x = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE);
     int selected_y = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE);
-    int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
-    startState = startStateTarget;
-    float totalCost;
-    m_Pather->Reset();
-    int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
-    switch (solved) {
-      case micropather::MicroPather::SOLVED:
-        m_Steps->erase(m_Steps->begin());
-        m_TargetIsDirty = false;
-        //m_Zoom = 0.33;
-        break;
-      case micropather::MicroPather::NO_SOLUTION:
-        //LOGV("none\n");
-        m_TargetX = selected_x;
-        m_TargetY = selected_y;
-        m_Steps->clear();
-        //m_Zoom = 1.33;
-        break;
-      case micropather::MicroPather::START_END_SAME:
-        //LOGV("same\n");
-        m_TargetX = selected_x;
-        m_TargetY = selected_y;
-        m_TargetIsDirty = false;
-        break;	
-      default:
-        break;
+
+    LOGV("wtf: %d\n", m_TargetX);
+    int colliding_index = m_Space->at(selected_x, selected_y, 0);
+    if (colliding_index != BLANK) {
+    LOGV("%d\n", colliding_index);
+      int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
+      startState = startStateTarget;
+      float totalCost;
+      m_Pather->Reset();
+      int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
+      switch (solved) {
+        case micropather::MicroPather::SOLVED:
+          m_Steps->erase(m_Steps->begin());
+          m_TargetIsDirty = false;
+          //m_Zoom = 0.33;
+          break;
+        case micropather::MicroPather::NO_SOLUTION:
+          //LOGV("none\n");
+          m_TargetX = selected_x;
+          m_TargetY = selected_y;
+          m_Steps->clear();
+          //m_Zoom = 1.33;
+          break;
+        case micropather::MicroPather::START_END_SAME:
+          //LOGV("same\n");
+          m_TargetX = selected_x;
+          m_TargetY = selected_y;
+          m_TargetIsDirty = false;
+          break;	
+        default:
+          break;
+      }
+    } else {
+    LOGV("wtf\n");
+      m_TargetIsDirty = false;
     }
   }
 

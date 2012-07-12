@@ -89,4 +89,6 @@ public:
 
   void BlitMazeCell(int row, int col, int mask);
 
+  bool m_NeedsTerrainRebatched;
+
 };

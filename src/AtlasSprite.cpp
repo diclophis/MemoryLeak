@@ -359,8 +359,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     sf->m_EnabledStates = true;
   }
   
-  Engine::CheckGL("wtf");
-  
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   if (false) {
