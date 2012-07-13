@@ -18,7 +18,7 @@
 #define kWindowHeight 480
 
 
-static int game_index = 4;
+static int game_index = 1;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;

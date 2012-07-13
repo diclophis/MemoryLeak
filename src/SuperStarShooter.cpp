@@ -58,7 +58,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_NeedsTerrainRebatched = true;
 
   LoadTexture(0);
-  LoadMaze(3);
+  LoadMaze(1);
   LoadSound(0);
 
   m_CenterOfWorldX = 4;
@@ -249,7 +249,7 @@ SuperStarShooter::~SuperStarShooter() {
 void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y) {
   for (int fy = 0; fy < height; fy++) {
     for (int fx = (width - 1); fx >= 0; fx--) {
-      //LOGV("wtf: %d %d\n", fx + offset_x, fy + offset_y);
+      LOGV("wtf: %d %d\n", fx + offset_x, fy + offset_y);
       m_Space->set(fx + offset_x, fy + offset_y, layer, bottom_right_start);
       bottom_right_start -= 1;
     }
