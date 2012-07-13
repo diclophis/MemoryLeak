@@ -59,8 +59,14 @@
     #include <GLUT/glut.h>    // Header File For The GLut Library
     #define glOrthof glOrtho
   #else
-    #include <OpenGLES/ES1/gl.h>
-    #include <OpenGLES/ES1/glext.h>
+    #ifdef USE_GLES2
+      #include <OpenGLES/ES2/gl.h>
+      #include <OpenGLES/ES2/glext.h>
+    #endif
+
+      #include <OpenGLES/ES1/gl.h>
+      #include <OpenGLES/ES1/glext.h>
+
     #define glFrustum glFrustumf
   #endif
 #else

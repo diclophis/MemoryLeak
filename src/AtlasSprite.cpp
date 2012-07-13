@@ -227,16 +227,19 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
 
+#ifdef USE_GLES2
+    glActiveTexture(GL_TEXTURE0);
+#else
     glEnable(GL_TEXTURE_2D);
+#endif
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+//
    
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
@@ -248,9 +251,25 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     }
 
-
+#ifdef USE_GLES2
+    
+    glVertexAttribPointer(sf->g_PositionAttribute, 2, GL_SHORT, GL_FALSE, foo->m_Stride, (char *)NULL + (0));
+    glVertexAttribPointer(sf->g_TextureAttribute, 2, GL_FLOAT, GL_FALSE, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+    glEnableVertexAttribArray(sf->g_PositionAttribute);
+    glEnableVertexAttribArray(sf->g_TextureAttribute);
+    
+#else
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glVertexPointer(2, GL_SHORT, foo->m_Stride, (char *)NULL + (0));
     glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
+    
+#endif
+    
+    
+//
+
   } else {
     if (foo->m_VertexArrayObjects[0] != sf->g_lastVertexArrayObject) {
       sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
@@ -258,17 +277,18 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     }
 
     /*
+    //may
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
     }
-    
     */
-
+    
     if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
       sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];
       glBindBuffer(GL_ARRAY_BUFFER, sf->g_lastInterleavedBuffer);
     }
+    
 
   }
 
@@ -306,6 +326,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
   glBufferSubData(GL_ARRAY_BUFFER, 0, interleaved_buffer_size, foo->m_SpriteFoos);
   
   if (!sf->m_EnabledStates) {
+    
 #ifdef HAS_VAO
 
     //states are enabled via VAO
@@ -321,7 +342,10 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #ifdef USE_GLES2
 
     glActiveTexture(GL_TEXTURE0);
-
+    
+    glEnableVertexAttribArray(sf->g_PositionAttribute);
+    glEnableVertexAttribArray(sf->g_TextureAttribute);
+    
 #else
 
     glEnable(GL_TEXTURE_2D);
@@ -344,6 +368,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #ifdef USE_GLES2
 
     glActiveTexture(0);
+    
     glDisableVertexAttribArray(sf->g_TextureAttribute);
 
 #endif

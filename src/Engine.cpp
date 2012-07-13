@@ -215,7 +215,7 @@ void Engine::DrawScreen(float rotation) {
 
 #ifdef USE_GLES2
 
-    glUseProgram(program);
+    //glUseProgram(program);
 
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -631,6 +631,11 @@ void Engine::LoadTexture(int i) {
   glBindTexture(GL_TEXTURE_2D, textureHandle);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
   //TODO: investigate pixel swizzling
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -688,7 +693,7 @@ void Engine::LoadTexture(int i) {
 */
 
 
-#ifndef USE_GLES2
+//#ifndef USE_GLES2
 
 void Engine::CheckGL(const char *s) {
   // normally (when no error) just return
@@ -707,4 +712,4 @@ void Engine::CheckGL(const char *s) {
   }
 }
 
-#endif
+//#endif

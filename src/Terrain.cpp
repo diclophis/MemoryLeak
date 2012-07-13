@@ -475,16 +475,19 @@ GLuint Terrain::GenerateStripesTexture() {
 
     glUseProgram(shaderprogram);
 
+  /*
     float m_ScreenHalfHeight = 512.0 / 2.0;
     float m_ScreenAspect = 1.0;
     float m_Zoom = 1.0;
+  
     float aa = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float bb = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float cc = (-m_ScreenHalfHeight) * m_Zoom;
     float dd = m_ScreenHalfHeight * m_Zoom;
     float ee = 1.0;
     float ff = -1.0;
-
+   */
+  
     ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
     ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
