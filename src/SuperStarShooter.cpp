@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-#define ZOOM (1.0)
-#define SUBDIVIDE (16.0) 
+#define ZOOM (2.0)
+#define SUBDIVIDE (32.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 40
-#define GRID_Y 40
+#define GRID_X 42
+#define GRID_Y 42
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -20,7 +20,8 @@
 #define FILL SAND
 #define OVER PURE
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define MAX_WAIT_BEFORE_WARP 0.05
+#define VELOCITY 1000.0
+#define MAX_WAIT_BEFORE_WARP 0.016
 #define MAX_SEARCH 30
 #define MAX_STATE_POINTERS 1024
 
@@ -29,8 +30,7 @@
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
 // to the PRIMARY bitmask) represent passages on the normal plane. Bits
 // in the high byte (corresponding to the UNDER bitmask) represent passages
-// that are passing under this cell. (Under/over passages are controlled via the
-// :weave setting, and are not supported by all maze types.)
+// that are passing under this cell.
 #define N  = 0x01 // North
 #define S  = 0x02 // South
 #define E  = 0x04 // East
@@ -170,10 +170,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(2000.0, 2000.0);
+    m_AtlasSprites[sub_index]->SetVelocity(VELOCITY, VELOCITY);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 15;
+    m_AtlasSprites[sub_index]->m_Fps = 20;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.25, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.25);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
@@ -346,7 +346,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
         m_TargetX = cx;
         m_TargetY = cy;
         m_TargetIsDirty = true;
-        m_WarpTimeout += MAX_WAIT_BEFORE_WARP;
+        //m_WarpTimeout += MAX_WAIT_BEFORE_WARP;
       }
     }
     m_SwipedBeforeUp = false;
@@ -507,13 +507,13 @@ int SuperStarShooter::Simulate() {
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = (m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = (m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = floor(m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = floor(m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = (m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = (m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = floor(m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = floor(m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
@@ -594,7 +594,7 @@ int SuperStarShooter::Simulate() {
     int stacked = MAX_SEARCH;
     bool top_of_stack = false;
     for (unsigned int i=0; i<m_TrailCount; i++) {
-      if (i < m_Steps->size() && i < stacked) {
+      if (i < m_Steps->size()) { // && i < stacked) {
         nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
         float tx = ((float)step->x * SUBDIVIDE);
         float ty = ((float)step->y * SUBDIVIDE);
@@ -668,7 +668,7 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-  if (false && m_Steps->size() == 0 && !stuck) {
+  if (m_TargetY > 0 && m_TargetX > 0 && m_TargetY < 1024 && m_TargetX < 1024 && m_Steps->size() == 0 && !stuck) {
     switch (m_PlayerIndex - m_PlayerStartIndex) {
       case (0):
         m_TargetY++;
@@ -683,6 +683,8 @@ int SuperStarShooter::Simulate() {
         m_TargetX--;
         break;
     }
+    //if (m_TargetX < 0) {
+      
     m_TargetIsDirty = true;
   }
   
@@ -835,8 +837,8 @@ void SuperStarShooter::LoadMaze(int level_index) {
     }
   }
   
-m_CameraActualOffsetX = (float)width * 500.0;
-m_CameraActualOffsetY = (float)height * 500.0;
+m_CameraActualOffsetX = (float)width * SUBDIVIDE * 3.0;
+m_CameraActualOffsetY = (float)height * SUBDIVIDE * 3.0;
 
 
   free(level);
@@ -905,6 +907,13 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
       BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // ##
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
+      break;
+    case 15:
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
+      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); //###
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     default:
