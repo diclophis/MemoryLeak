@@ -4,6 +4,7 @@
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
+
 #define ZOOM (2.0)
 #define SUBDIVIDE (32.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
@@ -17,12 +18,12 @@
 #define TREASURE 10
 #define PURE 97
 #define SAND 98
-#define FILL SAND
-#define OVER PURE
+#define FILL BLANK
+#define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define VELOCITY 1000.0
 #define MAX_WAIT_BEFORE_WARP 0.016
-#define MAX_SEARCH 20
+#define MAX_SEARCH 15
 #define MAX_STATE_POINTERS 1024
 
 
@@ -113,7 +114,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_TrailCount = MAX_SEARCH;
 
-  LoadMaze(1);
+  LoadMaze(0);
   LoadSound(0);
   //LoadSound(1);
   CreateFoos();
@@ -837,9 +838,8 @@ void SuperStarShooter::LoadMaze(int level_index) {
     }
   }
   
-m_CameraActualOffsetX = (float)width * SUBDIVIDE * 3.0;
-m_CameraActualOffsetY = (float)height * SUBDIVIDE * 3.0;
-
+m_CameraActualOffsetX = (float)width * SUBDIVIDE * 10.0;
+m_CameraActualOffsetY = (float)height * SUBDIVIDE * 10.0;
 
   free(level);
 }
