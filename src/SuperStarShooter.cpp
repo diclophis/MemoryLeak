@@ -9,8 +9,8 @@
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 42
-#define GRID_Y 42
+#define GRID_X 24
+#define GRID_Y 34
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -22,7 +22,7 @@
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define VELOCITY 1000.0
 #define MAX_WAIT_BEFORE_WARP 0.016
-#define MAX_SEARCH 30
+#define MAX_SEARCH 20
 #define MAX_STATE_POINTERS 1024
 
 
@@ -401,7 +401,7 @@ int SuperStarShooter::Simulate() {
 
   float speed_x = fastAbs(tx) * 1.5;
   float speed_y = fastAbs(ty) * 1.5;
-  float speed_max = 5000.0;
+  float speed_max = 800.0;
 
   if (speed_x > speed_max) {
     speed_x = speed_max;
