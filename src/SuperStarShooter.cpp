@@ -465,11 +465,11 @@ int SuperStarShooter::Simulate() {
   float dx = (m_LastCenterX - m_CameraActualOffsetX);
   float dy = (m_LastCenterY - m_CameraActualOffsetY);
 
-  if (fastAbs(dx / 6.0) > (SUBDIVIDE)) {
+  if (fastAbs(dx) > (SUBDIVIDE)) {
     recenter_x = true;
   }
   
-  if (fastAbs(dy / 6.0) > (SUBDIVIDE)) {
+  if (fastAbs(dy) > (SUBDIVIDE)) {
     recenter_y = true;
   }
 
@@ -748,18 +748,22 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
         //  passable = true;
         //  pass_cost = 100.0;
         //}
-        if (i==0 || i==2) {
-          if (fastAbs(ly) > fastAbs(lx)) {
-            pass_cost = 0.0;
+        if (ly < 2 || lx < 2) {
+          if (i==0 || i==2) {
+            if (fastAbs(ly) > fastAbs(lx)) {
+              pass_cost = 0.0;
+            } else {
+              pass_cost = 100.0;
+            }
           } else {
-            pass_cost = 100.0;
+            if (fastAbs(lx) > fastAbs(ly)) {
+              pass_cost = 0.0;
+            } else {
+              pass_cost = 100.0;
+            }
           }
         } else {
-          if (fastAbs(lx) > fastAbs(ly)) {
-            pass_cost = 0.0;
-          } else {
-            pass_cost = 100.0;
-          }
+          pass_cost = 100.0;
         }
       }
     }
