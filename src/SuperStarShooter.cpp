@@ -115,7 +115,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_TrailCount = MAX_SEARCH;
 
   LoadMaze(0);
-  LoadSound(0);
+  LoadSound(2);
   //LoadSound(1);
   CreateFoos();
 
@@ -221,6 +221,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_AtlasSprites[m_SpriteCount]->m_Fps = 0; 
     m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.5, SUBDIVIDE / 2.5);
     m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
     m_SpriteCount++;
   }
   m_TrailStopIndex = m_SpriteCount;
@@ -537,9 +538,11 @@ int SuperStarShooter::Simulate() {
   } else {
   }
 
+  float inverter = -1.0;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0);
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
+    inverter *= -1.0;
   }
 
   bool stuck = false;
@@ -602,6 +605,7 @@ int SuperStarShooter::Simulate() {
         //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
         m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 2;
         m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_Life = 0;
         m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
         m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
         m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
