@@ -35,6 +35,10 @@ int __attribute__((used)) start_game (int i) {
   return game_index;
 }
 
+//int __attribute__((used)) command (int i, const char *s);
+//int __attribute__((used)) command (int i, const char *s) {
+//  return Engine::CurrentGameCommand(i, s);
+//}
 
 typedef void (__cdecl * SinkJs_writeCallback) (Uint8 *buffer, int size, int channels);
 void sinkJsInit(SinkJs_writeCallback writeFunc, int frames, int sizeOfFrames, int channels);
