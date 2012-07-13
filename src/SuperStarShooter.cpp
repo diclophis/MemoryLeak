@@ -399,8 +399,8 @@ int SuperStarShooter::Simulate() {
   float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
   float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
 
-  float speed_x = fastAbs(tx) * 2.0;
-  float speed_y = fastAbs(ty) * 2.0;
+  float speed_x = fastAbs(tx) * 1.5;
+  float speed_y = fastAbs(ty) * 1.5;
   float speed_max = 5000.0;
 
   if (speed_x > speed_max) {
@@ -449,32 +449,36 @@ int SuperStarShooter::Simulate() {
   }
   */
 
-  // this causes seaming problems
-  m_CameraActualOffsetX -= (mx);
-  m_CameraActualOffsetY -= (my);
 
   if (false) {
     m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
     m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  } else {
+    // this causes seaming problems
+    m_CameraActualOffsetX -= (mx);
+    m_CameraActualOffsetY -= (my);
   }
 
   bool recenter_x = false;
   bool recenter_y = false;
   int dsx = 0;
   int dsy = 0;
+
   float dx = (m_LastCenterX - m_CameraActualOffsetX);
   float dy = (m_LastCenterY - m_CameraActualOffsetY);
 
-  if (fastAbs(dx) > (SUBDIVIDE)) {
+  dsx = (dx / SUBDIVIDE) + m_CenterOfWorldX;
+  dsy = (dy / SUBDIVIDE) + m_CenterOfWorldY;
+
+  //if (fastAbs(dx) > (SUBDIVIDE)) {
+  if (dsx != 0) {
     recenter_x = true;
   }
   
-  if (fastAbs(dy) > (SUBDIVIDE)) {
+  //if (fastAbs(dy) > (SUBDIVIDE)) {
+  if (dsy != 0) {
     recenter_y = true;
   }
-
-  dsx = (dx / SUBDIVIDE) + m_CenterOfWorldX;
-  dsy = (dy / SUBDIVIDE) + m_CenterOfWorldY;
 
   if (recenter_x) {
     m_LastCenterX -= ((float)dsx * SUBDIVIDE);
@@ -514,7 +518,9 @@ int SuperStarShooter::Simulate() {
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
       if (nsx >= 0 && nsy >= 0) {
-      //LOGV("do this less %f %f %f\n", fastAbs(dx), fastAbs(dy), m_SimulationTime);
+      //LOGV("do this less %f %f %f %d %f\n", fastAbs(dx), fastAbs(dy), m_SimulationTime, m_CenterOfWorldX, m_LastCenterX);
+      //LOGV("%d %d\n", dsx, dsy);
+      //192.000244 224.000244
         m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
         m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
       } else {
@@ -748,7 +754,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
         //  passable = true;
         //  pass_cost = 100.0;
         //}
-        if (ly < 2 || lx < 2) {
+        if (abs(ly) == 1 || abs(lx) == 1) {
           if (i==0 || i==2) {
             if (fastAbs(ly) > fastAbs(lx)) {
               pass_cost = 0.0;
