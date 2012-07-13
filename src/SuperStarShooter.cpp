@@ -4,13 +4,13 @@
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
 
-#define ZOOM (5.0)
-#define SUBDIVIDE (64.0) 
+#define ZOOM (1.0)
+#define SUBDIVIDE (16.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 65
-#define GRID_Y 65
+#define GRID_X 40
+#define GRID_Y 40
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -70,7 +70,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
-  m_Space = new Octree<int>(1024, BLANK);
+  m_Space = new Octree<int>(2048, BLANK);
 
   if (false) {
     for (unsigned int i=0; i<124; i++) {
@@ -113,7 +113,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_TrailCount = MAX_SEARCH;
 
-  LoadMaze(0);
+  LoadMaze(1);
   LoadSound(0);
   //LoadSound(1);
   CreateFoos();
@@ -170,7 +170,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     int sub_index = m_SpriteCount;
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos[i], NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(4000.0, 4000.0);
+    m_AtlasSprites[sub_index]->SetVelocity(2000.0, 2000.0);
     m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 15;
