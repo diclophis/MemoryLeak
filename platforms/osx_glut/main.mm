@@ -16,8 +16,8 @@
 #define kOutputBus 0
 
 
-static int kWindowWidth = 1024;
-static int kWindowHeight = 768;
+static int kWindowWidth = 768;
+static int kWindowHeight = 1024;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;

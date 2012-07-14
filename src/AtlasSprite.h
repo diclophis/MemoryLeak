@@ -85,7 +85,7 @@ public:
   static foofoo *GetBatchFoo(GLuint t, int m);
 
   bool m_IsNinePatch;
-  void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty, float cos_r, float sin_r);
+  void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty, float cos_r, float sin_r, bool use_r);
 
   AtlasSprite *m_Parent;
 
