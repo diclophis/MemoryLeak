@@ -12,8 +12,8 @@
 #define SHOOT_VELOCITY 425.0
 //#define GRID_X 24
 //#define GRID_Y 34
-#define GRID_X (58/2)
-#define GRID_Y (74/2)
+//#define GRID_X (58/2)
+//#define GRID_Y (74/2)
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -109,6 +109,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     //roof
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
   }
+
+  GRID_X = (m_ScreenWidth / SUBDIVIDE) + 6;
+  GRID_Y = (m_ScreenHeight / SUBDIVIDE) + 6;
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
