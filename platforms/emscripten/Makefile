@@ -81,8 +81,7 @@ install: $(hash_dir)
 	cp -R ../../assets ~/emscripten.risingcode.com/public/latest
 	touch ~/emscripten.risingcode.com/public/latest/favicon.ico
 	install -C index.html ~/emscripten.risingcode.com/public/latest
-	install -C sink.js ~/emscripten.risingcode.com/public/latest
-	install -C library_sink.js ~/emscripten.risingcode.com/public/latest
+	#install -C sink.js ~/emscripten.risingcode.com/public/latest
+	#install -C library_sink.js ~/emscripten.risingcode.com/public/latest
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public/latest
-	#touch ~/emscripten.risingcode.com/public/-$(HASH)
-	#ln -nsf $(hash_dir) ~/emscripten.risingcode.com/public/AAAA-`ls -l ~/emscripten.risingcode.com/public/ | wc -l`-LATEST
+	#ruby s3_uploader.rb $(HASH)
