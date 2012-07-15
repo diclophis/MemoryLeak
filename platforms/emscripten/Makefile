@@ -39,7 +39,7 @@ hash_dir=~/emscripten.risingcode.com/public/$(HASH)
 
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
-	EMCC_DEBUG=1 $(CXX) --closure 1 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game', '_command']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
+	EMCC_DEBUG=1 $(CXX) --closure 0 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game', '_command']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
 
 $(build)/%.bc: %.cpp
 	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@
@@ -85,4 +85,4 @@ install: $(hash_dir)
 	install -C library_sink.js ~/emscripten.risingcode.com/public/latest
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public/latest
 	#touch ~/emscripten.risingcode.com/public/-$(HASH)
-	ln -nsf $(hash_dir) ~/emscripten.risingcode.com/public/AAAA-`ls -l ~/emscripten.risingcode.com/public/ | wc -l`-LATEST
+	#ln -nsf $(hash_dir) ~/emscripten.risingcode.com/public/AAAA-`ls -l ~/emscripten.risingcode.com/public/ | wc -l`-LATEST
