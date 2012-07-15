@@ -119,9 +119,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_TrailCount = MAX_SEARCH * 2;
 
-  LoadMaze(1);
-  LoadSound(2);
-  //LoadSound(1);
+  LoadMaze(0);
+  LoadSound(0);
   CreateFoos();
 
   for (int i=0; i<(m_GridCount * 2); i++) {
@@ -823,6 +822,7 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
 
 
 void SuperStarShooter::LoadMaze(int level_index) {
+
 	uint16_t *level = (uint16_t *)malloc(sizeof(char) * m_LevelFileHandles->at(level_index)->len);
 	fseek(m_LevelFileHandles->at(level_index)->fp, m_LevelFileHandles->at(level_index)->off, SEEK_SET);
 	fread(level, sizeof(char), m_LevelFileHandles->at(level_index)->len, m_LevelFileHandles->at(level_index)->fp);
@@ -847,8 +847,8 @@ void SuperStarShooter::LoadMaze(int level_index) {
     }
   }
   
-m_CameraActualOffsetX = (float)width * SUBDIVIDE * 2.0;
-m_CameraActualOffsetY = (float)height * SUBDIVIDE * 2.0;
+  m_CameraActualOffsetX = (float)width * SUBDIVIDE * 2.0;
+  m_CameraActualOffsetY = (float)height * SUBDIVIDE * 2.0;
 
   free(level);
 }
@@ -870,10 +870,10 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 7:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3));// #
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));//###
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));//
+      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));//
       break;
     case 3075: //above ground
       BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
@@ -881,41 +881,41 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
       break;
     case 3:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //###
+      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); //
       break;
     case 9:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //##
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     case 10:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // ##
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     case 11:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));//
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));//###
+      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3));//
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3));// #
       break;
     case 12:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); // #
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     case 13:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // # 
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //##
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     case 14:
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
-      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // ##
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); // ##
+      BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // 
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     case 15:
@@ -933,14 +933,3 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       break;
   };
 }
-
-  /*
-	unsigned int i = 0;
-	unsigned int l = m_LevelFoos->at(level_index)->len;
-
-	const char *dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	int idx = -1;
-	int *data = (int *)malloc(sizeof(int) * l);
-	const char *code;
-	for (unsigned int j=0; j<l; j++) {
-  */
