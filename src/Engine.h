@@ -152,7 +152,7 @@ public:
 #ifdef USE_GLES2
 
   void glTranslatef(float x, float y, float z);
-  GLuint ModelViewProjectionMatrix_location;
+  //GLuint ModelViewProjectionMatrix_location;
   GLfloat ProjectionMatrix[16];
   //static GLuint GetProjectionMatrixLocation();
   //static GLfloat[] GetProjectionMatrix();

@@ -54,7 +54,7 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
   ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
   ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
   ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
-  glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+  glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 }
 
 
@@ -156,20 +156,15 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   // Create and link the shader program
   program = glCreateProgram();
-  LOGV("engine shader ID: %d\n", program);
+  LOGV("engine program ID: %d\n", program);
   glAttachShader(program, v);
   glAttachShader(program, f);
+
   //glBindAttribLocation(program, 0, "Position");
   //glBindAttribLocation(program, 1, "InCoord");
 
-  glLinkProgram(program);
-  glGetProgramInfoLog(program, sizeof msg, NULL, msg);
-  LOGV("info: %s\n", msg);
 
-  glUseProgram(program);
 
-  // Get the locations of the uniforms so we can access them
-  ModelViewProjectionMatrix_location = glGetUniformLocation(program, "ModelViewProjectionMatrix");
 
 #endif
 
@@ -215,7 +210,9 @@ void Engine::DrawScreen(float rotation) {
 
 #ifdef USE_GLES2
 
-    //glUseProgram(program);
+    if (!m_StateFoo->m_EnabledStates) {
+      m_StateFoo->Link();
+    }
 
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
@@ -226,7 +223,7 @@ void Engine::DrawScreen(float rotation) {
 
     ortho(ProjectionMatrix, a, b, c, d, e, f);
 
-    glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+    glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
 #endif
 

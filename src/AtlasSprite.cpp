@@ -230,6 +230,7 @@ void AtlasSprite::BlitVertice(foofoo *batch_foo, int i, float vx, float vy, floa
 
 void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
+
   if (foo->m_Texture != sf->g_lastTexture) {
     glBindTexture(GL_TEXTURE_2D, foo->m_Texture);
     sf->g_lastTexture = foo->m_Texture;
@@ -352,6 +353,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
+
 
 #else
 
