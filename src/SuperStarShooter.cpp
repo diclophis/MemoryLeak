@@ -5,13 +5,15 @@
 #include "SuperStarShooter.h"
 
 
-#define ZOOM (2.0)
+#define ZOOM (1.0)
 #define SUBDIVIDE (32.0) 
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-#define GRID_X 24
-#define GRID_Y 34
+//#define GRID_X 24
+//#define GRID_Y 34
+#define GRID_X (58/2)
+#define GRID_Y (74/2)
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK 255
@@ -112,9 +114,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = MAX_SEARCH;
+  m_TrailCount = MAX_SEARCH * 2;
 
-  LoadMaze(0);
+  LoadMaze(1);
   LoadSound(2);
   //LoadSound(1);
   CreateFoos();
@@ -176,7 +178,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 20;
     m_AtlasSprites[sub_index]->m_Frame = 0;
-    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.25, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.25);
+    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
     m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
@@ -403,7 +405,7 @@ int SuperStarShooter::Simulate() {
 
   float speed_x = fastAbs(tx) * 1.5;
   float speed_y = fastAbs(ty) * 1.5;
-  float speed_max = 800.0;
+  float speed_max = 1100.0;
 
   if (speed_x > speed_max) {
     speed_x = speed_max;
@@ -473,12 +475,12 @@ int SuperStarShooter::Simulate() {
   dsy = (dy / SUBDIVIDE) + m_CenterOfWorldY;
 
   //if (fastAbs(dx) > (SUBDIVIDE)) {
-  if (dsx != 0) {
+  if (abs(dsx) > 1) {
     recenter_x = true;
   }
   
   //if (fastAbs(dy) > (SUBDIVIDE)) {
-  if (dsy != 0) {
+  if (abs(dsy) > 1) {
     recenter_y = true;
   }
 
@@ -509,13 +511,13 @@ int SuperStarShooter::Simulate() {
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = floor(m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = floor(m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = (m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = (m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = floor(m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = floor(m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = (m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = (m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
@@ -595,7 +597,7 @@ int SuperStarShooter::Simulate() {
   }
 
 
-    int stacked = MAX_SEARCH;
+    //int stacked = m_TrailCount;
     bool top_of_stack = false;
     for (unsigned int i=0; i<m_TrailCount; i++) {
       if (i < m_Steps->size()) { // && i < stacked) {
@@ -616,7 +618,7 @@ int SuperStarShooter::Simulate() {
           //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 3;
           top_of_stack = true;
         }
-        stacked--;
+        //stacked--;
         m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
         m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
         m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]; //m_TargetX * SUBDIVIDE;
@@ -842,8 +844,8 @@ void SuperStarShooter::LoadMaze(int level_index) {
     }
   }
   
-m_CameraActualOffsetX = (float)width * SUBDIVIDE * 10.0;
-m_CameraActualOffsetY = (float)height * SUBDIVIDE * 10.0;
+m_CameraActualOffsetX = (float)width * SUBDIVIDE * 2.0;
+m_CameraActualOffsetY = (float)height * SUBDIVIDE * 2.0;
 
   free(level);
 }
