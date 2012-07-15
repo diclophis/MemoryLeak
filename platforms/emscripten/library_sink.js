@@ -12,7 +12,7 @@ var LibrarySinkJs = {
     proxy: null
   },
 
-  sinkJsInit__deps: ['$SinkJs'],
+  sinkJsInit__deps: ['$SinkJs', function() { return read('/home/jbardin/MemoryLeak/platforms/emscripten/sink.js') }],
   sinkJsInit: function(writeFunc, frames, sizeOfFrame, channels) {
     SinkJs.writeFunc = writeFunc;
     SinkJs.frames = frames;
@@ -36,4 +36,3 @@ var LibrarySinkJs = {
 
 autoAddDeps(LibrarySinkJs, '$SinkJs');
 mergeInto(LibraryManager.library, LibrarySinkJs);
-
