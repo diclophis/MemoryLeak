@@ -15,47 +15,9 @@ static void sincos (double a, double *s, double *c) {
 }
 #endif
 
-/**
-* Creates an identity 4x4 matrix.
-*
-* @param m the matrix make an identity matrix
-*/
-static void identity(GLfloat *m) {
-   GLfloat t[16] = {
-      1.0, 0.0, 0.0, 0.0,
-      0.0, 1.0, 0.0, 0.0,
-      0.0, 0.0, 1.0, 0.0,
-      0.0, 0.0, 0.0, 1.0,
-   };
-
-   memcpy(m, t, sizeof(t));
-}
 
 //TODO
-static void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ) {
 
-  GLfloat deltaX = right - left;
-  GLfloat deltaY = top - bottom;
-  GLfloat deltaZ = farZ - nearZ;
-
-  GLfloat tmp[16];
-  identity(tmp);
-
-  if ((deltaX == 0) || (deltaY == 0) || (deltaZ == 0)) {
-    LOGV("Invalid ortho");
-    return;
-  }
-
-  tmp[0] = 2 / deltaX;
-  tmp[12] = -(right + left) / deltaX;
-  tmp[5] = 2 / deltaY;
-  tmp[13] = -(top + bottom) / deltaY;
-  tmp[10] = -2 / deltaZ;
-  tmp[14] = -(nearZ + farZ) / deltaZ;
-
-  memcpy(m, tmp, sizeof(tmp));
-
-}
 
 
 #endif
@@ -148,7 +110,10 @@ public:
 	double t1, t2;
 
   GLuint program;
-
+  
+  void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ);
+  void identity(GLfloat *m);
+      
 #ifdef USE_GLES2
 
   void glTranslatef(float x, float y, float z);
@@ -160,6 +125,7 @@ public:
   GLuint f;
   const char *p;
   char msg[512];
+
 
 #endif
 
