@@ -489,7 +489,8 @@ GLuint Terrain::GenerateStripesTexture() {
    */
   
     ModelViewProjectionMatrix_location = glGetUniformLocation(shaderprogram, "ModelViewProjectionMatrix");
-    ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
+    //ortho(ProjectionMatrix, 512.0, 0, 512.0, 0, -1.0, 1.0);
+  assert(false);
     glUniformMatrix4fv(ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
 #else

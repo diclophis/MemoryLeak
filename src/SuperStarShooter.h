@@ -91,4 +91,7 @@ public:
 
   bool m_NeedsTerrainRebatched;
 
+  int GRID_X;
+  int GRID_Y;
+
 };
