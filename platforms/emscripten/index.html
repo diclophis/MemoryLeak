@@ -113,13 +113,11 @@
         print: (function() {
           return function(text) {
             console.log(text);
-            //document.getElementById("wham").innerHTML += text + "<br/>";
           };
         })(),
         canvas: (function() { var canvas = document.createElement("canvas"); document.body.appendChild(canvas); return canvas; })(),
         setStatus: function(text) {
           console.log(text);
-          //document.getElementById("wham").innerHTML += text + "<br/>";
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
@@ -128,12 +126,16 @@
         }
       };
     </script>
+    <!--
     <button class="game" value="0">MainMenu</button>
     <button class="game" value="1">SuperStarShooter</button>
     <button class="game" value="2">RadiantFireEightSixOne</button>
     <button class="game" value="3">SpaceShipDown</button>
     <button class="game" value="4">AncientDawn</button>
+    -->
+    <!--
     <script src="sink.js"></script>
+    -->
     <script src="raptor_island.js"></script>
   </body>
 </html>
