@@ -14,8 +14,8 @@
 #include "SDL.h"
 #include "SDL_audio.h"
 
-#define kWindowWidth 1024
-#define kWindowHeight 1024
+#define kWindowWidth 512
+#define kWindowHeight 512
 
 
 static int game_index = 1;
