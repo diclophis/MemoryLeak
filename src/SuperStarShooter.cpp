@@ -365,7 +365,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
+  glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
 
   if (m_NeedsTerrainRebatched) {
     m_Batches[0]->m_NumBatched = 0;
@@ -858,11 +858,16 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   int x = row * 3;
   int y = col * 3;
   int bl = 60 + 16 + 16 + 16;
+  int b2 = 63 + 16 + 16 + 16 + 16 + 16 + 16 + 16 + 16;
+  int b3 = (9 * 16) + 11;
+  int b4 = (9 * 16) + 13; //6 + 16 + 16 + 16 + 16 + 16 + 16;
   switch(mask) {
     case 5:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
+      BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //##
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); // 
+      BlitIntoSpace(0, b4, 3, 3, ((x + 0) * 3), ((y + 0) * 3)); //**
+      BlitIntoSpace(0, b4, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); //
       break;
     case 6:
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
@@ -913,10 +918,14 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
       break;
     case 14:
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); // ##
+      BlitIntoSpace(0, b2, 3, 3, ((x + 0) * 3), ((y + 2) * 3)); //
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); //*#
+      BlitIntoSpace(0, b2, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //*##
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); //
       BlitIntoSpace(0, bl, 3, 3, ((x + 2) * 3), ((y + 1) * 3)); // 
-      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); // #
+      BlitIntoSpace(0, b2, 3, 3, ((x + 0) * 3), ((y + 0) * 3)); //*#*
+      BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); //
+      BlitIntoSpace(0, b3, 3, 3, ((x + 2) * 3), ((y + 0) * 3)); //
       break;
     case 15:
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
