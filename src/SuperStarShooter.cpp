@@ -859,7 +859,7 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   int y = col * 3;
   int bl = 60 + 16 + 16 + 16;
   int b2 = 63 + 16 + 16 + 16 + 16 + 16 + 16 + 16 + 16;
-  int b3 = (9 * 16) + 11;
+  int b3 = (9 * 16) + 10;
   int b4 = (9 * 16) + 13; //6 + 16 + 16 + 16 + 16 + 16 + 16;
   switch(mask) {
     case 5:
