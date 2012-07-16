@@ -622,6 +622,9 @@ void Engine::LoadTexture(int i) {
   fseek(m_TextureFileHandles->at(i)->fp, m_TextureFileHandles->at(i)->off, 0);
   png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
   data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
+  for(int i=0; i < tex.width*tex.height*tex.bpp; ++i) {
+    data[i] = 0;
+  }
   png_get_data(&tex, data);
 
   glGenTextures(1, &textureHandle);
