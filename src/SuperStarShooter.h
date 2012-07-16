@@ -53,15 +53,11 @@ public:
   int m_TrailStartIndex;
   int m_TrailStopIndex;
 
-  int m_HoleIndex;
-
   float m_TouchStartX;
   float m_TouchStartY;
 
   foofoo *m_GridFoo;
-  foofoo *m_BatchFoo;
   foofoo **m_PlayerFoos;
-  foofoo *m_HoleFoo;
   foofoo *m_TrailFoo;
 
 	micropather::MicroPather *m_Pather;
@@ -94,4 +90,5 @@ public:
   int GRID_X;
   int GRID_Y;
 
+  bool Passable(int index);
 };

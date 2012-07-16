@@ -6,14 +6,10 @@
 
 
 #define ZOOM (1.0)
-#define SUBDIVIDE (16.0) 
+#define SUBDIVIDE (32.0)
 #define BARREL_ROTATE_TIMEOUT 0.33
 #define BARREL_ROTATE_PER_TICK 0 
 #define SHOOT_VELOCITY 425.0
-//#define GRID_X 24
-//#define GRID_Y 34
-//#define GRID_X (58/2)
-//#define GRID_Y (74/2)
 #define COLLIDE_TIMEOUT 0.001
 #define BARREL_SHOT_LENGTH 7 
 #define BLANK ((16 * 3) + 6)
@@ -23,9 +19,9 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY 1000.0
-#define MAX_WAIT_BEFORE_WARP 0.016
-#define MAX_SEARCH 15
+#define VELOCITY 2500.0
+#define MAX_WAIT_BEFORE_WARP 0.0175
+#define MAX_SEARCH 20
 #define MAX_STATE_POINTERS 1024
 
 
@@ -55,7 +51,6 @@
 // The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
 #define UNDER_SHIFT 8
 
-
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
   m_NeedsTerrainRebatched = true;
@@ -68,7 +63,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   int xx = 0;
   int yy = 0;
 
-  m_Zoom = ZOOM; //0.4321;
+  m_Zoom = ZOOM;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
@@ -188,16 +183,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   }
   m_PlayerStopIndex = m_SpriteCount;
 
-  /*
-  m_HoleIndex = m_SpriteCount;
-  m_AtlasSprites.push_back(new SpriteGun(m_HoleFoo, NULL));
-  m_AtlasSprites[m_HoleIndex]->SetPosition(0.0, 0.0);
-  m_AtlasSprites[m_HoleIndex]->m_Frame = 0;
-  m_AtlasSprites[m_HoleIndex]->SetScale(50.0, 50.0);
-  m_AtlasSprites[m_HoleIndex]->Build(0);
-  m_SpriteCount++;
-  */
-
   m_WarpTimeout = 0.0;
 
 	m_Pather = new micropather::MicroPather(this);
@@ -253,7 +238,6 @@ SuperStarShooter::~SuperStarShooter() {
 void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y) {
   for (int fy = 0; fy < height; fy++) {
     for (int fx = (width - 1); fx >= 0; fx--) {
-      //LOGV("wtf: %d %d\n", fx + offset_x, fy + offset_y);
       m_Space->set(fx + offset_x, fy + offset_y, layer, bottom_right_start);
       bottom_right_start -= 1;
     }
@@ -274,10 +258,8 @@ void SuperStarShooter::CreateFoos() {
     m_PlayerFoos[i] = AtlasSprite::GetFoo(m_Textures.at(0), 16, 14, 13 + (16 * i), 13 + (16 * i) + 3, 0.0);
   }
 
-  m_HoleFoo = AtlasSprite::GetFoo(m_Textures.at(0), 8, 8, 24, 25, 0.0);
   m_TrailFoo = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 251, 256, 0.0);
 
-  //m_BatchFoo = AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount * 2) + 1 + 1 + m_TrailCount);
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount * 2)));
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 1 + 1 + m_TrailCount));
 
@@ -296,10 +278,7 @@ void SuperStarShooter::DestroyFoos() {
     delete m_PlayerFoos[i];
   }
   free(m_PlayerFoos);
-  delete m_HoleFoo;
   delete m_TrailFoo;
-  //delete m_BatchFoo;
-
 }
 
 
@@ -370,7 +349,6 @@ void SuperStarShooter::RenderSpritePhase() {
   if (m_NeedsTerrainRebatched) {
     m_Batches[0]->m_NumBatched = 0;
     RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0]);
-    //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_BatchFoo);
     m_NeedsTerrainRebatched = false;
   }
 
@@ -380,8 +358,6 @@ void SuperStarShooter::RenderSpritePhase() {
 
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
-
-  //m_BatchFoo->m_NumBatched = 0;
 }
 
 
@@ -562,7 +538,7 @@ int SuperStarShooter::Simulate() {
 
     //LOGV("wtf: %d\n", m_TargetX);
     int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
-    if (colliding_index != BLANK) {
+    if (Passable(colliding_index)) {
       m_StatePointer = 0;
       
       int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
@@ -692,8 +668,7 @@ int SuperStarShooter::Simulate() {
         m_TargetX--;
         break;
     }
-    //if (m_TargetX < 0) {
-      
+
     m_TargetIsDirty = true;
   }
   
@@ -730,6 +705,17 @@ float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {
 }
 
 
+bool SuperStarShooter::Passable(int i) {
+
+  if (i == 91 || i == 92 || i == 74 || i == 75 || i == 76 || i == 90 || i == 106 || i == 107 || i == 108) {
+    return true;
+  }
+
+  return false;
+  
+}
+
+
 void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCost> *neighbors) {
 
   int ax = m_States[((intptr_t)node)]->x;
@@ -756,15 +742,8 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
     bool passable = false;
     if (nx >= 0 && ny >= 0) {
       int colliding_index = m_Space->at(nx, ny, 0);
-      //if (colliding_index != (68 + 16 + 16 + 16 + 16)) {
-      if (colliding_index != BLANK) {
-        //if (nx == m_States[1]->x && ny == m_States[1]->y) {
-          passable = true;
-        //  pass_cost = 0.0;
-        //} else {
-        //  passable = true;
-        //  pass_cost = 100.0;
-        //}
+      if (Passable(colliding_index)) {
+        passable = true;
         if (abs(ly) == 1 || abs(lx) == 1) {
           if (i==0 || i==2) {
             if (fastAbs(ly) > fastAbs(lx)) {
@@ -835,10 +814,7 @@ void SuperStarShooter::LoadMaze(int level_index) {
   int r = 0;
   unsigned int i=0;
 
-  LOGV("%d %d %d\n", int_count, width, height);
-
   for (i=0; i<width*height; i++) {
-    //LOGV("%d %d\n", cursor, level[i]);
     BlitMazeCell(r, cursor, level[i+2]);
     cursor++;
     if (cursor > (width - 1)) {
