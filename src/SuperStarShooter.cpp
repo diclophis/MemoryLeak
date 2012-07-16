@@ -859,15 +859,22 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   int y = col * 3;
   int bl = 60 + 16 + 16 + 16;
   int b2 = 63 + 16 + 16 + 16 + 16 + 16 + 16 + 16 + 16;
-  int b3 = (9 * 16) + 10;
-  int b4 = (9 * 16) + 13; //6 + 16 + 16 + 16 + 16 + 16 + 16;
+  int b3 = (9 * 16) + 12;
+  int b4 = (8 * 16) + 13; //6 + 16 + 16 + 16 + 16 + 16 + 16;
+  int b5 = (6 * 16) + 9;
   switch(mask) {
     case 5:
+      // #
+      //##
+      //
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3)); // #
       BlitIntoSpace(0, bl, 3, 3, ((x + 0) * 3), ((y + 1) * 3)); //##
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3)); // 
-      BlitIntoSpace(0, b4, 3, 3, ((x + 0) * 3), ((y + 0) * 3)); //**
-      BlitIntoSpace(0, b4, 3, 3, ((x + 1) * 3), ((y + 0) * 3)); //
+      BlitIntoSpace(0, b4, 2, 2, ((x + 0) * 3), ((y + 0) * 3) + 1); //**
+      BlitIntoSpace(0, b4, 1, 2, ((x + 0) * 3) + 2, ((y + 0) * 3) + 1); //**
+      BlitIntoSpace(0, b4, 2, 2, ((x + 1) * 3), ((y + 0) * 3) + 1); //
+      BlitIntoSpace(0, b4, 1, 2, ((x + 1) * 3) + 2, ((y + 0) * 3) + 1); //**
+      BlitIntoSpace(0, b5, 2, 2, ((x + 2) * 3), ((y + 0) * 3) + 1); //
       break;
     case 6:
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
