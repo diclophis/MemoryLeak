@@ -75,7 +75,7 @@ clean:
 $(hash_dir):
 	mkdir $(hash_dir)
 
-install: $(hash_dir)
+install: $(hash_dir) build/raptor_island.js
 	ln -nsf $(hash_dir) ~/emscripten.risingcode.com/public/latest
 	ruby cache_manifest.rb ../../assets > ~/emscripten.risingcode.com/public/latest/index.appcache
 	cp -R ../../assets ~/emscripten.risingcode.com/public/latest
