@@ -91,4 +91,6 @@ public:
   int GRID_Y;
 
   bool Passable(int index);
+
+  float m_SelectTimeout;
 };

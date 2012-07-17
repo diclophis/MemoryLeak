@@ -19,8 +19,8 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY 2500.0
-#define MAX_WAIT_BEFORE_WARP 0.0175
+#define VELOCITY 1200.0
+#define MAX_WAIT_BEFORE_WARP 0.04
 #define MAX_SEARCH 30
 #define MAX_STATE_POINTERS 1024
 
@@ -104,8 +104,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
   }
 
-  GRID_X = (3 * ((m_ScreenWidth / SUBDIVIDE) / 3)) + 3;
-  GRID_Y = (3 * ((m_ScreenHeight / SUBDIVIDE) / 3)) + 3;
+  GRID_X = (3 * ((m_ScreenWidth / SUBDIVIDE) / 3)) + 6;
+  GRID_Y = (3 * ((m_ScreenHeight / SUBDIVIDE) / 3)) + 6;
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -174,7 +174,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 20;
     m_AtlasSprites[sub_index]->m_Frame = 0;
-    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 2.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 2.0);
+    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
     m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
@@ -197,6 +197,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_TargetY = 4;
 
   m_TargetIsDirty = true;
+  m_SelectTimeout = 2.0;
 
   m_GotLastSwipeAt = -10.0;
   m_SwipedBeforeUp = false;
@@ -331,29 +332,15 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   bool collide_index_set = false;
 
   if (hitState == 0) {
+    m_SelectTimeout = 0;
     m_CameraStopOffsetX = (xx + m_CameraOffsetX);
     m_CameraStopOffsetY = (yy + m_CameraOffsetY);
     m_StartedSwipe = false;
   }
 
   if (hitState == 1) {
-    /*
-    if (m_SwipedBeforeUp) {
-      m_CameraOffsetX = (m_CameraStopOffsetX - xx);
-      m_CameraOffsetY = (m_CameraStopOffsetY - yy);
-    }
-
-    if (!m_StartedSwipe) {
-      m_GotLastSwipeAt = m_SimulationTime;
-      m_StartedSwipe = true;
-    }
-
-    if ((m_GotLastSwipeAt > 0.0) && ((m_SimulationTime - m_GotLastSwipeAt) > 0.0655)) {
-      m_SwipedBeforeUp = true;
-    }
-    */
+    m_SelectTimeout = 0;
   }
-
 
   if (hitState != 0) {
     if (m_SwipedBeforeUp) {
@@ -425,7 +412,7 @@ int SuperStarShooter::Simulate() {
 
   float speed_x = fastAbs(tx) * 1.5;
   float speed_y = fastAbs(ty) * 1.5;
-  float speed_max = 600.0;
+  float speed_max = 800.0;
 
   if (speed_x > speed_max) {
     speed_x = speed_max;
@@ -568,11 +555,12 @@ int SuperStarShooter::Simulate() {
   }
 
   bool stuck = false;
-  
-  if (m_TargetIsDirty) {
+
+  m_SelectTimeout += m_DeltaTime;
+
+  if (m_SelectTimeout > 0.02 && m_TargetIsDirty) {
+
     m_TargetIsDirty = false;
-
-
 
     int startState = -1;
     int selected_x = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE);
@@ -593,22 +581,12 @@ int SuperStarShooter::Simulate() {
       switch (solved) {
         case micropather::MicroPather::SOLVED:
           m_Steps->erase(m_Steps->begin());
-          m_TargetIsDirty = false;
-          //m_Zoom = 0.33;
           break;
         case micropather::MicroPather::NO_SOLUTION:
-          //LOGV("none\n");
-          //m_TargetX = selected_x;
-          //m_TargetY = selected_y;
           stuck = true;
           m_Steps->clear();
-          //m_Zoom = 1.33;
           break;
         case micropather::MicroPather::START_END_SAME:
-          //LOGV("same\n");
-          //m_TargetX = selected_x;
-          //m_TargetY = selected_y;
-          m_TargetIsDirty = false;
           break;	
         default:
           break;
@@ -617,34 +595,34 @@ int SuperStarShooter::Simulate() {
   }
 
 
-    //int stacked = m_TrailCount;
-    bool top_of_stack = false;
-    for (unsigned int i=0; i<m_TrailCount; i++) {
-      if (i < m_Steps->size()) { // && i < stacked) {
-        nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
-        float tx = ((float)step->x * SUBDIVIDE);
-        float ty = ((float)step->y * SUBDIVIDE);
-        //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 2;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Life = 0;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
+  //int stacked = m_TrailCount;
+  bool top_of_stack = false;
+  for (unsigned int i=0; i<m_TrailCount; i++) {
+    if (i < m_Steps->size()) { // && i < stacked) {
+      nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
+      float tx = ((float)step->x * SUBDIVIDE);
+      float ty = ((float)step->y * SUBDIVIDE);
+      //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 2;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Life = 0;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
+    } else {
+      if (top_of_stack) {
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (int)fastAbs((stacked) % 5);
       } else {
-        if (top_of_stack) {
-          //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (int)fastAbs((stacked) % 5);
-        } else {
-          //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 3;
-          top_of_stack = true;
-        }
-        //stacked--;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]; //m_TargetX * SUBDIVIDE;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]m_TargetY * SUBDIVIDE;
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 3;
+        top_of_stack = true;
       }
+      //stacked--;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]; //m_TargetX * SUBDIVIDE;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]m_TargetY * SUBDIVIDE;
     }
+  }
 
 
   if (needs_next_step && m_Steps->size() > 0) {
@@ -739,9 +717,9 @@ float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {
 
   int dx = xStart - xEnd;
   int dy = yStart - yEnd;
-  int dz = 0;
+  //int dz = 0;
 
-  float least_cost = (float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
+  float least_cost = dx + dy;//(float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
 
   return least_cost;
 }
@@ -786,7 +764,9 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
       int colliding_index = m_Space->at(nx, ny, 0);
       if (Passable(colliding_index)) {
         passable = true;
-        if (false && (abs(ly) == 1 || abs(lx) == 1)) {
+        pass_cost = 1.0;
+        /*
+        //if (false && (abs(ly) == 1 || abs(lx) == 1)) {
           if (i==0 || i==2) {
             if (fastAbs(ly) > fastAbs(lx)) {
               pass_cost = 0.0;
@@ -800,9 +780,10 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
               pass_cost = 100.0;
             }
           }
-        } else {
-          pass_cost = 100.0;
-        }
+        //} else {
+        //  pass_cost = 100.0;
+        //}
+        */
       }
     }
     
