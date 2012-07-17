@@ -27,15 +27,8 @@ jmethodID android_dumpAudio;
 static int min_buffer;
 static pthread_t audio_thread;
 
-/*
-static std::vector<GLuint> textures;
-static std::vector<foo*> models;
-static std::vector<foo*> levels;
-static std::vector<foo*> sounds;
-*/
-
-static int  sWindowWidth  = 0;
-static int  sWindowHeight = 0;
+static int sWindowWidth  = 0;
+static int sWindowHeight = 0;
 static jobject activity;
 
 bool playing_audio = false;
@@ -63,7 +56,7 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 
 void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(JNIEnv * env, jclass envClass, int size);
 //void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g);
-void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz); //, int count, jintArray arr);
+void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz);
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv*  env);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume(JNIEnv*  env);
@@ -175,41 +168,21 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
       for (int i=0; i<model_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        //foo *f = new foo;
-        //f->fp = fdopen(myfdx, "rb");
-        //f->off = env->GetIntArrayElements(off1, 0)[i];
-        //f->len = env->GetIntArrayElements(len1, 0)[i];
-        //models.push_back(f);
         Engine::PushBackFileHandle(MODELS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off1, 0)[i], env->GetIntArrayElements(len1, 0)[i]);
       }
       for (int i=0; i<level_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys2, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        //foo *f = new foo;
-        //f->fp = fdopen(myfdx, "rb");
-        //f->off = env->GetIntArrayElements(off2, 0)[i];
-        //f->len = env->GetIntArrayElements(len2, 0)[i];
-        //levels.push_back(f);
         Engine::PushBackFileHandle(LEVELS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off2, 0)[i], env->GetIntArrayElements(len2, 0)[i]);
       }
       for (int i=0; i<sound_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys3, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        //foo *f = new foo;
-        //f->fp = fdopen(myfdx, "rb");
-        //f->off = env->GetIntArrayElements(off3, 0)[i];
-        //f->len = env->GetIntArrayElements(len3, 0)[i];
-        //sounds.push_back(f);
         Engine::PushBackFileHandle(SOUNDS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off3, 0)[i], env->GetIntArrayElements(len3, 0)[i]);
       }
       for (int i=0; i<textures_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys4, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        //foo *f = new foo;
-        //f->fp = fdopen(myfdx, "rb");
-        //f->off = env->GetIntArrayElements(off3, 0)[i];
-        //f->len = env->GetIntArrayElements(len3, 0)[i];
-        //sounds.push_back(f);
         Engine::PushBackFileHandle(TEXTURES, fdopen(myfdx, "rb"), env->GetIntArrayElements(off4, 0)[i], env->GetIntArrayElements(len4, 0)[i]);
       }
 		}
@@ -217,26 +190,15 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 }
 
 
-void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz) { //, int count, jintArray arr) {
-  /*
+void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz) {
   if (Engine::CurrentGame()) {
-    textures.clear();
-  }
-
-	for (int i=0; i<count; i++) {
-  LOGV("texture :%d\n", env->GetIntArrayElements(arr, 0)[i]);
-		textures.push_back(env->GetIntArrayElements(arr, 0)[i]);
-	}
-  */
-
-  if (Engine::CurrentGame()) {
-    //Engine::CurrentGameDestroyFoos();
+    Engine::CurrentGameDestroyFoos();
     //Engine::CurrentGameSetAssets(textures, models, levels, sounds);
-    //Engine::CurrentGameCreateFoos();
+    Engine::CurrentGameCreateFoos();
     //Engine::CurrentGameStart();
+    LOGV("resume dead\n");
+    assert(false);
   } else {
-    Engine::Start(1, sWindowWidth, sWindowHeight);
-    create_audio_thread();
   }
 }
 
@@ -244,7 +206,9 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
   sWindowWidth = width;
   sWindowHeight = height;
-  Engine::CurrentGameResizeScreen(width, height);
+  Engine::Start(1, sWindowWidth, sWindowHeight);
+  create_audio_thread();
+  //Engine::CurrentGameResizeScreen(width, height);
 }
 
 

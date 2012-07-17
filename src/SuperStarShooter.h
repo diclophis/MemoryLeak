@@ -57,7 +57,7 @@ public:
   float m_TouchStartY;
 
   foofoo *m_GridFoo;
-  foofoo **m_PlayerFoos;
+  std::vector<foofoo *>m_PlayerFoos;
   foofoo *m_TrailFoo;
 
 	micropather::MicroPather *m_Pather;
