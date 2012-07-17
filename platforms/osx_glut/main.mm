@@ -109,7 +109,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         Engine::CurrentGameDestroyFoos();
         //Engine::CurrentGameSetAssets(textures, models, levels, sounds);
         Engine::CurrentGameCreateFoos();
-        //Engine::CurrentGameStart();
+        Engine::CurrentGameStart();
       } else if (key == 115) { // s
         //if (game_index == 2) {
         //  game_index = 3;

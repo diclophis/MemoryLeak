@@ -8,14 +8,16 @@
 #include <math.h>
 #include <float.h>
 #include <assert.h>
-
 #include "stdafx.h"
 
+
 #include "MemoryLeak.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 static JavaVM *g_Vm;
 static JNIEnv *g_Env;
@@ -26,15 +28,13 @@ static jclass player;
 jmethodID android_dumpAudio;
 static int min_buffer;
 static pthread_t audio_thread;
-
 static int sWindowWidth  = 0;
 static int sWindowHeight = 0;
 static jobject activity;
-
 bool playing_audio = false;
-
 void *pump_audio(void *);
 void create_audio_thread();
+
 
 void create_audio_thread() {
   playing_audio = false;
@@ -55,7 +55,6 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 
 
 void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(JNIEnv * env, jclass envClass, int size);
-//void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g);
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz);
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height);
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv*  env);
@@ -125,11 +124,6 @@ void Java_com_example_SanAngeles_DemoActivity_setMinBuffer(
 }
 
 
-//void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeStartGame(JNIEnv * env, jclass envClass, int g) {
-//  Engine::Start(g, sWindowWidth, sWindowHeight, textures, models, levels, sounds, SimulationThreadCleanup);
-//}
-
-
 int Java_com_example_SanAngeles_DemoActivity_initNative(
   JNIEnv * env, jobject thiz,
   int model_count, jobjectArray fd_sys1, jintArray off1, jintArray len1,
@@ -137,9 +131,6 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
   int sound_count, jobjectArray fd_sys3, jintArray off3, jintArray len3,
   int textures_count, jobjectArray fd_sys4, jintArray off4, jintArray len4
 ) {
-
-  LOGV("\n\n models:%d levels:%d sounds:%d textures:%d\n\n", model_count, level_count, sound_count, textures_count);
-
   activity = (jobject)env->NewGlobalRef(thiz);
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
 	if (fdClass != NULL) {
@@ -174,18 +165,13 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env, jobject thiz) {
   if (Engine::CurrentGame()) {
     Engine::CurrentGameDestroyFoos();
-    //Engine::CurrentGameSetAssets(textures, models, levels, sounds);
     Engine::CurrentGameCreateFoos();
-    //Engine::CurrentGameStart();
-    LOGV("resume dead\n");
-    //assert(false);
   } else {
   }
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
-LOGV("resize???\n");
   sWindowWidth = width;
   sWindowHeight = height;
   if (Engine::CurrentGame()) {
@@ -204,7 +190,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause( JNIEnv*  env ) {
 
 
 void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume( JNIEnv*  env ) {
-  LOGV("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+  LOGV("Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume\n");
 }
 
 
@@ -216,6 +202,7 @@ void Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTouch(JNIEnv* env, jobj
 void Java_com_example_SanAngeles_DemoRenderer_nativeRender( JNIEnv*  env ) {
   Engine::CurrentGameDrawScreen(0);
 }
+
 
 #ifdef __cplusplus
 }
