@@ -138,25 +138,6 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
   int textures_count, jobjectArray fd_sys4, jintArray off4, jintArray len4
 ) {
 
-  /*
-  if (Engine::CurrentGame()) {
-    for (std::vector<foo *>::iterator i = models.begin(); i != models.end(); ++i) {
-      delete *i;
-    }
-    models.clear();
-
-    for (std::vector<foo *>::iterator i = levels.begin(); i != levels.end(); ++i) {
-      delete *i;
-    }
-    levels.clear();
-
-    for (std::vector<foo *>::iterator i = sounds.begin(); i != sounds.end(); ++i) {
-      delete *i;
-    }
-    sounds.clear();
-  }
-  */
-
   LOGV("\n\n models:%d levels:%d sounds:%d textures:%d\n\n", model_count, level_count, sound_count, textures_count);
 
   activity = (jobject)env->NewGlobalRef(thiz);
@@ -197,18 +178,23 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
     Engine::CurrentGameCreateFoos();
     //Engine::CurrentGameStart();
     LOGV("resume dead\n");
-    assert(false);
+    //assert(false);
   } else {
   }
 }
 
 
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
+LOGV("resize???\n");
   sWindowWidth = width;
   sWindowHeight = height;
-  Engine::Start(1, sWindowWidth, sWindowHeight);
-  create_audio_thread();
-  //Engine::CurrentGameResizeScreen(width, height);
+  if (Engine::CurrentGame()) {
+    Engine::CurrentGameResizeScreen(width, height);
+    Engine::CurrentGameStart();
+  } else {
+    Engine::Start(1, sWindowWidth, sWindowHeight);
+    create_audio_thread();
+  }
 }
 
 
