@@ -15,7 +15,7 @@ static std::vector<FileHandle *> models;
 static std::vector<FileHandle *> sounds;
 static std::vector<FileHandle *> textures;
 static std::vector<FileHandle *> levels;
-
+static bool m_WarnedAboutGameFailure = false;
 
 namespace OpenSteer {
 	bool updatePhaseActive = false;
@@ -494,9 +494,13 @@ void Engine::Start(int i, int w, int h) {
     delete m_CurrentGame;
   }
 
-  m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
-  m_CurrentGame->StartSimulation();
-  
+  try {
+    m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
+    m_CurrentGame->StartSimulation();
+  } catch (std::exception& e) {
+    LOGV("Exception is: %s %s", e.what(), e.where());
+    WarnAboutGameFailure("exception in construct\n");
+  }
 }
 
 
@@ -504,7 +508,7 @@ void Engine::CurrentGameDestroyFoos() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DestroyFoos();
   } else {
-    LOGV("current game is not set to destroy foos\n\n");
+    WarnAboutGameFailure("current game is not set to destroy foos\n\n");
   }
 }
 
@@ -513,7 +517,7 @@ void Engine::CurrentGameCreateFoos() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->CreateFoos();
   } else {
-    LOGV("current game is not set to create foos\n\n");
+    WarnAboutGameFailure("current game is not set to create foos\n\n");
   }
 }
 
@@ -522,7 +526,7 @@ void Engine::CurrentGamePause() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->PauseSimulation();
   } else {
-    LOGV("current game is not set to pause\n\n");
+    WarnAboutGameFailure("current game is not set to pause\n\n");
   }
 }
 
@@ -531,7 +535,7 @@ void Engine::CurrentGameHit(float x, float y, int hitState) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->Hit(x, y, hitState);
   } else {
-    LOGV("current game is not set to hit\n\n");
+    WarnAboutGameFailure("current game is not set to hit\n\n");
   }
 }
 
@@ -540,7 +544,7 @@ void Engine::CurrentGameResizeScreen(int width, int height) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->ResizeScreen(width, height);
   } else {
-    LOGV("current game is not set to resize\n\n");
+    WarnAboutGameFailure("current game is not set to resize\n\n");
   }
 }
 
@@ -549,7 +553,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DrawScreen(rotation);
   } else {
-    LOGV("CurrentGameDrawScreen without m_CurrentGame set\n");
+    WarnAboutGameFailure("CurrentGameDrawScreen without m_CurrentGame set\n");
   }
 }
 
@@ -558,7 +562,7 @@ void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {
-    LOGV("CurrentGameDoAudio without m_CurrentGame set\n");
+    WarnAboutGameFailure("CurrentGameDoAudio without m_CurrentGame set\n");
   }
 }
 
@@ -568,15 +572,6 @@ bool Engine::CurrentGame() {
     return true;
   } else {
     return false;
-  }
-}
-
-
-void Engine::CurrentGameStart() {
-  if (m_CurrentGame != NULL) {
-    m_CurrentGame->StartSimulation();
-  } else {
-    LOGV("current game not set to start\n");
   }
 }
 
@@ -614,6 +609,9 @@ void Engine::LoadModel(int i, int s, int e) {
 
 
 void Engine::LoadTexture(int i) {
+  if (i >= m_TextureFileHandles->size()) {
+    LOGV("missing texture: %d\n", i);
+  }
   png_t tex;
   unsigned char* data;
   GLuint textureHandle;
@@ -759,4 +757,19 @@ void Engine::ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfl
   
 }
 
+
+void Engine::WarnAboutGameFailure(const char *s) {
+  if (!m_WarnedAboutGameFailure) {
+    m_WarnedAboutGameFailure = true;
+    LOGV("Game failed: %s", s);
+  }
+}
+
+void Engine::CurrentGameStart() {
+  if (m_CurrentGame != NULL) {
+    m_CurrentGame->StartSimulation();
+  } else {
+    LOGV("current game not set to start\n");
+  }
+}
 
