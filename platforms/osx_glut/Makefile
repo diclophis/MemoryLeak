@@ -21,7 +21,6 @@ CXXFLAGS=\
 -I../../src/assimp/BoostWorkaround \
 -I../../src/Box2D \
 -I../../src/OpenSteer \
--I../../src/memmgr \
 
 #-DUSE_GLES2 \
 
@@ -46,7 +45,6 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ..
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Common/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/OpenSteer/*.cpp)))
-objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/memmgr/*.c)))
 
 raptor_island: $(build) $(objects)
 	$(CXX) $(LDFLAGS) -o $(build)/raptor_island $(objects)
@@ -77,7 +75,6 @@ $(build):
 	mkdir -p $(build)/Box2D/Dynamics/Joints
 	mkdir -p $(build)/Box2D/Dynamics/Rope
 	mkdir -p $(build)/OpenSteer
-	mkdir -p $(build)/memmgr
 
 clean:
 	touch $(build) && rm -R $(build)

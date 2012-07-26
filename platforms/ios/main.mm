@@ -9,12 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MemoryLeakAppDelegate.h"
 
-extern "C" {
-  #include "memmgr.h"
-}
-
-int main(int argc, char *argv[]) {
-    memmgr_init();
+int main(int argc, char *argv[]) {		
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     int retVal = UIApplicationMain(argc, argv, nil, NSStringFromClass([MemoryLeakAppDelegate class]));
     [pool release];
