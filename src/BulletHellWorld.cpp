@@ -12,14 +12,7 @@ BulletHellWorld::BulletHellWorld(const b2Vec2& gravity, bool doSleep) : b2World(
 void BulletHellWorld::Step(float32 dt, int32 velocityIterations, int32 positionIterations) {
 	b2Timer stepTimer;
 
-	// If new fixtures were added, we need to find the new contacts.
-	//if (m_flags & e_newFixture)
-	//{
-	//	m_contactManager.FindNewContacts();
-	//	m_flags &= ~e_newFixture;
-	//}
-
-	m_flags = 0; //|= e_locked;
+	m_flags = 0;
 
 	b2TimeStep step;
 	step.dt = dt;
@@ -38,27 +31,10 @@ void BulletHellWorld::Step(float32 dt, int32 velocityIterations, int32 positionI
 
 	step.warmStarting = m_warmStarting;
 	
-	// Update contacts. This is where some contacts are destroyed.
-	{
-		b2Timer timer;
-		//m_contactManager.Collide();
-		m_profile.collide = timer.GetMilliseconds();
-	}
-
 	// Integrate velocities, solve velocity constraints, and integrate positions.
 	if (m_stepComplete && step.dt > 0.0f)
 	{
-		b2Timer timer;
 		Solve(step);
-		m_profile.solve = timer.GetMilliseconds();
-	}
-
-	// Handle TOI events.
-	if (m_continuousPhysics && step.dt > 0.0f)
-	{
-		b2Timer timer;
-		//SolveTOI(step);
-		m_profile.solveTOI = timer.GetMilliseconds();
 	}
 }
 
@@ -135,6 +111,7 @@ void BulletHellWorld::Solve(const b2TimeStep& step)
           continue;
         }
         
+        /*
         // Search all contacts connected to this body.
         for (b2ContactEdge* ce = b->m_contactList; ce; ce = ce->next)
         {
@@ -176,7 +153,8 @@ void BulletHellWorld::Solve(const b2TimeStep& step)
           stack[stackCount++] = other;
           other->m_flags |= b2Body::e_islandFlag;
         }
-        
+         */
+
         // Search all joints connect to this body.
         for (b2JointEdge* je = b->m_jointList; je; je = je->next)
         {
@@ -207,6 +185,7 @@ void BulletHellWorld::Solve(const b2TimeStep& step)
         }
       }
       
+        
       b2Profile profile;
       island.Solve(&profile, step, m_gravity, m_allowSleep);
       m_profile.solveInit += profile.solveInit;
