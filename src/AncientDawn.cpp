@@ -174,7 +174,7 @@ void AncientDawn::CreatePlayer() {
     b2Body *bullet_body = m_World->CreateBody(&bd2);
     bullet_body->SetUserData(bullet);
     bullet_body->CreateFixture(&fd2);
-    bullet_body->SetActive(true);
+    //bullet_body->SetActive(true);
   }
 
   b2BodyDef bd;
@@ -194,7 +194,7 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody = m_World->CreateBody(&bd);
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
-  m_PlayerBody->SetActive(true);
+  //m_PlayerBody->SetActive(true);
 
   
   b2Body *center_body = m_World->CreateBody(&bd);
@@ -248,7 +248,7 @@ void AncientDawn::CreateSpaceShip() {
     b2Body *bullet_body = m_World->CreateBody(&bd2);
     bullet_body->SetUserData(bullet);
     bullet_body->CreateFixture(&fd2);
-    bullet_body->SetActive(true);
+    //bullet_body->SetActive(true);
   }
 }
 
@@ -369,8 +369,8 @@ int AncientDawn::Simulate() {
     if (m_World->m_Solve) {
 
       m_ColliderSwitch = COLLIDE_PLAYER;
-      aabb.lowerBound.Set((-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-      aabb.upperBound.Set((1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.lowerBound.Set((-10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
       m_World->QueryAABB(this, aabb);
 
       m_ColliderSwitch = COLLIDE_CULLING;
@@ -443,12 +443,14 @@ int AncientDawn::Simulate() {
             }
 
             if (!sprite->m_IsAlive) {
-              body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+              //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+              body->SetAwake(false);
             }
-          } else if (sprite->m_Parent == m_AtlasSprites[m_SpaceShipIndex]) {
+          } else {
             if (boss_shoot_this_tick && !sprite->m_IsAlive && boss_shot_this_tick < 10) {
               sprite->m_Scale[0] = 10.0;
               sprite->m_Scale[1] = 10.0;
+              body->SetAwake(false);
               body->SetAwake(true);
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
               // x = r cos theta,
@@ -463,7 +465,7 @@ int AncientDawn::Simulate() {
               boss_shot_this_tick++;
               theta += (M_PI * 2.0) / 10.0;
             } else if ((sprite->m_Life > (10.0))) {
-              body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+              //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
               body->SetAwake(false);
               sprite->m_IsAlive = false;
             }
