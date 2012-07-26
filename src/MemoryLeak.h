@@ -150,3 +150,9 @@
 
 #include "pnglite.h"
 
+extern "C" {
+  #include "memmgr.h"
+}
+
+
+

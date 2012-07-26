@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C2077CC615C0BD14004E4BF7 /* memmgr.c in Sources */ = {isa = PBXBuildFile; fileRef = C2077CC215C0BD14004E4BF7 /* memmgr.c */; };
 		C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C23348D215827CA800F64C5E /* StateFoo.cpp */; };
 		C249FCCA1589EAA300ABFE76 /* BulletHellWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */; };
 		C251C68E158EF4CE00750D11 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */; };
@@ -181,6 +182,8 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2077CC215C0BD14004E4BF7 /* memmgr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memmgr.c; sourceTree = "<group>"; };
+		C2077CC315C0BD14004E4BF7 /* memmgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memmgr.h; sourceTree = "<group>"; };
 		C23348D215827CA800F64C5E /* StateFoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateFoo.cpp; sourceTree = "<group>"; };
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
 		C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletHellWorld.cpp; sourceTree = "<group>"; };
@@ -757,6 +760,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		C2077CC015C0BD14004E4BF7 /* memmgr */ = {
+			isa = PBXGroup;
+			children = (
+				C2077CC215C0BD14004E4BF7 /* memmgr.c */,
+				C2077CC315C0BD14004E4BF7 /* memmgr.h */,
+			);
+			path = memmgr;
+			sourceTree = "<group>";
+		};
 		C251C68C158EF4CE00750D11 /* iPad */ = {
 			isa = PBXGroup;
 			children = (
@@ -781,6 +793,7 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C2077CC015C0BD14004E4BF7 /* memmgr */,
 				C29A2CFB155CE772007B500C /* AncientDawn.cpp */,
 				C29A2CFC155CE772007B500C /* AncientDawn.h */,
 				FC1417741285415800166578 /* assimp */,
@@ -1718,6 +1731,7 @@
 				C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */,
 				C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */,
 				C249FCCA1589EAA300ABFE76 /* BulletHellWorld.cpp in Sources */,
+				C2077CC615C0BD14004E4BF7 /* memmgr.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1727,7 +1741,7 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -1768,6 +1782,7 @@
 					"$(SRCROOT)/../../src/include/ares",
 					"$(SRCROOT)/../../src/include",
 					"$(SRCROOT)/../../src/oolua",
+					"$(SRCROOT)/../../src/memmgr",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
@@ -1792,7 +1807,7 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -1819,6 +1834,7 @@
 					"$(SRCROOT)/../../src/include/ares",
 					"$(SRCROOT)/../../src/include",
 					"$(SRCROOT)/../../src/oolua",
+					"$(SRCROOT)/../../src/memmgr",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
@@ -1896,7 +1912,7 @@
 		FCF8913513E8AA7B00AFEB8E /* Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1924,6 +1940,7 @@
 					"$(SRCROOT)/../../src/include/ares",
 					"$(SRCROOT)/../../src/include",
 					"$(SRCROOT)/../../src/oolua",
+					"$(SRCROOT)/../../src/memmgr",
 				);
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;

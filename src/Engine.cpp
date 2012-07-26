@@ -497,8 +497,8 @@ void Engine::Start(int i, int w, int h) {
   try {
     m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
     m_CurrentGame->StartSimulation();
-  } catch (std::exception& e) {
-    LOGV("Exception is: %s %s", e.what(), e.where());
+  } catch (...) {
+    //LOGV("Exception is: %s %s", e.what(), e.where());
     WarnAboutGameFailure("exception in construct\n");
   }
 }
