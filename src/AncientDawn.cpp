@@ -8,12 +8,10 @@
 #define COUNT 600
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
-  LOGV("alloc AncientDawn %d %d %d\n", CONTINUE_LEVEL, RESTART_LEVEL, START_NEXT_LEVEL);
   LoadSound(0);
-  LOGV("got to load sound\n");
-  LoadTexture(1);
-  LOGV("got to load texture\n");
+  LoadTexture(0);
   StartLevel(FirstLevel());
+  //m_Zoom = 2.0;
 }
 
 
@@ -53,8 +51,6 @@ void AncientDawn::DestroyFoos() {
 
 
 void AncientDawn::StartLevel(int level_index) {
-  LOGV("Starting Level: %d\n", level_index);
-
   m_CurrentLevel = level_index;
 
   ResetStateFoo();
@@ -193,9 +189,7 @@ void AncientDawn::CreatePlayer() {
   fd.shape = &shape;
   fd.isSensor = true;
   fd.density = 0.0;
-  //fd.restitution = 0.0;
   fd.friction = 0.0;
-  //fd.filter.categoryBits = 0x0002;
   fd.filter.groupIndex = -1;
   m_PlayerBody = m_World->CreateBody(&bd);
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
@@ -256,18 +250,6 @@ void AncientDawn::CreateSpaceShip() {
     bullet_body->CreateFixture(&fd2);
     bullet_body->SetActive(true);
   }
- 
-  /*
-  b2Body *center_body = m_World->CreateBody(&bd);
-  b2MouseJointDef mouse_joint_def;
-  mouse_joint_def.bodyA = center_body;
-  mouse_joint_def.bodyB = m_PlayerBody;
-  mouse_joint_def.target = b2Vec2(0.0, 0.0);
-  mouse_joint_def.maxForce = 2000.0f * m_PlayerBody->GetMass();
-  mouse_joint_def.dampingRatio = 10.0;
-  mouse_joint_def.frequencyHz = 100.0;
-  m_PlayerMouseJoint = (b2MouseJoint *)m_World->CreateJoint(&mouse_joint_def);
-  */
 }
 
 
@@ -323,7 +305,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 20.0));
+  m_World->m_Solve = (m_SolveTimeout > (m_DeltaTime * 10.0));
   if (m_World->m_Solve) {
     m_SolveTimeout = 0.0;
   }
@@ -383,35 +365,56 @@ int AncientDawn::Simulate() {
   
   StepPhysics();
 
-  b2AABB aabb;
-  if (m_World->m_Solve) {
-    aabb.lowerBound.Set((-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-    aabb.upperBound.Set((1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-  }
-  
-  int shot_this_tick = 0;
-  int boss_shot_this_tick = 0;
+  { // collision detect
+    if (m_World->m_Solve) {
 
-  m_ShootTimeout += m_DeltaTime;
-  m_BossShootTimeout += m_DeltaTime;
-  
-  float theta = 0.0;
-  bool shoot_this_tick = (m_ShootTimeout > (1.0 / 10.0));
-  if (shoot_this_tick) {
-    m_ShootTimeout = 0.0;
-  }
-  
-  bool boss_shoot_this_tick = (m_BossShootTimeout > (1.0 / 5.0));
-  if (boss_shoot_this_tick) {
-    m_BossShootTimeout = 0.0;
-  }
-  
-  float spread = -(M_PI * 0.5);
+      m_ColliderSwitch = COLLIDE_PLAYER;
+      aabb.lowerBound.Set((-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.upperBound.Set((1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (1.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
 
-  int last_used_index = 0;
+      m_ColliderSwitch = COLLIDE_CULLING;
+      aabb.lowerBound.Set(((m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5) + 1.0) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set(((-(m_ScreenWidth * 0.5) - 1.0) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((m_ScreenHeight * 0.5) + 1.0) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), ((-(m_ScreenHeight * 0.5) - 1.0) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
 
-  //if (shoot_this_tick || boss_shoot_this_tick) {
+    }
+  }
+
+  { // bullets
+    int shot_this_tick = 0;
+    int boss_shot_this_tick = 0;
+
+    m_ShootTimeout += m_DeltaTime;
+    m_BossShootTimeout += m_DeltaTime;
+    
+    float theta = 0.0;
+    bool shoot_this_tick = (m_ShootTimeout > (1.0 / 10.0));
+    if (shoot_this_tick) {
+      m_ShootTimeout = 0.0;
+    }
+    
+    bool boss_shoot_this_tick = (m_BossShootTimeout > (1.0 / 5.0));
+    if (boss_shoot_this_tick) {
+      m_BossShootTimeout = 0.0;
+    }
+    
+    float spread = -(M_PI * 0.5);
+
+    int last_used_index = 0;
+
     for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
       AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
       if (sprite != NULL) {
@@ -420,7 +423,6 @@ int AncientDawn::Simulate() {
         } else {
           last_used_index++;
           if (sprite->m_Parent == m_AtlasSprites[m_PlayerIndex]) {
-            //if (shoot_this_tick && !sprite->m_IsAlive && shot_this_tick < 3) {
             if (shoot_this_tick && (last_used_index > m_LastRecycledIndex) && (!sprite->m_IsAlive) && shot_this_tick < 3) {
               body->SetAwake(false);
               body->SetAwake(true);
@@ -436,20 +438,13 @@ int AncientDawn::Simulate() {
               if (m_LastRecycledIndex >= (COUNT)) {
                 m_LastRecycledIndex = -1;
               }
-            } else if ((sprite->m_Life > (0.33))) {
+            } else if ((sprite->m_Life > (0.3))) { //bullet live time
               sprite->m_IsAlive = false;
             }
 
             if (!sprite->m_IsAlive) {
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
             }
-            /*
-              //body->SetAwake(false);
-              sprite->m_IsAlive = false;
-            } else if (sprite->m_IsAlive) {
-            } else {
-            }
-            */
           } else if (sprite->m_Parent == m_AtlasSprites[m_SpaceShipIndex]) {
             if (boss_shoot_this_tick && !sprite->m_IsAlive && boss_shot_this_tick < 10) {
               sprite->m_Scale[0] = 10.0;
@@ -458,7 +453,7 @@ int AncientDawn::Simulate() {
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
               // x = r cos theta,
               // y = r sin theta, 
-              float off = m_SimulationTime * 2.0; //((sinf(m_SimulationTime * 1.0) * (M_PI * 0.5)));
+              float off = m_SimulationTime * 2.0;
               float fx = m_BulletSpeed * fastSinf((M_PI / 2.0) - (theta + off));
               float fy = m_BulletSpeed * fastSinf((theta + off));
               body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
@@ -467,7 +462,7 @@ int AncientDawn::Simulate() {
               sprite->m_Frame = 0;
               boss_shot_this_tick++;
               theta += (M_PI * 2.0) / 10.0;
-            } else if ((sprite->m_Life > (5.0))) {
+            } else if ((sprite->m_Life > (10.0))) {
               body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
               body->SetAwake(false);
               sprite->m_IsAlive = false;
@@ -476,15 +471,17 @@ int AncientDawn::Simulate() {
         }
       }
     }
-  //}
+  }
 
-  for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
-    AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
-    if (sprite != NULL) {
-      float x = body->GetPosition().x * PTM_RATIO;
-      float y = body->GetPosition().y * PTM_RATIO;
-      UpdatePhysicialPositionOfSprite(sprite, x, y);
-      sprite->Simulate(m_DeltaTime);
+  { // graphics
+    for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
+      AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
+      if (sprite != NULL) {
+        float x = body->GetPosition().x * PTM_RATIO;
+        float y = body->GetPosition().y * PTM_RATIO;
+        UpdatePhysicialPositionOfSprite(sprite, x, y);
+        sprite->Simulate(m_DeltaTime);
+      }
     }
   }
   
@@ -496,15 +493,22 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
   
   b2Body* body = fixture->GetBody();
   AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
-  
-  if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-    //LOGV("%f %f\n", sprite->m_Position[0], sprite->m_Position[1]);
-    sprite->m_Scale[0] = 40.0;
-    sprite->m_Scale[1] = 40.0;
-    //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-    //body->SetAwake(false);
-    //sprite->m_IsAlive = false;
-    //body->WakeUp();
+ 
+  switch (m_ColliderSwitch) {
+    case COLLIDE_PLAYER:
+      if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
+        sprite->m_Scale[0] = 40.0;
+        sprite->m_Scale[1] = 40.0;
+      }
+      break;
+
+    case COLLIDE_CULLING:
+      if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
+        body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+        body->SetAwake(false);
+        sprite->m_IsAlive = false;
+      }
+      break;
   }
 
   return true;
@@ -521,15 +525,13 @@ void AncientDawn::RenderSpritePhase() {
     m_Batches[0]->m_NumBatched = 0;
     RenderSpriteRange(0, 2, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
-  } else {
+  } else { // debug draw data doesnt work with opengles 2.0
     AtlasSprite::ReleaseBuffers();
     ResetStateFoo();
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
-    //glColor4f(1.0, 0.0, 0.0, 1.0);
     m_World->DrawDebugData();
-    //glColor4f(1.0, 1.0, 1.0, 1.0);
     glDisableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_TEXTURE_2D);

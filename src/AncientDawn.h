@@ -7,6 +7,10 @@ enum {
   START_NEXT_LEVEL
 };
 
+enum {
+  COLLIDE_PLAYER,
+  COLLIDE_CULLING
+};
 
 class AncientDawn : public Engine, b2QueryCallback {
 
@@ -135,6 +139,8 @@ public:
   float m_TouchOffsetX;
   float m_TouchOffsetY;
 
+  // collision detection
+  int m_ColliderSwitch;
   float m_SolveTimeout;
   float m_BossShootTimeout;
   float m_ShootTimeout;
@@ -142,7 +148,8 @@ public:
   float m_BulletSpeed;
   int m_Batch;
   bool m_Force;
-
+  b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
+
 
 };
