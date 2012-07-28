@@ -67,8 +67,9 @@ public:
   static void CurrentGameDrawScreen(float rotation);
   static void CurrentGameDoAudio(short buffer[], int bytes);
   static bool CurrentGame();
-  static void CurrentGameStart();
   static void CheckGL(const char *s);
+  static void CurrentGameStart();
+  static void WarnAboutGameFailure(const char *s);
 
   bool m_IsSceneBuilt;
   bool m_IsScreenResized;

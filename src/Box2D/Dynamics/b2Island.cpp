@@ -204,7 +204,7 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 		{
 			// Integrate velocities.
 			v += h * (b->m_gravityScale * gravity + b->m_invMass * b->m_force);
-			w += h * b->m_invI * b->m_torque;
+			//w += h * b->m_invI * b->m_torque;
 
 			// Apply damping.
 			// ODE: dv/dt + c * v = 0
@@ -214,7 +214,7 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 			// Taylor expansion:
 			// v2 = (1.0f - c * dt) * v1
 			v *= b2Clamp(1.0f - h * b->m_linearDamping, 0.0f, 1.0f);
-			w *= b2Clamp(1.0f - h * b->m_angularDamping, 0.0f, 1.0f);
+			//w *= b2Clamp(1.0f - h * b->m_angularDamping, 0.0f, 1.0f);
 		}
 
 		m_positions[i].c = c;
@@ -240,13 +240,13 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 	contactSolverDef.velocities = m_velocities;
 	contactSolverDef.allocator = m_allocator;
 
-	b2ContactSolver contactSolver(&contactSolverDef);
-	contactSolver.InitializeVelocityConstraints();
+	//b2ContactSolver contactSolver(&contactSolverDef);
+	//contactSolver.InitializeVelocityConstraints();
 
-	if (step.warmStarting)
-	{
-		contactSolver.WarmStart();
-	}
+	//if (step.warmStarting)
+	//{
+	//	contactSolver.WarmStart();
+	//}
 	
 	for (int32 i = 0; i < m_jointCount; ++i)
 	{
@@ -264,11 +264,11 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 			m_joints[j]->SolveVelocityConstraints(solverData);
 		}
 
-		contactSolver.SolveVelocityConstraints();
+		//contactSolver.SolveVelocityConstraints();
 	}
 
 	// Store impulses for warm starting
-	contactSolver.StoreImpulses();
+	//contactSolver.StoreImpulses();
 	profile->solveVelocity = timer.GetMilliseconds();
 
 	// Integrate positions
@@ -279,6 +279,7 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 		b2Vec2 v = m_velocities[i].v;
 		float32 w = m_velocities[i].w;
 
+    /*
 		// Check for large velocities
 		b2Vec2 translation = h * v;
 		if (b2Dot(translation, translation) > b2_maxTranslationSquared)
@@ -293,7 +294,8 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 			float32 ratio = b2_maxRotation / b2Abs(rotation);
 			w *= ratio;
 		}
-
+    */
+    
 		// Integrate
 		c += h * v;
 		a += h * w;
@@ -308,7 +310,7 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 	timer.Reset();
 	for (int32 i = 0; i < step.positionIterations; ++i)
 	{
-		bool contactsOkay = contactSolver.SolvePositionConstraints();
+		bool contactsOkay = true; //contactSolver.SolvePositionConstraints();
 
 		bool jointsOkay = true;
 		for (int32 i = 0; i < m_jointCount; ++i)
@@ -337,7 +339,7 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 
 	profile->solvePosition = timer.GetMilliseconds();
 
-	Report(contactSolver.m_velocityConstraints);
+	//Report(contactSolver.m_velocityConstraints);
 
 	if (allowSleep)
 	{
