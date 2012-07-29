@@ -269,7 +269,7 @@ int Engine::Run() {
     if (m_GameState > 1) {
       //paused
     } else {
-      float steps = 4.0;
+      float steps = 1.0; //4 for overdrive
       m_DeltaTime = step / steps;
       for (int j=0; j<(int)steps; j++) {
         if (Active()) {
