@@ -110,7 +110,7 @@ void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
     }
   }
 
-  AtlasSprite::Render(sf, batch_foo);
+  //AtlasSprite::Render(sf, batch_foo);
 }
 
 

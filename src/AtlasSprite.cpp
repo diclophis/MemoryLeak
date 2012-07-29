@@ -42,6 +42,7 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
   m_IsAlive = true;
   m_Frame = 0;
   m_IsNinePatch = false;
+  m_LastUsedBullet = 0;
 }
 
 
