@@ -6,7 +6,7 @@
 
 <action label="top">
   <repeat>
-    <times>999</times>
+    <times>100</times>
     <action>
       <repeat>
         <times>2+$rank*1.5</times>
@@ -14,26 +14,27 @@
          <fire>
           <bulletRef label="rfRkt"/>
          </fire>
-         <wait>45</wait>
+         <wait>20</wait>
         </action>
       </repeat>
     </action>
-    <wait>60</wait>
+    <wait>20</wait>
   </repeat>
 </action>
 
 <bullet label="rfRkt">
-<action>
-<repeat><times>100</times>
-<action>
- <wait>1</wait>
- <fire>
-  <direction type="sequence">13</direction>
-  <bullet/>
- </fire>
-</action>
-</repeat>
-</action>
+  <action>
+    <repeat>
+      <times>100</times>
+      <action>
+        <wait>20</wait>
+        <fire>
+          <direction type="sequence">13</direction>
+          <bullet/>
+        </fire>
+      </action>
+    </repeat>
+  </action>
 </bullet>
 
 </bulletml>

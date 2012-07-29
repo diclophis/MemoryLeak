@@ -8,20 +8,19 @@
 //}
 
 BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(bp), bullet(b) {
-  LOGV("BulletCommand::BulletCommand\n");
+  //LOGV("BulletCommand::BulletCommand MAINNNN %x bullet=%x\n", this, bullet);
   turn = 0;
   m_LastUsedBullet = -1;
   m_UseThisBullet = -1;
-  m_FollowBullet = NULL;
+  m_FollowBullet = bullet;
 }
 
 
-BulletCommand::BulletCommand(BulletMLState* bs, SpriteGun* b) : BulletMLRunner(bs), bullet(b) {
-  LOGV("BulletCommand::BulletCommand with state\n");
+BulletCommand::BulletCommand(BulletMLState* bs, SpriteGun* b, AtlasSprite *c) : BulletMLRunner(bs), bullet(b), m_FollowBullet(c) {
+  //LOGV("BulletCommand::BulletCommand with state SUB: %x bullet = %x != m_Follow = %x\n", this, bullet, m_FollowBullet);
   turn = 0;
   m_LastUsedBullet = -1;
   m_UseThisBullet = -1;
-  m_FollowBullet = NULL;
 }
 
 
@@ -30,16 +29,16 @@ BulletCommand::~BulletCommand() {
 }
 
 void BulletCommand::createSimpleBullet(double direction, double speed) {
-  Shoot(direction, speed);
+  //LOGV("createSimple MAIN==?? %x with state gonna center on follow? %x\n", this, m_FollowBullet);
+  Shoot(direction, speed, m_FollowBullet);
 }
 
 
 void BulletCommand::createBullet(BulletMLState* state, double direction, double speed) {
-  LOGV("createBullet with state\n");
-  BulletCommand *bc = new BulletCommand(state, bullet);
+  //LOGV("createBullet MAIN==?? %x with state\n", this);
+  BulletCommand *bc = new BulletCommand(state, bullet, bullet->m_AtlasSprites[bullet->m_LastUsedBullet]);
   m_SubBulletCommands.push_back(bc);
-  bc->m_FollowBullet = bullet->m_AtlasSprites[bullet->m_LastUsedBullet];
-  bc->Shoot(direction, speed);
+  bc->Shoot(direction, speed, bullet);
 }
 
 void BulletCommand::Consume() {
@@ -54,7 +53,7 @@ void BulletCommand::Consume() {
   //}
 }
 
-void BulletCommand::Shoot(double direction, double speed) {
+void BulletCommand::Shoot(double direction, double speed, AtlasSprite *center) {
   
   /*
   int i = bullet->m_LastUsedBullet;
@@ -66,20 +65,25 @@ void BulletCommand::Shoot(double direction, double speed) {
   }
   */
 
-  //LOGV("Shoot %x  --  %d %d %d  --  %f %f\n", this, m_LastUsedBullet, m_UseThisBullet, bullet->m_LastUsedBullet, direction, speed);
+  //LOGV("Shoot %x %x  --  %d  --  %f %f\n", this, m_FollowBullet, bullet->m_LastUsedBullet, direction, speed);
 
   AtlasSprite *sprite = bullet->m_AtlasSprites[bullet->m_LastUsedBullet];
   b2Body *body = (b2Body *)sprite->m_UserData;
 
   sprite->m_Scale[0] = 10.0;
   sprite->m_Scale[1] = 10.0;
+
   body->SetAwake(false);
-  if (m_FollowBullet) {
-    //LOGV("following\n");
-    body->SetTransform(b2Vec2(m_FollowBullet->m_Position[0] / PTM_RATIO, m_FollowBullet->m_Position[1] / PTM_RATIO), 0.0);
-  } else {
-    body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
-  }
+
+  body->SetTransform(b2Vec2(center->m_Position[0] / PTM_RATIO, center->m_Position[1] / PTM_RATIO), 0.0);
+
+  //if (m_FollowBullet) {
+  //  //LOGV("following\n");
+  //  body->SetTransform(b2Vec2(m_FollowBullet->m_Position[0] / PTM_RATIO, m_FollowBullet->m_Position[1] / PTM_RATIO), 0.0);
+  //}
+
+  //body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
+
   // x = r cos theta,
   // y = r sin theta, 
   float fx = speed * fastSinf((M_PI / 2.0) - DEGREES_TO_RADIANS(direction));
@@ -130,9 +134,14 @@ int BulletCommand::getTurn() {
 
 
 void BulletCommand::doVanish() {
-  LOGV("doVanish %d\n", bullet->m_LastUsedBullet);
+  //LOGV("doVanish %d\n", bullet->m_LastUsedBullet);
   if (m_FollowBullet) {
     m_FollowBullet->m_IsAlive = false;
+    //LOGV("centering\n");
+    //b2Body *body = (b2Body *)m_FollowBullet->m_UserData;
+    //body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
+    //m_FollowBullet->m_Position[0] = bullet->m_Position[0];
+    //m_FollowBullet->m_Position[1] = bullet->m_Position[1];
   }
 }
 

@@ -6,8 +6,7 @@
 #include "SpaceShipDownContactListener.h"
 #include "AncientDawn.h"
 
-#define COUNT 300
-
+#define COUNT 18 * 10
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
@@ -27,7 +26,7 @@ void AncientDawn::CreateFoos() {
   m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 3, 5.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 2, 1, 2, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
-  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 4, (9 * (16 * 4)) + 7, 5.0);
+  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 6, (9 * (16 * 4)) + 7, 5.0);
 
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   if (m_SimulationTime > 0.0) {
@@ -229,7 +228,7 @@ void AncientDawn::CreateSpaceShip() {
 
   for (int i=0; i<m_AtlasSprites[m_SpaceShipIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_SpaceShipIndex]->m_AtlasSprites[i];
-    bullet->m_Fps = 5; 
+    bullet->m_Fps = 0; 
     bullet->SetScale(8.0, 8.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;

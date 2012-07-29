@@ -9,7 +9,7 @@ public:
   int turn;
   int m_LastUsedBullet;
 
-  void Shoot(double direction, double speed);
+  void Shoot(double direction, double speed, AtlasSprite *center);
   void createSimpleBullet(double direction, double speed);
 	void createBullet(BulletMLState* state, double direction, double speed);
 
@@ -18,7 +18,7 @@ public:
 
   //BulletCommand(BulletMLParser *bp, SpriteGun *sprite);
   BulletCommand(BulletMLParser *bp, SpriteGun *b); // : BulletMLRunner(bp), bullet_(b);
-  BulletCommand(BulletMLState *bs, SpriteGun *b);// : BulletMLRunner(bs), bullet_(b);
+  BulletCommand(BulletMLState *bs, SpriteGun *b, AtlasSprite *c);// : BulletMLRunner(bs), bullet_(b);
   ~BulletCommand();
 
   double getBulletDirection();
