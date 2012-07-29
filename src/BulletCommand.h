@@ -9,7 +9,7 @@ public:
   int turn;
   int m_LastUsedBullet;
 
-  void Shoot(double direction, double speed, AtlasSprite *center);
+  void Shoot(AtlasSprite *, double direction, double speed, AtlasSprite *center);
   void createSimpleBullet(double direction, double speed);
 	void createBullet(BulletMLState* state, double direction, double speed);
 
@@ -46,7 +46,7 @@ public:
   //double getRand() { return (double)rand() / RAND_MAX; }
   //BulletMLRunnerImpl* makeImpl(BulletMLState* state);
 
-  void Consume();
+  AtlasSprite* Consume();
   
   AtlasSprite *m_FollowBullet;
 };
