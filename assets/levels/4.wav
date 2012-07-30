@@ -12,7 +12,7 @@
        <param>180-45+90*$rand</param>
       </actionRef>
     </action>
-    <wait>60</wait>
+    <wait>120</wait>
   </repeat>
 </action>
 
@@ -21,7 +21,7 @@
   <speed>6</speed>
   <bullet>
     <action>
-     <wait>40</wait>
+     <wait>30</wait>
      <fire>
       <direction type="absolute">$2</direction>
       <speed>1.5+$rank</speed>

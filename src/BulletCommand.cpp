@@ -8,7 +8,7 @@
 //}
 
 BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(bp), bullet(b) {
-  LOGV("BulletCommand::BulletCommand MAINNNN %x bullet=%x\n", this, bullet);
+  //LOGV("BulletCommand::BulletCommand MAINNNN %x bullet=%x\n", this, bullet);
   turn = 0;
   m_LastUsedBullet = -1;
   m_UseThisBullet = -1;
@@ -17,7 +17,7 @@ BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(
 
 
 BulletCommand::BulletCommand(BulletMLState* bs, SpriteGun* b, AtlasSprite *c) : BulletMLRunner(bs), bullet(b), m_FollowBullet(c) {
-  LOGV("BulletCommand::BulletCommand with state SUB: %x bullet = %x != m_Follow = %x\n", this, bullet, m_FollowBullet);
+  //LOGV("BulletCommand::BulletCommand with state SUB: %x bullet = %x != m_Follow = %x\n", this, bullet, m_FollowBullet);
   turn = 0;
   m_LastUsedBullet = -1;
   m_UseThisBullet = -1;
@@ -32,9 +32,6 @@ BulletCommand::~BulletCommand() {
 void BulletCommand::createSimpleBullet(double direction, double speed) {
   //LOGV("createSimple MAIN==?? %x with state gonna center on follow? %x\n", this, m_FollowBullet);
   AtlasSprite *going_to_be_shot = Consume();
-  //if (m_FollowBullet == NULL) {
-  //  m_FollowBullet = going_to_be_shot;
-  //}
   if (m_FollowBullet) {
     Shoot(going_to_be_shot, direction, speed, m_FollowBullet);
   } else {
@@ -61,44 +58,17 @@ AtlasSprite *BulletCommand::Consume() {
   }
 
   return bullet->m_AtlasSprites[r];
-
-  //for (std::vector<BulletCommand *>::iterator i = m_SubBulletCommands.begin(); i != m_SubBulletCommands.end(); ++i) {
-  //  (*i)->m_LastUsedBullet = m_LastUsedBullet;
-  //}
 }
 
 void BulletCommand::Shoot(AtlasSprite *sprite, double direction, double speed, AtlasSprite *center) {
   
-  /*
-  int i = bullet->m_LastUsedBullet;
-
-  if (m_UseThisBullet != -1) {
-    i = m_UseThisBullet;
-  } else {
-    i = m_LastUsedBullet;
-  }
-  */
-
-  //LOGV("Shoot %x %x  --  %d  --  %f %f\n", this, m_FollowBullet, bullet->m_LastUsedBullet, direction, speed);
-  
-  //int shot = Consume();
-
-  //AtlasSprite *sprite = bullet->m_AtlasSprites[shot];
   b2Body *body = (b2Body *)sprite->m_UserData;
 
   sprite->m_Scale[0] = 10.0;
   sprite->m_Scale[1] = 10.0;
 
   body->SetAwake(false);
-
   body->SetTransform(b2Vec2(center->m_Position[0] / PTM_RATIO, center->m_Position[1] / PTM_RATIO), 0.0);
-
-  //if (m_FollowBullet) {
-  //  //LOGV("following\n");
-  //  body->SetTransform(b2Vec2(m_FollowBullet->m_Position[0] / PTM_RATIO, m_FollowBullet->m_Position[1] / PTM_RATIO), 0.0);
-  //}
-
-  //body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
 
   // x = r cos theta,
   // y = r sin theta, 
@@ -150,11 +120,6 @@ void BulletCommand::doVanish() {
   //LOGV("doVanish %d\n", bullet->m_LastUsedBullet);
   if (m_FollowBullet) {
     m_FollowBullet->m_IsAlive = false;
-    //LOGV("centering\n");
-    //b2Body *body = (b2Body *)m_FollowBullet->m_UserData;
-    //body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
-    //m_FollowBullet->m_Position[0] = bullet->m_Position[0];
-    //m_FollowBullet->m_Position[1] = bullet->m_Position[1];
   }
 }
 
@@ -163,6 +128,7 @@ void BulletCommand::doChangeDirection(double direction) {
   float speed = getDefaultSpeed();
   float fx = speed * fastSinf((M_PI / 2.0) - DEGREES_TO_RADIANS(direction));
   float fy = speed * fastSinf(DEGREES_TO_RADIANS(direction));
+  //TODO this is wrong
   if (m_FollowBullet) {
     AtlasSprite *sprite = m_FollowBullet; //bullet->m_AtlasSprites[m_LastUsedBullet - 1];
     b2Body *body = (b2Body *)sprite->m_UserData;
@@ -173,18 +139,15 @@ void BulletCommand::doChangeDirection(double direction) {
 
 
 void BulletCommand::doChangeSpeed(double vel) {
-  LOGV("doChangeSpeed\n");
+  //LOGV("doChangeSpeed\n");
   if (m_FollowBullet) {
     m_FollowBullet->m_IsAlive = false;
-    //LOGV("centering\n");
     b2Body *body = (b2Body *)m_FollowBullet->m_UserData;
-
     //body->SetLinearVelocity(vel);
-
     //body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
     //m_FollowBullet->m_Position[0] = bullet->m_Position[0];
     //m_FollowBullet->m_Position[1] = bullet->m_Position[1];
-      //body->SetLinearVelocity( vel );
+    //body->SetLinearVelocity( vel );
   }
 }
 
@@ -200,13 +163,13 @@ void BulletCommand::doAccelY(double) {
 
 
 double BulletCommand::getBulletSpeedX() {
-  LOGV("getBulletSpeedX\n");
+  //LOGV("getBulletSpeedX\n");
   return 0.0;
 }
 
 
 double BulletCommand::getBulletSpeedY() {
-  LOGV("getBulletSpeedY\n");
+  //LOGV("getBulletSpeedY\n");
   return 0.0;
 }
 

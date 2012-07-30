@@ -251,7 +251,7 @@ void AncientDawn::CreateSpaceShip() {
     bullet->m_UserData = bullet_body;
   }
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(6)->fp);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(4)->fp);
   bp->build();
 
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
