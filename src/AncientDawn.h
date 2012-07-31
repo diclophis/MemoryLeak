@@ -151,5 +151,6 @@ public:
   b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
 
+  BulletCommand* bc;
 
 };

@@ -88,5 +88,8 @@ public:
   void BlitVertice(foofoo *batch_foo, int i, float vx, float vy, float tx, float ty, float cos_r, float sin_r, bool use_r);
 
   AtlasSprite *m_Parent;
+  void *m_UserData;
+
+  int m_LastUsedBullet;
 
 };

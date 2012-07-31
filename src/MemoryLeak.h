@@ -170,5 +170,11 @@
 
 #include "BulletHellWorld.h"
 
+#include "bulletml/bulletmlparser.h"
+#include "bulletml/bulletmlparser-tinyxml.h"
+#include "bulletml/bulletmlrunner.h"
+
+#include "BulletCommand.h"
+
 #include "pnglite.h"
 

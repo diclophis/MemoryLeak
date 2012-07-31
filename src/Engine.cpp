@@ -269,7 +269,7 @@ int Engine::Run() {
     if (m_GameState > 1) {
       //paused
     } else {
-      float steps = 1.0;
+      float steps = 1.0; //4 for overdrive
       m_DeltaTime = step / steps;
       for (int j=0; j<(int)steps; j++) {
         if (Active()) {
@@ -498,7 +498,7 @@ void Engine::Start(int i, int w, int h) {
     m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
     m_CurrentGame->StartSimulation();
   } catch (std::exception& e) {
-    //LOGV("Exception is: %s %s", e.what(), e.where());
+    LOGV("Exception is: %s %s", e.what());
     WarnAboutGameFailure("exception in construct\n");
   }
 }

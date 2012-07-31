@@ -2,12 +2,11 @@
 
 
 #include "MemoryLeak.h"
+
 #include "SpaceShipDownContactListener.h"
 #include "AncientDawn.h"
 
-
-#define COUNT 1000
-
+#define COUNT 18 * 10
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
@@ -27,7 +26,7 @@ void AncientDawn::CreateFoos() {
   m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 3, 5.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 2, 1, 2, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
-  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 4, (9 * (16 * 4)) + 7, 5.0);
+  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 6, (9 * (16 * 4)) + 7, 5.0);
 
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   if (m_SimulationTime > 0.0) {
@@ -153,6 +152,7 @@ void AncientDawn::CreatePlayer() {
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
 
+  /*
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
     bullet->m_Fps = 24; 
@@ -177,6 +177,7 @@ void AncientDawn::CreatePlayer() {
     bullet_body->CreateFixture(&fd2);
     //bullet_body->SetActive(true);
   }
+  */
 
   b2BodyDef bd;
   bd.type = b2_dynamicBody;
@@ -217,7 +218,7 @@ void AncientDawn::CreateSpaceShip() {
   m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipDraw, m_SpaceShipBulletDraw));
   m_AtlasSprites[m_SpaceShipIndex]->m_Fps = 0;
   m_AtlasSprites[m_SpaceShipIndex]->m_IsAlive = true;
-  m_AtlasSprites[m_SpaceShipIndex]->SetPosition(0.0, 200.0);
+  m_AtlasSprites[m_SpaceShipIndex]->SetPosition(50.0, 50.0);
   m_AtlasSprites[m_SpaceShipIndex]->SetScale(175.0, 100.0);
   m_AtlasSprites[m_SpaceShipIndex]->Build(COUNT);
   m_SpriteCount++;
@@ -227,7 +228,7 @@ void AncientDawn::CreateSpaceShip() {
 
   for (int i=0; i<m_AtlasSprites[m_SpaceShipIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_SpaceShipIndex]->m_AtlasSprites[i];
-    bullet->m_Fps = 10; 
+    bullet->m_Fps = 0; 
     bullet->SetScale(8.0, 8.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
@@ -247,7 +248,13 @@ void AncientDawn::CreateSpaceShip() {
     b2Body *bullet_body = m_World->CreateBody(&bd2);
     bullet_body->SetUserData(bullet);
     bullet_body->CreateFixture(&fd2);
+    bullet->m_UserData = bullet_body;
   }
+
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(4)->fp);
+  bp->build();
+
+  bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
 }
 
 
@@ -303,7 +310,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > 0.2);
+  m_World->m_Solve = true; //(m_SolveTimeout > 0.5);
 
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
     
@@ -387,6 +394,9 @@ int AncientDawn::Simulate() {
   
   StepPhysics();
 
+  bc->run((int)(m_SimulationTime * 100.0));
+
+  /*
   { // bullets
     int shot_this_tick = 0;
     int boss_shot_this_tick = 0;
@@ -461,15 +471,21 @@ int AncientDawn::Simulate() {
       }
     }
   }
+  */
 
   { // graphics
     for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
       AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
       if (sprite != NULL) {
-        float x = body->GetPosition().x * PTM_RATIO;
-        float y = body->GetPosition().y * PTM_RATIO;
-        UpdatePhysicialPositionOfSprite(sprite, x, y);
-        sprite->Simulate(m_DeltaTime);
+        if (sprite->m_IsAlive) {
+          float x = body->GetPosition().x * PTM_RATIO;
+          float y = body->GetPosition().y * PTM_RATIO;
+          UpdatePhysicialPositionOfSprite(sprite, x, y);
+          sprite->Simulate(m_DeltaTime);
+        } else {
+          //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+          body->SetAwake(false);
+        }
       }
     }
   }
@@ -486,15 +502,15 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
   switch (m_ColliderSwitch) {
     case COLLIDE_PLAYER:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-        sprite->m_Scale[0] = 40.0;
-        sprite->m_Scale[1] = 40.0;
+        //sprite->m_Scale[0] = 40.0;
+        //sprite->m_Scale[1] = 40.0;
       }
       break;
 
     case COLLIDE_CULLING:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-        body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-        body->SetAwake(false);
+        //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
+        //body->SetAwake(false);
         sprite->m_IsAlive = false;
       }
       break;
