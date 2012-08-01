@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C23348D215827CA800F64C5E /* StateFoo.cpp */; };
 		C249FCCA1589EAA300ABFE76 /* BulletHellWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */; };
-		C251C68E158EF4CE00750D11 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */; };
 		C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C29A2CFB155CE772007B500C /* AncientDawn.cpp */; };
 		C2B995E815C3C24B000B84F7 /* BulletCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2B9958315C3C24B000B84F7 /* BulletCommand.cpp */; };
 		C2B995EB15C3C24B000B84F7 /* bulletmlparser-tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2B995CD15C3C24B000B84F7 /* bulletmlparser-tinyxml.cpp */; };
@@ -22,6 +21,7 @@
 		C2B995F715C3C24B000B84F7 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2B995E215C3C24B000B84F7 /* tinyxml.cpp */; };
 		C2B995F915C3C24B000B84F7 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2B995E515C3C24B000B84F7 /* tinyxmlerror.cpp */; };
 		C2B995FA15C3C24B000B84F7 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2B995E615C3C24B000B84F7 /* tinyxmlparser.cpp */; };
+		C2D0791915C8DFCD00A10206 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = C2D0791815C8DFCD00A10206 /* MainWindow-iPad.xib */; };
 		C2E2EC991542A4770069C210 /* pnglite.c in Sources */ = {isa = PBXBuildFile; fileRef = C2E2EC971542A4760069C210 /* pnglite.c */; };
 		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
@@ -122,7 +122,6 @@
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
 		C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletHellWorld.cpp; sourceTree = "<group>"; };
 		C249FCC91589EAA300ABFE76 /* BulletHellWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletHellWorld.h; sourceTree = "<group>"; };
-		C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow-iPad.xib"; path = "iPad/MainWindow-iPad.xib"; sourceTree = "<group>"; };
 		C29A2CFB155CE772007B500C /* AncientDawn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AncientDawn.cpp; sourceTree = "<group>"; };
 		C29A2CFC155CE772007B500C /* AncientDawn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AncientDawn.h; sourceTree = "<group>"; };
 		C2B9958315C3C24B000B84F7 /* BulletCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletCommand.cpp; sourceTree = "<group>"; };
@@ -210,6 +209,7 @@
 		C2B995E515C3C24B000B84F7 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
 		C2B995E615C3C24B000B84F7 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		C2B995E715C3C24B000B84F7 /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
+		C2D0791815C8DFCD00A10206 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MainWindow-iPad.xib"; sourceTree = "<group>"; };
 		C2E2EC961542A4760069C210 /* FileHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileHandle.h; sourceTree = "<group>"; };
 		C2E2EC971542A4760069C210 /* pnglite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pnglite.c; sourceTree = "<group>"; };
 		C2E2EC981542A4760069C210 /* pnglite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglite.h; sourceTree = "<group>"; };
@@ -619,17 +619,17 @@
 			isa = PBXGroup;
 			children = (
 				FC141C4A1285429700166578 /* assets */,
+				FC1417731285415800166578 /* src */,
 				FC1417611285413100166578 /* Classes */,
+				FC1417681285413100166578 /* MainWindow.xib */,
+				C2D0791815C8DFCD00A10206 /* MainWindow-iPad.xib */,
 				FC1417661285413100166578 /* Default.png */,
 				FCF8913213E8AA3900AFEB8E /* Entitlements.plist */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				C251C68C158EF4CE00750D11 /* iPad */,
 				FC1417671285413100166578 /* main.mm */,
-				FC1417681285413100166578 /* MainWindow.xib */,
 				FC14176A1285413100166578 /* MemoryLeak-Info.plist */,
 				FC1417691285413100166578 /* MemoryLeak_Prefix.pch */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				FC1417731285415800166578 /* src */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -645,14 +645,6 @@
 				FCDE095012D92F17004CE9B7 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C251C68C158EF4CE00750D11 /* iPad */ = {
-			isa = PBXGroup;
-			children = (
-				C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */,
-			);
-			name = iPad;
 			sourceTree = "<group>";
 		};
 		C2B9958515C3C24B000B84F7 /* bulletml */ = {
@@ -1383,7 +1375,7 @@
 				FC14176F1285413100166578 /* MainWindow.xib in Resources */,
 				FC141C571285429700166578 /* assets in Resources */,
 				FCF8913313E8AA3900AFEB8E /* Entitlements.plist in Resources */,
-				C251C68E158EF4CE00750D11 /* MainWindow-iPad.xib in Resources */,
+				C2D0791915C8DFCD00A10206 /* MainWindow-iPad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
