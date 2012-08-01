@@ -554,6 +554,7 @@ void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {
+    //LOGV("CurrentGameDoAudio without m_CurrentGame set\n");
     WarnAboutGameFailure("CurrentGameDoAudio without m_CurrentGame set\n");
   }
 }

@@ -85,6 +85,26 @@
 #endif
 
 #ifdef DESKTOP
+  #define GL_RGBA8_OES GL_RGBA8
+  #ifdef EMSCRIPTEN
+    #define glGenFramebuffersOES glGenFramebuffers
+    #define glBindFramebufferOES glBindFramebuffer
+    #define glGenRenderbuffersOES glGenRenderbuffers
+    #define glBindRenderbufferOES glBindRenderbuffer
+    #define glRenderbufferStorageOES glRenderbufferStorage
+    #define glFramebufferRenderbufferOES glFramebufferRenderbuffer
+    #define GL_FRAMEBUFFER_BINDING_OES GL_FRAMEBUFFER_BINDING
+    #define GL_RENDERBUFFER_BINDING_OES GL_RENDERBUFFER_BINDING
+    #define GL_FRAMEBUFFER_OES GL_FRAMEBUFFER
+    #define GL_RENDERBUFFER_OES GL_RENDERBUFFER
+    #define GL_COLOR_ATTACHMENT0_OES GL_COLOR_ATTACHMENT0
+    #define GL_DEPTH_ATTACHMENT_OES GL_DEPTH_ATTACHMENT
+    #define GL_DEPTH_COMPONENT16_OES GL_DEPTH_COMPONENT16
+    #define glCheckFramebufferStatusOES glCheckFramebufferStatus
+    #define glFramebufferTexture2DOES glFramebufferTexture2D
+    #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE
+    #define glDeleteFramebuffersOES glDeleteFramebuffers
+  #else
     #define glGenFramebuffersOES glGenFramebuffersEXT
     #define glBindFramebufferOES glBindFramebufferEXT
     #define glGenRenderbuffersOES glGenRenderbuffersEXT
@@ -102,7 +122,7 @@
     #define glFramebufferTexture2DOES glFramebufferTexture2DEXT
     #define GL_FRAMEBUFFER_COMPLETE_OES GL_FRAMEBUFFER_COMPLETE_EXT
     #define glDeleteFramebuffersOES glDeleteFramebuffersEXT
-    #define GL_RGBA8_OES GL_RGBA8
+  #endif
  #endif
 
 
@@ -131,6 +151,8 @@
 #include "Game.h"
 #include "GLES-Render.h"
 #include "Engine.h"
+
+#define random rand
 
 #include "MLPoint.h"
 
