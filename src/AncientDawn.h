@@ -120,7 +120,6 @@ public:
   // physics
   BulletHellWorld *m_World;
   GLESDebugDraw *m_DebugDraw;
-  SpaceShipDownContactListener *m_ContactListener;
   b2Body *m_PlayerBody;
   b2MouseJoint *m_PlayerMouseJoint;
 

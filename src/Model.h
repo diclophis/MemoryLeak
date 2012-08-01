@@ -12,7 +12,7 @@ class Model {
 public:
 	
 	static void ReleaseBuffers();
-	static foofoo *GetFoo(const aiScene *a, int s, int e);
+	//static foofoo *GetFoo(const aiScene *a, int s, int e);
   static foofoo *GetBatchFoo(GLuint t, int max_face_count, int max_model_count);
 	
 	

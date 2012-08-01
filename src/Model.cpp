@@ -101,7 +101,7 @@ foofoo *Model::GetBatchFoo(GLuint texture_index, int max_face_count, int max_mod
   return ff;
 }
 
-
+/*
 foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
   if (!a->mMeshes[0]->HasTextureCoords(0)) {
     LOGV("no tex coords\n");
@@ -159,6 +159,7 @@ foofoo *Model::GetFoo(const aiScene *a, int s, int e) {
 
   return ff;
 }
+*/
 
 
 void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {

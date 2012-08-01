@@ -3,7 +3,6 @@
 
 #include "MemoryLeak.h"
 
-#include "SpaceShipDownContactListener.h"
 #include "AncientDawn.h"
 
 #define COUNT 18 * 10
@@ -118,12 +117,12 @@ void AncientDawn::DestroyDebugDraw() {
 
 void AncientDawn::CreateContactListener() {
   //TODO: do we want a contact listener?
-  m_ContactListener = new SpaceShipDownContactListener();
+  //m_ContactListener = new SpaceShipDownContactListener();
 }
 
 
 void AncientDawn::DestroyContactListener() {
-  delete m_ContactListener;
+  //delete m_ContactListener;
 }
 
 

@@ -18,7 +18,7 @@ CXXFLAGS=\
 -I../../src/include \
 -I../../src/include/libmodplug \
 -I../../src/octree \
--I../../src/assimp/BoostWorkaround \
+-I../../src/bulletml \
 -I../../src/Box2D \
 -I../../src/OpenSteer \
 
