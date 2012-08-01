@@ -178,7 +178,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject 
     Engine::CurrentGameResizeScreen(width, height);
     Engine::CurrentGameStart();
   } else {
-    Engine::Start(1, sWindowWidth, sWindowHeight);
+    Engine::Start(0, sWindowWidth, sWindowHeight);
     create_audio_thread();
   }
 }

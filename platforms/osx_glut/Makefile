@@ -21,8 +21,7 @@ CXXFLAGS=\
 -I../../src/bulletml \
 -I../../src/Box2D \
 -I../../src/OpenSteer \
-
-#-DUSE_GLES2 \
+-DUSE_GLES2 \
 
 
 CFLAGS=$(CXXFLAGS)

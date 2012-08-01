@@ -5,8 +5,8 @@
 
 #include <string>
 
-BulletMLParserTinyXML::BulletMLParserTinyXML(FILE *filename)
-    : xmlFile_(filename), curNode_(0)
+BulletMLParserTinyXML::BulletMLParserTinyXML(FILE *filename, unsigned s)
+    : xmlFile_(filename), curNode_(0), size(s)
 {
 	setName("foobazbarwtfisnamefor");
 }
@@ -74,8 +74,8 @@ void BulletMLParserTinyXML::parse() {
     //hack jbardin
     //tixmldocument doc(xmlfile_.c_str());
     //doc.loadfile();
-    TiXmlDocument doc("fuckit");
-    doc.LoadFile(xmlFile_);
+    TiXmlDocument doc; //"<fuckit>");
+    doc.LoadFile(xmlFile_, size);
     parseImpl(doc);
 }
 

@@ -78,6 +78,58 @@
          in order to avoid having your file be overridden by tools such as "android update project"
     -->
     <!-- version-tag: 1 -->
+
     <import file="${sdk.dir}/tools/ant/build.xml" />
+
+<target name="-package-resources" > 
+
+<exec executable="${aapt}" failonerror="true">
+      <arg value="package" />
+      <arg value="-f" />
+      <arg value="-0" />
+      <arg value="-v" />
+      <arg value="-M" />
+      <arg path="AndroidManifest.xml" />
+      <arg value="-A" />
+      <arg path="assets" />
+      <arg value="-I" />
+      <arg path="${android.jar}" />
+      <arg value="-m" />
+      <arg value="-J" />
+      <arg path="${out.absolute.dir}" />
+      <arg value="-F" />
+      <arg path="${out.absolute.dir}/${resource.package.file.name}" />
+      <arg value="-S" />
+      <arg path="res" />
+      <arg value="--rename-manifest-package" />
+      <arg value="my.new.package.name" />
+    </exec>
+
+
+   <!--
+          <aapt executable="${aapt}"
+                    command="package"
+                    versioncode="${version.code}"
+                    versionname="${version.name}"
+                    debug="${build.is.packaging.debug}"
+                    manifest="AndroidManifest.xml"
+                    assets="${asset.absolute.dir}"
+                    androidjar="${android.jar}"
+                    apkfolder="${out.absolute.dir}"
+                    nocrunch="${build.packaging.nocrunch}"
+                    resourcefilename="${resource.package.file.name}"
+                    resourcefilter="${aapt.resource.filter}"
+                    projectLibrariesResName="project.libraries.res"
+                    projectLibrariesPackageName="project.libraries.package"
+                    previousBuildType="${build.last.target}"
+                    buildType="${build.target}">
+                <res path="${out.res.absolute.dir}" />
+                <res path="${resource.absolute.dir}" />
+                <nocompress />
+            </aapt>
+            -->
+
+</target>
+
 
 </project>

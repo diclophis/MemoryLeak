@@ -21,6 +21,8 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
+#include "MemoryLeak.h"
+#include "stdlib.h"
 #include "tinyxml.h"
 
 
@@ -515,34 +517,30 @@ bool TiXmlDocument::SaveFile()
 }
 
 
-bool TiXmlDocument::LoadFile( FILE* fp )
+bool TiXmlDocument::LoadFile( FILE* fp, unsigned size )
 {
 	// Delete the existing data:
 	Clear();
-
-	unsigned size, first;
-	first = ftell( fp );
-	fseek( fp, 0, SEEK_END );
-	size = ftell( fp ) - first + 1;
-	fseek( fp, first, SEEK_SET );
-
-	char* buf = new char[size];
-	char* p = buf;
-	while( fgets( p, size, fp ) )
-	{
-		p = strchr( p, 0 );
-	}
-	fclose( fp );
-		
+	char* buf = (char *)malloc(sizeof(char) * (size + 1)); //new char[size];
+  buf[size] = '\0';
+  fread(buf, sizeof(char), size, fp);
 	Parse( buf );
-	delete [] buf;
-
-	if ( !Error() )
+	//delete [] buf;
+	free(buf);
+  
+  if ( !Error() )
 		return true;
 
 	return false;
 }
 
+void TiXmlDocument::SetError( int err ) {
+  LOGV("wtf\n");
+  assert( err > 0 && err < TIXML_ERROR_STRING_COUNT );
+  error   = true; 
+  errorId = err;
+  errorDesc = errorString[ errorId ]; 
+}
 
 bool TiXmlDocument::LoadFile( const std::string& filename )
 {
@@ -551,9 +549,15 @@ bool TiXmlDocument::LoadFile( const std::string& filename )
 	
 	// Load the new data:
 	FILE* fp = fopen( filename.c_str(), "r" );
+  unsigned size, first;
+	first = ftell( fp );
+	fseek( fp, 0, SEEK_END );
+	size = ftell( fp ) - first + 1;
+	fseek( fp, first, SEEK_SET );
+  
 	if ( fp )
 	{
-		return LoadFile(fp);
+		return LoadFile(fp, size);
 	}
 	else
 	{

@@ -140,7 +140,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glShaderSource(v, 1, &p, NULL);
   glCompileShader(v);
   glGetShaderInfoLog(v, sizeof msg, NULL, msg);
-  LOGV("vertex shader info: %s\n", msg);
+  //LOGV("vertex shader info: %s\n", msg);
 
   // Compile the fragment shader
   p = fragment_shader;
@@ -148,11 +148,12 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glShaderSource(f, 1, &p, NULL);
   glCompileShader(f);
   glGetShaderInfoLog(f, sizeof msg, NULL, msg);
-  LOGV("fragment shader info: %s\n", msg);
+  //LOGV("fragment shader info: %s\n", msg);
 
   // Create and link the shader program
   program = glCreateProgram();
-  LOGV("engine program ID: %d\n", program);
+  //LOGV("engine program ID: %d\n", program);
+
   glAttachShader(program, v);
   glAttachShader(program, f);
 
@@ -486,13 +487,14 @@ void Engine::Start(int i, int w, int h) {
     delete m_CurrentGame;
   }
 
-  try {
+  //try {
     m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
     m_CurrentGame->StartSimulation();
-  } catch (std::exception& e) {
-    LOGV("Exception is: %s %s", e.what());
-    WarnAboutGameFailure("exception in construct\n");
-  }
+  //} catch (std::exception& e) {
+  //  LOGV("Exception is: %s %s", e.what());
+  //  WarnAboutGameFailure("exception in construct\n");
+  //  throw e;
+  //}
 }
 
 

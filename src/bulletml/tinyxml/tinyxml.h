@@ -606,7 +606,7 @@ class TiXmlDocument : public TiXmlNode
 	/// Save a file using the given filename. Returns true if successful.
 	bool SaveFile( const std::string& filename );
 	/// Load a file using the given file pointer. Returns true if successful.
-	bool LoadFile(FILE* fp);
+	bool LoadFile(FILE* fp, unsigned);
 
 	/// Parse the given null terminated block of xml data.
 	const char* Parse( const char* );
@@ -624,10 +624,7 @@ class TiXmlDocument : public TiXmlNode
 	// [internal use] 	
 	virtual TiXmlNode* Clone() const;
 	// [internal use] 	
-	void SetError( int err ) {		assert( err > 0 && err < TIXML_ERROR_STRING_COUNT );
-									error   = true; 
-									errorId = err;
-									errorDesc = errorString[ errorId ]; }
+	void SetError( int err );
 
   private:
 	bool error;

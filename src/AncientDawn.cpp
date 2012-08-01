@@ -250,10 +250,13 @@ void AncientDawn::CreateSpaceShip() {
     bullet->m_UserData = bullet_body;
   }
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(4)->fp);
-  bp->build();
+ 
+  fseek(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->off, 0);
 
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->len);
+  bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
+
 }
 
 
@@ -393,7 +396,9 @@ int AncientDawn::Simulate() {
   
   StepPhysics();
 
-  bc->run((int)(m_SimulationTime * 100.0));
+  if (bc != NULL) {
+    bc->run((int)(m_SimulationTime * 100.0));
+  }
 
   /*
   { // bullets

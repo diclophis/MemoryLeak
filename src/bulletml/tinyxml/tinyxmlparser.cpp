@@ -21,7 +21,7 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-
+#include "MemoryLeak.h"
 #include "tinyxml.h"
 #include <ctype.h>
 
@@ -173,14 +173,14 @@ TiXmlNode* TiXmlNode::IdentifyAndParse( const char** where )
 			&& tolower( *(p+3) ) == 'l' )
 	{
 		#ifdef DEBUG_PARSER
-			printf( "XML parsing Declaration\n" );
+			LOGV( "XML parsing Declaration\n" );
 		#endif
 		returnNode = new TiXmlDeclaration();
 	}
 	else if ( isalpha( *p ) || *p == '_' )
 	{
 		#ifdef DEBUG_PARSER
-			printf( "XML parsing Element\n" );
+			LOGV( "XML parsing Element\n" );
 		#endif
 		returnNode = new TiXmlElement( "" );
 	}
@@ -189,7 +189,7 @@ TiXmlNode* TiXmlNode::IdentifyAndParse( const char** where )
 			  && *(p+2) == '-' )
 	{
 		#ifdef DEBUG_PARSER
-			printf( "XML parsing Comment\n" );
+			LOGV( "XML parsing Comment\n" );
 		#endif
 		returnNode = new TiXmlComment();
 	}
@@ -207,7 +207,7 @@ TiXmlNode* TiXmlNode::IdentifyAndParse( const char** where )
 	else
 	{
 		#ifdef DEBUG_PARSER
-			printf( "XML parsing Comment\n" );
+			LOGV( "XML parsing Comment\n" );
 		#endif
 		returnNode = new TiXmlUnknown();
 	}

@@ -16,7 +16,7 @@ class BulletMLNode;
 
 class BulletMLParserTinyXML : public BulletMLParser {
 public:
-    DECLSPEC BulletMLParserTinyXML(FILE *filename);
+    DECLSPEC BulletMLParserTinyXML(FILE *filename, unsigned size);
     DECLSPEC virtual ~BulletMLParserTinyXML();
 
     DECLSPEC virtual void parse();
@@ -31,6 +31,7 @@ protected:
 private:
     FILE *xmlFile_;
     BulletMLNode* curNode_;
+  unsigned size;
 };
 
 #endif // ! BULLETMLPARSER_TINYXML_H_
