@@ -33,6 +33,8 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard .
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Common/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/OpenSteer/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/bulletml/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/bulletml/tinyxml/*.cpp)))
 
 HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
 hash_dir=~/emscripten.risingcode.com/public/$(HASH)
@@ -67,6 +69,8 @@ $(build):
 	mkdir -p $(build)/Box2D/Dynamics/Joints
 	mkdir -p $(build)/Box2D/Dynamics/Rope
 	mkdir -p $(build)/OpenSteer
+	mkdir -p $(build)/bulletml
+	mkdir -p $(build)/bulletml/tinyxml
 
 clean:
 	rm -R /tmp/emscripten_temp
