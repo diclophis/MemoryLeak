@@ -8,6 +8,13 @@
         margin: 0;
         padding: 0;
         -webkit-transition-duration: 0.66s;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      div {
+        display: -webkit-box;
       }
 
       body, html {
@@ -16,11 +23,13 @@
       }
 
       .invisible {
-        opacity: 0;
+        display: none;
+        z-index: -1;
       }
 
       .visible {
-        opacity: 1;
+        display: -webkit-box;
+        z-index: 1;
       }
 
       .transparent {
@@ -37,85 +46,100 @@
         left: 0;
         width: 100%;
         height: 100%;
+        overflow: hidden;
+      }
+
+      #inventory {
+        width: 100%;
+        height: 10%;
+        background-color: cyan;
+        -webkit-backface-visibility: hidden;
+      }
+
+      .visible #inventory {
       }
 
       #main-menu {
         position: absolute;
-        top: 0;
+        top: 10%;
         left: 0;
         width: 100%;
-        height: 100%;
-        display: -webkit-box;
+        height: 90%;
         -webkit-box-orient: vertical;
         -webkit-box-align: center;
         -webkit-box-pack: center;
+        -webkit-backface-visibility: hidden;
       }
 
       #main-menu div {
         width: 75%;
       }
 
-      #inventory {
-        height: 10%;
-        background-color: cyan;
+      #shop {
+        color: orange;
+        background-color: grey;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        width: 100%;
+        height: 90%;
+        -webkit-backface-visibility: hidden;
       }
 
       #title {
         color: white;
-        height: 20%;
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: red;
       }
 
       #flavor {
-        height: 30%;
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: blue;
         color: white;
-        opacity: 0.0;
       }
 
       .visible #flavor {
         -webkit-transition-delay: 1s;
-        opacity: 1.0;
       }
 
-      #start {
+      #start-button {
         height: 20%;
         color: green;
-        -webkit-transform: translate3d(300%, 0, 0);
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: yellow;
         -webkit-transition-delay: 2s;
       }
 
-      .visible #start {
+      .visible #start-button {
         -webkit-transform: translate3d(0%, 0, 0);
       }
 
-      #shop {
+      .invisible #start-button {
+        -webkit-transform: translate3d(500%, 0, 0);
+      }
+
+      #shop-button {
         height: 20%;
         color: blue;
-        -webkit-transform: translate3d(-300%, 0, 0);
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: purple;
         -webkit-transition-delay: 2s;
       }
 
-      .visible #shop {
+      .visible #shop-button {
         -webkit-transform: translate3d(0%, 0, 0);
+      }
+
+      .invisible #shop-button {
+        -webkit-transform: translate3d(-500%, 0, 0);
       }
 
       #hud {
@@ -126,19 +150,27 @@
         left: 0;
         width: 100%;
         height: 5%;
-        display: -webkit-box;
       }
+
     </style>
   </head>
   <body class="translucent">
     <div id="overlay" class="transparent">
-      <div id="main-menu" class="invisible">
-        <div id="inventory">
-          <span id="pennies">
-          </span>
-          <span id="fuel">
-          </span>
+      <div id="hud" class="invisible">
+        <span id="player_health"></span>
+      </div>
+      <div id="shop" class="invisible">
+        <div id="back-to-main-from-shop-button">
+          main
         </div>
+      </div>
+      <div id="inventory" class="visible">
+        <span id="pennies">
+        </span>
+        <span id="fuel">
+        </span>
+      </div>
+      <div id="main-menu" class="invisible">
         <div id="title">
           <h1>
             Metal Wolf
@@ -147,19 +179,23 @@
         <div id="flavor">
           Lorem Ipsum
         </div>
-        <div id="start">start</div>
-        <div id="shop">shop</div>
-      </div>
-      <div id="hud" class="invisible">
-        <span id="player_health"></span>
+        <div id="start-button">start</div>
+        <div id="shop-button">shop</div>
       </div>
     </div>
     <script>
       try {
-        var mainMenu = document.getElementById("main-menu");
-        var startButton = document.getElementById("start");
+
+        var startButton = document.getElementById("start-button");
+        var shopButton = document.getElementById("shop-button");
+        var backToMainFromShopButton = document.getElementById("back-to-main-from-shop-button");
+
         var playerHealthSpan = document.getElementById("player_health");
+
+        var mainMenu = document.getElementById("main-menu");
         var hud = document.getElementById("hud");
+        var shop = document.getElementById("shop");
+        var inventory = document.getElementById("inventory");
 
         var player_health = 100;
 
@@ -178,8 +214,8 @@
             };
           },
           finalize: function() {
-            console.log('done');
             mainMenu.className = "visible";
+            return true;
           }
         };
         
@@ -187,11 +223,59 @@
           bridge.echoecho("foo");
         };
 
+        var present_results = function() {
+          document.body.className = "translucent";
+          hud.className = "invisible";
+          mainMenu.className = "visible";
+          bridge.set_user_interaction_enabled("1");
+        };
+
+        var hide_body = function() {
+          document.body.className = "transparent";
+        };
+
+        var show_body = function() {
+          document.body.className = "translucent";
+        };
+
+        var hide_main_menu = function() {
+          mainMenu.className = "invisible";
+        };
+
+        var show_main_menu = function() {
+          mainMenu.className = "visible";
+        };
+
+        var hide_hud = function() {
+          hud.className = "invisible";
+        };
+
+        var show_hud = function() {
+          hud.className = "visible transparent";
+        };
+
+        var hide_shop = function() {
+          shop.className = "invisible";
+        };
+
+        var show_shop = function() {
+          shop.className = "visible transparent";
+        };
+
+        var hide_inventory = function() {
+          inventory.className = "invisible";
+        };
+
+        var show_inventory = function() {
+          inventory.className = "visible transparent";
+        };
+
         startButton.onclick = function(e) {
           try {
-            document.body.className = "transparent";
-            hud.className = "visible transparent";
-            mainMenu.className = "invisible";
+            hide_body();
+            hide_main_menu();
+            hide_inventory();
+            show_hud();
             bridge.set_user_interaction_enabled("0");
             bridge.start_game("1");
           } catch(e) {
@@ -199,11 +283,14 @@
           }
         };
 
-        var present_results = function() {
-          document.body.className = "translucent";
-          hud.className = "invisible";
-          mainMenu.className = "visible";
-          bridge.set_user_interaction_enabled("1");
+        shopButton.onclick = function(e) {
+          hide_main_menu();
+          show_shop();
+        };
+
+        backToMainFromShopButton.onclick = function(e) {
+          hide_shop();
+          show_main_menu();
         };
 
         (function tick() {
