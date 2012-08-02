@@ -336,7 +336,7 @@ void AncientDawn::DestroyLandscape() {
 
 int AncientDawn::LevelProgress() {
   if (m_SimulationTime > MWParams::kNextLevelTime || m_PlayerHealth == 0.0f) {
-    return RESTART_LEVEL; //TODO: Should Kick to Results Screen
+    return END_LEVEL; //TODO: Should Kick to Results Screen
   }
 
   return CONTINUE_LEVEL;
@@ -474,6 +474,10 @@ int AncientDawn::_gameSimulate()
     case CONTINUE_LEVEL:
       chosen_state = 1;
       break;
+    
+    case END_LEVEL:
+      chosen_state = 1;
+      break;
       
     case RESTART_LEVEL:
       RestartLevel();
@@ -549,7 +553,6 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         }
         m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
       }
-      
       
       break;
     }

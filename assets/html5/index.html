@@ -7,6 +7,7 @@
       * {
         margin: 0;
         padding: 0;
+        -webkit-transition-duration: 0.66s;
       }
 
       body, html {
@@ -48,27 +49,106 @@
         -webkit-box-orient: vertical;
         -webkit-box-align: center;
         -webkit-box-pack: center;
-        -webkit-transition-duration: 1.5s;
+      }
+
+      #main-menu div {
+        width: 75%;
+      }
+
+      #inventory {
+        height: 10%;
+        background-color: cyan;
       }
 
       #title {
         color: white;
+        height: 20%;
+        text-align: center;
+        display: -webkit-box;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        background-color: red;
+      }
+
+      #flavor {
+        height: 30%;
+        text-align: center;
+        display: -webkit-box;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        background-color: blue;
+        color: white;
+        opacity: 0.0;
+      }
+
+      .visible #flavor {
+        -webkit-transition-delay: 1s;
+        opacity: 1.0;
       }
 
       #start {
+        height: 20%;
         color: green;
+        -webkit-transform: translate3d(300%, 0, 0);
+        text-align: center;
+        display: -webkit-box;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        background-color: yellow;
+        -webkit-transition-delay: 2s;
+      }
+
+      .visible #start {
+        -webkit-transform: translate3d(0%, 0, 0);
+      }
+
+      #shop {
+        height: 20%;
+        color: blue;
+        -webkit-transform: translate3d(-300%, 0, 0);
+        text-align: center;
+        display: -webkit-box;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        background-color: purple;
+        -webkit-transition-delay: 2s;
+      }
+
+      .visible #shop {
+        -webkit-transform: translate3d(0%, 0, 0);
       }
 
       #hud {
         color: red;
+        background-color: green;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5%;
+        display: -webkit-box;
       }
     </style>
   </head>
   <body class="translucent">
     <div id="overlay" class="transparent">
       <div id="main-menu" class="invisible">
-        <h1 id="title">Metal Wolf</h1>
-        <h1 id="start">start</h1>
+        <div id="inventory">
+          <span id="pennies">
+          </span>
+          <span id="fuel">
+          </span>
+        </div>
+        <div id="title">
+          <h1>
+            Metal Wolf
+          </h1>
+        </div>
+        <div id="flavor">
+          Lorem Ipsum
+        </div>
+        <div id="start">start</div>
+        <div id="shop">shop</div>
       </div>
       <div id="hud" class="invisible">
         <span id="player_health"></span>
@@ -117,6 +197,13 @@
           } catch(e) {
             alert(e);
           }
+        };
+
+        var present_results = function() {
+          document.body.className = "translucent";
+          hud.className = "invisible";
+          mainMenu.className = "visible";
+          bridge.set_user_interaction_enabled("1");
         };
 
         (function tick() {
