@@ -149,6 +149,9 @@ public:
   bool m_Force;
   b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
+  
+  // Player Logic
+  float m_PlayerHealth;
 
   BulletCommand* bc;
   

@@ -14,7 +14,10 @@ void doo_thing_one(const char *s) {
 
 #define COUNT 18 * 20
 
-AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
+AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
+: Engine(w, h, t, m, l, s)
+, m_PlayerHealth (MWParams::kPlayerStartHeatlh)
+{
   LoadSound(0);
   LoadTexture(1);
   StartLevel(FirstLevel());
@@ -91,6 +94,9 @@ void AncientDawn::ResetGame() {
   m_TouchOffsetX = 0;
   m_TouchOffsetY = 0;
   m_LastRecycledIndex = -1;
+  
+  //Initialize Player Life
+  m_PlayerHealth = MWParams::kPlayerStartHeatlh;
 }
 
 
@@ -283,8 +289,8 @@ void AncientDawn::DestroyLandscape() {
 
 
 int AncientDawn::LevelProgress() {
-  if (m_SimulationTime > 120.0) {
-    return RESTART_LEVEL;
+  if (m_SimulationTime > MWParams::kNextLevelTime || m_PlayerHealth == 0.0f) {
+    return RESTART_LEVEL; //TODO: Should Kick to Results Screen
   }
 
   return CONTINUE_LEVEL;
@@ -292,6 +298,8 @@ int AncientDawn::LevelProgress() {
 
 
 void AncientDawn::RestartLevel() {
+  LOGV("Restarting Level\n");
+
   StopLevel();
   //if (m_CurrentLevel > 0) {
   //  StopLevel();
@@ -516,17 +524,34 @@ int AncientDawn::Simulate() {
 
 
 bool AncientDawn::ReportFixture(b2Fixture* fixture) {
-  
   b2Body* body = fixture->GetBody();
   AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
  
   switch (m_ColliderSwitch) {
     case COLLIDE_PLAYER:
-      if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-        sprite->m_Scale[0] = 40.0;
-        sprite->m_Scale[1] = 40.0;
+    {
+      bool bCollidingSpriteIsBullet = (sprite->m_IsAlive && 
+                                        sprite != m_AtlasSprites[m_PlayerIndex] && 
+                                        sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]);
+      if (bCollidingSpriteIsBullet) 
+      {
+        //sprite->m_Scale[0] = 40.0;
+        //sprite->m_Scale[1] = 40.0;
+        sprite->m_IsAlive = false;
+        if(m_PlayerHealth > 0.0f) 
+        {
+            m_PlayerHealth -= MWParams::kEnemyBulletDamageAmount;
+        }
+        if(m_PlayerHealth < 0.0f)
+        {
+            m_PlayerHealth = 0.0f;
+        }
+        LOGV("Player Health: %d\n", (int)m_PlayerHealth);
       }
+      
+      
       break;
+    }
 
     case COLLIDE_CULLING:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
