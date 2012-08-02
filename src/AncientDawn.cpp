@@ -43,6 +43,7 @@ void start_game(const char *s) {
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
 , m_PlayerHealth (MWParams::kPlayerStartHeatlh)
+, m_EnemyHealth(MWParams::kEnemyStartingHealth)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
 , mbPlayerIsShooting(false)
@@ -281,7 +282,7 @@ void AncientDawn::CreateSpaceShip() {
   m_AtlasSprites[m_SpaceShipIndex]->m_Fps = 0;
   m_AtlasSprites[m_SpaceShipIndex]->m_IsAlive = true;
   m_AtlasSprites[m_SpaceShipIndex]->SetPosition(MWParams::kEnemyStartX, MWParams::kEnemyStartY);
-  m_AtlasSprites[m_SpaceShipIndex]->SetScale(381.0, 100.0);
+  m_AtlasSprites[m_SpaceShipIndex]->SetScale(MWParams::kEnemyHalfPixelDimX, MWParams::kEnemyHalfPixelDimY);
   m_AtlasSprites[m_SpaceShipIndex]->Build(COUNT);
   m_SpriteCount++;
 
@@ -387,8 +388,13 @@ void AncientDawn::StepPhysics() {
     aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
     m_World->QueryAABB(this, aabb);
     
-    //m_ColliderSwitch = COLLIDE_ENEMY;
-    //aabb.lowerBound.Set((
+    m_ColliderSwitch = COLLIDE_ENEMY;
+    aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                        (-MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+    aabb.upperBound.Set((MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                        (MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+    m_World->QueryAABB(this, aabb);
+                        
     
     m_ColliderSwitch = COLLIDE_CULLING;
     
@@ -546,19 +552,26 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         //sprite->m_Scale[0] = 40.0;
         //sprite->m_Scale[1] = 40.0;
         sprite->m_IsAlive = false;
-        if(m_PlayerHealth > 0.0f) 
-        {
-            m_PlayerHealth -= MWParams::kEnemyBulletDamageAmount;
-        }
-        if(m_PlayerHealth < 0.0f)
-        {
-            m_PlayerHealth = 0.0f;
-        }
+        
+        m_PlayerHealth = MAX(0.0f, m_PlayerHealth - MWParams::kEnemyBulletDamageAmount);
         m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
       }
-      
-      break;
     }
+    break;
+    
+    case COLLIDE_ENEMY:
+    {
+        bool bCollidingSpriteIsPlayerBullet = (sprite->m_IsAlive &&
+                                                sprite->m_Parent == m_AtlasSprites[m_PlayerIndex]);
+        if(bCollidingSpriteIsPlayerBullet)
+        {
+            sprite->m_IsAlive = false;
+        
+            m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kPlayerBulletDamage);
+            m_JavascriptTick += string_format("enemy_health = %d;", (int)m_EnemyHealth);
+        }
+    }
+    break;
 
     case COLLIDE_CULLING:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {

@@ -168,6 +168,9 @@ public:
   // Player Logic
   float m_PlayerHealth;
   bool mbPlayerIsShooting;
+  
+  // Enemy Logic
+  float m_EnemyHealth;
 
   BulletCommand* bc;
   BulletCommand* mpBulletCommandPlayer;
