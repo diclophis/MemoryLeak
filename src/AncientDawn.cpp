@@ -43,6 +43,7 @@ void start_game(const char *s) {
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
 , m_PlayerHealth (MWParams::kPlayerStartHeatlh)
+, m_PlayerArmor(MWParams::kPlayerStartArmor)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
 , mbPlayerIsShooting(false)
@@ -546,15 +547,21 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         //sprite->m_Scale[0] = 40.0;
         //sprite->m_Scale[1] = 40.0;
         sprite->m_IsAlive = false;
-        if(m_PlayerHealth > 0.0f) 
-        {
-            m_PlayerHealth -= MWParams::kEnemyBulletDamageAmount;
+        if (m_PlayerArmor >= 0) {
+            m_PlayerArmor -= MWParams::kEnemyBulletDamageAmount;
         }
-        if(m_PlayerHealth < 0.0f)
+        else
         {
-            m_PlayerHealth = 0.0f;
+            if(m_PlayerHealth > 0.0f) 
+            {
+                m_PlayerHealth -= MWParams::kEnemyBulletDamageAmount;
+            }
+            else
+            {
+                m_PlayerHealth = 0.0f;
+            }
+            m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
         }
-        m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
       }
       
       break;

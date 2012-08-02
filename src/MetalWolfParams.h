@@ -4,6 +4,8 @@ namespace MWParams
     static float kPlayerStartX = 0.0f;
     static float kPlayerStartY = -400.0f;
     static float kPlayerStartHeatlh = 100.0f;
+    static float kPlayerStartArmor = 100.0f;
+
     
     //Enemy
     static float kEnemyStartX = 0.0f;

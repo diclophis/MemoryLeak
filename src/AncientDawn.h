@@ -20,6 +20,13 @@ enum EBulletMLFileIndex {
     EBulletMLFileIndex_COUNT,
 };
 
+//TODO names
+enum EArmorType {
+    EArmorType_1 = 0,
+    EArmorType_2,
+    EArmorType_3,
+};
+
 class AncientDawn : public Engine, b2QueryCallback {
 
 public:
@@ -167,6 +174,7 @@ public:
   
   // Player Logic
   float m_PlayerHealth;
+  int m_PlayerArmor;
   bool mbPlayerIsShooting;
 
   BulletCommand* bc;
