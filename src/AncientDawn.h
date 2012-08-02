@@ -13,6 +13,12 @@ enum {
   COLLIDE_CULLING
 };
 
+enum EBulletMLFileIndex {
+    EBulletMLFileIndex_ENEMY = 0,
+    EBulletMLFileIndex_PLAYER,
+    EBulletMLFileIndex_COUNT,
+};
+
 class AncientDawn : public Engine, b2QueryCallback {
 
 public:

@@ -214,9 +214,9 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   
-  fseek(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->off, 0);
+  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->off, 0);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->len);
   bp->build();
   mpBulletCommandPlayer = new BulletCommandPlayer(bp, m_AtlasSprites[m_PlayerIndex]);
   
@@ -275,9 +275,9 @@ void AncientDawn::CreateSpaceShip() {
   }
 
  
-  fseek(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->off, 0);
+  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->off, EBulletMLFileIndex_ENEMY);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->len);
   bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
 
