@@ -195,7 +195,7 @@
           main
         </div>
       </div>
-      <div id="inventory" class="visible">
+      <div id="inventory" class="invisible">
         <span id="pennies">
         </span>
         <span id="fuel">
@@ -249,7 +249,8 @@
             };
           },
           finalize: function() {
-            mainMenu.className = "visible";
+            show_inventory();
+            show_main_menu();
             return true;
           }
         };
