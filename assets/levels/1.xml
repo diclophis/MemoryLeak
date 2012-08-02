@@ -4,7 +4,7 @@
 <bulletml type="vertical"
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
 
-<action label="top">
+ <action label="top">
   <repeat>
     <times>999</times>
     <action>
@@ -42,6 +42,6 @@
       </fireRef>
     </action>
   </repeat>
-</action>
+</action> 
 
 </bulletml>

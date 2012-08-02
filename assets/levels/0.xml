@@ -1,8 +1,10 @@
-<?xml version="1.0" ?>
+<!--<?xml version="1.0" ?>
 <!DOCTYPE bulletml SYSTEM "http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/bulletml.dtd">
 
 <bulletml type="vertical"
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
+
+
 
 <action label="top">
   <repeat>
@@ -42,6 +44,38 @@
       </fireRef>
     </action>
   </repeat>
+</action>
+
+</bulletml> -->
+
+<?xml version="1.0" ?>
+<!DOCTYPE bulletml SYSTEM "http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/bulletml.dtd">
+
+<bulletml type="vertical"
+          xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
+
+<action label="top">
+<repeat> <times>100</times>
+<action>
+ <fire>
+  <direction>-45+$rand*90</direction>
+  <speed>5.0+$rand*2.0</speed>
+  <bullet/>
+ </fire>
+ <wait>20</wait>
+</action>
+</repeat>
+
+<repeat> <times>100</times>
+<action>
+ <fire>
+  <direction>-45+$rand*90</direction>
+  <speed>0.4+$rand*7.0</speed>
+  <bullet/>
+ </fire>
+ <wait>2</wait>
+</action>
+</repeat>
 </action>
 
 </bulletml>

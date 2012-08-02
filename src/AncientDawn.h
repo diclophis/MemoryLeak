@@ -1,6 +1,5 @@
 // Jon Bardin GPL
 
-#include "BulletCommandPlayer.h"
 
 enum {
   CONTINUE_LEVEL,
@@ -161,7 +160,7 @@ public:
   float m_PlayerHealth;
 
   BulletCommand* bc;
-  BulletCommandPlayer* mpBulletCommandPlayer;
+  BulletCommand* mpBulletCommandPlayer;
   
   float m_WebViewTimeout;
 

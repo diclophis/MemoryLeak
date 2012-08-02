@@ -18,6 +18,7 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 : Engine(w, h, t, m, l, s)
 , m_PlayerHealth (MWParams::kPlayerStartHeatlh)
 , mpBulletCommandPlayer(NULL)
+, bc(NULL)
 {
   //LoadSound(0);
   LoadTexture(1);
@@ -218,7 +219,7 @@ void AncientDawn::CreatePlayer() {
 
   BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->len);
   bp->build();
-  mpBulletCommandPlayer = new BulletCommandPlayer(bp, m_AtlasSprites[m_PlayerIndex]);
+  mpBulletCommandPlayer = new BulletCommand(bp, m_AtlasSprites[m_PlayerIndex]);
   
   b2Body *center_body = m_World->CreateBody(&bd);
   b2MouseJointDef mouse_joint_def;
@@ -275,7 +276,7 @@ void AncientDawn::CreateSpaceShip() {
   }
 
  
-  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->off, EBulletMLFileIndex_ENEMY);
+  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->off, 0);
 
   BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->len);
   bp->build();

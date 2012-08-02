@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2913778615CB03D80061AFFA /* BulletCommandPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2913778515CB03D80061AFFA /* BulletCommandPlayer.cpp */; };
-		2913778815CB07B80061AFFA /* playerBulletML.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2913778715CB07B80061AFFA /* playerBulletML.xml */; };
 		C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C23348D215827CA800F64C5E /* StateFoo.cpp */; };
 		C249FCCA1589EAA300ABFE76 /* BulletHellWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */; };
 		C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C29A2CFB155CE772007B500C /* AncientDawn.cpp */; };
@@ -120,9 +118,6 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2913778315CB03C90061AFFA /* BulletCommandPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletCommandPlayer.h; sourceTree = "<group>"; };
-		2913778515CB03D80061AFFA /* BulletCommandPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletCommandPlayer.cpp; sourceTree = "<group>"; };
-		2913778715CB07B80061AFFA /* playerBulletML.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = playerBulletML.xml; path = ../../assets/levels/playerBulletML.xml; sourceTree = "<group>"; };
 		29E68AA115CA3F0300FFFF25 /* MetalWolfParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalWolfParams.h; sourceTree = "<group>"; };
 		C23348D215827CA800F64C5E /* StateFoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateFoo.cpp; sourceTree = "<group>"; };
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
@@ -625,7 +620,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				2913778715CB07B80061AFFA /* playerBulletML.xml */,
 				FC141C4A1285429700166578 /* assets */,
 				FC1417731285415800166578 /* src */,
 				FC1417611285413100166578 /* Classes */,
@@ -854,8 +848,6 @@
 				FC8A93EF12C9D8EB006E9C83 /* SpriteGun.h */,
 				C23348D215827CA800F64C5E /* StateFoo.cpp */,
 				C23348D315827CA800F64C5E /* StateFoo.h */,
-				2913778315CB03C90061AFFA /* BulletCommandPlayer.h */,
-				2913778515CB03D80061AFFA /* BulletCommandPlayer.cpp */,
 			);
 			name = src;
 			path = ../../src;
@@ -1388,7 +1380,6 @@
 				FC141C571285429700166578 /* assets in Resources */,
 				FCF8913313E8AA3900AFEB8E /* Entitlements.plist in Resources */,
 				C2D0791915C8DFCD00A10206 /* MainWindow-iPad.xib in Resources */,
-				2913778815CB07B80061AFFA /* playerBulletML.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1511,7 +1502,6 @@
 				C2B995F715C3C24B000B84F7 /* tinyxml.cpp in Sources */,
 				C2B995F915C3C24B000B84F7 /* tinyxmlerror.cpp in Sources */,
 				C2B995FA15C3C24B000B84F7 /* tinyxmlparser.cpp in Sources */,
-				2913778615CB03D80061AFFA /* BulletCommandPlayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

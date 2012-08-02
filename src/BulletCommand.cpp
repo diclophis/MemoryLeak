@@ -142,7 +142,10 @@ void BulletCommand::doChangeSpeed(double vel) {
   //LOGV("doChangeSpeed\n");
   if (m_FollowBullet) {
     m_FollowBullet->m_IsAlive = false;
-    b2Body *body = (b2Body *)m_FollowBullet->m_UserData;
+    if(m_FollowBullet)
+    {
+        b2Body *body = (b2Body *)m_FollowBullet->m_UserData;
+    }
     //body->SetLinearVelocity(vel);
     //body->SetTransform(b2Vec2(bullet->m_Position[0] / PTM_RATIO, bullet->m_Position[1] / PTM_RATIO), 0.0);
     //m_FollowBullet->m_Position[0] = bullet->m_Position[0];
