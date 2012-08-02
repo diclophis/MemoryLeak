@@ -29,10 +29,6 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-void doo_thing_one(const char *s) {
-  LOGV("wtf %d\n", game->LevelProgress());
-}
-
 #define COUNT 18 * 20
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 

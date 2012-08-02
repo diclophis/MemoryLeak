@@ -10,7 +10,7 @@
 #define	PARAM	260
 #define	NEG	261
 
-#line 3 "calc.yy"
+//#line 3 "calc.yy"
 
 typedef double NumType;
 
@@ -27,7 +27,7 @@ typedef double NumType;
 #include "formula.h"
 #include "formula-variables.h"
 
-int yyerror(char* s);
+int yyerror(const char* s);
 int yylex();
 
 const char* yyinStr;
@@ -176,7 +176,7 @@ static const short yycheck[] = {     0,
      8,     9,    10,    15,    -1,    13
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+//#line 3 "/usr/lib/bison.simple"
 /* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
@@ -390,7 +390,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "/usr/lib/bison.simple"
+//#line 217 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -719,81 +719,81 @@ yyreduce:
   switch (yyn) {
 
 case 4:
-#line 56 "calc.yy"
+//#line 56 "calc.yy"
 { formula = f(yyvsp[-1]); return 0; ;
     break;}
 case 5:
-#line 59 "calc.yy"
+//#line 59 "calc.yy"
 {
 	        yyval = formulas.size();
 	        formulas.push_back(new CalcFormula(new CalcNumber(yyvsp[0])));
         ;
     break;}
 case 6:
-#line 63 "calc.yy"
+//#line 63 "calc.yy"
 {
 	        yyval = formulas.size();
             formulas.push_back(new CalcFormula(new CalcRandom()));
         ;
     break;}
 case 7:
-#line 67 "calc.yy"
+//#line 67 "calc.yy"
 {
 			yyval = formulas.size();
 			formulas.push_back(new CalcFormula(new CalcRank()));
 		;
     break;}
 case 8:
-#line 71 "calc.yy"
+//#line 71 "calc.yy"
 {
 			yyval = formulas.size();
 			formulas.push_back(new CalcFormula(new CalcParam(paramId)));
 		;
     break;}
 case 9:
-#line 75 "calc.yy"
+//#line 75 "calc.yy"
 {
 		    yyval = formulas.size();
 			formulas.push_back(new CalcFormula(f(yyvsp[-2]), op_add, f(yyvsp[0])));
 		;
     break;}
 case 10:
-#line 79 "calc.yy"
+//#line 79 "calc.yy"
 {
 		    yyval = formulas.size();
 			formulas.push_back(new CalcFormula(f(yyvsp[-2]), op_sub, f(yyvsp[0])));
 		;
     break;}
 case 11:
-#line 83 "calc.yy"
+//#line 83 "calc.yy"
 {
 		    yyval = formulas.size();
 			formulas.push_back(new CalcFormula(f(yyvsp[-2]), op_mul, f(yyvsp[0])));
 		;
     break;}
 case 12:
-#line 87 "calc.yy"
+//#line 87 "calc.yy"
 {
 		    yyval = formulas.size();
 			formulas.push_back(new CalcFormula(f(yyvsp[-2]), op_div, f(yyvsp[0])));
 		;
     break;}
 case 13:
-#line 91 "calc.yy"
+//#line 91 "calc.yy"
 {
 		    yyval = yyvsp[0];
 			f(yyvsp[0])->setHeadSub();
 		;
     break;}
 case 14:
-#line 95 "calc.yy"
+//#line 95 "calc.yy"
 {
 		    yyval = yyvsp[-1];
 		;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "/usr/lib/bison.simple"
+//#line 543 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1013,7 +1013,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 99 "calc.yy"
+//#line 99 "calc.yy"
 
 
 /**
@@ -1066,7 +1066,7 @@ int yylex ()
 	return c;
 }
 
-int yyerror(char* s) {
+int yyerror(const char* s) {
 	printf("yyerror: %s\n", s);
 	return 0;
 }
