@@ -5,6 +5,10 @@ namespace MWParams
     static float kPlayerStartY = -400.0f;
     static float kPlayerStartHeatlh = 100.0f;
     
+    //Enemy
+    static float kEnemyStartX = 0.0f;
+    static float kEnemyStartY = 450.0f;
+    
     //Level
     static float kNextLevelTime = 120.0f;
     

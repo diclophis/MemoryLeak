@@ -279,13 +279,13 @@ void AncientDawn::CreateSpaceShip() {
   m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipDraw, m_SpaceShipBulletDraw));
   m_AtlasSprites[m_SpaceShipIndex]->m_Fps = 0;
   m_AtlasSprites[m_SpaceShipIndex]->m_IsAlive = true;
-  m_AtlasSprites[m_SpaceShipIndex]->SetPosition(50.0, 50.0);
+  m_AtlasSprites[m_SpaceShipIndex]->SetPosition(MWParams::kEnemyStartX, MWParams::kEnemyStartY);
   m_AtlasSprites[m_SpaceShipIndex]->SetScale(175.0, 100.0);
   m_AtlasSprites[m_SpaceShipIndex]->Build(COUNT);
   m_SpriteCount++;
 
   
-  MLPoint startPosition = MLPointMake(m_AtlasSprites[m_SpaceShipIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_SpaceShipIndex]->m_Position[1] / PTM_RATIO);
+  MLPoint startPosition = MLPointMake(MWParams::kEnemyStartX / PTM_RATIO, MWParams::kEnemyStartY / PTM_RATIO);
 
   for (int i=0; i<m_AtlasSprites[m_SpaceShipIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_SpaceShipIndex]->m_AtlasSprites[i];
@@ -312,6 +312,24 @@ void AncientDawn::CreateSpaceShip() {
     bullet->m_UserData = bullet_body;
   }
 
+  //TODO: This the body for the Enemy ship
+  /*b2BodyDef bd;
+  bd.type = b2_staticBody;
+  bd.awake = false;
+  bd.linearDamping = 0.0;
+  bd.fixedRotation = true;
+  bd.position.Set(startPosition.x, startPosition.y);
+  b2CircleShape shape;
+  shape.m_radius = 10.0 / PTM_RATIO;
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.isSensor = true;
+  fd.density = 0.0;
+  fd.friction = 0.0;
+  fd.filter.groupIndex = -1;
+  m_PlayerBody = m_World->CreateBody(&bd);
+  m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
+  m_PlayerBody->CreateFixture(&fd);*/
  
   fseek(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->off, 0);
 
