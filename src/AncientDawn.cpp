@@ -375,7 +375,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = true; //(m_SolveTimeout > 0.5);
+  m_World->m_Solve = (m_SolveTimeout > 0.25);
 
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
     
