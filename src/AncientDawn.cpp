@@ -6,6 +6,27 @@
 #include "MetalWolfParams.h"
 #include "Bridge.h"
 
+std::string string_format(const std::string &fmt, ...) {
+  int size=100;
+  std::string str;
+  va_list ap;
+  while (1) {
+    str.resize(size);
+    va_start(ap, fmt);
+    int n = vsnprintf((char *)str.c_str(), size, fmt.c_str(), ap);
+    va_end(ap);
+    if (n > -1 && n < size) {
+      str.resize(n);
+      return str;
+    }
+    if (n > -1)
+      size=n+1;
+    else
+      size*=2;
+  }
+}
+
+
 static AncientDawn *game;
 
 void doo_thing_one(const char *s) {
@@ -98,6 +119,8 @@ void AncientDawn::ResetGame() {
   
   //Initialize Player Life
   m_PlayerHealth = MWParams::kPlayerStartHeatlh;
+  
+  m_JavascriptTick = "";
 }
 
 
@@ -400,12 +423,7 @@ void AncientDawn::Hit(float x, float y, int hitState) {
 
 int AncientDawn::Simulate() {
 
-  m_WebViewTimeout += m_DeltaTime;
-  if (m_WebViewTimeout > (0.33)) {
-    push_pop_function("wang++; document.getElementById('wang').innerHTML = 'score: ' + wang;");
-    m_WebViewTimeout = 0.0;
-    return 1;
-  }
+
   
   int chosen_state = 0;
   
@@ -532,6 +550,13 @@ int AncientDawn::Simulate() {
     }
   }
   
+  m_WebViewTimeout += m_DeltaTime;
+  if (m_WebViewTimeout > (0.33)) {
+    push_pop_function(m_JavascriptTick.c_str());
+    m_WebViewTimeout = 0.0;
+    m_JavascriptTick = "";
+  }
+  
   return chosen_state;
 }
 
@@ -559,7 +584,7 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         {
             m_PlayerHealth = 0.0f;
         }
-        LOGV("Player Health: %d\n", (int)m_PlayerHealth);
+        m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
       }
       
       

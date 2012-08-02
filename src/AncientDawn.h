@@ -164,5 +164,7 @@ public:
   BulletCommandPlayer* mpBulletCommandPlayer;
   
   float m_WebViewTimeout;
+  
+  std::string m_JavascriptTick;
 
 };
