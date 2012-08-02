@@ -4,44 +4,17 @@
 <bulletml type="vertical"
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
 
- <action label="top">
-  <repeat>
-    <times>999</times>
-    <action>
-      <actionRef label="fireCircle">
-       <param>180-45+90*$rand</param>
-      </actionRef>
-    </action>
-    <wait>50</wait>
-  </repeat>
+<action label="top">
+<repeat> <times>1000000000</times>
+<action>
+ <fire>
+  <direction>180</direction>
+  <speed>15.0</speed>
+  <bullet/>
+ </fire>
+ <wait>6</wait>
 </action>
-
-<fire label="circle">
-  <direction type="sequence">$1</direction>
-  <speed>6</speed>
-  <bullet>
-    <action>
-     <wait>30</wait>
-     <fire>
-      <direction type="absolute">$2</direction>
-      <speed>10.0+$rank</speed>
-      <bullet/>
-     </fire>
-     <vanish/>
-    </action>
-  </bullet>
-</fire>
-
-<action label="fireCircle">
-  <repeat>
-    <times>18</times>
-    <action>
-      <fireRef label="circle">
-        <param>20</param>
-        <param>$1</param>
-      </fireRef>
-    </action>
-  </repeat>
+</repeat>
 </action> 
 
 </bulletml>

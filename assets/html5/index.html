@@ -57,6 +57,7 @@
         startButton.onclick = function(e) {
           try {
             bridge.set_user_interaction_enabled("0");
+            bridge.start_game("1");
           } catch(e) {
             alert(e);
           }

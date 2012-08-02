@@ -33,6 +33,11 @@ void doo_thing_one(const char *s) {
   LOGV("wtf %d\n", game->LevelProgress());
 }
 
+void start_game(const char *s) {
+  LOGV("starting game");
+  game->StartLevel(game->FirstLevel());
+}
+
 #define COUNT 18 * 20
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
@@ -40,10 +45,11 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_PlayerHealth (MWParams::kPlayerStartHeatlh)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
+, mbPlayerIsShooting(false)
+, mbGameStarted(false)
 {
   //LoadSound(0);
   LoadTexture(1);
-  StartLevel(FirstLevel());
   game = this;
 }
 
@@ -118,8 +124,12 @@ void AncientDawn::ResetGame() {
   m_TouchOffsetY = 0;
   m_LastRecycledIndex = -1;
   
-  //Initialize Player Life
+  //Initialize Player
   m_PlayerHealth = MWParams::kPlayerStartHeatlh;
+  mbPlayerIsShooting = false;
+  
+  //Initilize Game State
+  mbGameStarted = true;
   
   m_JavascriptTick = "";
 }
@@ -175,6 +185,8 @@ void AncientDawn::StopLevel() {
   DestroyPlayer();
   DestroySpaceShip();
   DestroyLandscape();
+  
+  mbGameStarted = false;
 }
 
 
@@ -414,6 +426,17 @@ void AncientDawn::Hit(float x, float y, int hitState) {
   
   m_PlayerMouseJoint->SetTarget(b2Vec2((xx - m_TouchOffsetX) / PTM_RATIO, (yy - m_TouchOffsetY) / PTM_RATIO));
 
+  if(hitState == 2 || hitState == -1)
+  {
+    //if the player is touch up(hitstate is 2) or touch cancled(hit state -1) then we stop shooting
+    mbPlayerIsShooting = false;
+  }
+  else
+  {
+    //Otherwise the player has thier finger on the screen and we are shooting
+    mbPlayerIsShooting = true;
+  }
+
   if (hitState == 2) {
     m_Force = false;
   } else {
@@ -424,7 +447,24 @@ void AncientDawn::Hit(float x, float y, int hitState) {
 
 int AncientDawn::Simulate() {
 
+  //Java Script is always simulated, regardless if the game is started.
+  m_WebViewTimeout += m_DeltaTime;
+  if (m_WebViewTimeout > (0.33)) {
+    push_pop_function(m_JavascriptTick.c_str());
+    m_WebViewTimeout = 0.0;
+    m_JavascriptTick = "";
+  }
 
+  return _gameSimulate();
+}
+
+int AncientDawn::_gameSimulate()
+{
+  if(!mbGameStarted)
+  {
+    //Don't not run any simulation for a game that is not started
+    return 0;
+  }
   
   int chosen_state = 0;
   
@@ -448,11 +488,12 @@ int AncientDawn::Simulate() {
   
   StepPhysics();
 
-  if (bc != NULL) {
+  if (bc) 
+  {
     bc->run((int)(m_SimulationTime * 100.0));
   }
   
-  if(mpBulletCommandPlayer)
+  if(mpBulletCommandPlayer && mbPlayerIsShooting)
   {
     mpBulletCommandPlayer->run((int)(m_SimulationTime * 100.0f));
   }
@@ -551,13 +592,6 @@ int AncientDawn::Simulate() {
     }
   }
   
-  m_WebViewTimeout += m_DeltaTime;
-  if (m_WebViewTimeout > (0.33)) {
-    push_pop_function(m_JavascriptTick.c_str());
-    m_WebViewTimeout = 0.0;
-    m_JavascriptTick = "";
-  }
-  
   return chosen_state;
 }
 
@@ -611,6 +645,10 @@ void AncientDawn::RenderModelPhase() {
 
 
 void AncientDawn::RenderSpritePhase() {
+  if(!mbGameStarted)
+  {
+    return;
+  }
   m_Batches[0]->m_NumBatched = 0;
   RenderSpriteRange(0, 2, m_Batches[0]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);

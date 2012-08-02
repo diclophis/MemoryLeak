@@ -59,7 +59,10 @@ public:
   // * For every collision, Detect if between bullet and player
   // * * If bullet and player collide, cause damage to player
   // * Change level based on current level progress
-	int Simulate();
+  int Simulate();
+private:
+  int _gameSimulate();
+public:
   void StepPhysics();
   void UpdatePhysicialPositionOfSprite(AtlasSprite *sprite, float x, float y);
   b2Body *BodyCollidingWithPlayer(b2Body *a, b2Body *b);
@@ -156,8 +159,12 @@ public:
   b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
   
+  // Game State logic
+  bool mbGameStarted;
+  
   // Player Logic
   float m_PlayerHealth;
+  bool mbPlayerIsShooting;
 
   BulletCommand* bc;
   BulletCommand* mpBulletCommandPlayer;
