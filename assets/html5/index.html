@@ -13,13 +13,20 @@
         width: 100%;
         height: 100%;
       }
+      .invisible {
+        opacity: 0;
+      }
+      .visible {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
-    <h1 id="wang">hello world</h1>
+    <h1 id="title">Metal Wolf</h1>
+    <h1 id="start">start</h1>
+    <span id="player_health"></span>
     <script>
       try {
-        var wang = 0;
         var bridge = {
           queue: [],
           enqueue: function(function_pointer, string_argument) {
@@ -36,12 +43,35 @@
           },
           finalize: function() {
             console.log('done');
+            startButton.className = "visible";
           }
         };
         
         var debug_alert = function() {
           bridge.echoecho("foo");
         };
+
+        var startButton = document.getElementById("start");
+        var playerHealthSpan = document.getElementById("player_health");
+
+        startButton.onclick = function(e) {
+          try {
+            bridge.set_user_interaction_enabled("0");
+          } catch(e) {
+            alert(e);
+          }
+        };
+        
+        var player_health = 100;
+
+        (function tick() {
+          try {
+            playerHealthSpan.innerHTML = player_health;
+            setTimeout(tick, 32); //32ms is 30fps
+          } catch(e) {
+            alert(e);
+          }
+        })();
       } catch(e) {
         alert(e);
       }
