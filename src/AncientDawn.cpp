@@ -5,7 +5,7 @@
 
 #include "AncientDawn.h"
 
-#define COUNT 18 * 10
+#define COUNT 18 * 128
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
@@ -25,7 +25,7 @@ void AncientDawn::CreateFoos() {
   m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 3, 5.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 2, 1, 2, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
-  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 6, (9 * (16 * 4)) + 7, 5.0);
+  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
 
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
   if (m_SimulationTime > 0.0) {
@@ -506,8 +506,8 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
   switch (m_ColliderSwitch) {
     case COLLIDE_PLAYER:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-        //sprite->m_Scale[0] = 40.0;
-        //sprite->m_Scale[1] = 40.0;
+        sprite->m_Scale[0] = 40.0;
+        sprite->m_Scale[1] = 40.0;
       }
       break;
 
@@ -530,20 +530,8 @@ void AncientDawn::RenderModelPhase() {
 
 
 void AncientDawn::RenderSpritePhase() {
-  if (true) {
-    m_Batches[0]->m_NumBatched = 0;
-    RenderSpriteRange(0, 2, m_Batches[0]);
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
-  } else { // debug draw data doesnt work with opengles 2.0
-    AtlasSprite::ReleaseBuffers();
-    ResetStateFoo();
-    glDisable(GL_TEXTURE_2D);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    m_World->DrawDebugData();
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnable(GL_TEXTURE_2D);
-  }
+  m_Batches[0]->m_NumBatched = 0;
+  RenderSpriteRange(0, 2, m_Batches[0]);
+  AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
 }
 
