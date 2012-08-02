@@ -152,12 +152,43 @@
         height: 5%;
       }
 
+      #player-health-container {
+        width: 50%;
+        height: 100%;
+        border: 1px solid red;
+      }
+
+      #player-health-bar {
+        width: 100%;
+        border: 1px solid yellow;
+      }
+
+      #enemy-health-container {
+        width: 50%;
+        height: 100%;
+        border: 1px solid red;
+      }
+
+      #enemy-health-bar {
+        width: 100%;
+        border: 1px solid yellow;
+      }
+
     </style>
   </head>
   <body class="translucent">
     <div id="overlay" class="transparent">
       <div id="hud" class="invisible">
-        <span id="player_health"></span>
+        <div id="player-health-container">
+          <div id="player-health-bar">
+            <span id="player-health"></span>
+          </div>
+        </div>
+        <div id="enemy-health-container">
+          <div id="enemy-health-bar">
+            <span id="enemy-health"></span>
+          </div>
+        </div>
       </div>
       <div id="shop" class="invisible">
         <div id="back-to-main-from-shop-button">
@@ -190,7 +221,10 @@
         var shopButton = document.getElementById("shop-button");
         var backToMainFromShopButton = document.getElementById("back-to-main-from-shop-button");
 
-        var playerHealthSpan = document.getElementById("player_health");
+        var playerHealthSpan = document.getElementById("player-health");
+        var playerHealthBar = document.getElementById("player-health-bar");
+        var enemyHealthSpan = document.getElementById("enemy-health");
+        var enemyHealthBar = document.getElementById("enemy-health-bar");
 
         var mainMenu = document.getElementById("main-menu");
         var hud = document.getElementById("hud");
@@ -198,6 +232,7 @@
         var inventory = document.getElementById("inventory");
 
         var player_health = 100;
+        var enemy_health = 100;
 
         var bridge = {
           queue: [],
@@ -271,15 +306,15 @@
         };
 
         startButton.onclick = function(e) {
+          hide_body();
+          hide_main_menu();
+          hide_inventory();
+          show_hud();
           try {
-            hide_body();
-            hide_main_menu();
-            hide_inventory();
-            show_hud();
             bridge.set_user_interaction_enabled("0");
             bridge.start_game("1");
           } catch(e) {
-            alert(e);
+            console.log(e);
           }
         };
 
@@ -295,7 +330,11 @@
 
         (function tick() {
           try {
-            playerHealthSpan.innerHTML = player_health;
+            var player_health_percent = (player_health / 100.0) * 100.0;
+            var enemy_health_percent = (enemy_health / 100.0) * 100.0;
+            playerHealthBar.style.width = player_health_percent + "%";
+            enemyHealthBar.style.width = enemy_health_percent + "%";
+
             setTimeout(tick, 32); //32ms is 30fps
           } catch(e) {
             alert(e);

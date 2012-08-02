@@ -29,14 +29,12 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-void doo_thing_one(const char *s) {
-  LOGV("wtf %d\n", game->LevelProgress());
-}
 
 void start_game(const char *s) {
   LOGV("starting game");
   game->StartLevel(game->FirstLevel());
 }
+
 
 #define COUNT 18 * 10
 
@@ -526,7 +524,6 @@ int AncientDawn::_gameSimulate()
           UpdatePhysicialPositionOfSprite(sprite, x, y);
           sprite->Simulate(m_DeltaTime);
         } else {
-          //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
           body->SetAwake(false);
         }
       }
@@ -549,10 +546,7 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
                                         sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]);
       if (bCollidingSpriteIsBullet) 
       {
-        //sprite->m_Scale[0] = 40.0;
-        //sprite->m_Scale[1] = 40.0;
         sprite->m_IsAlive = false;
-        
         m_PlayerHealth = MAX(0.0f, m_PlayerHealth - MWParams::kEnemyBulletDamageAmount);
         m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
       }
@@ -575,8 +569,6 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
 
     case COLLIDE_CULLING:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-        //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-        //body->SetAwake(false);
         sprite->m_IsAlive = false;
       }
       break;
