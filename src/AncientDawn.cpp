@@ -29,7 +29,7 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-#define COUNT 18 * 20
+#define COUNT 18 * 10
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
