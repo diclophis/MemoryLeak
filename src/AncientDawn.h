@@ -83,6 +83,7 @@ public:
   void CreatePlayer();
   void CreateSpaceShip();
   void CreateLandscape();
+  void GenerateCubeMap();
 
   // When stopping a level do
   // * Destroy foos

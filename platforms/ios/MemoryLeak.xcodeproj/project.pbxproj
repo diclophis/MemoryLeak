@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1540CA0515CAFF54005ECD5D /* GLProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0415CAFF54005ECD5D /* GLProgram.m */; };
+		1540CA1315CAFFCA005ECD5D /* PlainDisplay.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0915CAFFCA005ECD5D /* PlainDisplay.fsh */; };
+		1540CA1415CAFFCA005ECD5D /* PlainDisplay.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0A15CAFFCA005ECD5D /* PlainDisplay.vsh */; };
+		1540CA1515CAFFCA005ECD5D /* BrickShader.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0B15CAFFCA005ECD5D /* BrickShader.fsh */; };
+		1540CA1615CAFFCA005ECD5D /* BrickShader.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0C15CAFFCA005ECD5D /* BrickShader.vsh */; };
+		1540CA1715CAFFCA005ECD5D /* SimpleLighting.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0D15CAFFCA005ECD5D /* SimpleLighting.fsh */; };
+		1540CA1815CAFFCA005ECD5D /* SimpleLighting.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0E15CAFFCA005ECD5D /* SimpleLighting.vsh */; };
+		1540CA1915CAFFCA005ECD5D /* Toon.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA0F15CAFFCA005ECD5D /* Toon.fsh */; };
+		1540CA1A15CAFFCA005ECD5D /* Toon.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA1015CAFFCA005ECD5D /* Toon.vsh */; };
+		1540CA1B15CAFFCA005ECD5D /* Reflection.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA1115CAFFCA005ECD5D /* Reflection.fsh */; };
+		1540CA1C15CAFFCA005ECD5D /* Reflection.vsh in Sources */ = {isa = PBXBuildFile; fileRef = 1540CA1215CAFFCA005ECD5D /* Reflection.vsh */; };
 		C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C23348D215827CA800F64C5E /* StateFoo.cpp */; };
 		C249FCCA1589EAA300ABFE76 /* BulletHellWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */; };
 		C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C29A2CFB155CE772007B500C /* AncientDawn.cpp */; };
@@ -117,6 +128,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1540CA0415CAFF54005ECD5D /* GLProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLProgram.m; sourceTree = "<group>"; };
+		1540CA0715CAFF9A005ECD5D /* GLProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLProgram.h; sourceTree = "<group>"; };
+		1540CA0915CAFFCA005ECD5D /* PlainDisplay.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PlainDisplay.fsh; sourceTree = "<group>"; };
+		1540CA0A15CAFFCA005ECD5D /* PlainDisplay.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PlainDisplay.vsh; sourceTree = "<group>"; };
+		1540CA0B15CAFFCA005ECD5D /* BrickShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = BrickShader.fsh; sourceTree = "<group>"; };
+		1540CA0C15CAFFCA005ECD5D /* BrickShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = BrickShader.vsh; sourceTree = "<group>"; };
+		1540CA0D15CAFFCA005ECD5D /* SimpleLighting.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = SimpleLighting.fsh; sourceTree = "<group>"; };
+		1540CA0E15CAFFCA005ECD5D /* SimpleLighting.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = SimpleLighting.vsh; sourceTree = "<group>"; };
+		1540CA0F15CAFFCA005ECD5D /* Toon.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Toon.fsh; sourceTree = "<group>"; };
+		1540CA1015CAFFCA005ECD5D /* Toon.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Toon.vsh; sourceTree = "<group>"; };
+		1540CA1115CAFFCA005ECD5D /* Reflection.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Reflection.fsh; sourceTree = "<group>"; };
+		1540CA1215CAFFCA005ECD5D /* Reflection.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Reflection.vsh; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C23348D215827CA800F64C5E /* StateFoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateFoo.cpp; sourceTree = "<group>"; };
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
@@ -607,6 +630,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1540CA0815CAFFB2005ECD5D /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				1540CA0915CAFFCA005ECD5D /* PlainDisplay.fsh */,
+				1540CA0A15CAFFCA005ECD5D /* PlainDisplay.vsh */,
+				1540CA0B15CAFFCA005ECD5D /* BrickShader.fsh */,
+				1540CA0C15CAFFCA005ECD5D /* BrickShader.vsh */,
+				1540CA0D15CAFFCA005ECD5D /* SimpleLighting.fsh */,
+				1540CA0E15CAFFCA005ECD5D /* SimpleLighting.vsh */,
+				1540CA0F15CAFFCA005ECD5D /* Toon.fsh */,
+				1540CA1015CAFFCA005ECD5D /* Toon.vsh */,
+				1540CA1115CAFFCA005ECD5D /* Reflection.fsh */,
+				1540CA1215CAFFCA005ECD5D /* Reflection.vsh */,
+			);
+			name = shaders;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -809,6 +849,7 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				1540CA0815CAFFB2005ECD5D /* shaders */,
 				C2B9958315C3C24B000B84F7 /* BulletCommand.cpp */,
 				C2B9958415C3C24B000B84F7 /* BulletCommand.h */,
 				C2B9958515C3C24B000B84F7 /* bulletml */,
@@ -822,6 +863,8 @@
 				FC14188C1285415800166578 /* contrib */,
 				FC1419B41285415900166578 /* Engine.cpp */,
 				FC1419B51285415900166578 /* Engine.h */,
+				1540CA0715CAFF9A005ECD5D /* GLProgram.h */,
+				1540CA0415CAFF54005ECD5D /* GLProgram.m */,
 				C2E2EC961542A4760069C210 /* FileHandle.h */,
 				FC1419B61285415900166578 /* foo.h */,
 				FC6D4D6713A46D1B00DE1200 /* Game.h */,
@@ -1498,6 +1541,17 @@
 				C2B995F715C3C24B000B84F7 /* tinyxml.cpp in Sources */,
 				C2B995F915C3C24B000B84F7 /* tinyxmlerror.cpp in Sources */,
 				C2B995FA15C3C24B000B84F7 /* tinyxmlparser.cpp in Sources */,
+				1540CA0515CAFF54005ECD5D /* GLProgram.m in Sources */,
+				1540CA1315CAFFCA005ECD5D /* PlainDisplay.fsh in Sources */,
+				1540CA1415CAFFCA005ECD5D /* PlainDisplay.vsh in Sources */,
+				1540CA1515CAFFCA005ECD5D /* BrickShader.fsh in Sources */,
+				1540CA1615CAFFCA005ECD5D /* BrickShader.vsh in Sources */,
+				1540CA1715CAFFCA005ECD5D /* SimpleLighting.fsh in Sources */,
+				1540CA1815CAFFCA005ECD5D /* SimpleLighting.vsh in Sources */,
+				1540CA1915CAFFCA005ECD5D /* Toon.fsh in Sources */,
+				1540CA1A15CAFFCA005ECD5D /* Toon.vsh in Sources */,
+				1540CA1B15CAFFCA005ECD5D /* Reflection.fsh in Sources */,
+				1540CA1C15CAFFCA005ECD5D /* Reflection.vsh in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

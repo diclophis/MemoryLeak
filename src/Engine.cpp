@@ -36,12 +36,122 @@ static const char fragment_shader[] =
 "#ifdef GL_ES\n"
 "precision mediump float;\n"
 "#endif\n"
+/*"uniform sampler2D Sampler;\n"
 "varying vec2 OutCoord;\n"
-"uniform sampler2D Sampler;\n"
+"uniform float pixelWidth;\n"
+"uniform float pixelHeight;\n"
+
 "void main()\n"
 "{\n"
-"gl_FragColor = texture2D(Sampler, OutCoord);\n"
+    // Larger constant = bigger glow
+    "vec4 pixel = texture2D(Sampler, OutCoord);\n"
+    "float glow = 4.0 * ((pixelWidth + pixelHeight) / 2.0);\n"
+    
+    // The vector to contain the new, "bloomed" colour values
+    "vec4 bloom = vec4(0);\n"
+    
+    // Loop over all the pixels on the texture in the area given by the constant in glow
+    "int count = 0;\n"
+    "for(float x = (OutCoord.x - glow); x < (OutCoord.x + glow); x += pixelWidth)\n"
+    "{\n"
+        "for(float y = (OutCoord.y - glow); y < (OutCoord.y + glow); y += pixelHeight)\n"
+        "{\n"
+            // Add that pixel's value to the bloom vector
+            "bloom += (texture2D(Sampler, vec2(x, y)) - 0.4) * 30.0;\n"
+            // Add 1 to the number of pixels sampled
+            "count++;\n"
+        "}\n"
+    "}\n"
+     // Divide by the number of pixels sampled to average out the value
+     // The constant being multiplied with count here will dim the bloom effect a bit, with higher values
+     // Clamp the value between a 0.0 to 1.0 range
+    //"bloom = clamp(bloom / (300000 * 30), 0.0, 1.0);\n"
+     
+    "gl_FragColor = pixel + bloom;\n"
+"}\n";*/
+
+
+
+"uniform sampler2D Sampler;\n"
+"varying vec2 OutCoord;\n"
+"void main()\n"
+"{\n"
+   " vec4 sum = vec4(0);\n"
+    "int j;\n"
+    "int i;\n"
+    
+    "for( i= -2 ;i < 2; i++)\n"
+    "{\n"
+       " for (j = -2; j < 2; j++)\n"
+       " {\n"
+         "   sum += texture2D(Sampler, OutCoord + vec2(j, i)*0.004)*0.25;\n"
+        "}\n"
+    "}\n"
+    "if (texture2D(Sampler, OutCoord).r < 0.2)\n"
+    "{\n"
+        "gl_FragColor = sum*sum*0.012 + texture2D(Sampler, OutCoord);\n"
+    "}\n"
 "}\n";
+
+
+void main(void)
+
+{
+    
+    gl_FragColor = texture2D( Sampler, vec2(gl_FragCoord)/1024.0 ) * weight[0];
+    
+    for (int i=1; i<5; i++) {
+        
+        gl_FragColor += texture2D( Sampler, ( vec2(gl_FragCoord)+vec2(0.0, offset[i]) )/1024.0 )* weight[i];
+        
+        gl_FragColor +=texture2D( Sampler, ( vec2(gl_FragCoord)-vec2(0.0, offset[i]) )/1024.0 )* weight[i];
+        
+    }
+}
+
+
+// The original texture
+/*"uniform sampler2D Sampler;\n"
+
+// The width and height of each pixel in texture coordinates
+"uniform float pixelWidth;\n"
+"uniform vec3 color;\n"
+"uniform float pixelHeight;\n"
+"varying vec2 OutCoord;\n"
+
+"void main()\n"
+"{\n
+    // Current texture coordinate
+    //"OutCoord = vec2(gl_TexCoord[0]);\n" 
+    "vec 4 pixel = texture2D(Sampler, OutCoord);\n"
+    
+    // Larger constant = bigger glow
+    "float glow = 4.0 * ((pixelWidth + pixelHeight) / 2.0);\n"
+    
+    // The vector to contain the new, "bloomed" colour values
+    "vec4 bloom = vec4(0);\n"
+    
+    // Loop over all the pixels on the texture in the area given by the constant in glow
+    "int count = 0;\n"
+    "for(float x = OutCoord).x - glow; x < OutCoord).x + glow; x += pixelWidth)\n"
+    "{\n"
+        "for(float y = OutCoord).y - glow; y < OutCoord).y + glow; y += pixelHeight)\n"
+        "{\n"
+            // Add that pixel's value to the bloom vector
+            "bloom += (texture2D(Sampler, vec2(x, y)) - 0.4) * 30.0;\n"
+            // Add 1 to the number of pixels sampled
+            "count++;\n"
+        "}\n"
+    "}\n"
+    // Divide by the number of pixels sampled to average out the value
+    // The constant being multiplied with count here will dim the bloom effect a bit, with higher values
+    // Clamp the value between a 0.0 to 1.0 range
+    "bloom = clamp(bloom / (count * 30), 0.0, 1.0);\n"
+    
+    // Set the current fragment to the original texture pixel, with our bloom value added on
+    "gl_FragColor = vec4(color,1.0); \n"
+"}\n";*/
+
 
 
 
@@ -140,7 +250,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glShaderSource(v, 1, &p, NULL);
   glCompileShader(v);
   glGetShaderInfoLog(v, sizeof msg, NULL, msg);
-  //LOGV("vertex shader info: %s\n", msg);
+  LOGV("vertex shader info: %s\n", msg);
 
   // Compile the fragment shader
   p = fragment_shader;
