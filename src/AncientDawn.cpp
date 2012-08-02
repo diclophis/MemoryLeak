@@ -17,8 +17,9 @@ void doo_thing_one(const char *s) {
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
 , m_PlayerHealth (MWParams::kPlayerStartHeatlh)
+, mpBulletCommandPlayer(NULL)
 {
-  LoadSound(0);
+  //LoadSound(0);
   LoadTexture(1);
   StartLevel(FirstLevel());
   game = this;
@@ -162,16 +163,16 @@ void AncientDawn::CreatePlayer() {
   m_AtlasSprites[m_PlayerIndex]->SetPosition(MWParams::kPlayerStartX,
                                              MWParams::kPlayerStartY);
   m_AtlasSprites[m_PlayerIndex]->SetScale(20.0, 20.0);
-  m_AtlasSprites[m_PlayerIndex]->Build(18);
+  m_AtlasSprites[m_PlayerIndex]->Build(COUNT);
   m_SpriteCount++;
 
   MLPoint startPosition = MLPointMake(MWParams::kPlayerStartX / PTM_RATIO, MWParams::kPlayerStartY / PTM_RATIO);
-
-  /*
+  
+  //Creating bullet bodies for the player's ship
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
-    bullet->m_Fps = 24; 
-    bullet->SetScale(10.0, 50.0);
+    bullet->m_Fps = 0; 
+    bullet->SetScale(8.0, 8.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;
@@ -180,7 +181,7 @@ void AncientDawn::CreatePlayer() {
     bd2.fixedRotation = true;
     bd2.position.Set(startPosition.x, startPosition.y);
     b2CircleShape shape2;
-    shape2.m_radius = 5.0 / PTM_RATIO;
+    shape2.m_radius = 1.0 / PTM_RATIO;
     b2FixtureDef fd2;
     fd2.shape = &shape2;
     fd2.isSensor = true;
@@ -190,10 +191,11 @@ void AncientDawn::CreatePlayer() {
     b2Body *bullet_body = m_World->CreateBody(&bd2);
     bullet_body->SetUserData(bullet);
     bullet_body->CreateFixture(&fd2);
-    //bullet_body->SetActive(true);
+    bullet->m_UserData = bullet_body;
   }
-  */
+  
 
+  //This the body for the player ship
   b2BodyDef bd;
   bd.type = b2_dynamicBody;
   bd.awake = false;
@@ -211,6 +213,12 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody = m_World->CreateBody(&bd);
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
+  
+  fseek(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->off, 0);
+
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(0)->fp, m_LevelFileHandles->at(0)->len);
+  bp->build();
+  mpBulletCommandPlayer = new BulletCommandPlayer(bp, m_AtlasSprites[m_PlayerIndex]);
   
   b2Body *center_body = m_World->CreateBody(&bd);
   b2MouseJointDef mouse_joint_def;
@@ -423,6 +431,11 @@ int AncientDawn::Simulate() {
 
   if (bc != NULL) {
     bc->run((int)(m_SimulationTime * 100.0));
+  }
+  
+  if(mpBulletCommandPlayer)
+  {
+    mpBulletCommandPlayer->run((int)(m_SimulationTime * 100.0f));
   }
 
   /*
