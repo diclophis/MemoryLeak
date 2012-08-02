@@ -119,7 +119,6 @@ void AncientDawn::ResetGame() {
   m_CurrentSound = 0;
   m_PlayerIndex = 0;
   m_SpaceShipIndex = 0;
-  m_Force = false;
   m_TouchOffsetX = 0;
   m_TouchOffsetY = 0;
   m_LastRecycledIndex = -1;
@@ -444,12 +443,6 @@ void AncientDawn::Hit(float x, float y, int hitState) {
   {
     //Otherwise the player has thier finger on the screen and we are shooting
     mbPlayerIsShooting = true;
-  }
-
-  if (hitState == 2) {
-    m_Force = false;
-  } else {
-    m_Force = true;
   }
 }
 

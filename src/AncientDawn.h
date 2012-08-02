@@ -158,7 +158,6 @@ public:
   float m_PhysicsTimeout;
   float m_BulletSpeed;
   int m_Batch;
-  bool m_Force;
   b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
   
