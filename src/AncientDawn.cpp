@@ -38,7 +38,7 @@ void start_game(const char *s) {
   game->StartLevel(game->FirstLevel());
 }
 
-#define COUNT 18 * 20
+#define COUNT 18 * 10
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
@@ -132,6 +132,8 @@ void AncientDawn::ResetGame() {
   mbGameStarted = true;
   
   m_JavascriptTick = "";
+  
+  m_LastBulletCommandTurn = -1;
 }
 
 
@@ -488,92 +490,18 @@ int AncientDawn::_gameSimulate()
   
   StepPhysics();
 
-  if (bc) 
-  {
-    bc->run((int)(m_SimulationTime * 100.0));
-  }
-  
-  if(mpBulletCommandPlayer && mbPlayerIsShooting)
-  {
-    mpBulletCommandPlayer->run((int)(m_SimulationTime * 100.0f));
-  }
-
-  /*
-  { // bullets
-    int shot_this_tick = 0;
-    int boss_shot_this_tick = 0;
-
-    m_ShootTimeout += m_DeltaTime;
-    m_BossShootTimeout += m_DeltaTime;
-    
-    float theta = 0.0;
-    bool shoot_this_tick = (m_ShootTimeout > (1.0 / 10.0));
-    if (shoot_this_tick) {
-      m_ShootTimeout = 0.0;
+  int this_bulletml_turn = (int)(m_SimulationTime * 100.0);
+  if (this_bulletml_turn != m_LastBulletCommandTurn) {  
+    if (bc) {
+      bc->run(this_bulletml_turn);
     }
     
-    bool boss_shoot_this_tick = (m_BossShootTimeout > (1.0 / 10.0));
-    if (boss_shoot_this_tick) {
-      m_BossShootTimeout = 0.0;
+    if(mpBulletCommandPlayer && mbPlayerIsShooting)
+    {
+      mpBulletCommandPlayer->run(this_bulletml_turn);
     }
-    
-    float spread = -(M_PI * 0.5);
-
-    int last_used_index = 0;
-
-    for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {
-      AtlasSprite *sprite = (AtlasSprite *)body->GetUserData();
-      if (sprite != NULL) {
-        if (sprite == m_AtlasSprites[m_PlayerIndex]) {
-        } else if (sprite == m_AtlasSprites[m_SpaceShipIndex]) {
-        } else {
-          last_used_index++;
-          if (sprite->m_Parent == m_AtlasSprites[m_PlayerIndex]) {
-            if (shoot_this_tick && (last_used_index > m_LastRecycledIndex) && (!sprite->m_IsAlive) && shot_this_tick < 3) {
-              body->SetAwake(false);
-              body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-              float fx = (spread + (0.5 * M_PI * ((float)shot_this_tick))) * 2.0;
-              float fy = 50.0;
-              body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
-              sprite->m_IsAlive = true;
-              sprite->m_Life = 0.0;
-              sprite->m_Frame = 0;
-              shot_this_tick++;
-              m_LastRecycledIndex = last_used_index;
-              if (m_LastRecycledIndex >= (COUNT)) {
-                m_LastRecycledIndex = -1;
-              }
-            } else if ((sprite->m_Life > (0.3))) { //bullet live time
-              sprite->m_IsAlive = false;
-              body->SetAwake(false);
-            }
-          } else {
-            if (boss_shoot_this_tick && !sprite->m_IsAlive && boss_shot_this_tick < 10) {
-              sprite->m_Scale[0] = 10.0;
-              sprite->m_Scale[1] = 10.0;
-              body->SetAwake(false);
-              body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-              // x = r cos theta,
-              // y = r sin theta, 
-              float off = m_SimulationTime * 2.0;
-              float fx = m_BulletSpeed * fastSinf((M_PI / 2.0) - (theta + off));
-              float fy = m_BulletSpeed * fastSinf((theta + off));
-              body->ApplyLinearImpulse(b2Vec2(fx, fy), body->GetPosition());
-              sprite->m_IsAlive = true;
-              sprite->m_Life = 0.0;
-              sprite->m_Frame = 0;
-              boss_shot_this_tick++;
-              theta += (M_PI * 2.0) / 10.0;
-            } else if ((sprite->m_Life > (10.0))) {
-              body->SetAwake(false);
-              sprite->m_IsAlive = false;
-            }
-          }
-        }
-      }
-    }
+    m_LastBulletCommandTurn = this_bulletml_turn;
   }
-  */
 
   { // graphics
     for (b2Body* body = m_World->GetBodyList(); body; body = body->GetNext()) {

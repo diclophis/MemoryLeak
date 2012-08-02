@@ -26,6 +26,11 @@ static int game_index = 0;
 static short *outData;
 
 
+const char *push_and_pop(const char *s) {
+  return NULL;
+}
+
+
 static void CheckError(OSStatus error, const char *operation) {
   if (error == noErr) return;
   char str[20];
@@ -122,7 +127,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
           game_index = 0;
         }
 
-        Engine::Start(game_index, kWindowWidth, kWindowHeight); //, textures, models, levels, sounds, NULL);
+        Engine::Start(game_index, kWindowWidth, kWindowHeight, &push_and_pop); //, textures, models, levels, sounds, NULL);
       }
     }
     reset_down = !reset_down;
@@ -314,7 +319,7 @@ int main(int argc, char** argv) {
 
   [mainBundle release];
 
-  Engine::Start(game_index, kWindowWidth, kWindowHeight);
+  Engine::Start(game_index, kWindowWidth, kWindowHeight, &push_and_pop);
 
   audioUnitSetup();
 

@@ -175,8 +175,8 @@ const char *push_and_pop(const char *s) {
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView {
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('set_user_interaction_enabled', %d);", &set_user_interaction_enabled]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('start_game', %d);", &start_game]];
-  [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('doo_thing_one', %d);", &doo_thing_one]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.finalize();"]];
+  [self startAnimation];
 }
 
 

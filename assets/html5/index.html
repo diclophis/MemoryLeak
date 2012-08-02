@@ -8,25 +8,81 @@
         margin: 0;
         padding: 0;
       }
+
       body, html {
-        background-color: rgba(0, 0, 0, 0);
         width: 100%;
         height: 100%;
       }
+
       .invisible {
         opacity: 0;
       }
+
       .visible {
         opacity: 1;
       }
+
+      .transparent {
+        background-color: rgba(0, 0, 0, 0);
+      }
+
+      .translucent {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #main-menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        -webkit-transition-duration: 1.5s;
+      }
+
+      #title {
+        color: white;
+      }
+
+      #start {
+        color: green;
+      }
+
+      #hud {
+        color: red;
+      }
     </style>
   </head>
-  <body>
-    <h1 id="title">Metal Wolf</h1>
-    <h1 id="start">start</h1>
-    <span id="player_health"></span>
+  <body class="translucent">
+    <div id="overlay" class="transparent">
+      <div id="main-menu" class="invisible">
+        <h1 id="title">Metal Wolf</h1>
+        <h1 id="start">start</h1>
+      </div>
+      <div id="hud" class="invisible">
+        <span id="player_health"></span>
+      </div>
+    </div>
     <script>
       try {
+        var mainMenu = document.getElementById("main-menu");
+        var startButton = document.getElementById("start");
+        var playerHealthSpan = document.getElementById("player_health");
+        var hud = document.getElementById("hud");
+
+        var player_health = 100;
+
         var bridge = {
           queue: [],
           enqueue: function(function_pointer, string_argument) {
@@ -43,7 +99,7 @@
           },
           finalize: function() {
             console.log('done');
-            startButton.className = "visible";
+            mainMenu.className = "visible";
           }
         };
         
@@ -51,19 +107,17 @@
           bridge.echoecho("foo");
         };
 
-        var startButton = document.getElementById("start");
-        var playerHealthSpan = document.getElementById("player_health");
-
         startButton.onclick = function(e) {
           try {
+            document.body.className = "transparent";
+            hud.className = "visible transparent";
+            mainMenu.className = "invisible";
             bridge.set_user_interaction_enabled("0");
             bridge.start_game("1");
           } catch(e) {
             alert(e);
           }
         };
-        
-        var player_health = 100;
 
         (function tick() {
           try {

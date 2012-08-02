@@ -172,5 +172,7 @@ public:
   float m_WebViewTimeout;
   
   std::string m_JavascriptTick;
+  
+  int m_LastBulletCommandTurn;
 
 };
