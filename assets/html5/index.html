@@ -17,6 +17,7 @@
   </head>
   <body>
     <h1 id="wang">hello world</h1>
+    <h1 id="start">start</h1>
     <script>
       try {
         var wang = 0;
@@ -41,6 +42,14 @@
         
         var debug_alert = function() {
           bridge.echoecho("foo");
+        };
+
+        document.getElementById("start").onclick = function(e) {
+          try {
+            bridge.set_user_interaction_enabled("0");
+          } catch(e) {
+            alert(e);
+          }
         };
       } catch(e) {
         alert(e);

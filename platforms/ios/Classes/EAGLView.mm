@@ -9,9 +9,30 @@ static GLuint g_LastFrameBuffer = -1;
 static GLuint g_LastRenderBuffer = -1;
 static EAGLView *gView;
 
+void set_user_interaction_enabled(const char *s) {
+  BOOL enabled = [[NSString stringWithUTF8String:s] boolValue];
+  [[gView webView] setUserInteractionEnabled:enabled];
+}
+
 const char *push_and_pop(const char *s) {
-  //NSLog(@"push and pop %@", gView);
-  return [[[gView webView] stringByEvaluatingJavaScriptFromString:[NSString stringWithCString:s encoding:NSUTF8StringEncoding]] cStringUsingEncoding:NSUTF8StringEncoding];
+  NSString *wrapper = @"(function() { try { %@ } catch(e) { return e; } })();";
+  NSString *middle = [NSString stringWithFormat:@"%s; return bridge.dequeue();", s];
+  NSString *executer = [NSString stringWithFormat:wrapper, middle];
+  NSString *dequeued_message = [[gView webView] stringByEvaluatingJavaScriptFromString:executer];
+  if ([dequeued_message length] > 0) {
+    NSArray *parts = [dequeued_message componentsSeparatedByString:@"|"];
+    if ([parts count] == 2) {
+      unsigned int address_of_function = [[parts objectAtIndex:0] intValue];
+      if (address_of_function > 0) {
+        const char *(*pointer_to_function)(const char *) = (const char *(*)(const char *))address_of_function;
+        return pointer_to_function([[parts objectAtIndex:1] cStringUsingEncoding:NSUTF8StringEncoding]);
+      }
+    } else {
+      NSLog(@"Exception: %@", dequeued_message);
+    }
+  }
+  
+  return NULL;  
 }
 
 @implementation EAGLView
@@ -146,12 +167,13 @@ const char *push_and_pop(const char *s) {
   [webView setOpaque:NO];
   [webView loadRequest:[NSURLRequest requestWithURL:urlToIndexHtml]];
   [[[webView subviews] objectAtIndex:0] setBounces:NO];
-  [webView setUserInteractionEnabled:NO];
+  //[webView setUserInteractionEnabled:NO];
   [self addSubview:webView];
 }
 
 
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView {
+  [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('set_user_interaction_enabled', %d);", &set_user_interaction_enabled]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('doo_thing_one', %d);", &doo_thing_one]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.finalize();"]];
 }
