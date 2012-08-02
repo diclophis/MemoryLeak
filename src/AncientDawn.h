@@ -10,6 +10,7 @@ enum {
 
 enum {
   COLLIDE_PLAYER,
+  COLLIDE_ENEMY,
   COLLIDE_CULLING
 };
 
@@ -131,6 +132,7 @@ public:
   BulletHellWorld *m_World;
   GLESDebugDraw *m_DebugDraw;
   b2Body *m_PlayerBody;
+  b2Body *m_EnemyBody;
   b2MouseJoint *m_PlayerMouseJoint;
 
   // drawing
