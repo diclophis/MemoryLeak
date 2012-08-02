@@ -58,7 +58,7 @@ public:
   int isExtensionSupported(const char *extension);
  
   static void PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length);
-  static void Start(int i, int w, int h);
+  static void Start(int i, int w, int h, const char *(*push_pop_function)(const char *));
   static void CurrentGameDestroyFoos();
   static void CurrentGameCreateFoos();
   static void CurrentGamePause();
@@ -114,7 +114,9 @@ public:
   
   void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ);
   void identity(GLfloat *m);
-      
+  
+  const char *(*push_pop_function)(const char *);
+  
 #ifdef USE_GLES2
 
   void glTranslatef(float x, float y, float z);

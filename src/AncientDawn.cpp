@@ -2,15 +2,22 @@
 
 
 #include "MemoryLeak.h"
-
 #include "AncientDawn.h"
+#include "Bridge.h"
 
-#define COUNT 18 * 128
+static AncientDawn *game;
+
+void doo_thing_one(const char *s) {
+  LOGV("wtf %d\n", game->LevelProgress());
+}
+
+#define COUNT 18 * 20
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
   LoadSound(0);
   LoadTexture(1);
   StartLevel(FirstLevel());
+  game = this;
 }
 
 
@@ -65,6 +72,7 @@ void AncientDawn::StartLevel(int level_index) {
 
 
 void AncientDawn::ResetGame() {
+  m_WebViewTimeout = 0;
   m_Zoom = 1.0;
   m_Batch = 0;
   m_BulletSpeed = 10.0;
@@ -374,6 +382,13 @@ void AncientDawn::Hit(float x, float y, int hitState) {
 
 int AncientDawn::Simulate() {
 
+  m_WebViewTimeout += m_DeltaTime;
+  if (m_WebViewTimeout > (0.33)) {
+    push_pop_function("wang++; document.getElementById('wang').innerHTML = 'score: ' + wang;");
+    m_WebViewTimeout = 0.0;
+    return 1;
+  }
+  
   int chosen_state = 0;
   
   switch(LevelProgress()) {

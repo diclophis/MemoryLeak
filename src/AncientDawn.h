@@ -151,5 +151,7 @@ public:
   bool ReportFixture(b2Fixture* fixture);
 
   BulletCommand* bc;
+  
+  float m_WebViewTimeout;
 
 };

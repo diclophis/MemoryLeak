@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript" charset="utf-8" src="iscroll.js"></script>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body, html {
+        background-color: rgba(0, 0, 0, 0);
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="wang">hello world</h1>
+    <script>
+      try {
+        var wang = 0;
+        var bridge = {
+          queue: [],
+          enqueue: function(function_pointer, string_argument) {
+            this.queue.push(function_pointer + "|" + string_argument);
+          },
+          dequeue: function() {
+            dequeued_message = this.queue.shift();
+            return dequeued_message;
+          },
+          register: function(function_name, function_pointer) {
+            this[function_name] = function(string_argument) {
+              this.enqueue(function_pointer, string_argument);
+            };
+          },
+          finalize: function() {
+            console.log('done');
+          }
+        };
+        
+        var debug_alert = function() {
+          bridge.echoecho("foo");
+        };
+      } catch(e) {
+        alert(e);
+      }
+    </script>
+  </body>
+</html>

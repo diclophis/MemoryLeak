@@ -210,6 +210,7 @@
 		C2B995E615C3C24B000B84F7 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		C2B995E715C3C24B000B84F7 /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
 		C2D0791815C8DFCD00A10206 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MainWindow-iPad.xib"; sourceTree = "<group>"; };
+		C2DFD89015CA0B5B0077A734 /* Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bridge.h; sourceTree = "<group>"; };
 		C2E2EC961542A4760069C210 /* FileHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileHandle.h; sourceTree = "<group>"; };
 		C2E2EC971542A4760069C210 /* pnglite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pnglite.c; sourceTree = "<group>"; };
 		C2E2EC981542A4760069C210 /* pnglite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglite.h; sourceTree = "<group>"; };
@@ -809,6 +810,7 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C2DFD89015CA0B5B0077A734 /* Bridge.h */,
 				C2B9958315C3C24B000B84F7 /* BulletCommand.cpp */,
 				C2B9958415C3C24B000B84F7 /* BulletCommand.h */,
 				C2B9958515C3C24B000B84F7 /* bulletml */,

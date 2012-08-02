@@ -477,7 +477,7 @@ void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset,
 }
 
 
-void Engine::Start(int i, int w, int h) {
+void Engine::Start(int i, int w, int h, const char *(*push_pop_function)(const char *) = NULL) {
   if (games.size() == 0) {
     games.push_back(new GameImpl<AncientDawn>);
   }
@@ -487,9 +487,11 @@ void Engine::Start(int i, int w, int h) {
     delete m_CurrentGame;
   }
 
-  //try {
-    m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
-    m_CurrentGame->StartSimulation();
+  m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
+  m_CurrentGame->StartSimulation();
+  if (push_pop_function != NULL) {
+    m_CurrentGame->push_pop_function = push_pop_function;
+  }
   //} catch (std::exception& e) {
   //  LOGV("Exception is: %s %s", e.what());
   //  WarnAboutGameFailure("exception in construct\n");

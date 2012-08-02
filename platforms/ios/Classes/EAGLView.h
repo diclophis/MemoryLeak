@@ -15,7 +15,7 @@
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
 // Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
-@interface EAGLView : UIView {    
+@interface EAGLView : UIView<UIWebViewDelegate> {    
 
 
 @private
@@ -41,19 +41,22 @@
   // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view
   // OpenGL renderbuffers are simple interfaces for drawing to destinations other than the buffers provided to the GL by the window-system.
   GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
+  
+  UIWebView *webView;
 
 }
 
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
-
+@property (nonatomic, retain) UIWebView *webView;
 
 -(void)startAnimation;
 -(void)stopAnimation;
 -(void)drawView:(id)sender;
 -(void)startGame:(id)i;
 -(BOOL)wasActive;
+-(void)installWebView;
 
 
 @end

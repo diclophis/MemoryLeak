@@ -12,7 +12,7 @@
        <param>180-45+90*$rand</param>
       </actionRef>
     </action>
-    <wait>10</wait>
+    <wait>50</wait>
   </repeat>
 </action>
 

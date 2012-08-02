@@ -3,16 +3,22 @@
 
 #import "EAGLView.h"
 #import "MemoryLeak.h"
-
+#import "Bridge.h"
 
 static GLuint g_LastFrameBuffer = -1;
 static GLuint g_LastRenderBuffer = -1;
+static EAGLView *gView;
 
+const char *push_and_pop(const char *s) {
+  //NSLog(@"push and pop %@", gView);
+  return [[[gView webView] stringByEvaluatingJavaScriptFromString:[NSString stringWithCString:s encoding:NSUTF8StringEncoding]] cStringUsingEncoding:NSUTF8StringEncoding];
+}
 
 @implementation EAGLView
 
 
 @synthesize animating;
+@synthesize webView;
 @dynamic animationFrameInterval;
 
 
@@ -123,8 +129,31 @@ static GLuint g_LastRenderBuffer = -1;
       rewind(fd);
       Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
     }
+    
+    [self installWebView];
+    
+    gView = self;
   }
   return self;
+}
+
+
+-(void)installWebView {
+  NSURL *urlToIndexHtml = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"html" subdirectory:@"assets/html5"];
+  webView = [[UIWebView alloc] initWithFrame:[self frame]];
+  [webView setDelegate:self];
+  [webView setBackgroundColor:[UIColor clearColor]];
+  [webView setOpaque:NO];
+  [webView loadRequest:[NSURLRequest requestWithURL:urlToIndexHtml]];
+  [[[webView subviews] objectAtIndex:0] setBounces:NO];
+  [webView setUserInteractionEnabled:NO];
+  [self addSubview:webView];
+}
+
+
+- (void)webViewDidFinishLoad:(UIWebView *)theWebView {
+  [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('doo_thing_one', %d);", &doo_thing_one]];
+  [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.finalize();"]];
 }
 
 
@@ -252,7 +281,7 @@ static GLuint g_LastRenderBuffer = -1;
 
 
 -(void)startGame:(id)i {
-  Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height);
+  Engine::Start([i intValue], self.layer.frame.size.width, self.layer.frame.size.height, &push_and_pop);
   initAudio2();
 }
 
@@ -280,6 +309,9 @@ static GLuint g_LastRenderBuffer = -1;
   [context release];
   context = nil;
 	
+  [webView removeFromSuperview];
+  [webView release];
+  
   [super dealloc];
 }
 
