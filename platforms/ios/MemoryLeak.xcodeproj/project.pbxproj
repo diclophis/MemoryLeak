@@ -118,6 +118,7 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		29E68AA115CA3F0300FFFF25 /* MetalWolfParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalWolfParams.h; sourceTree = "<group>"; };
 		C23348D215827CA800F64C5E /* StateFoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateFoo.cpp; sourceTree = "<group>"; };
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
 		C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BulletHellWorld.cpp; sourceTree = "<group>"; };
@@ -810,6 +811,7 @@
 		FC1417731285415800166578 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				29E68AA115CA3F0300FFFF25 /* MetalWolfParams.h */,
 				C2DFD89015CA0B5B0077A734 /* Bridge.h */,
 				C2B9958315C3C24B000B84F7 /* BulletCommand.cpp */,
 				C2B9958415C3C24B000B84F7 /* BulletCommand.h */,

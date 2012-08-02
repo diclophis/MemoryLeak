@@ -3,6 +3,7 @@
 
 #include "MemoryLeak.h"
 #include "AncientDawn.h"
+#include "MetalWolfParams.h"
 #include "Bridge.h"
 
 static AncientDawn *game;
@@ -152,12 +153,13 @@ void AncientDawn::CreatePlayer() {
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerDraw, m_BulletDraw));
   m_AtlasSprites[m_PlayerIndex]->m_Fps = 60;
   m_AtlasSprites[m_PlayerIndex]->m_IsAlive = true;
-  m_AtlasSprites[m_PlayerIndex]->SetPosition(0.0, 0.0);
+  m_AtlasSprites[m_PlayerIndex]->SetPosition(MWParams::kPlayerStartX,
+                                             MWParams::kPlayerStartY);
   m_AtlasSprites[m_PlayerIndex]->SetScale(20.0, 20.0);
   m_AtlasSprites[m_PlayerIndex]->Build(18);
   m_SpriteCount++;
 
-  MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
+  MLPoint startPosition = MLPointMake(MWParams::kPlayerStartX / PTM_RATIO, MWParams::kPlayerStartY / PTM_RATIO);
 
   /*
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
@@ -208,7 +210,7 @@ void AncientDawn::CreatePlayer() {
   b2MouseJointDef mouse_joint_def;
   mouse_joint_def.bodyA = center_body;
   mouse_joint_def.bodyB = m_PlayerBody;
-  mouse_joint_def.target = b2Vec2(0.0, 0.0);
+  mouse_joint_def.target = b2Vec2(startPosition.x, startPosition.y);
   mouse_joint_def.maxForce = 1000000.0f * m_PlayerBody->GetMass();
   mouse_joint_def.dampingRatio = 0.0;
   mouse_joint_def.frequencyHz = 100.0;
