@@ -155,23 +155,22 @@
       #player-health-container {
         width: 50%;
         height: 100%;
-        border: 1px solid red;
       }
 
       #player-health-bar {
         width: 100%;
-        border: 1px solid yellow;
+        background-color: purple;
       }
 
       #enemy-health-container {
         width: 50%;
         height: 100%;
-        border: 1px solid red;
+        background-color: green;
       }
 
       #enemy-health-bar {
         width: 100%;
-        border: 1px solid yellow;
+        background-color: yellow;
       }
 
     </style>
@@ -232,7 +231,7 @@
         var inventory = document.getElementById("inventory");
 
         var player_health = 100;
-        var enemy_health = 100;
+        var enemy_health = 3000;
 
         var bridge = {
           queue: [],
@@ -332,9 +331,11 @@
         (function tick() {
           try {
             var player_health_percent = (player_health / 100.0) * 100.0;
-            var enemy_health_percent = (enemy_health / 100.0) * 100.0;
+            var enemy_health_percent = (enemy_health / 3000.0) * 100.0;
             playerHealthBar.style.width = player_health_percent + "%";
             enemyHealthBar.style.width = enemy_health_percent + "%";
+            playerHealthSpan.innerHTML = player_health;
+            enemyHealthSpan.innerHTML = enemy_health;
 
             setTimeout(tick, 32); //32ms is 30fps
           } catch(e) {
