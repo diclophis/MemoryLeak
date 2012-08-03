@@ -29,9 +29,12 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-void start_game(const char *s) {
-  LOGV("starting game");
-  game->StartLevel(game->FirstLevel());
+void start_game(const char *s) {  
+  try {
+    game->StartLevel(game->FirstLevel());
+  } catch(std::exception &e) {
+    LOGV("Exception at start game is: %s", e.what());
+  }
 }
 
 
