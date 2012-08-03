@@ -415,10 +415,10 @@
           <h1>
             weapons
           </h1>
-          <div>
+          <div id="weapons_curr_lvl">
             current level
           </div>
-          <div>
+          <div id="weapons_upgrade">
             upgrade
           </div>
         </div>
@@ -426,10 +426,10 @@
           <h1>
             armor
           </h1>
-          <div>
+          <div id="armor_curr_lvl">
             current level
           </div>
-          <div>
+          <div id="armor_upgrade">
             upgrade
           </div>
         </div>
@@ -437,10 +437,10 @@
           <h1>
             shields
           </h1>
-          <div>
+          <div id="shields_curr_lvl">
             current level
           </div>
-          <div>
+          <div id="shields_upgrade">
             upgrade
           </div>
         </div>
@@ -448,10 +448,10 @@
           <h1>
             hero drive
           </h1>
-          <div>
+          <div id="hero_drive_curr_lvl">
             current level
           </div>
-          <div>
+          <div id="hero_drive_upgrade">
             upgrade
           </div>
         </div>
@@ -530,9 +530,13 @@
         var weapon_confirm = document.getElementById("weapon_confirm");
           
         var armor_lv1 = document.getElementById("armor_lv1");
-        var armor_lv1 = document.getElementById("warmor_lv2");
-        var armor_lv1 = document.getElementById("armor_lv3");
+        var armor_lv2 = document.getElementById("armor_lv2");
+        var armor_lv3 = document.getElementById("armor_lv3");
         var armor_confirm = document.getElementById("armor_confirm");
+          
+          var shop_armor = document.getElementById("shop-armor");
+          
+          
 
         var player_health = 100;
         //default
@@ -606,6 +610,7 @@
 
         var show_shop = function() {
           shop.className = "visible transparent";
+          shop_armor.innerHTML = "current level " + armor_level;
         };
           
           
@@ -645,7 +650,7 @@
               show_hud();
               bridge.set_user_interaction_enabled("0");
               
-              bridge.start_game("1,100,100," + weapon_type);
+              bridge.start_game("1," + weapon_type +","+armor_type);
           } catch(e) {
               alert(e);
           }
