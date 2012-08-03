@@ -9,15 +9,15 @@
 <action label="top">
 <repeat> <times> 1000000000 </times>
 <action>
-    <fire>
+   <fire>
         <direction>90</direction>
-        <speed>15.0</speed>
+        <speed>20.0</speed>
         <bullet>
             <action>
                 <wait>3</wait>
                 <fire>
                     <direction>180</direction>
-                    <speed>15.0</speed>
+                    <speed>40.0</speed>
                     <bullet/>
                 </fire>
                 <vanish/>
@@ -26,13 +26,43 @@
     </fire>
     <fire>
         <direction>-90</direction>
-        <speed>15.0</speed>
+        <speed>20.0</speed>
         <bullet>
             <action>
                 <wait>3</wait>
                 <fire>
                     <direction>180</direction>
-                    <speed>15.0</speed>
+                    <speed>40.0</speed>
+                    <bullet/>
+                </fire>
+                <vanish/>
+            </action>
+        </bullet>
+    </fire>
+    <fire>
+        <direction>-90</direction>
+        <speed>20.0</speed>
+        <bullet>
+            <action>
+                <wait>6</wait>
+                <fire>
+                    <direction>180</direction>
+                    <speed>40.0</speed>
+                    <bullet/>
+                </fire>
+                <vanish/>
+            </action>
+        </bullet>
+    </fire>
+    <fire>
+        <direction>90</direction>
+        <speed>20.0</speed>
+        <bullet>
+            <action>
+                <wait>6</wait>
+                <fire>
+                    <direction>180</direction>
+                    <speed>40.0</speed>
                     <bullet/>
                 </fire>
                 <vanish/>
