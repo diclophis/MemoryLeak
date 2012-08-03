@@ -38,7 +38,7 @@ namespace MWParams
     static float kEnemyStartY = 365.0f;
     static float kEnemyHalfPixelDimX = 384.0f; //2*381 = 768
     static float kEnemyHalfPixelDimY = 100.0f;
-    static float kEnemyStartingHealth = 230000.0f; //This will need to be retrieved from the server at some point
+    static float kEnemyStartingHealth = 5000.0f; //This will need to be retrieved from the server at some point
     static float kEnemyBulletDamageAmount = 5.0f;
     
     //Level
