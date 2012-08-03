@@ -30,7 +30,6 @@ std::string string_format(const std::string &fmt, ...) {
 static AncientDawn *game;
 
 void start_game(const char *s) {
-  LOGV("starting game");
   game->StartLevel(game->FirstLevel());
 }
 
@@ -306,11 +305,10 @@ void AncientDawn::CreateSpaceShip() {
   }
  
   fseek(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->off, 0);
-
   BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->len);
   bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
-
+  bc->EnableShooting(true);
 }
 
 

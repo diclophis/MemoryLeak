@@ -11,7 +11,7 @@ namespace MWParams
     static float kPlayerStartY = -400.0f;
     static float kPlayerStartHeatlh = 100.0f;
     static float kPlayerBulletDamage = 5.0f;
-    static int kPlayerGunMLFileIndex = EPlayerGunsMLFileName_LVL2;
+    static int kPlayerGunMLFileIndex = EPlayerGunsMLFileName_LVL1;
     
     //Enemy
     static float kEnemyStartX = 0.0f;
