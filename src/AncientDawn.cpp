@@ -5,6 +5,7 @@
 #include "AncientDawn.h"
 #include "MetalWolfParams.h"
 #include "Bridge.h"
+#include <string>
 
 std::string string_format(const std::string &fmt, ...) {
   int size=100;
@@ -29,21 +30,30 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-void doo_thing_one(const char *s) {
+void doo_thing_one(char *s) {
   LOGV("wtf %d\n", game->LevelProgress());
 }
 
-void start_game(const char *s) {
-  LOGV("starting game");
-  game->StartLevel(game->FirstLevel());
+void start_game(const char* s) {    
+    char str[100];
+    strncpy(str, s, sizeof(str));
+    char* params[100] = {0};
+    unsigned int index = 0;
+    params[index] = strtok(str,",");
+    
+    while(params[index] != 0)
+    {
+        ++index;
+        params[index] = strtok(NULL, ",");
+    }
+    game->StartLevel(params);
 }
 
 #define COUNT 18 * 10
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
-, m_PlayerHealth (MWParams::kPlayerStartHeatlh)
-, m_PlayerArmor(MWParams::kPlayerStartArmor)
+, m_EnemyHealth(MWParams::kEnemyStartingHealth)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
 , mbPlayerIsShooting(false)
@@ -90,17 +100,29 @@ void AncientDawn::DestroyFoos() {
   ResetStateFoo();
 }
 
-
-void AncientDawn::StartLevel(int level_index) {
-  m_CurrentLevel = level_index;
-
+void AncientDawn::StartLevel(char* params[]) {
+  
+  int level = 0; 
+  std::istringstream isLevel(params[0]);
+  isLevel >> level;
+    
+  m_CurrentLevel = level;
+   
+  int health = 0;
+  std::istringstream is(params[1]);
+  is >> health;
+    
+  int armor = 0;
+  std::istringstream is2(params[2]);
+  is2 >> armor;
+    
   ResetStateFoo();
   ResetGame();
   CreateFoos();
   CreateWorld();
   CreateDebugDraw();
   CreateContactListener();
-  CreatePlayer();
+  CreatePlayer(health,armor);
   CreateSpaceShip();
   CreateLandscape();
 }
@@ -194,7 +216,10 @@ void AncientDawn::StopLevel() {
 }
 
 
-void AncientDawn::CreatePlayer() {
+void AncientDawn::CreatePlayer(int health, int armor) {
+    
+  m_PlayerHealth = health;
+  m_PlayerArmor = armor;
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerDraw, m_BulletDraw));
@@ -282,7 +307,7 @@ void AncientDawn::CreateSpaceShip() {
   m_AtlasSprites[m_SpaceShipIndex]->m_Fps = 0;
   m_AtlasSprites[m_SpaceShipIndex]->m_IsAlive = true;
   m_AtlasSprites[m_SpaceShipIndex]->SetPosition(MWParams::kEnemyStartX, MWParams::kEnemyStartY);
-  m_AtlasSprites[m_SpaceShipIndex]->SetScale(381.0, 100.0);
+  m_AtlasSprites[m_SpaceShipIndex]->SetScale(MWParams::kEnemyHalfPixelDimX, MWParams::kEnemyHalfPixelDimY);
   m_AtlasSprites[m_SpaceShipIndex]->Build(COUNT);
   m_SpriteCount++;
 
@@ -353,13 +378,13 @@ void AncientDawn::RestartLevel() {
   //} else {
   //  m_CurrentLevel = -1;
   //}
-  StartLevel(m_CurrentLevel);
+  //StartLevel(m_CurrentLevel);
 }
 
 
 void AncientDawn::StartNextLevel() {
   StopLevel();
-  StartLevel(NextLevel());
+  //StartLevel(NextLevel());
 }
 
 
@@ -388,8 +413,13 @@ void AncientDawn::StepPhysics() {
     aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
     m_World->QueryAABB(this, aabb);
     
-    //m_ColliderSwitch = COLLIDE_ENEMY;
-    //aabb.lowerBound.Set((
+    m_ColliderSwitch = COLLIDE_ENEMY;
+    aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                        (-MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+    aabb.upperBound.Set((MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                        (MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+    m_World->QueryAABB(this, aabb);
+                        
     
     m_ColliderSwitch = COLLIDE_CULLING;
     
@@ -547,25 +577,33 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         //sprite->m_Scale[0] = 40.0;
         //sprite->m_Scale[1] = 40.0;
         sprite->m_IsAlive = false;
-        if (m_PlayerArmor >= 0) {
-            m_PlayerArmor -= MWParams::kEnemyBulletDamageAmount;
-        }
-        else
-        {
-            if(m_PlayerHealth > 0.0f) 
-            {
-                m_PlayerHealth -= MWParams::kEnemyBulletDamageAmount;
-            }
-            else
-            {
-                m_PlayerHealth = 0.0f;
-            }
-            m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
-        }
+
+          if (m_PlayerArmor > 0) 
+          {
+              m_PlayerArmor -= MWParams::kEnemyBulletDamageAmount;
+          }
+          else 
+          {
+              m_PlayerHealth = MAX(0.0f, m_PlayerHealth - MWParams::kEnemyBulletDamageAmount);
+              m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
+          }
       }
-      
-      break;
     }
+    break;
+    
+    case COLLIDE_ENEMY:
+    {
+        bool bCollidingSpriteIsPlayerBullet = (sprite->m_IsAlive &&
+                                                sprite->m_Parent == m_AtlasSprites[m_PlayerIndex]);
+        if(bCollidingSpriteIsPlayerBullet)
+        {
+            sprite->m_IsAlive = false;
+        
+            m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kPlayerBulletDamage);
+            m_JavascriptTick += string_format("enemy_health = %d;", (int)m_EnemyHealth);
+        }
+    }
+    break;
 
     case COLLIDE_CULLING:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {

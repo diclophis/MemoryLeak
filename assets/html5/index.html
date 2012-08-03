@@ -8,6 +8,13 @@
         margin: 0;
         padding: 0;
         -webkit-transition-duration: 0.66s;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      div {
+        display: -webkit-box;
       }
 
       body, html {
@@ -16,11 +23,13 @@
       }
 
       .invisible {
-        opacity: 0;
+        display: none;
+        z-index: -1;
       }
 
       .visible {
-        opacity: 1;
+        display: -webkit-box;
+        z-index: 1;
       }
 
       .transparent {
@@ -37,85 +46,100 @@
         left: 0;
         width: 100%;
         height: 100%;
+        overflow: hidden;
+      }
+
+      #inventory {
+        width: 100%;
+        height: 10%;
+        background-color: cyan;
+        -webkit-backface-visibility: hidden;
+      }
+
+      .visible #inventory {
       }
 
       #main-menu {
         position: absolute;
-        top: 0;
+        top: 10%;
         left: 0;
         width: 100%;
-        height: 100%;
-        display: -webkit-box;
+        height: 90%;
         -webkit-box-orient: vertical;
         -webkit-box-align: center;
         -webkit-box-pack: center;
+        -webkit-backface-visibility: hidden;
       }
 
       #main-menu div {
         width: 75%;
       }
 
-      #inventory {
-        height: 10%;
-        background-color: cyan;
+      #shop {
+        color: orange;
+        background-color: grey;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        width: 100%;
+        height: 90%;
+        -webkit-backface-visibility: hidden;
       }
 
       #title {
         color: white;
-        height: 20%;
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: red;
       }
 
       #flavor {
-        height: 30%;
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: blue;
         color: white;
-        opacity: 0.0;
       }
 
       .visible #flavor {
         -webkit-transition-delay: 1s;
-        opacity: 1.0;
       }
 
-      #start {
+      #start-button {
         height: 20%;
         color: green;
-        -webkit-transform: translate3d(300%, 0, 0);
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: yellow;
         -webkit-transition-delay: 2s;
       }
 
-      .visible #start {
+      .visible #start-button {
         -webkit-transform: translate3d(0%, 0, 0);
       }
 
-      #shop {
+      .invisible #start-button {
+        -webkit-transform: translate3d(500%, 0, 0);
+      }
+
+      #shop-button {
         height: 20%;
         color: blue;
-        -webkit-transform: translate3d(-300%, 0, 0);
         text-align: center;
-        display: -webkit-box;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: purple;
         -webkit-transition-delay: 2s;
       }
 
-      .visible #shop {
+      .visible #shop-button {
         -webkit-transform: translate3d(0%, 0, 0);
+      }
+
+      .invisible #shop-button {
+        -webkit-transform: translate3d(-500%, 0, 0);
       }
 
       #hud {
@@ -126,19 +150,190 @@
         left: 0;
         width: 100%;
         height: 5%;
-        display: -webkit-box;
       }
+        
+      #shop-button {
+        height: 20%;
+        color: blue;
+        text-align: center;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        background-color: purple;
+        -webkit-transition-delay: 2s;
+      }
+        #customization-screen {
+            height: 100%;
+            width:100%;
+            color: blue;
+            text-align: center;
+            -webkit-box-align: center;
+            -webkit-box-pack: center;
+            background-color: red;
+            -webkit-transition-delay: 2s;
+        }
+        #weaponTitle {
+            position:absolute;
+            height: 3%%;
+            left:5%;
+            width:20%;
+            color: blue;
+            text-align: center;
+            top:8%;
+            background-color: green;
+        }
+        #weapon_lv1 {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:5%;
+            color: blue;
+            text-align: center;
+            top:10%;
+            background-color: purple;
+        }
+        #weapon_lv2 {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:25%;
+            color: blue;
+            text-align: center;
+            top:10%;
+            background-color: purple;
+        }
+        #weapon_lv3 {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:45.2%;
+            color: blue;
+            text-align: center;
+            top:10%;
+            background-color: purple;
+        }
+        #weapon_confirm {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:70.2%;
+            color: blue;
+            text-align: center;
+            top:10%;
+            background-color: purple;
+        }
+        #weapon_descr {
+            position:absolute;
+            height: 8%;
+            width:85%;
+            left:5%;
+            color: blue;
+            text-align: center;
+            top:22%;
+            background-color: green;
+        }
+        
+        #backToMainMenu {
+            height: 10%;
+            position:absolute;
+            text-align: center;
+            background-color: blue;
+            width:25%;
+            left:25%;
+            height:5%;
+            top:80%;
+            color:red;
+        }
+
+        #armor_title {
+            position:absolute;
+            height: 3%%;
+            left:5%;
+            width:20%;
+            color: blue;
+            text-align: center;
+            top:42%;
+            background-color: green;
+        }
+        #armor_lv1 {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:5%;
+            color: blue;
+            text-align: center;
+            top:45%;
+            background-color: purple;
+        }
+        #armor_lv2 {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:25%;
+            color: blue;
+            text-align: center;
+            top:45%;
+            background-color: purple;
+        }
+        #armor_lv3 {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:45.2%;
+            color: blue;
+            text-align: center;
+            top:45%;
+            background-color: purple;
+        }
+        #armor_confirm {
+            position:absolute;
+            height: 8%;
+            width:20%;
+            left:70.2%;
+            color: blue;
+            text-align: center;
+            top:45%;
+            background-color: purple;
+        }
+        #armor_descr {
+            position:absolute;
+            height: 8%;
+            width:85%;
+            left:5%;
+            color: blue;
+            text-align: center;
+            top:57%;
+            background-color: green;
+        }
+        #Fight{
+            height: 10%;
+            position:absolute;
+            text-align: center;
+            background-color: green;
+            width:25%;
+            left:55%;
+            height:5%;
+            top:80%;
+        }
+
     </style>
   </head>
   <body class="translucent">
     <div id="overlay" class="transparent">
-      <div id="main-menu" class="invisible">
-        <div id="inventory">
-          <span id="pennies">
-          </span>
-          <span id="fuel">
-          </span>
+      <div id="hud" class="invisible">
+        <span id="player_health"></span>
+      </div>
+      <div id="shop" class="invisible">
+        <div id="back-to-main-from-shop-button">
+          main
         </div>
+      </div>
+      <div id="inventory" class="visible">
+        <span id="pennies">
+        </span>
+        <span id="fuel">
+        </span>
+      </div>
+      <div id="main-menu" class="invisible">
         <div id="title">
           <h1>
             Metal Wolf
@@ -147,21 +342,70 @@
         <div id="flavor">
           Lorem Ipsum
         </div>
-        <div id="start">start</div>
-        <div id="shop">shop</div>
+        <div id="start-button">start</div>
+        <div id="shop-button">shop</div>
       </div>
-      <div id="hud" class="invisible">
-        <span id="player_health"></span>
+        
+        
+      <div id="customization-screen" class="invisible"> 
+
+          <div id="backToMainMenu">Main Menu</div>
+          <div id="main-menu-hud">999.999 pennies   0/20 Fuel</div>
+          <div id="weaponTitle">Weapons</div>
+          
+          <div id="weapon_lv1" level="1">Guns</div>
+          <div id="weapon_lv2" level="0">Lasers</div>
+          <div id="weapon_lv3" level="2">Missiles</div>
+    
+          <div id="weapon_confirm">OK!</div>
+    
+          <div id="weapon_descr">Lorem Ipsum</div>
+    
+          <div id="armor_title">Armor</div>
+          <div id="armor_lv1" level="0">Lvl 1</div>
+          <div id="armor_lv2" level="1">Lvl 2</div>
+          <div id="armor_lv3" level="2">Lvl 3</div>
+    
+          <div id="armor_confirm">OK!</div>
+    
+          <div id="armor_descr">Lorem Ipsum</div>
+    
+    
+          <div id="Fight">Fight!</div>
       </div>
     </div>
     <script>
       try {
-        var mainMenu = document.getElementById("main-menu");
-        var startButton = document.getElementById("start");
+
+        var startButton = document.getElementById("start-button");
+        var shopButton = document.getElementById("shop-button");
+        var backToMainFromShopButton = document.getElementById("back-to-main-from-shop-button");
+
         var playerHealthSpan = document.getElementById("player_health");
+
+        var mainMenu = document.getElementById("main-menu");
         var hud = document.getElementById("hud");
+        var shop = document.getElementById("shop");
+        var inventory = document.getElementById("inventory");
+        
+          
+        var customizationScreen = document.getElementById("customization-screen");
+        var backToMainMenu = document.getElementById("backToMainMenu");
+        var weapon_lv1 = document.getElementById("weapon_lv1");
+        var weapon_lv2 = document.getElementById("weapon_lv2");
+        var weapon_lv3 = document.getElementById("weapon_lv3");
+        var weapon_confirm = document.getElementById("weapon_confirm");
+          
+        var armor_lv1 = document.getElementById("armor_lv1");
+        var armor_lv1 = document.getElementById("warmor_lv2");
+        var armor_lv1 = document.getElementById("armor_lv3");
+        var armor_confirm = document.getElementById("armor_confirm");
 
         var player_health = 100;
+        //default
+        var armor_type = 200;
+          var weapon_type = 0;
+          
 
         var bridge = {
           queue: [],
@@ -178,8 +422,8 @@
             };
           },
           finalize: function() {
-            console.log('done');
             mainMenu.className = "visible";
+            return true;
           }
         };
         
@@ -187,24 +431,148 @@
           bridge.echoecho("foo");
         };
 
-        startButton.onclick = function(e) {
-          try {
-            document.body.className = "transparent";
-            hud.className = "visible transparent";
-            mainMenu.className = "invisible";
-            bridge.set_user_interaction_enabled("0");
-            bridge.start_game("1");
-          } catch(e) {
-            alert(e);
-          }
-        };
-
         var present_results = function() {
           document.body.className = "translucent";
           hud.className = "invisible";
           mainMenu.className = "visible";
           bridge.set_user_interaction_enabled("1");
+            
+
         };
+
+        var hide_body = function() {
+          document.body.className = "transparent";
+        };
+
+        var show_body = function() {
+          document.body.className = "translucent";
+        };
+
+        var hide_main_menu = function() {
+          mainMenu.className = "invisible";
+        };
+
+        var show_main_menu = function() {
+          mainMenu.className = "visible";
+        };
+
+        var hide_hud = function() {
+          hud.className = "invisible";
+        };
+
+        var show_hud = function() {
+          hud.className = "visible transparent";
+        };
+
+        var hide_shop = function() {
+          shop.className = "invisible";
+        };
+
+        var show_shop = function() {
+          shop.className = "visible transparent";
+        };
+          
+          
+        var hide_customizationScreen=function(){
+            customizationScreen.className = "invisible";
+        }
+          
+        var show_customizationScreen=function(){
+            customizationScreen.className = "visible";
+        }
+          
+        var hide_inventory = function() {
+          inventory.className = "invisible";
+        };
+
+        var show_inventory = function() {
+          inventory.className = "visible transparent";
+        };
+
+        startButton.onclick = function(e) {
+        
+            hide_main_menu();
+            hide_inventory();
+            show_customizationScreen();
+          
+        };
+
+        shopButton.onclick = function(e) {
+          hide_main_menu();
+          show_shop();
+        };
+          
+        Fight.onclick = function(e){
+          try {
+              hide_body();
+              hide_main_menu();
+              hide_inventory();
+              hide_customizationScreen();
+              show_hud();
+              bridge.set_user_interaction_enabled("0");
+              
+              bridge.start_game("1,100,100," + weapon_type);
+          } catch(e) {
+              alert(e);
+          }
+        }
+          
+        
+        weapon_lv1.onclick = function(e){
+            weapon_type =  this.getAttribute("level");
+        }
+          
+          weapon_lv2.onclick = function(e){
+              weapon_type =  this.getAttribute("level");
+
+              
+          }
+          
+          weapon_lv3.onclick = function(e){
+              weapon_type =  this.getAttribute("level");
+
+              
+          }
+          
+          weapon_confirm.onclick = function(e){
+              
+          }
+          
+          armor_lv1.onclick = function(e){
+              armor_type =  this.getAttribute("level");
+
+              
+          }
+          
+          armor_lv2.onclick = function(e){
+              armor_type =  this.getAttribute("level");
+
+              
+          }
+          
+          armor_lv3.onclick = function(e){
+              warmor_type =  this.getAttribute("level");
+
+              
+          }
+          
+          
+          armor_confirm.onclick = function(e){
+             // weapon_type =  this.getAttribute("level");
+          }
+          
+        
+
+        backToMainFromShopButton.onclick = function(e) {
+          hide_shop();
+          show_main_menu();
+        };
+          
+          backToMainMenu.onclick = function(e){
+              hide_customizationScreen();
+              show_main_menu();
+          };
+
 
         (function tick() {
           try {

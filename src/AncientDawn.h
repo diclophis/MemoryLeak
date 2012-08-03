@@ -21,10 +21,10 @@ enum EBulletMLFileIndex {
 };
 
 //TODO names
-enum EArmorType {
-    EArmorType_1 = 0,
-    EArmorType_2,
-    EArmorType_3,
+enum EArmorLevel {
+    EArmorLevel_1 = 0,
+    EArmorLevel_2,
+    EArmorLevel_3,
 };
 
 class AncientDawn : public Engine, b2QueryCallback {
@@ -93,12 +93,12 @@ public:
   // * Create the Player
   // * Create the spaceships
   // * Create the Landscape
-  void StartLevel(int level_index);
+  void StartLevel(char* params[]);
   void ResetGame();
   void CreateWorld();
   void CreateDebugDraw();
   void CreateContactListener();
-  void CreatePlayer();
+  void CreatePlayer(int health, int armor);
   void CreateSpaceShip();
   void CreateLandscape();
 
@@ -176,6 +176,9 @@ public:
   float m_PlayerHealth;
   int m_PlayerArmor;
   bool mbPlayerIsShooting;
+  
+  // Enemy Logic
+  float m_EnemyHealth;
 
   BulletCommand* bc;
   BulletCommand* mpBulletCommandPlayer;
