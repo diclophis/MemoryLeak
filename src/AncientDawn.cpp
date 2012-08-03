@@ -59,6 +59,7 @@ void change_sound(const char *s) {
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
+, m_PlayerHealth (100.0f)
 , m_EnemyHealth(MWParams::kEnemyStartingHealth)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
@@ -161,7 +162,7 @@ void AncientDawn::ResetGame() {
   m_LastRecycledIndex = -1;
   
   //Initialize Player
-  m_PlayerHealth = MWParams::kPlayerStartHeatlh;
+  m_PlayerHealth = MWParams::kPlayerStartHealth[0];
   
   //Initilize Game State
   mbGameStarted = true;
@@ -621,7 +622,7 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         if(bCollidingSpriteIsPlayerBullet)
         {
             sprite->m_IsAlive = false;
-            m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kPlayerBulletDamage);
+            m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kGunBulletDamage[MWParams::kPlayerGun]);
             m_JavascriptTick += string_format("enemy_health = %d;", (int)m_EnemyHealth);
         }
     }
