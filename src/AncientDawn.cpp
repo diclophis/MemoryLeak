@@ -51,7 +51,7 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_EnemyBody(NULL)
 , m_PlayerBulletIsLaser(false)
 {
-  //LoadSound(0);
+  LoadSound(0);
   LoadTexture(0);
   LoadTexture(1);
   game = this;
@@ -378,7 +378,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > 0.125);
+  m_World->m_Solve = (m_SolveTimeout > 0.2);
 
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
     
