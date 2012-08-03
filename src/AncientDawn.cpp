@@ -246,7 +246,7 @@ void AncientDawn::CreatePlayer() {
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
     bullet->m_Fps = 0; 
-    bullet->SetScale(20.0, 50.0);
+    bullet->SetScale(10.0, 20.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;
@@ -473,6 +473,11 @@ b2Body *AncientDawn::BodyCollidingWithPlayer(b2Body *a, b2Body *b) {
 
 
 void AncientDawn::Hit(float x, float y, int hitState) {
+  if(!mbGameStarted)
+  {
+    return;
+  }
+  
   float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
 	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
   if (hitState == 0) {
@@ -546,7 +551,7 @@ int AncientDawn::_gameSimulate()
     bc->EnableShooting(true);
   }
   
-  int this_bulletml_turn = (int)(m_SimulationTime * 100.0);
+  int this_bulletml_turn = m_LastBulletCommandTurn + 1; //(int)(m_SimulationTime * 100.0);
   if (this_bulletml_turn != m_LastBulletCommandTurn) {  
     if (bc) {
       bc->run(this_bulletml_turn);

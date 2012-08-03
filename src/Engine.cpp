@@ -266,7 +266,7 @@ int Engine::Run() {
     if (m_GameState > 1) {
       //paused
     } else {
-      float steps = 4.0; //4 for overdrive
+      float steps = 1.0; //4 for overdrive
       m_DeltaTime = step / steps;
       for (int j=0; j<(int)steps; j++) {
         if (Active()) {
@@ -633,26 +633,31 @@ void Engine::LoadTexture(int i) {
   for(int i=0; i < tex.width*tex.height*tex.bpp; ++i) {
     data[i] = 0;
   }
-  png_get_data(&tex, data);
+  //png_print_info(&tex);
+  int r = png_get_data(&tex, data);
+  if (r == PNG_NO_ERROR) {
+    glGenTextures(1, &textureHandle);
+    glBindTexture(GL_TEXTURE_2D, textureHandle);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  glGenTextures(1, &textureHandle);
-  glBindTexture(GL_TEXTURE_2D, textureHandle);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //TODO: investigate pixel swizzling
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    m_Textures.push_back(textureHandle);
+
+  } else {
+    LOGV("wtf %s\n", png_error_string(r));
+  }
   
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  //TODO: investigate pixel swizzling
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-  glBindTexture(GL_TEXTURE_2D, 0);
-
   free(data);
 
-  m_Textures.push_back(textureHandle);
 }
 
 /*

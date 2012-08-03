@@ -7,16 +7,16 @@
 
   <action label="top">
     <repeat>
-      <times>1000000000</times>
+      <times>9999</times>
       <action>
         <fire>
           <direction>180</direction>
-          <speed>25.0</speed>
+          <speed>50.0</speed>
           <bullet/>
         </fire>
-        <wait>3</wait>
+        <wait>1</wait>
       </action>
     </repeat>
-  </action> 
+  </action>
 
 </bulletml>
