@@ -14,7 +14,7 @@
   <speed>15.0</speed>
   <bullet/>
  </fire>
- <wait>25</wait>
+ <wait>20</wait>
 </action>
 </repeat>
 </action> 
