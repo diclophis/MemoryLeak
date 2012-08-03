@@ -401,6 +401,7 @@
           hide_inventory();
           show_hud();
           try {
+            bridge.change_sound("1");
             bridge.set_user_interaction_enabled("0");
             bridge.start_game("1");
           } catch(e) {

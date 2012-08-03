@@ -33,6 +33,10 @@ void start_game(const char *s) {
   game->StartLevel(game->FirstLevel());
 }
 
+void change_sound(const char *s) {
+  int sound_index = atoi(s);
+  game->ChangeSound(sound_index);
+}
 
 #define COUNT 18 * 20
 
@@ -46,7 +50,9 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_EnemyBody(NULL)
 , m_PlayerBulletIsLaser(false)
 {
-  //LoadSound(0);
+  LoadSound(0);
+  LoadSound(1);
+  ChangeSound(0);
   LoadTexture(0);
   LoadTexture(1);
   game = this;
@@ -120,7 +126,6 @@ void AncientDawn::ResetGame() {
   m_DebugDrawToggle = false;
   m_TouchedLeft = false;
   m_TouchedRight = false;
-  m_CurrentSound = 0;
   m_PlayerIndex = 0;
   m_SpaceShipIndex = 0;
   m_TouchOffsetX = 0;
