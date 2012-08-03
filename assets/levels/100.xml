@@ -5,17 +5,18 @@
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
 <!-- LASER LVL 1 -->
 
-<action label="top">
-<repeat> <times>1000000000</times>
-<action>
- <fire>
-  <direction>180</direction>
-  <speed>70.0</speed>
-  <bullet/>
- </fire>
- <wait>1</wait>
-</action>
-</repeat>
-</action> 
+  <action label="top">
+    <repeat>
+      <times>1000000000</times>
+      <action>
+        <fire>
+          <direction>180</direction>
+          <speed>25.0</speed>
+          <bullet/>
+        </fire>
+        <wait>3</wait>
+      </action>
+    </repeat>
+  </action> 
 
 </bulletml>

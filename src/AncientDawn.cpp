@@ -104,8 +104,8 @@ void AncientDawn::StartLevel(int level_index) {
   CreateFoos();
   CreateWorld();
   CreateDebugDraw();
-  CreatePlayer();
   CreateSpaceShip();
+  CreatePlayer();
   CreateLandscape();
 }
 
@@ -375,7 +375,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > 0.25);
+  m_World->m_Solve = (m_SolveTimeout > 0.125);
 
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
     
@@ -386,31 +386,34 @@ void AncientDawn::StepPhysics() {
     aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
     m_World->QueryAABB(this, aabb);
     
-    m_ColliderSwitch = COLLIDE_ENEMY;
-    aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
-                        (-MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
-    aabb.upperBound.Set((MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
-                        (MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
+    {
+      m_ColliderSwitch = COLLIDE_ENEMY;
+      aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                          (-MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+      aabb.upperBound.Set((MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                          (MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+    }
                         
     
-    m_ColliderSwitch = COLLIDE_CULLING;
-    
-    aabb.lowerBound.Set(((m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
-    aabb.upperBound.Set((((m_ScreenWidth * 0.5) + 150.0) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-    
-    aabb.lowerBound.Set((((-m_ScreenWidth * 0.5) - 150.0) / PTM_RATIO), ((-m_ScreenHeight * 0.5) / PTM_RATIO));
-    aabb.upperBound.Set(((-m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-    
-    aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
-    aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((m_ScreenHeight * 0.5) + 150.0) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-    
-    aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), (((-m_ScreenHeight * 0.5) - 150.0) / PTM_RATIO));
-    aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((-m_ScreenHeight * 0.5)) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
+    {
+      m_ColliderSwitch = COLLIDE_CULLING;
+      aabb.lowerBound.Set(((m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5) + 150.0) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((((-m_ScreenWidth * 0.5) - 150.0) / PTM_RATIO), ((-m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set(((-m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((m_ScreenHeight * 0.5) + 150.0) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), (((-m_ScreenHeight * 0.5) - 150.0) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((-m_ScreenHeight * 0.5)) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+    }
   }
 }
 
@@ -571,7 +574,6 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         if(bCollidingSpriteIsPlayerBullet)
         {
             sprite->m_IsAlive = false;
-        
             m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kPlayerBulletDamage);
             m_JavascriptTick += string_format("enemy_health = %d;", (int)m_EnemyHealth);
         }

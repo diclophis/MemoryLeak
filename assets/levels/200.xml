@@ -6,17 +6,18 @@
 
 <!-- GUNS LVL 1 -->
 
-<action label="top">
-<repeat> <times>1000000000</times>
-<action>
- <fire>
-  <direction>180</direction>
-  <speed>15.0</speed>
-  <bullet/>
- </fire>
- <wait>10</wait>
-</action>
-</repeat>
-</action> 
+  <action label="top">
+    <repeat>
+      <times>1000000000</times>
+      <action>
+       <fire>
+        <direction>180</direction>
+        <speed>1.0</speed>
+        <bullet/>
+       </fire>
+       <wait>10</wait>
+      </action>
+    </repeat>
+  </action> 
 
 </bulletml>
