@@ -1604,7 +1604,7 @@
 					"$(SRCROOT)/../../src/include",
 					"$(SRCROOT)/../../src/oolua",
 				);
-				IBC_PLUGIN_SEARCH_PATHS = "$(SRCROOT)/../../src/ $(SRCROOT)/../../src/bulletml/ $(SRCROOT)/../../src/yajl $(SRCROOT)/../../src/yajl/api $(SRCROOT)/../../src/octree $(SRCROOT)/../../src/include/libmodplug $(SRCROOT)/../../src/include/ares $(SRCROOT)/../../src/include $(SRCROOT)/../../src/oolua";
+				IBC_PLUGIN_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = (
@@ -1716,7 +1716,7 @@
 					"$(SRCROOT)/../../src/include",
 					"$(SRCROOT)/../../src/oolua",
 				);
-				IBC_PLUGIN_SEARCH_PATHS = "$(SRCROOT)/../../src/ $(SRCROOT)/../../src/bulletml/ $(SRCROOT)/../../src/yajl $(SRCROOT)/../../src/yajl/api $(SRCROOT)/../../src/octree $(SRCROOT)/../../src/include/libmodplug $(SRCROOT)/../../src/include/ares $(SRCROOT)/../../src/include $(SRCROOT)/../../src/oolua";
+				IBC_PLUGIN_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "MemoryLeak-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = (
