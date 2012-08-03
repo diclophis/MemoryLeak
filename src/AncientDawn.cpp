@@ -87,17 +87,7 @@ void AncientDawn::CreateFoos() {
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(1), 1, 2, 1, 2, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
   m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
-
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  
-  //TODO: reset foos on restart for android
-  /*
-  if (m_SimulationTime > 0.0) {
-    for (int i=0; i<m_SpriteCount; i++) {
-      m_AtlasSprites[i]->ResetFoo(m_PlayerDraw, m_BulletDraw);
-    }
-  }
-  */
 }
 
 
@@ -195,7 +185,7 @@ void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int 
     
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = (MWParams::kPlayerGun >= EPlayerGunType_LASER_LVL1 && MWParams::kPlayerGun < EPlayerGunType_GUNS_LVL1);
+  m_PlayerBulletIsLaser = (mePlayerGunType >= EPlayerGunType_LASER_LVL1 && mePlayerGunType < EPlayerGunType_GUNS_LVL1);
 }
 
 
@@ -260,7 +250,7 @@ void AncientDawn::CreatePlayer() {
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
     bullet->m_Fps = 0; 
-    bullet->SetScale(20.0, 50.0);
+    bullet->SetScale(10.0, 20.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;
@@ -439,8 +429,8 @@ void AncientDawn::StepPhysics() {
     
     {
       m_ColliderSwitch = COLLIDE_PLAYER;
-      aabb.lowerBound.Set((-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-      aabb.upperBound.Set((8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.lowerBound.Set((-3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.upperBound.Set((3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
       m_World->QueryAABB(this, aabb);
     }
       
@@ -487,6 +477,11 @@ b2Body *AncientDawn::BodyCollidingWithPlayer(b2Body *a, b2Body *b) {
 
 
 void AncientDawn::Hit(float x, float y, int hitState) {
+  if(!mbGameStarted)
+  {
+    return;
+  }
+  
   float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
 	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
   if (hitState == 0) {
@@ -567,7 +562,7 @@ int AncientDawn::_gameSimulate()
     bc->EnableShooting(true);
   }
   
-  int this_bulletml_turn = (int)(m_SimulationTime * 100.0);
+  int this_bulletml_turn = m_LastBulletCommandTurn + 1; //(int)(m_SimulationTime * 100.0);
   if (this_bulletml_turn != m_LastBulletCommandTurn) {  
     if (bc) {
       bc->run(this_bulletml_turn);
