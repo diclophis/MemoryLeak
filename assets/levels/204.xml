@@ -17,7 +17,7 @@
           <wait>3</wait>
           <fire>
             <direction>180</direction>
-            <speed>15.0</speed>
+            <speed>40.0</speed>
             <bullet/>
           </fire>
           <vanish/>
@@ -32,7 +32,7 @@
                 <wait>3</wait>
                 <fire>
                     <direction>180</direction>
-                    <speed>15.0</speed>
+                    <speed>40.0</speed>
                     <bullet/>
                 </fire>
                 <vanish/>
@@ -47,7 +47,7 @@
                 <wait>3</wait>
                 <fire>
                     <direction>180</direction>
-                    <speed>15.0</speed>
+                    <speed>40.0</speed>
                     <bullet/>
                 </fire>
                 <vanish/>
@@ -62,7 +62,7 @@
                 <wait>6</wait>
                 <fire>
                     <direction>180</direction>
-                    <speed>15.0</speed>
+                    <speed>40.0</speed>
                     <bullet/>
                 </fire>
                 <vanish/>
@@ -77,7 +77,7 @@
                 <wait>6</wait>
                 <fire>
                     <direction>180</direction>
-                    <speed>15.0</speed>
+                    <speed>40.0</speed>
                     <bullet/>
                 </fire>
                 <vanish/>
