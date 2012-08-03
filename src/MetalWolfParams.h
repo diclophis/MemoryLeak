@@ -9,15 +9,27 @@ namespace MWParams
     //Player
     static float kPlayerStartX = 0.0f;
     static float kPlayerStartY = -400.0f;
-    static float kPlayerStartArmorType1 = 10.0f;
-    static float kPlayerStartArmorType2 = 20.0f;
-    static float kPlayerStartArmorType3 = 30.0f;
     static EPlayerGunType kPlayerGun = EPlayerGunType_GUNS_LVL3;
     
     static float kPlayerStartHealth [] = {
-        100.0f,
-        200.0f,
-        300.0f,
+        100.0f, //Level 1 Health
+        200.0f, //Level 2 Health
+        300.0f, //Level 3 Health
+        };
+        
+    static int kNumArmorLevels = 3;
+    static int kNumArmorTypes = 3;
+    static float kPlayerStartArmor [] = {
+        10.0f, //Level 1 Armor Light
+        20.0f, //Level 2 Armor Light
+        30.0f, //Level 3 Armor Light
+        20.0f, //Level 1 Armor Medium
+        30.0f, //Level 2 Armor Medium
+        40.0f, //Level 3 Armor Medium
+        30.0f, //Level 1 Armor Heavy
+        40.0f, //Level 2 Armor Heavy
+        50.0f, //Level 3 Armor Heavy
+        
         };
     
     //Enemy
@@ -34,10 +46,10 @@ namespace MWParams
     //Weapon Damage Data
     static float kGunBulletDamage[] = {
         5.0f, //EPlayerGunType_LASER_LVL1
-//        5.0f, //EPlayerGunType_LASER_LVL2
-//        5.0f, //EPlayerGunType_LASER_LVL3
-//        5.0f, //EPlayerGunType_LASER_LVL4
-//        5.0f, //EPlayerGunType_LASER_LVL5
+        5.0f, //EPlayerGunType_LASER_LVL2
+        5.0f, //EPlayerGunType_LASER_LVL3
+        5.0f, //EPlayerGunType_LASER_LVL4
+        5.0f, //EPlayerGunType_LASER_LVL5
         5.0f, //EPlayerGunType_GUNS_LVL1
         5.0f, //EPlayerGunType_GUNS_LVL2
         5.0f, //EPlayerGunType_GUNS_LVL3

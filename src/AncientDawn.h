@@ -15,13 +15,16 @@ enum {
   COLLIDE_CULLING
 };
 
+static const int kNumberOfGunTypes = 3;
+static const int kNumberOfGunLevels = 5;
+
 enum EPlayerGunType
 {
     EPlayerGunType_LASER_LVL1 = 0,
-//    EPlayerGunType_LASER_LVL2,
-//    EPlayerGunType_LASER_LVL3,
-//    EPlayerGunType_LASER_LVL4,
-//    EPlayerGunType_LASER_LVL5,
+    EPlayerGunType_LASER_LVL2,
+    EPlayerGunType_LASER_LVL3,
+    EPlayerGunType_LASER_LVL4,
+    EPlayerGunType_LASER_LVL5,
     EPlayerGunType_GUNS_LVL1,
     EPlayerGunType_GUNS_LVL2,
     EPlayerGunType_GUNS_LVL3,
@@ -43,10 +46,10 @@ enum EEnemyBulletMLFileName {
 
 enum EPlayerLaserMLFileName {
     EPlayerLaserMLFileName_LVL1 = EEnemyBulletMLFileIndex_COUNT,
-/*    EPlayerLaserMLFileName_LVL2 = EPlayerLaserMLFileName_LVL1,  //add logic to GetGunMLFileIndexFromGunType when you uncomment this
-    EPlayerLaserMLFileName_LVL3
-    EPlayerLaserMLFileName_LVL4,
-    EPlayerLaserMLFileName_LVL5,*/
+    EPlayerLaserMLFileName_LVL2 = EPlayerLaserMLFileName_LVL1,  //add logic to GetGunMLFileIndexFromGunType when you uncomment this
+    EPlayerLaserMLFileName_LVL3 = EPlayerLaserMLFileName_LVL1,
+    EPlayerLaserMLFileName_LVL4 = EPlayerLaserMLFileName_LVL1,
+    EPlayerLaserMLFileName_LVL5 = EPlayerLaserMLFileName_LVL1,
     EPlayerLaserMLFileName_UPTO_COUNT,
 };
 
@@ -143,10 +146,10 @@ public:
   // * Create the spaceships
   // * Create the Landscape
   void StartLevel(char* params[]);
-  void ResetGame();
+  void ResetGame(int weaponType, int weaponLevel, int armorType, int armorLevel, int healthLevel, int heroBoostLevel);
   void CreateWorld();
   void CreateDebugDraw();
-  void CreatePlayer(int health, int armor);
+  void CreatePlayer();
   void CreateSpaceShip();
   void CreateLandscape();
 
@@ -222,9 +225,10 @@ public:
   
   // Player Logic
   float m_PlayerHealth;
-  int m_PlayerArmor;
+  float m_PlayerArmor;
   bool mbPlayerIsShooting;
-
+  
+  EPlayerGunType mePlayerGunType;
   
   // Enemy Logic
   float m_EnemyHealth;

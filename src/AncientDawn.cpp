@@ -30,10 +30,6 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-void doo_thing_one(char *s) {
-  LOGV("wtf %d\n", game->LevelProgress());
-}
-
 void start_game(const char* s) {    
     char str[100];
     strncpy(str, s, sizeof(str));
@@ -66,6 +62,7 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , mbGameStarted(false)
 , m_EnemyBody(NULL)
 , m_PlayerBulletIsLaser(false)
+, mePlayerGunType(EPlayerGunType_LASER_LVL1)
 {
   LoadSound(0);
   LoadSound(1);
@@ -123,27 +120,44 @@ void AncientDawn::StartLevel(char* params[]) {
   isLevel >> level;
     
   m_CurrentLevel = level;
-   
-  int health = 0;
-  std::istringstream is(params[1]);
-  is >> health;
-    
-  int armor = 0;
-  std::istringstream is2(params[2]);
-  is2 >> armor;
+  
+  int weaponType = 0;
+  std::istringstream isWeaponType(params[1]);
+  isWeaponType >> weaponType;   
+  
+  int weaponLvl = 0;
+  std::istringstream isWeaponLvl(params[2]);
+  isWeaponLvl >> weaponLvl;
+  
+  int armorType = 0;
+  std::istringstream isArmorType(params[3]);
+  isArmorType >> armorType;
+  
+    int armorLevel = 0;
+  std::istringstream isArmorLevel(params[4]);
+  isArmorLevel >> armorLevel;
+  
+  int healthLevel = 0;
+  std::istringstream isHealthLevel(params[5]);
+  isHealthLevel >> healthLevel;
+  
+  int heroBoostLvl = 0;
+  std::istringstream isHeroBoostLvl(params[6]);
+  isHeroBoostLvl >> heroBoostLvl;
     
   ResetStateFoo();
-  ResetGame();
+  ResetGame(weaponType, weaponLvl, armorType, armorLevel, healthLevel, heroBoostLvl);
   CreateFoos();
   CreateWorld();
   CreateDebugDraw();
-  CreatePlayer(health,armor);
+  CreatePlayer();
   CreateSpaceShip();
   CreateLandscape();
 }
 
 
-void AncientDawn::ResetGame() {
+void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int armorLevel, int healthLevel, int heroBoostLevel) {
+
   m_WebViewTimeout = 0;
   m_Zoom = 1.0;
   m_Batch = 0;
@@ -162,7 +176,13 @@ void AncientDawn::ResetGame() {
   m_LastRecycledIndex = -1;
   
   //Initialize Player
-  m_PlayerHealth = MWParams::kPlayerStartHealth[0];
+  m_PlayerHealth = MWParams::kPlayerStartHealth[healthLevel];
+  m_PlayerArmor = MWParams::kPlayerStartArmor[(armorType * MWParams::kNumArmorTypes) + armorLevel];
+  
+  m_JavascriptTick += string_format("player_health_max = %d;", (int)m_PlayerHealth);
+  m_JavascriptTick += string_format("player_armor_max = %d;", (int)m_PlayerArmor);
+  
+  mePlayerGunType = (EPlayerGunType)((weaponType * kNumberOfGunTypes) + weaponLevel);
   
   //Initilize Game State
   mbGameStarted = true;
@@ -218,10 +238,7 @@ void AncientDawn::StopLevel() {
 }
 
 
-void AncientDawn::CreatePlayer(int health, int armor) {
-    
-  m_PlayerHealth = health;
-  m_PlayerArmor = armor;
+void AncientDawn::CreatePlayer() {
 
   m_PlayerIndex = m_SpriteCount;
   m_AtlasSprites.push_back(new SpriteGun(m_PlayerDraw, m_BulletDraw));
@@ -604,7 +621,8 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         sprite->m_IsAlive = false;
           if (m_PlayerArmor > 0) 
           {
-              m_PlayerArmor -= MWParams::kEnemyBulletDamageAmount;
+              m_PlayerArmor = MAX(0.0f, m_PlayerArmor - MWParams::kEnemyBulletDamageAmount);
+              m_JavascriptTick += string_format("player_armor = %d;", (int)m_PlayerArmor);
           }
           else 
           {
@@ -663,10 +681,10 @@ int AncientDawn::GetGunMLFileIndexFromGunType(EPlayerGunType ePlayerGunType)
 {
     switch (ePlayerGunType) {
         case EPlayerGunType_LASER_LVL1: return EPlayerLaserMLFileName_LVL1; break;
-//        case EPlayerGunType_LASER_LVL2: return EPlayerLaserMLFileName_LVL2; break;
-//        case EPlayerGunType_LASER_LVL3: return EPlayerLaserMLFileName_LVL3; break;
-//        case EPlayerGunType_LASER_LVL4: return EPlayerLaserMLFileName_LVL4; break;
-//        case EPlayerGunType_LASER_LVL5: return EPlayerLaserMLFileName_LVL5; break;
+        case EPlayerGunType_LASER_LVL2: return EPlayerLaserMLFileName_LVL2; break;
+        case EPlayerGunType_LASER_LVL3: return EPlayerLaserMLFileName_LVL3; break;
+        case EPlayerGunType_LASER_LVL4: return EPlayerLaserMLFileName_LVL4; break;
+        case EPlayerGunType_LASER_LVL5: return EPlayerLaserMLFileName_LVL5; break;
         case EPlayerGunType_GUNS_LVL1: return EPlayerGunsMLFileName_LVL1; break;
         case EPlayerGunType_GUNS_LVL2: return EPlayerGunsMLFileName_LVL2; break;
         case EPlayerGunType_GUNS_LVL3: return EPlayerGunsMLFileName_LVL3; break;
