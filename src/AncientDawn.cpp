@@ -63,6 +63,7 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_EnemyBody(NULL)
 , m_PlayerBulletIsLaser(false)
 , mePlayerGunType(EPlayerGunType_LASER_LVL1)
+, mbTouchStarted(false)
 {
   LoadSound(0);
   LoadSound(1);
@@ -186,6 +187,8 @@ void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int 
   m_LastBulletCommandTurn = -1;
   
   m_PlayerBulletIsLaser = (mePlayerGunType >= EPlayerGunType_LASER_LVL1 && mePlayerGunType < EPlayerGunType_GUNS_LVL1);
+  
+  mbTouchStarted = false;
 }
 
 
@@ -521,6 +524,14 @@ void AncientDawn::Hit(float x, float y, int hitState) {
   {
     return;
   }
+  
+  if(hitState == 0 && mbTouchStarted)
+  {
+    return; //ignore new touch begins if touch started is true.
+  }
+  
+  mbTouchStarted = (hitState == 0);
+
   
   float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
 	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;

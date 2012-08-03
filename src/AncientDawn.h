@@ -235,6 +235,7 @@ public:
   float m_PlayerHealth;
   float m_PlayerArmor;
   bool mbPlayerIsShooting;
+  bool mbTouchStarted;
   
   EPlayerGunType mePlayerGunType;
   
