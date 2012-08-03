@@ -128,6 +128,8 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
 	m_IsPushingAudio = false;
 
+  m_UniformMatrixSet = 0;
+
 
 
   m_CurrentSound = 0;
@@ -220,7 +222,9 @@ void Engine::DrawScreen(float rotation) {
 
     ortho(ProjectionMatrix, a, b, c, d, e, f);
 
+    //if (m_UniformMatrixSet++ < 100) {
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+    //}
 
 #endif
 

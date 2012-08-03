@@ -118,7 +118,9 @@ public:
   const char *(*push_pop_function)(const char *);
   
   void ChangeSound(int);
-  
+
+  int m_UniformMatrixSet;
+
 #ifdef USE_GLES2
 
   void glTranslatef(float x, float y, float z);
