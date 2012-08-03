@@ -15,6 +15,27 @@ enum {
   COLLIDE_CULLING
 };
 
+enum EPlayerGunType
+{
+    EPlayerGunType_LASER_LVL1 = 0,
+//    EPlayerGunType_LASER_LVL2,
+//    EPlayerGunType_LASER_LVL3,
+//    EPlayerGunType_LASER_LVL4,
+//    EPlayerGunType_LASER_LVL5,
+    EPlayerGunType_GUNS_LVL1,
+    EPlayerGunType_GUNS_LVL2,
+    EPlayerGunType_GUNS_LVL3,
+    EPlayerGunType_GUNS_LVL4,
+    EPlayerGunType_GUNS_LVL5,
+    EPlayerGunType_MISSLE_LVL1,
+    EPlayerGunType_MISSLE_LVL2,
+    EPlayerGunType_MISSLE_LVL3,
+    EPlayerGunType_MISSLE_LVL4,
+    EPlayerGunType_MISSLE_LVL5,
+    EPlayerGunType_COUNT,
+    
+};
+
 enum EEnemyBulletMLFileName {
     EEnemyBulletMLFileIndex_ENEMY = 0,
     EEnemyBulletMLFileIndex_COUNT,
@@ -22,7 +43,7 @@ enum EEnemyBulletMLFileName {
 
 enum EPlayerLaserMLFileName {
     EPlayerLaserMLFileName_LVL1 = EEnemyBulletMLFileIndex_COUNT,
-/*    EPlayerLaserMLFileName_LVL2 = EPlayerLaserMLFileName_LVL1,
+/*    EPlayerLaserMLFileName_LVL2 = EPlayerLaserMLFileName_LVL1,  //add logic to GetGunMLFileIndexFromGunType when you uncomment this
     EPlayerLaserMLFileName_LVL3
     EPlayerLaserMLFileName_LVL4,
     EPlayerLaserMLFileName_LVL5,*/
@@ -142,6 +163,9 @@ public:
   // Render callbacks
 	void RenderModelPhase();
 	void RenderSpritePhase();
+    
+  // Gun Service
+  int GetGunMLFileIndexFromGunType(EPlayerGunType ePlayerGunType);
 
 
   foofoo *m_PlayerDraw;

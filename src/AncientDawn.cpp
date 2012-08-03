@@ -137,7 +137,7 @@ void AncientDawn::ResetGame() {
   
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = (MWParams::kPlayerGunMLFileIndex >= EPlayerLaserMLFileName_LVL1 && MWParams::kPlayerGunMLFileIndex < EPlayerLaserMLFileName_UPTO_COUNT);
+  m_PlayerBulletIsLaser = (MWParams::kPlayerGun >= EPlayerGunType_LASER_LVL1 && MWParams::kPlayerGun < EPlayerGunType_GUNS_LVL1);
 }
 
 
@@ -244,9 +244,11 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   
-  fseek(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->off, 0);
+  int iGunMLFileIndex = GetGunMLFileIndexFromGunType(MWParams::kPlayerGun);
+  
+  fseek(m_LevelFileHandles->at(iGunMLFileIndex)->fp, m_LevelFileHandles->at(iGunMLFileIndex)->off, 0);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(iGunMLFileIndex)->fp, m_LevelFileHandles->at(iGunMLFileIndex)->len);
   bp->build();
   mpBulletCommandPlayer = new BulletCommand(bp, m_AtlasSprites[m_PlayerIndex]);
   
@@ -611,4 +613,28 @@ void AncientDawn::RenderSpritePhase() {
   m_Batches[1]->m_NumBatched = 0;
   RenderSpriteRange(0, 2, m_Batches[1]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
+}
+
+int AncientDawn::GetGunMLFileIndexFromGunType(EPlayerGunType ePlayerGunType)
+{
+    switch (ePlayerGunType) {
+        case EPlayerGunType_LASER_LVL1: return EPlayerLaserMLFileName_LVL1; break;
+//        case EPlayerGunType_LASER_LVL2: return EPlayerLaserMLFileName_LVL2; break;
+//        case EPlayerGunType_LASER_LVL3: return EPlayerLaserMLFileName_LVL3; break;
+//        case EPlayerGunType_LASER_LVL4: return EPlayerLaserMLFileName_LVL4; break;
+//        case EPlayerGunType_LASER_LVL5: return EPlayerLaserMLFileName_LVL5; break;
+        case EPlayerGunType_GUNS_LVL1: return EPlayerGunsMLFileName_LVL1; break;
+        case EPlayerGunType_GUNS_LVL2: return EPlayerGunsMLFileName_LVL2; break;
+        case EPlayerGunType_GUNS_LVL3: return EPlayerGunsMLFileName_LVL3; break;
+        case EPlayerGunType_GUNS_LVL4: return EPlayerGunsMLFileName_LVL4; break;
+        case EPlayerGunType_GUNS_LVL5: return EPlayerGunsMLFileName_LVL5; break;
+        case EPlayerGunType_MISSLE_LVL1: return EPlayerMissleMLFileIndex_LVL1; break;
+        case EPlayerGunType_MISSLE_LVL2: return EPlayerMissleMLFileIndex_LVL2; break;
+        case EPlayerGunType_MISSLE_LVL3: return EPlayerMissleMLFileIndex_LVL3; break;
+        case EPlayerGunType_MISSLE_LVL4: return EPlayerMissleMLFileIndex_LVL4; break;
+        case EPlayerGunType_MISSLE_LVL5: return EPlayerMissleMLFileIndex_LVL5; break;
+        case EPlayerGunType_COUNT:
+        default: return EPlayerLaserMLFileName_LVL1;
+        };
+        
 }
