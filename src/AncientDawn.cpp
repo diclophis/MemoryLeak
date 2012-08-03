@@ -175,10 +175,8 @@ void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int 
   m_JavascriptTick += string_format("player_health_max = %d;", (int)m_PlayerHealth);
   m_JavascriptTick += string_format("player_armor_max = %d;", (int)m_PlayerArmor);
   m_JavascriptTick += string_format("player_armor = %d;", (int)m_PlayerArmor);
-  
 
-  
-  mePlayerGunType = (EPlayerGunType)((weaponType * kNumberOfGunTypes) + weaponLevel);
+  mePlayerGunType = (EPlayerGunType)((weaponType * kNumberOfGunLevels) + weaponLevel);
   
   //Initilize Game State
   mbGameStarted = true;
@@ -292,7 +290,7 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   
-  int iGunMLFileIndex = GetGunMLFileIndexFromGunType(MWParams::kPlayerGun);
+  int iGunMLFileIndex = GetGunMLFileIndexFromGunType(mePlayerGunType);
   
   fseek(m_LevelFileHandles->at(iGunMLFileIndex)->fp, m_LevelFileHandles->at(iGunMLFileIndex)->off, 0);
 
