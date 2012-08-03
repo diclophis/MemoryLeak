@@ -87,17 +87,7 @@ void AncientDawn::CreateFoos() {
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(1), 1, 2, 1, 2, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
   m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
-
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
-  
-  //TODO: reset foos on restart for android
-  /*
-  if (m_SimulationTime > 0.0) {
-    for (int i=0; i<m_SpriteCount; i++) {
-      m_AtlasSprites[i]->ResetFoo(m_PlayerDraw, m_BulletDraw);
-    }
-  }
-  */
 }
 
 
@@ -435,8 +425,8 @@ void AncientDawn::StepPhysics() {
     
     {
       m_ColliderSwitch = COLLIDE_PLAYER;
-      aabb.lowerBound.Set((-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-      aabb.upperBound.Set((8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.lowerBound.Set((-3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.upperBound.Set((3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (3.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
       m_World->QueryAABB(this, aabb);
     }
       
