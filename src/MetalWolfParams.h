@@ -19,7 +19,7 @@ namespace MWParams
         200.0f, //Level 5 Health
         };
         
-    static int kNumArmorLevels = 5;
+    //static int kNumArmorLevels = 5;
     static int kNumArmorTypes = 3;
     static float kPlayerStartArmor [] = {
         10.0f, //Level 1 Armor Light
