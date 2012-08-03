@@ -22,7 +22,7 @@ enum EEnemyBulletMLFileName {
 
 enum EPlayerLaserMLFileName {
     EPlayerLaserMLFileName_LVL1 = EEnemyBulletMLFileIndex_COUNT,
-/*    EPlayerLaserMLFileName_LVL2,
+/*    EPlayerLaserMLFileName_LVL2 = EPlayerLaserMLFileName_LVL1,
     EPlayerLaserMLFileName_LVL3
     EPlayerLaserMLFileName_LVL4,
     EPlayerLaserMLFileName_LVL5,*/
