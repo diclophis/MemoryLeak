@@ -15,6 +15,7 @@
 
       div {
         display: -webkit-box;
+        text-align: center;
       }
 
       body, html {
@@ -94,6 +95,9 @@
         left: 0;
         width: 100%;
         height: 90%;
+        -webkit-box-orient: vertical;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
         -webkit-backface-visibility: hidden;
       }
 
@@ -105,16 +109,27 @@
         opacity: 1;
       }
 
+      #shop div {
+        width: 75%;
+      }
+
+      #shop div#back-to-main-from-shop-button {
+        background-color: yellow;
+        width: 25%;
+        height: 10%;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+
       #title {
         color: white;
-        text-align: center;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: red;
       }
 
       #flavor {
-        text-align: center;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: blue;
@@ -127,7 +142,6 @@
       #start-button {
         height: 20%;
         color: green;
-        text-align: center;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: yellow;
@@ -215,7 +229,20 @@
       </div>
       <div id="shop" class="invisible">
         <div id="back-to-main-from-shop-button">
-          main
+        </div>
+        <div id="shop-weapons">
+          <h1>
+            weapons
+          </h1>
+        </div>
+        <div id="shop-armor">
+          armor
+        </div>
+        <div id="shop-shields">
+          shields
+        </div>
+        <div id="shop-drive">
+          hero drive
         </div>
       </div>
       <div id="inventory" class="invisible">
