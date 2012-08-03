@@ -2,12 +2,8 @@
 
 #include "MemoryLeak.h"
 
-//BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun *b) : BulletMLRunner(bp) {
-//  LOGV("BulletCommand::BulletCommand just parser, with sprite\n");
-//  turn = 0;
-//}
 
-BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(bp), bullet(b) {
+BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(bp), bullet(b), mbShootingEnabled(false) {
   //LOGV("BulletCommand::BulletCommand MAINNNN %x bullet=%x\n", this, bullet);
   turn = 0;
   m_LastUsedBullet = -1;
@@ -16,7 +12,7 @@ BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(
 }
 
 
-BulletCommand::BulletCommand(BulletMLState* bs, SpriteGun* b, AtlasSprite *c) : BulletMLRunner(bs), bullet(b), m_FollowBullet(c) {
+BulletCommand::BulletCommand(BulletMLState* bs, SpriteGun* b, AtlasSprite *c) : BulletMLRunner(bs), bullet(b), m_FollowBullet(c), mbShootingEnabled(false) {
   //LOGV("BulletCommand::BulletCommand with state SUB: %x bullet = %x != m_Follow = %x\n", this, bullet, m_FollowBullet);
   turn = 0;
   m_LastUsedBullet = -1;
@@ -28,9 +24,17 @@ BulletCommand::~BulletCommand() {
   LOGV("dealloc bullet\n");
 }
 
+void BulletCommand::EnableShooting(bool bEnableShoot)
+{
+    mbShootingEnabled = bEnableShoot;
+}
+
 
 void BulletCommand::createSimpleBullet(double direction, double speed) {
+  if(!mbShootingEnabled) return;
+
   //LOGV("createSimple MAIN==?? %x with state gonna center on follow? %x\n", this, m_FollowBullet);
+  
   AtlasSprite *going_to_be_shot = Consume();
   if (m_FollowBullet) {
     Shoot(going_to_be_shot, direction, speed, m_FollowBullet);
@@ -41,9 +45,13 @@ void BulletCommand::createSimpleBullet(double direction, double speed) {
 
 
 void BulletCommand::createBullet(BulletMLState* state, double direction, double speed) {
-  //LOGV("createBullet MAIN==?? %x with state\n", this);
+  if(!mbShootingEnabled) return;
+  
+  //LOGV("createBullet MAIN==?? %x %x\n", this, m_FollowBullet);
+
   AtlasSprite *going_to_be_shot = Consume();
   BulletCommand *bc = new BulletCommand(state, bullet, going_to_be_shot);
+  bc->EnableShooting(mbShootingEnabled);
   m_SubBulletCommands.push_back(bc);
   bc->Shoot(going_to_be_shot, direction, speed, bullet);
 }
@@ -64,8 +72,8 @@ void BulletCommand::Shoot(AtlasSprite *sprite, double direction, double speed, A
   
   b2Body *body = (b2Body *)sprite->m_UserData;
 
-  sprite->m_Scale[0] = 10.0;
-  sprite->m_Scale[1] = 10.0;
+  //sprite->m_Scale[0] = 10.0;
+  //sprite->m_Scale[1] = 10.0;
 
   body->SetAwake(false);
   body->SetTransform(b2Vec2(center->m_Position[0] / PTM_RATIO, center->m_Position[1] / PTM_RATIO), 0.0);

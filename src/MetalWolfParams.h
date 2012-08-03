@@ -1,3 +1,9 @@
+#ifndef METALWOLFPARAMS_H
+#define METALWOLFPARAMS_H
+
+#include "AncientDawn.h"
+
+
 namespace MWParams
 {
     //Player
@@ -8,6 +14,7 @@ namespace MWParams
     static float kPlayerStartArmorType2 = 20.0f;
     static float kPlayerStartArmorType3 = 30.0f;
     static float kPlayerBulletDamage = 5.0f;
+    static int kPlayerGunMLFileIndex = EPlayerGunsMLFileName_LVL4;
     
     //Enemy
     static float kEnemyStartX = 0.0f;
@@ -19,6 +26,10 @@ namespace MWParams
     
     //Level
     static float kNextLevelTime = 120.0f;
+    
+    //Weapon Damage Data
 
 
 }
+
+#endif

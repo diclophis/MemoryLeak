@@ -1,5 +1,6 @@
 // Jon Bardin GPL
-
+#ifndef ANCIENTDAWN_H
+#define ANCIENTDAWN_H
 
 enum {
   CONTINUE_LEVEL,
@@ -14,10 +15,27 @@ enum {
   COLLIDE_CULLING
 };
 
-enum EBulletMLFileIndex {
-    EBulletMLFileIndex_ENEMY = 0,
-    EBulletMLFileIndex_PLAYER,
-    EBulletMLFileIndex_COUNT,
+enum EEnemyBulletMLFileName {
+    EEnemyBulletMLFileIndex_ENEMY = 0,
+    EEnemyBulletMLFileIndex_COUNT,
+};
+
+enum EPlayerLaserMLFileName {
+    EPlayerLaserMLFileName_LVL1 = EEnemyBulletMLFileIndex_COUNT,
+/*    EPlayerLaserMLFileName_LVL2,
+    EPlayerLaserMLFileName_LVL3,
+    EPlayerLaserMLFileName_LVL4,
+    EPlayerLaserMLFileName_LVL5,*/
+    EPlayerLaserMLFileName_UPTO_COUNT,
+};
+
+enum EPlayerGunsMLFileName {
+    EPlayerGunsMLFileName_LVL1 = EPlayerLaserMLFileName_UPTO_COUNT,
+    EPlayerGunsMLFileName_LVL2,
+    EPlayerGunsMLFileName_LVL3,
+    EPlayerGunsMLFileName_LVL4,
+    EPlayerGunsMLFileName_LVL5,
+    EPlayerGunsMLFileName_UPTO_COUNT,
 };
 
 //TODO names
@@ -26,6 +44,16 @@ enum EArmorLevel {
     EArmorLevel_2,
     EArmorLevel_3,
 };
+
+enum EPlayerMissleMLFileIndex {
+    EPlayerMissleMLFileIndex_LVL1 = EPlayerGunsMLFileName_UPTO_COUNT,
+/*    EPlayerMissleMLFileIndex_LVL2,
+    EPlayerMissleMLFileIndex_LVL3,
+    EPlayerMissleMLFileIndex_LVL4,
+    EPlayerMissleMLFileIndex_LVL5,*/
+    EPlayerMissleMLFileIndex_UPTO_COUNT,    
+};
+    
 
 class AncientDawn : public Engine, b2QueryCallback {
 
@@ -97,7 +125,6 @@ public:
   void ResetGame();
   void CreateWorld();
   void CreateDebugDraw();
-  void CreateContactListener();
   void CreatePlayer(int health, int armor);
   void CreateSpaceShip();
   void CreateLandscape();
@@ -128,9 +155,6 @@ public:
   foofoo *m_BulletDraw;
   foofoo *m_SpaceShipBulletDraw;
   foofoo *m_LandscapeDraw;
-  foofoo *m_FirstBatch;
-  foofoo *m_SecondBatch;
-  foofoo *m_ThirdBatch;
 
   // level
   int m_CurrentLevel;
@@ -145,7 +169,8 @@ public:
   // drawing
   int m_PlayerIndex;
   int m_SpaceShipIndex;
-  int m_LandscapeIndex;
+  int m_LandscapeStartIndex;
+  int m_LandscapeStopIndex;
   int m_SpaceShipsStartIndex;
   int m_SpaceShipsStopIndex;
   int m_LastRecycledIndex;
@@ -165,7 +190,6 @@ public:
   float m_PhysicsTimeout;
   float m_BulletSpeed;
   int m_Batch;
-  bool m_Force;
   b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
   
@@ -176,6 +200,7 @@ public:
   float m_PlayerHealth;
   int m_PlayerArmor;
   bool mbPlayerIsShooting;
+
   
   // Enemy Logic
   float m_EnemyHealth;
@@ -188,5 +213,9 @@ public:
   std::string m_JavascriptTick;
   
   int m_LastBulletCommandTurn;
+  
+  bool m_PlayerBulletIsLaser;
 
 };
+
+#endif

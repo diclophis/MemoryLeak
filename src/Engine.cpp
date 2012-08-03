@@ -487,10 +487,14 @@ void Engine::Start(int i, int w, int h, const char *(*push_pop_function)(const c
     delete m_CurrentGame;
   }
 
-  m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
-  m_CurrentGame->StartSimulation();
-  if (push_pop_function != NULL) {
-    m_CurrentGame->push_pop_function = push_pop_function;
+  try {
+    m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
+    m_CurrentGame->StartSimulation();
+    if (push_pop_function != NULL) {
+      m_CurrentGame->push_pop_function = push_pop_function;
+    }
+  } catch(std::exception &e) {
+    LOGV("Exception at load is: %s", e.what());
   }
   //} catch (std::exception& e) {
   //  LOGV("Exception is: %s %s", e.what());

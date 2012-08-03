@@ -47,20 +47,23 @@ void start_game(const char* s) {
         params[index] = strtok(NULL, ",");
     }
     game->StartLevel(params);
+
 }
 
-#define COUNT 18 * 10
+
+#define COUNT 18 * 20
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
 , m_EnemyHealth(MWParams::kEnemyStartingHealth)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
-, mbPlayerIsShooting(false)
 , mbGameStarted(false)
 , m_EnemyBody(NULL)
+, m_PlayerBulletIsLaser(false)
 {
   //LoadSound(0);
+  LoadTexture(0);
   LoadTexture(1);
   game = this;
 }
@@ -73,18 +76,24 @@ AncientDawn::~AncientDawn() {
 
 
 void AncientDawn::CreateFoos() {
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (COUNT * 2) + 2));
-  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 3, 5.0);
-  m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 2, 1, 2, 0.0);
-  m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
-  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 32));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(1), (COUNT * 2) + 2));
+  
+  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(1), 16, 16, 0, 3, 5.0);
+  m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(1), 1, 2, 1, 2, 0.0);
+  m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
+  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
 
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  
+  //TODO: reset foos on restart for android
+  /*
   if (m_SimulationTime > 0.0) {
     for (int i=0; i<m_SpriteCount; i++) {
       m_AtlasSprites[i]->ResetFoo(m_PlayerDraw, m_BulletDraw);
     }
   }
+  */
 }
 
 
@@ -121,7 +130,6 @@ void AncientDawn::StartLevel(char* params[]) {
   CreateFoos();
   CreateWorld();
   CreateDebugDraw();
-  CreateContactListener();
   CreatePlayer(health,armor);
   CreateSpaceShip();
   CreateLandscape();
@@ -143,14 +151,12 @@ void AncientDawn::ResetGame() {
   m_CurrentSound = 0;
   m_PlayerIndex = 0;
   m_SpaceShipIndex = 0;
-  m_Force = false;
   m_TouchOffsetX = 0;
   m_TouchOffsetY = 0;
   m_LastRecycledIndex = -1;
   
   //Initialize Player
   m_PlayerHealth = MWParams::kPlayerStartHeatlh;
-  mbPlayerIsShooting = false;
   
   //Initilize Game State
   mbGameStarted = true;
@@ -158,6 +164,8 @@ void AncientDawn::ResetGame() {
   m_JavascriptTick = "";
   
   m_LastBulletCommandTurn = -1;
+  
+  m_PlayerBulletIsLaser = (MWParams::kPlayerGunMLFileIndex >= EPlayerLaserMLFileName_LVL1 && MWParams::kPlayerGunMLFileIndex < EPlayerLaserMLFileName_UPTO_COUNT);
 }
 
 
@@ -191,23 +199,11 @@ void AncientDawn::DestroyDebugDraw() {
 }
 
 
-void AncientDawn::CreateContactListener() {
-  //TODO: do we want a contact listener?
-  //m_ContactListener = new SpaceShipDownContactListener();
-}
-
-
-void AncientDawn::DestroyContactListener() {
-  //delete m_ContactListener;
-}
-
-
 void AncientDawn::StopLevel() {
   DestroyFoos();
   ClearSprites();
   DestroyWorld();
   DestroyDebugDraw();
-  DestroyContactListener();
   DestroyPlayer();
   DestroySpaceShip();
   DestroyLandscape();
@@ -237,7 +233,7 @@ void AncientDawn::CreatePlayer(int health, int armor) {
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
     bullet->m_Fps = 0; 
-    bullet->SetScale(8.0, 8.0);
+    bullet->SetScale(20.0, 50.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;
@@ -279,9 +275,9 @@ void AncientDawn::CreatePlayer(int health, int armor) {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   
-  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->off, 0);
+  fseek(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->off, 0);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->len);
   bp->build();
   mpBulletCommandPlayer = new BulletCommand(bp, m_AtlasSprites[m_PlayerIndex]);
   
@@ -339,12 +335,11 @@ void AncientDawn::CreateSpaceShip() {
     bullet->m_UserData = bullet_body;
   }
  
-  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->off, 0);
-
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->len);
+  fseek(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->off, 0);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->len);
   bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
-
+  bc->EnableShooting(true);
 }
 
 
@@ -353,6 +348,17 @@ void AncientDawn::DestroySpaceShip() {
 
 
 void AncientDawn::CreateLandscape() {
+  m_LandscapeStartIndex = m_SpriteCount;
+  for (unsigned int i=0; i<3; i++) {
+    m_AtlasSprites.push_back(new SpriteGun(m_LandscapeDraw, NULL));
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 0;
+    m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
+    m_AtlasSprites[m_SpriteCount]->SetPosition(0, i * 512);
+    m_AtlasSprites[m_SpriteCount]->SetScale(512, 512);
+    m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_SpriteCount++;
+  }
+  m_LandscapeStopIndex = m_SpriteCount;
 }
 
 
@@ -371,13 +377,7 @@ int AncientDawn::LevelProgress() {
 
 void AncientDawn::RestartLevel() {
   LOGV("Restarting Level\n");
-
   StopLevel();
-  //if (m_CurrentLevel > 0) {
-  //  StopLevel();
-  //} else {
-  //  m_CurrentLevel = -1;
-  //}
   //StartLevel(m_CurrentLevel);
 }
 
@@ -402,7 +402,7 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = true; //(m_SolveTimeout > 0.5);
+  m_World->m_Solve = (m_SolveTimeout > 0.125);
 
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
     
@@ -413,31 +413,34 @@ void AncientDawn::StepPhysics() {
     aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
     m_World->QueryAABB(this, aabb);
     
-    m_ColliderSwitch = COLLIDE_ENEMY;
-    aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
-                        (-MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
-    aabb.upperBound.Set((MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
-                        (MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
+    {
+      m_ColliderSwitch = COLLIDE_ENEMY;
+      aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                          (-MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+      aabb.upperBound.Set((MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
+                          (MWParams::kEnemyHalfPixelDimY/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[1]/PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+    }
                         
     
-    m_ColliderSwitch = COLLIDE_CULLING;
-    
-    aabb.lowerBound.Set(((m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
-    aabb.upperBound.Set((((m_ScreenWidth * 0.5) + 150.0) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-    
-    aabb.lowerBound.Set((((-m_ScreenWidth * 0.5) - 150.0) / PTM_RATIO), ((-m_ScreenHeight * 0.5) / PTM_RATIO));
-    aabb.upperBound.Set(((-m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-    
-    aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
-    aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((m_ScreenHeight * 0.5) + 150.0) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
-    
-    aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), (((-m_ScreenHeight * 0.5) - 150.0) / PTM_RATIO));
-    aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((-m_ScreenHeight * 0.5)) / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
+    {
+      m_ColliderSwitch = COLLIDE_CULLING;
+      aabb.lowerBound.Set(((m_ScreenWidth * 0.5) / PTM_RATIO), (-(m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5) + 150.0) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((((-m_ScreenWidth * 0.5) - 150.0) / PTM_RATIO), ((-m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set(((-m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), ((m_ScreenHeight * 0.5) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((m_ScreenHeight * 0.5) + 150.0) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+      
+      aabb.lowerBound.Set((-(m_ScreenWidth * 0.5) / PTM_RATIO), (((-m_ScreenHeight * 0.5) - 150.0) / PTM_RATIO));
+      aabb.upperBound.Set((((m_ScreenWidth * 0.5)) / PTM_RATIO), (((-m_ScreenHeight * 0.5)) / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+    }
   }
 }
 
@@ -465,18 +468,12 @@ void AncientDawn::Hit(float x, float y, int hitState) {
   if(hitState == 2 || hitState == -1)
   {
     //if the player is touch up(hitstate is 2) or touch cancled(hit state -1) then we stop shooting
-    mbPlayerIsShooting = false;
+    mpBulletCommandPlayer->EnableShooting(false);
   }
   else
   {
     //Otherwise the player has thier finger on the screen and we are shooting
-    mbPlayerIsShooting = true;
-  }
-
-  if (hitState == 2) {
-    m_Force = false;
-  } else {
-    m_Force = true;
+    mpBulletCommandPlayer->EnableShooting(true);
   }
 }
 
@@ -534,7 +531,7 @@ int AncientDawn::_gameSimulate()
       bc->run(this_bulletml_turn);
     }
     
-    if(mpBulletCommandPlayer && mbPlayerIsShooting)
+    if(mpBulletCommandPlayer)
     {
       mpBulletCommandPlayer->run(this_bulletml_turn);
     }
@@ -551,10 +548,26 @@ int AncientDawn::_gameSimulate()
           UpdatePhysicialPositionOfSprite(sprite, x, y);
           sprite->Simulate(m_DeltaTime);
         } else {
-          //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
           body->SetAwake(false);
         }
       }
+    }
+  }
+  
+  for (unsigned int i=m_LandscapeStartIndex; i<m_LandscapeStopIndex; i++) {
+    float landscape_speed = -500.0;
+    //m_AtlasSprites[i]->m_Position[0] += landscape_speed * m_DeltaTime;
+    m_AtlasSprites[i]->m_Position[1] += landscape_speed * m_DeltaTime;
+    if (m_AtlasSprites[i]->m_Position[1] < -(m_ScreenHeight * 0.75)) {
+      m_AtlasSprites[i]->m_Position[1] = (m_ScreenHeight * 0.75);
+    }
+  }
+  
+  if (m_PlayerBulletIsLaser) {
+    for (unsigned int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
+      b2Body *body = (b2Body *)m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i]->m_UserData;
+      b2Vec2 new_pos = b2Vec2(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, body->GetPosition().y);
+      body->SetTransform(new_pos, 0);
     }
   }
   
@@ -574,10 +587,7 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
                                         sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]);
       if (bCollidingSpriteIsBullet) 
       {
-        //sprite->m_Scale[0] = 40.0;
-        //sprite->m_Scale[1] = 40.0;
         sprite->m_IsAlive = false;
-
           if (m_PlayerArmor > 0) 
           {
               m_PlayerArmor -= MWParams::kEnemyBulletDamageAmount;
@@ -598,7 +608,6 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
         if(bCollidingSpriteIsPlayerBullet)
         {
             sprite->m_IsAlive = false;
-        
             m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kPlayerBulletDamage);
             m_JavascriptTick += string_format("enemy_health = %d;", (int)m_EnemyHealth);
         }
@@ -607,8 +616,6 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
 
     case COLLIDE_CULLING:
       if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
-        //body->SetTransform(b2Vec2(sprite->m_Parent->m_Position[0] / PTM_RATIO, sprite->m_Parent->m_Position[1] / PTM_RATIO), 0.0);
-        //body->SetAwake(false);
         sprite->m_IsAlive = false;
       }
       break;
@@ -628,8 +635,12 @@ void AncientDawn::RenderSpritePhase() {
   {
     return;
   }
+  
   m_Batches[0]->m_NumBatched = 0;
-  RenderSpriteRange(0, 2, m_Batches[0]);
+  RenderSpriteRange(m_LandscapeStartIndex, m_LandscapeStopIndex, m_Batches[0]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
+  
+  m_Batches[1]->m_NumBatched = 0;
+  RenderSpriteRange(0, 2, m_Batches[1]);
+  AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
 }
-

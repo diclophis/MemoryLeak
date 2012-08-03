@@ -4,6 +4,8 @@
 <bulletml type="vertical"
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
 
+<!-- MISSLE LVL 1 -->
+
 <action label="top">
 <repeat> <times>1000000000</times>
 <action>
@@ -12,7 +14,7 @@
   <speed>15.0</speed>
   <bullet/>
  </fire>
- <wait>6</wait>
+ <wait>25</wait>
 </action>
 </repeat>
 </action> 
