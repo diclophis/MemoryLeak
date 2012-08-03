@@ -19,7 +19,7 @@ namespace MWParams
         200.0f, //Level 5 Health
         };
         
-    static int kNumArmorLevels = 5;
+    //static int kNumArmorLevels = 5;
     static int kNumArmorTypes = 3;
     static float kPlayerStartArmor [] = {
         10.0f, //Level 1 Armor Light
@@ -38,7 +38,7 @@ namespace MWParams
     static float kEnemyStartY = 365.0f;
     static float kEnemyHalfPixelDimX = 384.0f; //2*381 = 768
     static float kEnemyHalfPixelDimY = 100.0f;
-    static float kEnemyStartingHealth = 230000.0f; //This will need to be retrieved from the server at some point
+    static float kEnemyStartingHealth = 5000.0f; //This will need to be retrieved from the server at some point
     static float kEnemyBulletDamageAmount = 5.0f;
     
     //Level
@@ -46,11 +46,11 @@ namespace MWParams
     
     //Weapon Damage Data
     static float kGunBulletDamage[] = {
-        6.0f, //EPlayerGunType_LASER_LVL1
-        12.0f, //EPlayerGunType_LASER_LVL2
-        18.0f, //EPlayerGunType_LASER_LVL3
-        24.0f, //EPlayerGunType_LASER_LVL4
-        30.0f, //EPlayerGunType_LASER_LVL5
+        24.0f, //EPlayerGunType_LASER_LVL1
+        48.0f, //EPlayerGunType_LASER_LVL2
+        72.0f, //EPlayerGunType_LASER_LVL3
+        96.0f, //EPlayerGunType_LASER_LVL4
+        120.0f, //EPlayerGunType_LASER_LVL5
         10.0f, //EPlayerGunType_GUNS_LVL1
         20.0f, //EPlayerGunType_GUNS_LVL2
         30.0f, //EPlayerGunType_GUNS_LVL3
@@ -65,7 +65,7 @@ namespace MWParams
         
     //Coin Params
     static float kCoinFallSpeed = 7.0f;
-    static char* kCoinAmount = "25";
+    static const char* kCoinAmount = "25";
 
 
 }

@@ -7,7 +7,7 @@
       * {
         margin: 0;
         padding: 0;
-        -webkit-transition-duration: 0.66s;
+        -webkit-transition-duration: 0.7s;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         -webkit-tap-highlight-color: transparent;
@@ -108,8 +108,7 @@
       #shop.visible {
         opacity: 1;
       }
-        
-        
+
       #customization-screen.invisible {
         opacity: 0;
       }
@@ -203,12 +202,15 @@
       }
         #customization-screen {
             height: 100%;
-            width:100%;
+            width: 90%;
+            position: absolute;
+            top: 10%;
+            left: 0;
             color: blue;
             text-align: center;
             -webkit-box-align: center;
             -webkit-box-pack: center;
-            background-color: red;
+            -webkit-backface-visibility: hidden;
         }
         #weaponTitle {
             position:absolute;
@@ -354,9 +356,6 @@
             top:80%;
         }
 
-      #hud div {
-      }
-
       #hud.invisible {
         opacity: 0;
       }
@@ -376,19 +375,20 @@
         background-color: purple;
         -webkit-transition-property: none;
       }
-        #armor-container {
-            position : absolute;
-            left:0%;
-            width: 50%;
-            height: 50%;
-            overflow: hidden;
-        }
-        
-        #armor-bar {
-            width: 100%;
-            background-color: blue;
-            -webkit-transition-property: none;
-        }
+
+      #armor-container {
+          position : absolute;
+          left:0%;
+          width: 50%;
+          height: 50%;
+          overflow: hidden;
+      }
+      
+      #armor-bar {
+          width: 100%;
+          background-color: blue;
+          -webkit-transition-property: none;
+      }
 
       #enemy-health-container {
         width: 50%;
@@ -623,6 +623,7 @@
         };
 
         var show_main_menu = function() {
+          //bridge.change_sound("0");
           mainMenu.className = "visible";
         };
 
@@ -649,7 +650,8 @@
         }
           
         var show_customizationScreen=function(){
-            customizationScreen.className = "visible";
+            //bridge.change_sound("1");
+            customizationScreen.className = "visible transparent";
         }
           
         var hide_inventory = function() {
@@ -662,7 +664,6 @@
 
         startButton.onclick = function(e) {        
             hide_main_menu();
-            hide_inventory();
             show_customizationScreen();
         };
 

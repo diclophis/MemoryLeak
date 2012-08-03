@@ -604,6 +604,7 @@ void Engine::DoAudio(short buffer[], int size) {
 
 void Engine::ChangeSound(int i) {
   m_CurrentSound = i;
+  ModPlug_Seek(m_Sounds[m_CurrentSound], 0);
   m_IsPushingAudio = true;
 }
 
