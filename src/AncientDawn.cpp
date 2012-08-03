@@ -181,7 +181,7 @@ void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int 
   
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = (MWParams::kPlayerGun >= EPlayerGunType_LASER_LVL1 && MWParams::kPlayerGun < EPlayerGunType_GUNS_LVL1);
+  m_PlayerBulletIsLaser = (mePlayerGunType >= EPlayerGunType_LASER_LVL1 && mePlayerGunType < EPlayerGunType_GUNS_LVL1);
 }
 
 
