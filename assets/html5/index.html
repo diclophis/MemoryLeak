@@ -623,6 +623,7 @@
         };
 
         var show_main_menu = function() {
+          bridge.change_sound("0");
           mainMenu.className = "visible";
         };
 
@@ -649,6 +650,7 @@
         }
           
         var show_customizationScreen=function(){
+            bridge.change_sound("1");
             customizationScreen.className = "visible";
         }
           
