@@ -3,16 +3,17 @@
 
 <bulletml type="vertical"
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
+<!-- LASER LVL 1 -->
 
 <action label="top">
 <repeat> <times>1000000000</times>
 <action>
  <fire>
   <direction>180</direction>
-  <speed>15.0</speed>
+  <speed>70.0</speed>
   <bullet/>
  </fire>
- <wait>6</wait>
+ <wait>1</wait>
 </action>
 </repeat>
 </action> 

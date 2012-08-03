@@ -29,10 +29,6 @@ std::string string_format(const std::string &fmt, ...) {
 
 static AncientDawn *game;
 
-void doo_thing_one(const char *s) {
-  LOGV("wtf %d\n", game->LevelProgress());
-}
-
 void start_game(const char *s) {
   LOGV("starting game");
   game->StartLevel(game->FirstLevel());
@@ -254,9 +250,9 @@ void AncientDawn::CreatePlayer() {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   
-  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->off, 0);
+  fseek(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->off, 0);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_PLAYER)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->len);
   bp->build();
   mpBulletCommandPlayer = new BulletCommand(bp, m_AtlasSprites[m_PlayerIndex]);
   
@@ -314,9 +310,9 @@ void AncientDawn::CreateSpaceShip() {
     bullet->m_UserData = bullet_body;
   }
  
-  fseek(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->off, 0);
+  fseek(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->off, 0);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EBulletMLFileIndex_ENEMY)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->len);
   bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
 

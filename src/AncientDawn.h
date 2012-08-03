@@ -1,5 +1,6 @@
 // Jon Bardin GPL
-
+#ifndef ANCIENTDAWN_H
+#define ANCIENTDAWN_H
 
 enum {
   CONTINUE_LEVEL,
@@ -14,11 +15,38 @@ enum {
   COLLIDE_CULLING
 };
 
-enum EBulletMLFileIndex {
-    EBulletMLFileIndex_ENEMY = 0,
-    EBulletMLFileIndex_PLAYER,
-    EBulletMLFileIndex_COUNT,
+enum EEnemyBulletMLFileName {
+    EEnemyBulletMLFileIndex_ENEMY = 0,
+    EEnemyBulletMLFileIndex_COUNT,
 };
+
+enum EPlayerLaserMLFileName {
+    EPlayerLaserMLFileName_LVL1 = EEnemyBulletMLFileIndex_COUNT,
+/*    EPlayerLaserMLFileName_LVL2,
+    EPlayerLaserMLFileName_LVL3,
+    EPlayerLaserMLFileName_LVL4,
+    EPlayerLaserMLFileName_LVL5,*/
+    EPlayerLaserMLFileName_UPTO_COUNT,
+};
+
+enum EPlayerGunsMLFileName {
+    EPlayerGunsMLFileName_LVL1 = EPlayerLaserMLFileName_UPTO_COUNT,
+/*    EPlayerGunsMLFileName_LVL2,
+    EPlayerGunsMLFileName_LVL3,
+    EPlayerGunsMLFileName_LVL4,
+    EPlayerGunsMLFileName_LVL5,*/
+    EPlayerGunsMLFileName_UPTO_COUNT,
+};
+
+enum EPlayerMissleMLFileIndex {
+    EPlayerMissleMLFileIndex_LVL1 = EPlayerGunsMLFileName_UPTO_COUNT,
+/*    EPlayerMissleMLFileIndex_LVL2,
+    EPlayerMissleMLFileIndex_LVL3,
+    EPlayerMissleMLFileIndex_LVL4,
+    EPlayerMissleMLFileIndex_LVL5,*/
+    EPlayerMissleMLFileIndex_UPTO_COUNT,    
+};
+    
 
 class AncientDawn : public Engine, b2QueryCallback {
 
@@ -182,3 +210,5 @@ public:
   int m_LastBulletCommandTurn;
 
 };
+
+#endif
