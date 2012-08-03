@@ -167,17 +167,16 @@ const char *push_and_pop(const char *s) {
   [webView setOpaque:NO];
   [webView loadRequest:[NSURLRequest requestWithURL:urlToIndexHtml]];
   [[[webView subviews] objectAtIndex:0] setBounces:NO];
-  //[webView setUserInteractionEnabled:NO];
   [self addSubview:webView];
 }
 
 
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView {
+  [self startAnimation];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('set_user_interaction_enabled', %d);", &set_user_interaction_enabled]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('start_game', %d);", &start_game]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.register('change_sound', %d);", &change_sound]];
   [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"bridge.finalize();"]];
-  [self performSelector:@selector(startAnimation) withObject:nil afterDelay:2.0];
 }
 
 
