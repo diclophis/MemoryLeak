@@ -65,7 +65,6 @@
                     <speed>15.0</speed>
                     <bullet/>
                 </fire>
-                <vannish/>
             </action>
         </bullet>
     </fire>
