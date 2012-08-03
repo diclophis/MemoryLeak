@@ -416,7 +416,7 @@
             weapons
           </h1>
           <div id="weapons_curr_lvl">
-            current level
+              current level : 0
           </div>
           <div id="weapons_upgrade">
             upgrade
@@ -427,7 +427,7 @@
             armor
           </h1>
           <div id="armor_curr_lvl">
-            current level
+              current level : 0
           </div>
           <div id="armor_upgrade">
             upgrade
@@ -438,7 +438,7 @@
             shields
           </h1>
           <div id="shields_curr_lvl">
-            current level
+              current level : 0
           </div>
           <div id="shields_upgrade">
             upgrade
@@ -449,7 +449,7 @@
             hero drive
           </h1>
           <div id="hero_drive_curr_lvl">
-            current level
+              current level : 0
           </div>
           <div id="hero_drive_upgrade">
             upgrade
@@ -534,7 +534,21 @@
         var armor_lv3 = document.getElementById("armor_lv3");
         var armor_confirm = document.getElementById("armor_confirm");
           
-          var shop_armor = document.getElementById("shop-armor");
+        var armor_curr_lvl = document.getElementById("armor_curr_lvl");
+        var shields_curr_lvl = document.getElementById("shields_curr_lvl");
+        var weapons_curr_lvl = document.getElementById("weapons_curr_lvl");
+        var hero_drive_curr_lvl= document.getElementById("hero_drive_curr_lvl");
+          
+        var armor_upgrade= document.getElementById("armor_upgrade");
+        var weapons_upgrade= document.getElementById("weapons_upgrade");
+        var shields_upgrade= document.getElementById("shields_upgrade");
+        var hero_drive_upgrade= document.getElementById("hero_drive_upgrade");
+
+
+
+          
+          
+
           
           
 
@@ -545,6 +559,8 @@
         var weapon_level = 0;
         var armor_level = 0;
         var enemy_health = 3000;
+        var hero_boost_level = 0;
+        var health_level = 0;
 
         var bridge = {
           queue: [],
@@ -650,7 +666,7 @@
               show_hud();
               bridge.set_user_interaction_enabled("0");
               
-              bridge.start_game("1," + weapon_type +","+armor_type);
+              bridge.start_game("1," + weapon_type +","+weapon_level+","+armor_type+","+armor_level+","+health_level+","+hero_boost_level);
           } catch(e) {
               alert(e);
           }
@@ -679,7 +695,44 @@
           }
           
           armor_lv3.onclick = function(e){
-              warmor_type =  this.getAttribute("level");
+              armor_type =  this.getAttribute("level");
+          }
+          
+          
+          armor_upgrade.onclick = function(e){
+              if(armor_level < 3)
+              {
+                  armor_level += 1;
+              }
+              armor_curr_lvl.innerHTML = "current level : " + armor_level;
+          
+          }
+          
+          weapons_upgrade.onclick = function(e){
+              if(weapon_level < 5)
+              {
+                  weapon_level += 1;
+              }
+              weapons_curr_lvl.innerHTML = "current level : " + weapon_level;
+              
+          }
+          
+          shields_upgrade.onclick = function(e){
+              if(health_level < 3)
+              {
+                  healt_level += 1;
+              }
+              shields_curr_lvl.innerHTML = "current leveldd : " + health_level;
+              
+          }
+          
+          hero_drive_upgrade.onclick = function(e){
+              if(hero_boost_level < 3)
+              {
+                  hero_boost_level += 1;
+              }
+              hero_drive_curr_lvl.innerHTML = "current level : " +hero_boost_level;
+              
           }
            
         backToMainFromShopButton.onclick = function(e) {
