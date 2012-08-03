@@ -149,9 +149,6 @@ public:
   foofoo *m_BulletDraw;
   foofoo *m_SpaceShipBulletDraw;
   foofoo *m_LandscapeDraw;
-  foofoo *m_FirstBatch;
-  foofoo *m_SecondBatch;
-  foofoo *m_ThirdBatch;
 
   // level
   int m_CurrentLevel;
@@ -166,7 +163,8 @@ public:
   // drawing
   int m_PlayerIndex;
   int m_SpaceShipIndex;
-  int m_LandscapeIndex;
+  int m_LandscapeStartIndex;
+  int m_LandscapeStopIndex;
   int m_SpaceShipsStartIndex;
   int m_SpaceShipsStopIndex;
   int m_LastRecycledIndex;
@@ -186,7 +184,6 @@ public:
   float m_PhysicsTimeout;
   float m_BulletSpeed;
   int m_Batch;
-  bool m_Force;
   b2AABB aabb;
   bool ReportFixture(b2Fixture* fixture);
   
