@@ -834,17 +834,18 @@ sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 	self._callback		= bufferFill;
 	/* Keep references in order to avoid garbage collection removing the listeners, working around http://code.google.com/p/chromium/issues/detail?id=82795 */
 	// Thanks to @baffo32
-	fixChrome82795.push(node);
+	//fixChrome82795.push(node);
 }, {
 	kill: function () {
 		this._node.disconnect(0);
 
+    /*
 		for (var i=0; i<fixChrome82795.length; i++) {
 			if (fixChrome82795[i] === this._node) {
 				fixChrome82795.splice(i--, 1);
 			}
 		}
-
+    */
 		this._node = this._context = null;
 		this.emit('kill');
 	},
@@ -856,7 +857,7 @@ sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 
 sinks.webkit = sinks.webaudio;
 
-sinks.webaudio.fix82795 = fixChrome82795;
+//sinks.webaudio.fix82795 = fixChrome82795;
 
 sinks.webaudio.getContext = function () {
 	// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.

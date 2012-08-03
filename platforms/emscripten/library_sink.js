@@ -25,7 +25,8 @@ var LibrarySinkJs = {
         javascriptBuffer[i] = ({{{ makeGetValue('nativeBuffer', 'i*sizeOfFrame', 'i16', 0, 0) }}}) / 0x8000;
       }
     };
-    SinkJs.sink = Sink();
+    SinkJs.sink = Sink(null, 2, 8192);
+    SinkJs.sink.ringBuffer = new Float32Array((SinkJs.sink.sampleRate * SinkJs.sink.channelCount) * 16);
     SinkJs.proxy = SinkJs.sink.createProxy(SinkJs.frames, SinkJs.channels);
     SinkJs.proxy.on('audioprocess', function(buffer, channels) {
       FUNCTION_TABLE[SinkJs.writeFunc](SinkJs.nativeBuffer, SinkJs.nativeBufferSize, channels);

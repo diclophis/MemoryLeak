@@ -3,7 +3,7 @@
 build=build
 
 CXXFLAGS=\
--I../../src/assimp/BoostWorkaround \
+-I../../src/bulletml \
 -I../../src/include \
 -I../../src/include/libmodplug \
 -I../../src \
@@ -85,7 +85,5 @@ install: $(hash_dir) build/raptor_island.js
 	cp -R ../../assets ~/emscripten.risingcode.com/public/latest
 	touch ~/emscripten.risingcode.com/public/latest/favicon.ico
 	install -C index.html ~/emscripten.risingcode.com/public/latest
-	#install -C sink.js ~/emscripten.risingcode.com/public/latest
-	#install -C library_sink.js ~/emscripten.risingcode.com/public/latest
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public/latest
 	#ruby s3_uploader.rb $(HASH)
