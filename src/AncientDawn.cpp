@@ -38,7 +38,7 @@ void start_game(const char *s) {
 }
 
 
-#define COUNT 18 * 10
+#define COUNT 18 * 20
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
