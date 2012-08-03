@@ -46,6 +46,7 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , mbPlayerIsShooting(false)
 , mbGameStarted(false)
 , m_EnemyBody(NULL)
+, m_PlayerBulletIsLaser(false)
 {
   //LoadSound(0);
   LoadTexture(0);
@@ -138,6 +139,8 @@ void AncientDawn::ResetGame() {
   m_JavascriptTick = "";
   
   m_LastBulletCommandTurn = -1;
+  
+  m_PlayerBulletIsLaser = true;
 }
 
 
@@ -527,6 +530,14 @@ int AncientDawn::_gameSimulate()
     m_AtlasSprites[i]->m_Position[1] += landscape_speed * m_DeltaTime;
     if (m_AtlasSprites[i]->m_Position[1] < -(m_ScreenHeight * 0.75)) {
       m_AtlasSprites[i]->m_Position[1] = (m_ScreenHeight * 0.75);
+    }
+  }
+  
+  if (m_PlayerBulletIsLaser) {
+    for (unsigned int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
+      b2Body *body = (b2Body *)m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i]->m_UserData;
+      b2Vec2 new_pos = b2Vec2(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, body->GetPosition().y);
+      body->SetTransform(new_pos, 0);
     }
   }
   

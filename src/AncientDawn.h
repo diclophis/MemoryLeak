@@ -205,6 +205,8 @@ public:
   std::string m_JavascriptTick;
   
   int m_LastBulletCommandTurn;
+  
+  bool m_PlayerBulletIsLaser;
 
 };
 
