@@ -152,6 +152,10 @@ public:
   void CreatePlayer();
   void CreateSpaceShip();
   void CreateLandscape();
+  void CreateCoin();
+private:
+  void _generateDynamicCoin(MLPoint const & startingPosition);
+public:
 
   // When stopping a level do
   // * Destroy foos
@@ -180,6 +184,7 @@ public:
   foofoo *m_PlayerDraw;
   foofoo *m_SpaceShipDraw;
   foofoo *m_BulletDraw;
+  foofoo *m_CoinDraw;
   foofoo *m_SpaceShipBulletDraw;
   foofoo *m_LandscapeDraw;
 
@@ -190,11 +195,14 @@ public:
   BulletHellWorld *m_World;
   GLESDebugDraw *m_DebugDraw;
   b2Body *m_PlayerBody;
+  b2Body *m_CoinBody;
   b2Body *m_EnemyBody;
   b2MouseJoint *m_PlayerMouseJoint;
+  b2MouseJoint *m_CoinMouseJoint;
 
   // drawing
   int m_PlayerIndex;
+  int m_CoinIndex;
   int m_SpaceShipIndex;
   int m_LandscapeStartIndex;
   int m_LandscapeStopIndex;

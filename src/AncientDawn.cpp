@@ -81,9 +81,10 @@ AncientDawn::~AncientDawn() {
 
 void AncientDawn::CreateFoos() {
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 32));
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(1), (COUNT * 2) + 2));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(1), (COUNT * 2) + 128));
   
   m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(1), 16, 16, 0, 3, 5.0);
+  m_CoinDraw = AtlasSprite::GetFoo(m_Textures.at(1), 16, 16, 0, 1, 5.0);
   m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(1), 1, 2, 1, 2, 0.0);
   m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
   m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
@@ -94,6 +95,7 @@ void AncientDawn::CreateFoos() {
 void AncientDawn::DestroyFoos() {
   delete m_PlayerDraw;
   delete m_SpaceShipDraw;
+  delete m_CoinDraw;
   delete m_BulletDraw;
   delete m_LandscapeDraw;
   for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
@@ -141,6 +143,7 @@ void AncientDawn::StartLevel(char* params[]) {
   CreateWorld();
   CreateDebugDraw();
   CreatePlayer();
+  CreateCoin();
   CreateSpaceShip();
   CreateLandscape();
     
@@ -180,7 +183,6 @@ void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int 
   
   //Initilize Game State
   mbGameStarted = true;
-    
   m_LastBulletCommandTurn = -1;
   
   m_PlayerBulletIsLaser = (mePlayerGunType >= EPlayerGunType_LASER_LVL1 && mePlayerGunType < EPlayerGunType_GUNS_LVL1);
@@ -227,6 +229,46 @@ void AncientDawn::StopLevel() {
   DestroyLandscape();
   
   mbGameStarted = false;
+}
+
+void AncientDawn::CreateCoin() {
+    m_CoinIndex = m_SpriteCount;
+    m_AtlasSprites.push_back(new SpriteGun(m_CoinDraw, NULL));
+    m_AtlasSprites[m_CoinIndex]->m_Fps = 60;
+    m_AtlasSprites[m_CoinIndex]->m_IsAlive = false;
+    m_AtlasSprites[m_CoinIndex]->SetScale(20.0, 20.0);
+    m_AtlasSprites[m_CoinIndex]->Build(0);
+    m_SpriteCount++;
+    
+}
+
+void AncientDawn::_generateDynamicCoin(MLPoint const & startingPosition)
+{
+  if(m_AtlasSprites[m_CoinIndex]->m_IsAlive) return;
+
+  m_AtlasSprites[m_CoinIndex]->m_IsAlive = true;
+  
+  b2BodyDef bd;
+  bd.type = b2_dynamicBody;
+  bd.awake = false;
+  bd.linearDamping = 0.0;
+  bd.fixedRotation = true;
+  bd.position.Set(startingPosition.x, startingPosition.y);
+  b2CircleShape shape;
+  shape.m_radius = 10.0 / PTM_RATIO;
+  b2FixtureDef fd;
+  fd.shape = &shape;
+  fd.isSensor = true;
+  fd.density = 0.0;
+  fd.friction = 0.0;
+  fd.filter.groupIndex = -1;
+  m_CoinBody = m_World->CreateBody(&bd);
+  m_CoinBody->SetUserData(m_AtlasSprites[m_CoinIndex]);
+  m_CoinBody->CreateFixture(&fd);
+  
+  m_World->CreateBody(&bd);
+  m_CoinBody->ApplyLinearImpulse(b2Vec2(0.0f, -MWParams::kCoinFallSpeed), m_CoinBody->GetPosition());
+
 }
 
 
@@ -618,8 +660,9 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
     case COLLIDE_PLAYER:
     {
       bool bCollidingSpriteIsBullet = (sprite->m_IsAlive && 
-                                        sprite != m_AtlasSprites[m_PlayerIndex] && 
-                                        sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]);
+                                        sprite->m_Parent == m_AtlasSprites[m_SpaceShipIndex]);
+      bool bCollidingSprintIsCoin = (sprite->m_IsAlive &&
+                                        sprite == m_AtlasSprites[m_CoinIndex]);
       if (bCollidingSpriteIsBullet) 
       {
         sprite->m_IsAlive = false;
@@ -634,6 +677,12 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
               m_JavascriptTick += string_format("player_health = %d;", (int)m_PlayerHealth);
           }
       }
+      else if(bCollidingSprintIsCoin)
+      {
+        m_JavascriptTick += string_format("currency += %s;", MWParams::kCoinAmount);
+        sprite->m_IsAlive = false;
+        m_World->DestroyBody(m_CoinBody);
+      }
     }
     break;
     
@@ -646,15 +695,27 @@ bool AncientDawn::ReportFixture(b2Fixture* fixture) {
             sprite->m_IsAlive = false;
             m_EnemyHealth = MAX(0.0f, m_EnemyHealth - MWParams::kGunBulletDamage[MWParams::kPlayerGun]);
             m_JavascriptTick += string_format("enemy_health = %d;", (int)m_EnemyHealth);
+            
+            _generateDynamicCoin(MLPointMake(fixture->GetBody()->GetPosition().x, fixture->GetBody()->GetPosition().y));
         }
     }
     break;
 
     case COLLIDE_CULLING:
-      if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex]) {
+    {
+      bool bCollidingSpriteIsCoin = (sprite->m_IsAlive &&
+                                    sprite == m_AtlasSprites[m_CoinIndex]);
+      if (sprite->m_IsAlive && sprite != m_AtlasSprites[m_PlayerIndex] && sprite->m_Parent != m_AtlasSprites[m_PlayerIndex] && !bCollidingSpriteIsCoin) {
         sprite->m_IsAlive = false;
       }
-      break;
+      else if(bCollidingSpriteIsCoin)
+      {
+        sprite->m_IsAlive = false;
+        m_World->DestroyBody(m_CoinBody);
+      }
+                                        
+    }
+    break;
   }
 
   return true;
@@ -677,7 +738,7 @@ void AncientDawn::RenderSpritePhase() {
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
   
   m_Batches[1]->m_NumBatched = 0;
-  RenderSpriteRange(0, 2, m_Batches[1]);
+  RenderSpriteRange(0, 3, m_Batches[1]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
 }
 

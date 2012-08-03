@@ -31,7 +31,6 @@ namespace MWParams
         30.0f, //Level 1 Armor Heavy
         40.0f, //Level 2 Armor Heavy
         50.0f, //Level 3 Armor Heavy
-        
         };
     
     //Enemy
@@ -63,6 +62,10 @@ namespace MWParams
         400.0f, //EPlayerGunType_MISSLE_LVL4
         450.0f, //EPlayerGunType_MISSLE_LVL5
         };
+        
+    //Coin Params
+    static float kCoinFallSpeed = 7.0f;
+    static char* kCoinAmount = "25";
 
 
 }
