@@ -46,11 +46,11 @@ namespace MWParams
     
     //Weapon Damage Data
     static float kGunBulletDamage[] = {
-        6.0f, //EPlayerGunType_LASER_LVL1
-        12.0f, //EPlayerGunType_LASER_LVL2
-        18.0f, //EPlayerGunType_LASER_LVL3
-        24.0f, //EPlayerGunType_LASER_LVL4
-        30.0f, //EPlayerGunType_LASER_LVL5
+        24.0f, //EPlayerGunType_LASER_LVL1
+        48.0f, //EPlayerGunType_LASER_LVL2
+        72.0f, //EPlayerGunType_LASER_LVL3
+        96.0f, //EPlayerGunType_LASER_LVL4
+        120.0f, //EPlayerGunType_LASER_LVL5
         10.0f, //EPlayerGunType_GUNS_LVL1
         20.0f, //EPlayerGunType_GUNS_LVL2
         30.0f, //EPlayerGunType_GUNS_LVL3
