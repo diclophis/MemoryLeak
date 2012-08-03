@@ -12,13 +12,13 @@
     <action>
         <fire>
             <direction>90</direction>
-            <speed>15.0</speed>
+            <speed>40.0</speed>
             <bullet>
                 <action>
                     <wait>3</wait>
                     <fire>
                         <direction>180</direction>
-                        <speed>15.0</speed>
+                        <speed>40.0</speed>
                         <bullet/>
                     </fire>
                     <vanish/>
@@ -33,7 +33,7 @@
                     <wait>3</wait>
                     <fire>
                         <direction>180</direction>
-                        <speed>15.0</speed>
+                        <speed>40.0</speed>
                         <bullet/>
                     </fire>
                     <vanish/>
@@ -41,7 +41,7 @@
             </bullet>
         </fire>
     </action>
-    <wait>10</wait>
+    <wait>7</wait>
   </repeat>
 </action>
 

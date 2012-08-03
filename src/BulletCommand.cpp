@@ -72,8 +72,8 @@ void BulletCommand::Shoot(AtlasSprite *sprite, double direction, double speed, A
   
   b2Body *body = (b2Body *)sprite->m_UserData;
 
-  sprite->m_Scale[0] = 10.0;
-  sprite->m_Scale[1] = 10.0;
+  //sprite->m_Scale[0] = 10.0;
+  //sprite->m_Scale[1] = 10.0;
 
   body->SetAwake(false);
   body->SetTransform(b2Vec2(center->m_Position[0] / PTM_RATIO, center->m_Position[1] / PTM_RATIO), 0.0);

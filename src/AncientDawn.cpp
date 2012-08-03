@@ -34,7 +34,7 @@ void start_game(const char *s) {
 }
 
 
-#define COUNT 18 * 10
+#define COUNT 18 * 20
 
 AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) 
 : Engine(w, h, t, m, l, s)
@@ -202,7 +202,7 @@ void AncientDawn::CreatePlayer() {
   for (int i=0; i<m_AtlasSprites[m_PlayerIndex]->m_NumParticles; i++) {
     AtlasSprite *bullet = m_AtlasSprites[m_PlayerIndex]->m_AtlasSprites[i];
     bullet->m_Fps = 0; 
-    bullet->SetScale(8.0, 8.0);
+    bullet->SetScale(20.0, 50.0);
     b2BodyDef bd2;
     bd2.type = b2_dynamicBody;
     bd2.allowSleep = false;

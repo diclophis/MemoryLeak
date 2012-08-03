@@ -12,10 +12,10 @@
       <action>
         <fire>
           <direction>180</direction>
-          <speed>15.0</speed>
+          <speed>30.0</speed>
           <bullet/>
         </fire>
-       <wait>10</wait>
+       <wait>8</wait>
       </action>
     </repeat>
   </action> 
