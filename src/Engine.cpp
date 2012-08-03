@@ -303,15 +303,7 @@ void Engine::StartSimulation() {
 }
 
 
-void Engine::DoAudio(short buffer[], int size) {
-  memset(buffer, 0, size);
-  if (Active() && m_IsPushingAudio) {
-    int read = ModPlug_Read(m_Sounds[m_CurrentSound], buffer, size);
-    if (read == 0) {
-      ModPlug_Seek(m_Sounds[m_CurrentSound], 0);
-    }
-  }
-}
+
 
 
 void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
@@ -591,9 +583,25 @@ void Engine::LoadSound(int i) {
     m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFileHandles->at(i)->len));
   }
   free(buffer);
-  m_IsPushingAudio = true;
+  //m_IsPushingAudio = true;
 }
 
+
+void Engine::DoAudio(short buffer[], int size) {
+  memset(buffer, 0, size);
+  if (Active() && m_IsPushingAudio) {
+    int read = ModPlug_Read(m_Sounds[m_CurrentSound], buffer, size);
+    if (read == 0) {
+      ModPlug_Seek(m_Sounds[m_CurrentSound], 0);
+    }
+  }
+}
+
+
+void Engine::ChangeSound(int i) {
+  m_CurrentSound = i;
+  m_IsPushingAudio = true;
+}
 
 void Engine::LoadModel(int i, int s, int e) {
   //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak

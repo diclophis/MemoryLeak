@@ -50,6 +50,10 @@ void start_game(const char* s) {
 
 }
 
+void change_sound(const char *s) {
+  int sound_index = atoi(s);
+  game->ChangeSound(sound_index);
+}
 
 #define COUNT 18 * 20
 
@@ -62,7 +66,9 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_EnemyBody(NULL)
 , m_PlayerBulletIsLaser(false)
 {
-  //LoadSound(0);
+  LoadSound(0);
+  LoadSound(1);
+  ChangeSound(0);
   LoadTexture(0);
   LoadTexture(1);
   game = this;
@@ -148,7 +154,6 @@ void AncientDawn::ResetGame() {
   m_DebugDrawToggle = false;
   m_TouchedLeft = false;
   m_TouchedRight = false;
-  m_CurrentSound = 0;
   m_PlayerIndex = 0;
   m_SpaceShipIndex = 0;
   m_TouchOffsetX = 0;
@@ -165,7 +170,7 @@ void AncientDawn::ResetGame() {
   
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = (MWParams::kPlayerGunMLFileIndex >= EPlayerLaserMLFileName_LVL1 && MWParams::kPlayerGunMLFileIndex < EPlayerLaserMLFileName_UPTO_COUNT);
+  m_PlayerBulletIsLaser = (MWParams::kPlayerGun >= EPlayerGunType_LASER_LVL1 && MWParams::kPlayerGun < EPlayerGunType_GUNS_LVL1);
 }
 
 
@@ -275,9 +280,11 @@ void AncientDawn::CreatePlayer(int health, int armor) {
   m_PlayerBody->SetUserData(m_AtlasSprites[m_PlayerIndex]);
   m_PlayerBody->CreateFixture(&fd);
   
-  fseek(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->off, 0);
+  int iGunMLFileIndex = GetGunMLFileIndexFromGunType(MWParams::kPlayerGun);
+  
+  fseek(m_LevelFileHandles->at(iGunMLFileIndex)->fp, m_LevelFileHandles->at(iGunMLFileIndex)->off, 0);
 
-  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->fp, m_LevelFileHandles->at(MWParams::kPlayerGunMLFileIndex)->len);
+  BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(iGunMLFileIndex)->fp, m_LevelFileHandles->at(iGunMLFileIndex)->len);
   bp->build();
   mpBulletCommandPlayer = new BulletCommand(bp, m_AtlasSprites[m_PlayerIndex]);
   
@@ -339,7 +346,6 @@ void AncientDawn::CreateSpaceShip() {
   BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->len);
   bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
-  bc->EnableShooting(true);
 }
 
 
@@ -402,17 +408,20 @@ void AncientDawn::StepPhysics() {
   int velocityIterations = 1;
   int positionIterations = 1;
   m_SolveTimeout += m_DeltaTime;
-  m_World->m_Solve = (m_SolveTimeout > 0.125);
+  m_World->m_Solve = true;
 
   m_World->Step(m_DeltaTime, velocityIterations, positionIterations);
     
   if (m_World->m_Solve) {
     m_SolveTimeout = 0.0;
-    m_ColliderSwitch = COLLIDE_PLAYER;
-    aabb.lowerBound.Set((-10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-    aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
     
+    {
+      m_ColliderSwitch = COLLIDE_PLAYER;
+      aabb.lowerBound.Set((-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.upperBound.Set((8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+    }
+      
     {
       m_ColliderSwitch = COLLIDE_ENEMY;
       aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
@@ -525,6 +534,10 @@ int AncientDawn::_gameSimulate()
   
   StepPhysics();
 
+  if (m_SimulationTime > 3.0) {
+    bc->EnableShooting(true);
+  }
+  
   int this_bulletml_turn = (int)(m_SimulationTime * 100.0);
   if (this_bulletml_turn != m_LastBulletCommandTurn) {  
     if (bc) {
@@ -643,4 +656,28 @@ void AncientDawn::RenderSpritePhase() {
   m_Batches[1]->m_NumBatched = 0;
   RenderSpriteRange(0, 2, m_Batches[1]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
+}
+
+int AncientDawn::GetGunMLFileIndexFromGunType(EPlayerGunType ePlayerGunType)
+{
+    switch (ePlayerGunType) {
+        case EPlayerGunType_LASER_LVL1: return EPlayerLaserMLFileName_LVL1; break;
+//        case EPlayerGunType_LASER_LVL2: return EPlayerLaserMLFileName_LVL2; break;
+//        case EPlayerGunType_LASER_LVL3: return EPlayerLaserMLFileName_LVL3; break;
+//        case EPlayerGunType_LASER_LVL4: return EPlayerLaserMLFileName_LVL4; break;
+//        case EPlayerGunType_LASER_LVL5: return EPlayerLaserMLFileName_LVL5; break;
+        case EPlayerGunType_GUNS_LVL1: return EPlayerGunsMLFileName_LVL1; break;
+        case EPlayerGunType_GUNS_LVL2: return EPlayerGunsMLFileName_LVL2; break;
+        case EPlayerGunType_GUNS_LVL3: return EPlayerGunsMLFileName_LVL3; break;
+        case EPlayerGunType_GUNS_LVL4: return EPlayerGunsMLFileName_LVL4; break;
+        case EPlayerGunType_GUNS_LVL5: return EPlayerGunsMLFileName_LVL5; break;
+        case EPlayerGunType_MISSLE_LVL1: return EPlayerMissleMLFileIndex_LVL1; break;
+        case EPlayerGunType_MISSLE_LVL2: return EPlayerMissleMLFileIndex_LVL2; break;
+        case EPlayerGunType_MISSLE_LVL3: return EPlayerMissleMLFileIndex_LVL3; break;
+        case EPlayerGunType_MISSLE_LVL4: return EPlayerMissleMLFileIndex_LVL4; break;
+        case EPlayerGunType_MISSLE_LVL5: return EPlayerMissleMLFileIndex_LVL5; break;
+        case EPlayerGunType_COUNT:
+        default: return EPlayerLaserMLFileName_LVL1;
+        };
+        
 }
