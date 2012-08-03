@@ -43,7 +43,6 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_EnemyHealth(MWParams::kEnemyStartingHealth)
 , mpBulletCommandPlayer(NULL)
 , bc(NULL)
-, mbPlayerIsShooting(false)
 , mbGameStarted(false)
 , m_EnemyBody(NULL)
 , m_PlayerBulletIsLaser(false)
@@ -131,7 +130,6 @@ void AncientDawn::ResetGame() {
   
   //Initialize Player
   m_PlayerHealth = MWParams::kPlayerStartHeatlh;
-  mbPlayerIsShooting = false;
   
   //Initilize Game State
   mbGameStarted = true;
@@ -140,7 +138,7 @@ void AncientDawn::ResetGame() {
   
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = true;
+  m_PlayerBulletIsLaser = false;
 }
 
 
@@ -441,12 +439,12 @@ void AncientDawn::Hit(float x, float y, int hitState) {
   if(hitState == 2 || hitState == -1)
   {
     //if the player is touch up(hitstate is 2) or touch cancled(hit state -1) then we stop shooting
-    mbPlayerIsShooting = false;
+    mpBulletCommandPlayer->EnableShooting(false);
   }
   else
   {
     //Otherwise the player has thier finger on the screen and we are shooting
-    mbPlayerIsShooting = true;
+    mpBulletCommandPlayer->EnableShooting(true);
   }
 }
 
@@ -504,7 +502,7 @@ int AncientDawn::_gameSimulate()
       bc->run(this_bulletml_turn);
     }
     
-    if(mpBulletCommandPlayer && mbPlayerIsShooting)
+    if(mpBulletCommandPlayer)
     {
       mpBulletCommandPlayer->run(this_bulletml_turn);
     }
@@ -610,4 +608,3 @@ void AncientDawn::RenderSpritePhase() {
   RenderSpriteRange(0, 2, m_Batches[1]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
 }
-

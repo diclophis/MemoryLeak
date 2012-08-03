@@ -20,6 +20,8 @@ public:
   BulletCommand(BulletMLParser *bp, SpriteGun *b); // : BulletMLRunner(bp), bullet_(b);
   BulletCommand(BulletMLState *bs, SpriteGun *b, AtlasSprite *c);// : BulletMLRunner(bs), bullet_(b);
   ~BulletCommand();
+  
+  void EnableShooting(bool bEnableShoot); 
 
   double getBulletDirection();
   double getAimDirection();
@@ -42,6 +44,7 @@ public:
   void run(int);
 
   int m_UseThisBullet;
+  bool mbShootingEnabled;
 
   //double getRand() { return (double)rand() / RAND_MAX; }
   //BulletMLRunnerImpl* makeImpl(BulletMLState* state);

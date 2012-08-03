@@ -7,7 +7,7 @@
 //  turn = 0;
 //}
 
-BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(bp), bullet(b) {
+BulletCommand::BulletCommand(BulletMLParser* bp, SpriteGun* b) : BulletMLRunner(bp), bullet(b), mbShootingEnabled(false) {
   //LOGV("BulletCommand::BulletCommand MAINNNN %x bullet=%x\n", this, bullet);
   turn = 0;
   m_LastUsedBullet = -1;
@@ -28,8 +28,14 @@ BulletCommand::~BulletCommand() {
   LOGV("dealloc bullet\n");
 }
 
+void BulletCommand::EnableShooting(bool bEnableShoot)
+{
+    mbShootingEnabled = bEnableShoot;
+}
+
 
 void BulletCommand::createSimpleBullet(double direction, double speed) {
+  
   //LOGV("createSimple MAIN==?? %x with state gonna center on follow? %x\n", this, m_FollowBullet);
   AtlasSprite *going_to_be_shot = Consume();
   if (m_FollowBullet) {
@@ -41,7 +47,8 @@ void BulletCommand::createSimpleBullet(double direction, double speed) {
 
 
 void BulletCommand::createBullet(BulletMLState* state, double direction, double speed) {
-  //LOGV("createBullet MAIN==?? %x with state\n", this);
+  if(!mbShootingEnabled) return;
+  
   AtlasSprite *going_to_be_shot = Consume();
   BulletCommand *bc = new BulletCommand(state, bullet, going_to_be_shot);
   m_SubBulletCommands.push_back(bc);

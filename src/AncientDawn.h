@@ -32,9 +32,9 @@ enum EPlayerLaserMLFileName {
 enum EPlayerGunsMLFileName {
     EPlayerGunsMLFileName_LVL1 = EPlayerLaserMLFileName_UPTO_COUNT,
     EPlayerGunsMLFileName_LVL2,
-/*    EPlayerGunsMLFileName_LVL3,
+    EPlayerGunsMLFileName_LVL3,
     EPlayerGunsMLFileName_LVL4,
-    EPlayerGunsMLFileName_LVL5,*/
+    EPlayerGunsMLFileName_LVL5,
     EPlayerGunsMLFileName_UPTO_COUNT,
 };
 
@@ -192,7 +192,6 @@ public:
   
   // Player Logic
   float m_PlayerHealth;
-  bool mbPlayerIsShooting;
   
   // Enemy Logic
   float m_EnemyHealth;

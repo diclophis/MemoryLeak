@@ -7,16 +7,41 @@
 <!-- GUNS LVL 5 -->
 
 <action label="top">
-<repeat> <times>1000000000</times>
+<repeat> <times> 1000000000 </times>
 <action>
- <fire>
-  <direction>180</direction>
-  <speed>15.0</speed>
-  <bullet/>
- </fire>
- <wait>10</wait>
+    <fire>
+        <direction>90</direction>
+        <speed>15.0</speed>
+        <bullet>
+            <action>
+                <wait>3</wait>
+                <fire>
+                    <direction>180</direction>
+                    <speed>15.0</speed>
+                    <bullet/>
+                </fire>
+                <vanish/>
+            </action>
+        </bullet>
+    </fire>
+    <fire>
+        <direction>-90</direction>
+        <speed>15.0</speed>
+        <bullet>
+            <action>
+                <wait>3</wait>
+                <fire>
+                    <direction>180</direction>
+                    <speed>15.0</speed>
+                    <bullet/>
+                </fire>
+                <vanish/>
+            </action>
+        </bullet>
+    </fire>
+<wait>10</wait>
 </action>
 </repeat>
-</action> 
+</action>
 
 </bulletml>
