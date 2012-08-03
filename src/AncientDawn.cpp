@@ -143,7 +143,7 @@ void AncientDawn::ResetGame() {
   
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = true;
+  //m_PlayerBulletIsLaser = true;
 }
 
 
