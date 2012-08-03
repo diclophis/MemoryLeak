@@ -49,6 +49,7 @@ AncientDawn::AncientDawn(int w, int h, std::vector<FileHandle *> &t, std::vector
 , m_EnemyBody(NULL)
 {
   //LoadSound(0);
+  LoadTexture(0);
   LoadTexture(1);
   game = this;
 }
@@ -61,18 +62,24 @@ AncientDawn::~AncientDawn() {
 
 
 void AncientDawn::CreateFoos() {
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (COUNT * 2) + 2));
-  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(0), 16, 16, 0, 3, 5.0);
-  m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 2, 1, 2, 0.0);
-  m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
-  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(0), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 32));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(1), (COUNT * 2) + 2));
+  
+  m_PlayerDraw = AtlasSprite::GetFoo(m_Textures.at(1), 16, 16, 0, 3, 5.0);
+  m_SpaceShipDraw = AtlasSprite::GetFoo(m_Textures.at(1), 1, 2, 1, 2, 0.0);
+  m_BulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (8 * (16 * 4)) + 5, (8 * (16 * 4)) + 8, 5.0);
+  m_SpaceShipBulletDraw = AtlasSprite::GetFoo(m_Textures.at(1), (16 * 4), (16 * 4), (9 * (16 * 4)) + 5, (9 * (16 * 4)) + 7, 5.0);
 
   m_LandscapeDraw = AtlasSprite::GetFoo(m_Textures.at(0), 1, 1, 0, 1, 0.0);
+  
+  //TODO: reset foos on restart for android
+  /*
   if (m_SimulationTime > 0.0) {
     for (int i=0; i<m_SpriteCount; i++) {
       m_AtlasSprites[i]->ResetFoo(m_PlayerDraw, m_BulletDraw);
     }
   }
+  */
 }
 
 
@@ -97,7 +104,6 @@ void AncientDawn::StartLevel(int level_index) {
   CreateFoos();
   CreateWorld();
   CreateDebugDraw();
-  CreateContactListener();
   CreatePlayer();
   CreateSpaceShip();
   CreateLandscape();
@@ -166,23 +172,11 @@ void AncientDawn::DestroyDebugDraw() {
 }
 
 
-void AncientDawn::CreateContactListener() {
-  //TODO: do we want a contact listener?
-  //m_ContactListener = new SpaceShipDownContactListener();
-}
-
-
-void AncientDawn::DestroyContactListener() {
-  //delete m_ContactListener;
-}
-
-
 void AncientDawn::StopLevel() {
   DestroyFoos();
   ClearSprites();
   DestroyWorld();
   DestroyDebugDraw();
-  DestroyContactListener();
   DestroyPlayer();
   DestroySpaceShip();
   DestroyLandscape();
@@ -325,6 +319,17 @@ void AncientDawn::DestroySpaceShip() {
 
 
 void AncientDawn::CreateLandscape() {
+  m_LandscapeStartIndex = m_SpriteCount;
+  for (unsigned int i=0; i<3; i++) {
+    m_AtlasSprites.push_back(new SpriteGun(m_LandscapeDraw, NULL));
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 0;
+    m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
+    m_AtlasSprites[m_SpriteCount]->SetPosition(0, i * 512);
+    m_AtlasSprites[m_SpriteCount]->SetScale(512, 512);
+    m_AtlasSprites[m_SpriteCount]->Build(0);
+    m_SpriteCount++;
+  }
+  m_LandscapeStopIndex = m_SpriteCount;
 }
 
 
@@ -343,13 +348,7 @@ int AncientDawn::LevelProgress() {
 
 void AncientDawn::RestartLevel() {
   LOGV("Restarting Level\n");
-
   StopLevel();
-  //if (m_CurrentLevel > 0) {
-  //  StopLevel();
-  //} else {
-  //  m_CurrentLevel = -1;
-  //}
   StartLevel(m_CurrentLevel);
 }
 
@@ -523,6 +522,15 @@ int AncientDawn::_gameSimulate()
     }
   }
   
+  for (unsigned int i=m_LandscapeStartIndex; i<m_LandscapeStopIndex; i++) {
+    float landscape_speed = -500.0;
+    //m_AtlasSprites[i]->m_Position[0] += landscape_speed * m_DeltaTime;
+    m_AtlasSprites[i]->m_Position[1] += landscape_speed * m_DeltaTime;
+    if (m_AtlasSprites[i]->m_Position[1] < -(m_ScreenHeight * 0.75)) {
+      m_AtlasSprites[i]->m_Position[1] = (m_ScreenHeight * 0.75);
+    }
+  }
+  
   return chosen_state;
 }
 
@@ -581,8 +589,13 @@ void AncientDawn::RenderSpritePhase() {
   {
     return;
   }
+  
   m_Batches[0]->m_NumBatched = 0;
-  RenderSpriteRange(0, 2, m_Batches[0]);
+  RenderSpriteRange(m_LandscapeStartIndex, m_LandscapeStopIndex, m_Batches[0]);
   AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
+  
+  m_Batches[1]->m_NumBatched = 0;
+  RenderSpriteRange(0, 2, m_Batches[1]);
+  AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
 }
 
