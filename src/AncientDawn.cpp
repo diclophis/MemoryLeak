@@ -153,6 +153,8 @@ void AncientDawn::StartLevel(char* params[]) {
   CreatePlayer();
   CreateSpaceShip();
   CreateLandscape();
+    
+    
 }
 
 
@@ -178,17 +180,19 @@ void AncientDawn::ResetGame(int weaponType, int weaponLevel, int armorType, int 
   //Initialize Player
   m_PlayerHealth = MWParams::kPlayerStartHealth[healthLevel];
   m_PlayerArmor = MWParams::kPlayerStartArmor[(armorType * MWParams::kNumArmorTypes) + armorLevel];
-  
+    LOGV("%f",m_PlayerArmor);
+    
   m_JavascriptTick += string_format("player_health_max = %d;", (int)m_PlayerHealth);
   m_JavascriptTick += string_format("player_armor_max = %d;", (int)m_PlayerArmor);
+  m_JavascriptTick += string_format("player_armor = %d;", (int)m_PlayerArmor);
+  
+
   
   mePlayerGunType = (EPlayerGunType)((weaponType * kNumberOfGunTypes) + weaponLevel);
   
   //Initilize Game State
   mbGameStarted = true;
-  
-  m_JavascriptTick = "";
-  
+    
   m_LastBulletCommandTurn = -1;
   
   m_PlayerBulletIsLaser = (MWParams::kPlayerGun >= EPlayerGunType_LASER_LVL1 && MWParams::kPlayerGun < EPlayerGunType_GUNS_LVL1);
@@ -510,9 +514,16 @@ int AncientDawn::Simulate() {
   //Java Script is always simulated, regardless if the game is started.
   m_WebViewTimeout += m_DeltaTime;
   if (m_WebViewTimeout > (0.33)) {
-    push_pop_function(m_JavascriptTick.c_str());
+    if(m_JavascriptTick.length() > 0)
+    {
+        push_pop_function(m_JavascriptTick.c_str());
+        m_JavascriptTick = "";
+    }
+    else {
+        push_pop_function("");
+    }
     m_WebViewTimeout = 0.0;
-    m_JavascriptTick = "";
+
   }
 
   return _gameSimulate();

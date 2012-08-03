@@ -378,6 +378,19 @@
         background-color: purple;
         -webkit-transition-property: none;
       }
+        #armor-container {
+            position : absolute;
+            left:0%;
+            width: 50%;
+            height: 50%;
+            overflow: hidden;
+        }
+        
+        #armor-bar {
+            width: 100%;
+            background-color: blue;
+            -webkit-transition-property: none;
+        }
 
       #enemy-health-container {
         width: 50%;
@@ -402,11 +415,17 @@
             <span id="player-health"></span>
           </div>
         </div>
+          <div id="armor-container">
+              <div id="armor-bar">
+                  <span id="player-armor"></span>
+              </div>
+          </div>
         <div id="enemy-health-container">
           <div id="enemy-health-bar">
             <span id="enemy-health"></span>
           </div>
         </div>
+        
       </div>
       <div id="shop" class="invisible">
         <div id="back-to-main-from-shop-button">
@@ -515,6 +534,8 @@
         var playerHealthBar = document.getElementById("player-health-bar");
         var enemyHealthSpan = document.getElementById("enemy-health");
         var enemyHealthBar = document.getElementById("enemy-health-bar");
+        var armorBar = document.getElementById("armor-bar");
+
 
         var mainMenu = document.getElementById("main-menu");
         var hud = document.getElementById("hud");
@@ -545,22 +566,17 @@
         var hero_drive_upgrade= document.getElementById("hero_drive_upgrade");
 
 
-
-          
-          
-
-          
-          
-
         var player_health = 100;
         //default
-        var armor_type = 200;
+        var armor_type = 0;
         var weapon_type = 0;
         var weapon_level = 0;
         var armor_level = 0;
         var enemy_health = 3000;
         var hero_boost_level = 0;
         var health_level = 0;
+        var player_armor_max = 0;
+        var player_armor = 0;
 
         var bridge = {
           queue: [],
@@ -675,27 +691,33 @@
         
          weapon_lv1.onclick = function(e){
             weapon_type =  this.getAttribute("level");
+            this.style.backgroundColor = "black";
          }
           
           weapon_lv2.onclick = function(e){
               weapon_type =  this.getAttribute("level");
+              this.style.backgroundColor = "black";
           }
           
           weapon_lv3.onclick = function(e){
               weapon_type =  this.getAttribute("level");
+              this.style.backgroundColor = "black";
           }
           
           
           armor_lv1.onclick = function(e){
               armor_type =  this.getAttribute("level");
+              this.style.backgroundColor = "black";
           }
           
           armor_lv2.onclick = function(e){
               armor_type =  this.getAttribute("level");
+              this.style.backgroundColor = "black";
           }
           
           armor_lv3.onclick = function(e){
               armor_type =  this.getAttribute("level");
+              this.style.backgroundColor = "black";
           }
           
           
@@ -750,8 +772,11 @@
           try {
             var player_health_percent = (player_health / 100.0) * 100.0;
             var enemy_health_percent = (enemy_health / 3000.0) * 100.0;
+            var armor_percent = (player_armor/player_armor_max)*100;
+            
             playerHealthBar.style.webkitTransform = "translate3d(-" + (100.0 - player_health_percent) + "%, 0, 0)";
             enemyHealthBar.style.webkitTransform = "translate3d(-" + (100.0 - enemy_health_percent) + "%, 0, 0)";
+            armorBar.style.webkitTransform = "translate3d(-" + (100.0 - armor_percent) + "%, 0, 0)";
             //playerHealthSpan.innerHTML = player_health;
             //enemyHealthSpan.innerHTML = enemy_health;
             setTimeout(tick, 0); //32ms is 30fps
