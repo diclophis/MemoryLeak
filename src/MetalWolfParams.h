@@ -65,7 +65,7 @@ namespace MWParams
         
     //Coin Params
     static float kCoinFallSpeed = 7.0f;
-    static char* kCoinAmount = "25";
+    static const char* kCoinAmount = "25";
 
 
 }
