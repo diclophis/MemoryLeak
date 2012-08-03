@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		29E2AABB15CBA7CE006405D1 /* 301.xml in Resources */ = {isa = PBXBuildFile; fileRef = 29E2AABA15CBA7CD006405D1 /* 301.xml */; };
+		29E2AABD15CBA7D8006405D1 /* 302.xml in Resources */ = {isa = PBXBuildFile; fileRef = 29E2AABC15CBA7D8006405D1 /* 302.xml */; };
+		29E2AABF15CBA7E4006405D1 /* 303.xml in Resources */ = {isa = PBXBuildFile; fileRef = 29E2AABE15CBA7E3006405D1 /* 303.xml */; };
+		29E2AAC115CBA7EF006405D1 /* 304.xml in Resources */ = {isa = PBXBuildFile; fileRef = 29E2AAC015CBA7EF006405D1 /* 304.xml */; };
 		C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C23348D215827CA800F64C5E /* StateFoo.cpp */; };
 		C249FCCA1589EAA300ABFE76 /* BulletHellWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C249FCC81589EAA300ABFE76 /* BulletHellWorld.cpp */; };
 		C29A2CFD155CE772007B500C /* AncientDawn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C29A2CFB155CE772007B500C /* AncientDawn.cpp */; };
@@ -118,6 +122,10 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* RaptorIsland.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaptorIsland.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		29E2AABA15CBA7CD006405D1 /* 301.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = 301.xml; path = ../../assets/levels/301.xml; sourceTree = "<group>"; };
+		29E2AABC15CBA7D8006405D1 /* 302.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = 302.xml; path = ../../assets/levels/302.xml; sourceTree = "<group>"; };
+		29E2AABE15CBA7E3006405D1 /* 303.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = 303.xml; path = ../../assets/levels/303.xml; sourceTree = "<group>"; };
+		29E2AAC015CBA7EF006405D1 /* 304.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = 304.xml; path = ../../assets/levels/304.xml; sourceTree = "<group>"; };
 		29E68AA115CA3F0300FFFF25 /* MetalWolfParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalWolfParams.h; sourceTree = "<group>"; };
 		C23348D215827CA800F64C5E /* StateFoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateFoo.cpp; sourceTree = "<group>"; };
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
@@ -620,6 +628,10 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				29E2AAC015CBA7EF006405D1 /* 304.xml */,
+				29E2AABE15CBA7E3006405D1 /* 303.xml */,
+				29E2AABC15CBA7D8006405D1 /* 302.xml */,
+				29E2AABA15CBA7CD006405D1 /* 301.xml */,
 				FC141C4A1285429700166578 /* assets */,
 				FC1417731285415800166578 /* src */,
 				FC1417611285413100166578 /* Classes */,
@@ -1380,6 +1392,10 @@
 				FC141C571285429700166578 /* assets in Resources */,
 				FCF8913313E8AA3900AFEB8E /* Entitlements.plist in Resources */,
 				C2D0791915C8DFCD00A10206 /* MainWindow-iPad.xib in Resources */,
+				29E2AABB15CBA7CE006405D1 /* 301.xml in Resources */,
+				29E2AABD15CBA7D8006405D1 /* 302.xml in Resources */,
+				29E2AABF15CBA7E4006405D1 /* 303.xml in Resources */,
+				29E2AAC115CBA7EF006405D1 /* 304.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
