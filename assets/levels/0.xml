@@ -6,24 +6,29 @@
     <repeat>
       <times>9999</times>
       <action>
+        <fire>
+          <direction>-45</direction>
+          <speed>10.0</speed>
+          <bullet/>
+        </fire>
+        <wait>5</wait>
         <repeat>
           <times>50</times>
           <action>
             <fire>
-              <direction>-45+$rand*90</direction>
-              <speed>5.0+$rand*2.0</speed>
+              <direction type="sequence">2</direction>
+              <speed>10.0</speed>
               <bullet/>
             </fire>
-            <wait>10</wait>
+            <wait>5</wait>
           </action>
         </repeat>
-
         <repeat>
-          <times>200</times>
+          <times>100</times>
           <action>
             <fire>
               <direction>-45+$rand*90</direction>
-              <speed>0.4+$rand*7.0</speed>
+              <speed>4.0+$rand*2.0</speed>
               <bullet/>
             </fire>
             <wait>1</wait>

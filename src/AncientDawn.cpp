@@ -308,7 +308,6 @@ void AncientDawn::CreateSpaceShip() {
   BulletMLParser* bp = new BulletMLParserTinyXML(m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->fp, m_LevelFileHandles->at(EEnemyBulletMLFileIndex_ENEMY)->len);
   bp->build();
   bc = new BulletCommand(bp, m_AtlasSprites[m_SpaceShipIndex]);
-  bc->EnableShooting(true);
 }
 
 
@@ -377,11 +376,14 @@ void AncientDawn::StepPhysics() {
     
   if (m_World->m_Solve) {
     m_SolveTimeout = 0.0;
-    m_ColliderSwitch = COLLIDE_PLAYER;
-    aabb.lowerBound.Set((-10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-    aabb.upperBound.Set((10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (10.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
-    m_World->QueryAABB(this, aabb);
     
+    {
+      m_ColliderSwitch = COLLIDE_PLAYER;
+      aabb.lowerBound.Set((-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (-8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      aabb.upperBound.Set((8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO), (8.0f / PTM_RATIO) + (m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO));
+      m_World->QueryAABB(this, aabb);
+    }
+      
     {
       m_ColliderSwitch = COLLIDE_ENEMY;
       aabb.lowerBound.Set((-MWParams::kEnemyHalfPixelDimX/PTM_RATIO) + (m_AtlasSprites[m_SpaceShipIndex]->m_Position[0]/PTM_RATIO),
@@ -494,6 +496,10 @@ int AncientDawn::_gameSimulate()
   
   StepPhysics();
 
+  if (m_SimulationTime > 3.0) {
+    bc->EnableShooting(true);
+  }
+  
   int this_bulletml_turn = (int)(m_SimulationTime * 100.0);
   if (this_bulletml_turn != m_LastBulletCommandTurn) {  
     if (bc) {
