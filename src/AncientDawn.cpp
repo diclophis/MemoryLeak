@@ -138,7 +138,7 @@ void AncientDawn::ResetGame() {
   
   m_LastBulletCommandTurn = -1;
   
-  m_PlayerBulletIsLaser = false;
+  m_PlayerBulletIsLaser = (MWParams::kPlayerGunMLFileIndex >= EPlayerLaserMLFileName_LVL1 && MWParams::kPlayerGunMLFileIndex < EPlayerLaserMLFileName_UPTO_COUNT);
 }
 
 

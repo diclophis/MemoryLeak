@@ -15,6 +15,7 @@
 
       div {
         display: -webkit-box;
+        text-align: center;
       }
 
       body, html {
@@ -94,6 +95,9 @@
         left: 0;
         width: 100%;
         height: 90%;
+        -webkit-box-orient: vertical;
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
         -webkit-backface-visibility: hidden;
       }
 
@@ -105,16 +109,29 @@
         opacity: 1;
       }
 
+      #shop div {
+        -webkit-box-align: center;
+        -webkit-box-pack: center;
+        -webkit-box-orient: vertical;
+      }
+
+      #shop div#back-to-main-from-shop-button {
+        background-color: yellow;
+        width: 25%;
+        height: 10%;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+
       #title {
         color: white;
-        text-align: center;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: red;
       }
 
       #flavor {
-        text-align: center;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: blue;
@@ -127,7 +144,6 @@
       #start-button {
         height: 20%;
         color: green;
-        text-align: center;
         -webkit-box-align: center;
         -webkit-box-pack: center;
         background-color: yellow;
@@ -168,6 +184,9 @@
         height: 5%;
       }
 
+      #hud div {
+      }
+
       #hud.invisible {
         opacity: 0;
       }
@@ -179,22 +198,26 @@
       #player-health-container {
         width: 50%;
         height: 100%;
+        overflow: hidden;
       }
 
       #player-health-bar {
         width: 100%;
         background-color: purple;
+        -webkit-transition-property: none;
       }
 
       #enemy-health-container {
         width: 50%;
         height: 100%;
         background-color: green;
+        overflow: hidden;
       }
 
       #enemy-health-bar {
         width: 100%;
         background-color: yellow;
+        -webkit-transition-property: none;
       }
 
     </style>
@@ -215,7 +238,50 @@
       </div>
       <div id="shop" class="invisible">
         <div id="back-to-main-from-shop-button">
-          main
+        </div>
+        <div id="shop-weapons">
+          <h1>
+            weapons
+          </h1>
+          <div>
+            current level
+          </div>
+          <div>
+            upgrade
+          </div>
+        </div>
+        <div id="shop-armor">
+          <h1>
+            armor
+          </h1>
+          <div>
+            current level
+          </div>
+          <div>
+            upgrade
+          </div>
+        </div>
+        <div id="shop-shields">
+          <h1>
+            shields
+          </h1>
+          <div>
+            current level
+          </div>
+          <div>
+            upgrade
+          </div>
+        </div>
+        <div id="shop-drive">
+          <h1>
+            hero drive
+          </h1>
+          <div>
+            current level
+          </div>
+          <div>
+            upgrade
+          </div>
         </div>
       </div>
       <div id="inventory" class="invisible">
@@ -356,12 +422,11 @@
           try {
             var player_health_percent = (player_health / 100.0) * 100.0;
             var enemy_health_percent = (enemy_health / 3000.0) * 100.0;
-            playerHealthBar.style.width = player_health_percent + "%";
-            enemyHealthBar.style.width = enemy_health_percent + "%";
-            playerHealthSpan.innerHTML = player_health;
-            enemyHealthSpan.innerHTML = enemy_health;
-
-            setTimeout(tick, 32); //32ms is 30fps
+            playerHealthBar.style.webkitTransform = "translate3d(-" + (100.0 - player_health_percent) + "%, 0, 0)";
+            enemyHealthBar.style.webkitTransform = "translate3d(-" + (100.0 - enemy_health_percent) + "%, 0, 0)";
+            //playerHealthSpan.innerHTML = player_health;
+            //enemyHealthSpan.innerHTML = enemy_health;
+            setTimeout(tick, 0); //32ms is 30fps
           } catch(e) {
             alert(e);
           }
