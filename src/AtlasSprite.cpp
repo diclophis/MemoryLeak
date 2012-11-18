@@ -224,8 +224,8 @@ void AtlasSprite::BlitVertice(foofoo *batch_foo, int i, float vx, float vy, floa
     
   batch_foo->m_SpriteFoos[(batched_times_four)].vertex[0] = (x + m_Position[0]);
   batch_foo->m_SpriteFoos[(batched_times_four)].vertex[1] = (y + m_Position[1]);
-  batch_foo->m_SpriteFoos[(batched_times_four)].texture[0] = tx;
-  batch_foo->m_SpriteFoos[(batched_times_four)].texture[1] = ty;
+  batch_foo->m_SpriteFoos[(batched_times_four)].texture[0] = (tx);
+  batch_foo->m_SpriteFoos[(batched_times_four)].texture[1] = (ty);
 }
 
 
@@ -399,8 +399,8 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 #endif
 
     glColor4f(0.0, 1.0, 0.0, 1.0);
-    glDrawElements(GL_POINTS, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
-    //glDrawElements(GL_LINES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    //glDrawElements(GL_POINTS, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
+    glDrawElements(GL_LINES, foo->m_NumBatched * 6, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 0.0);
 
     glEnable(GL_TEXTURE_2D);
