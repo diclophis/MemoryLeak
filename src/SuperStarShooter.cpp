@@ -368,7 +368,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
+  glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
 
   if (m_Batches.size() == 2) {
     if (m_NeedsTerrainRebatched) {
@@ -492,11 +492,11 @@ int SuperStarShooter::Simulate() {
   }
 
   if (recenter_x) {
-    m_LastCenterX -= ((float)dsx * SUBDIVIDE);
+    m_LastCenterX -= floor((float)dsx * SUBDIVIDE);
   }
 
   if (recenter_y) {
-    m_LastCenterY -= ((float)dsy * SUBDIVIDE);
+    m_LastCenterY -= floor((float)dsy * SUBDIVIDE);
   }
 
   int xx = 0;
@@ -513,8 +513,8 @@ int SuperStarShooter::Simulate() {
       nsx = sx;
       nsy = sy;
 
-      float px = ((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
-      float py = ((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+      float px = floor(((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
+      float py = floor(((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
 
       if (recenter_x) {
         nsx -= dsx;
