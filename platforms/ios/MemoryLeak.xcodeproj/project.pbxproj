@@ -1292,7 +1292,7 @@
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -1320,7 +1320,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = RaptorIsland;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

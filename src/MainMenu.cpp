@@ -50,7 +50,7 @@ MainMenu::MainMenu(int w, int h, std::vector<GLuint> &t, std::vector<foo*> &m, s
 	
 	
 	m_Models.push_back(new Model(m_FooFoos.at(1)));
-	m_Models[1]->SetTexture(m_Textures->at(1));
+	m_Models[1]->SetTexture(m_Textures->at(0));
 	m_Models[1]->SetFrame(0);
 	m_Models[1]->SetPosition(0.0, -0.675, 0.0);
 	m_Models[1]->SetScale(512.0, 0.25, 512.0);
