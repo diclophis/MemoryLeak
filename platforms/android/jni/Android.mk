@@ -15,27 +15,13 @@ CG_SUBDIRS := \
 ../../../src \
 ../../../src/libmodplug \
 ../../../src/octree \
-../../../src/assimp \
-../../../src/contrib/irrXML \
 ../../../src/contrib/ConvertUTF \
 ../../../src/contrib/unzip \
 ../../../src/contrib/zlib \
-../../../src/Box2D \
-../../../src/Box2D/Collision \
-../../../src/Box2D/Collision/Shapes \
-../../../src/Box2D/Common \
-../../../src/Box2D/Dynamics \
-../../../src/Box2D/Dynamics/Contacts \
-../../../src/Box2D/Dynamics/Joints \
-../../../src/Box2D/Rope \
-../../../src/OpenSteer \
-../../../src/bulletml \
-../../../src/bulletml/tinyxml
 
 LOCAL_SRC_FILES := $(foreach F, $(CG_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.cpp))))
 LOCAL_SRC_FILES += $(foreach F, $(CG_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))
 
-#LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog -lc -lgcc -lm -ldl -lstdc++
 LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lc -lgcc -lm -ldl -lstdc++
 
 include $(BUILD_SHARED_LIBRARY)

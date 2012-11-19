@@ -34,6 +34,7 @@ static jobject activity;
 bool playing_audio = false;
 void *pump_audio(void *);
 void create_audio_thread();
+static int game_index = 0;
 
 
 void create_audio_thread() {
@@ -178,7 +179,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject 
     Engine::CurrentGameResizeScreen(width, height);
     Engine::CurrentGameStart();
   } else {
-    Engine::Start(1, sWindowWidth, sWindowHeight);
+    Engine::Start(game_index, sWindowWidth, sWindowHeight);
     create_audio_thread();
   }
 }
