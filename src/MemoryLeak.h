@@ -63,10 +63,6 @@
       #include <OpenGLES/ES2/gl.h>
       #include <OpenGLES/ES2/glext.h>
     #endif
-
-      #include <OpenGLES/ES1/gl.h>
-      #include <OpenGLES/ES1/glext.h>
-
     #define glFrustum glFrustumf
   #endif
 #else
@@ -79,8 +75,6 @@
 #endif
 
 #ifdef ANDROID_NDK
-//  #include <GLES/gl.h>
-//  #include <GLES/glext.h>
   #include <GLES2/gl2.h>
   #include <GLES2/gl2ext.h>
   #define glFrustum glFrustumf
@@ -130,11 +124,6 @@
 
 #include "OpenGLCommon.h"
 
-//#include "assimp.hpp"
-//#include "aiScene.h"
-//#include "aiPostProcess.h"
-//#include <include/IOStream.h>
-//#include <include/IOSystem.h>
 #include "FileHandle.h"
 #include "StateFoo.h"
 #include "foo.h"
@@ -146,34 +135,14 @@
 
 #define MSG_OUT stdout  
 
-//#include "Box2D.h"
-
-//#include "OpenSteer/SimpleVehicle.h"
-//#include "OpenSteer/Color.h"
-
 #include "stdarg.h"
 #include "octree.h"
 #include "micropather.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
-//#include "Model.h"
 #include "Game.h"
-//#include "FooIO.h"
-//#include "RenderTexture.h"
-//#include "GLES-Render.h"
 #include "Engine.h"
 
 #define random rand
-
-//#include "MLPoint.h"
-//#include "Terrain.h"
-
-//#include "BulletHellWorld.h"
-
-//#include "bulletml/bulletmlparser.h"
-//#include "bulletml/bulletmlparser-tinyxml.h"
-//#include "bulletml/bulletmlrunner.h"
-
-//#include "BulletCommand.h"
 
 #include "pnglite.h"
