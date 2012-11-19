@@ -210,6 +210,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
     
 #else
 
+#ifndef USE_GLES2
   if (!sf->m_EnabledStates) {
     glEnable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
@@ -232,6 +233,7 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   glVertexPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + (0));
 	glNormalPointer(GL_FLOAT, foo->m_Stride, (char *)(NULL) + (3 * sizeof(GLfloat)));
   glTexCoordPointer(3, GL_FLOAT, foo->m_Stride, (char *)NULL + ((3 * sizeof(GLfloat)) + (3 * sizeof(GLfloat))));
+#endif
   
 #endif
 
@@ -244,12 +246,14 @@ void Model::RenderFoo(StateFoo *sf, foofoo *foo, bool copy) {
   glDrawElements(GL_TRIANGLES, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
 
   if (false) {
+#ifndef USE_GLES2
     glDisable(GL_TEXTURE_2D);
     glColor4f(1.0, 1.0, 0.0, 1.0);
     glPointSize(5.0);
     glDrawElements(GL_POINTS, foo->m_NumBatched, GL_UNSIGNED_SHORT, (GLvoid*)((char*)NULL));
     glColor4f(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
+#endif
   }
 
   sf->m_LastBufferIndex++;

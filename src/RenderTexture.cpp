@@ -4,20 +4,25 @@
 
 RenderTexture::RenderTexture(int width, int height) {
   name = 0;
+#ifndef USE_GLES2
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_RENDERBUFFER_BINDING_OES, &oldRBO);
+#endif
 }
 
 
 RenderTexture::~RenderTexture() {
   LOGV("dealloc rendertexture %d\n", name);
+#ifndef USE_GLES2
   glDeleteTextures(1, &name);
   glDeleteBuffers(1, &fbo);
   glDeleteBuffers(1, &depthRenderbuffer);
+#endif
 }
 
 
 void RenderTexture::Begin() {
+#ifndef USE_GLES2
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldFBO);
   glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &oldRBO);
 
@@ -49,11 +54,14 @@ void RenderTexture::Begin() {
     LOGV("2222 INVALID GL CONTEXT CANT MAKE BUFFER\n");
     assert(false);
   }
+#endif
 }
 
 
 void RenderTexture::End() {
+#ifndef USE_GLES2
   glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFBO);
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRBO);
   glBindTexture(GL_TEXTURE_2D, 0);
+#endif
 }

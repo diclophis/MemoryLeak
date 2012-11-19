@@ -519,7 +519,7 @@ static inline void Matrix3DSetShear(Matrix3D matrix, GLfloat xShear, GLfloat ySh
     matrix[4] = yShear;
 }
 
-
+#ifndef USE_GLES2
 #pragma mark -
 #pragma mark -
 #pragma mark Misc
@@ -539,6 +539,7 @@ static inline void billboardCurrentMatrix(void)
 	}
 	glLoadMatrixf(modelview);
 }
+#endif
 
 //returns a random float between 0 and 1
 static inline float randf() {

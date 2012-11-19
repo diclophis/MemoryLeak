@@ -531,6 +531,7 @@ void AncientDawn::RenderSpritePhase() {
     RenderSpriteRange(0, 2, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
   } else { // debug draw data doesnt work with opengles 2.0
+#ifndef USE_GLES2
     AtlasSprite::ReleaseBuffers();
     ResetStateFoo();
     glDisable(GL_TEXTURE_2D);
@@ -540,6 +541,7 @@ void AncientDawn::RenderSpritePhase() {
     glDisableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnable(GL_TEXTURE_2D);
+#endif
   }
 }
 

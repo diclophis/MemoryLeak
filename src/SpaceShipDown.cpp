@@ -1051,6 +1051,7 @@ void SpaceShipDown::RenderModelPhase() {
 
 
 void SpaceShipDown::RenderSpritePhase() {
+#ifndef USE_GLES2
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0.0);
   if (m_DebugDrawToggle) {
     AtlasSprite::ReleaseBuffers();
@@ -1094,6 +1095,7 @@ void SpaceShipDown::RenderSpritePhase() {
     //AtlasSprite::RenderFoo(m_StateFoo, m_SecondBatchFoo);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
   }
+#endif
 }
 
 

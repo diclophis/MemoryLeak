@@ -641,7 +641,7 @@ GLuint Terrain::GenerateStripesTexture() {
   }
 
   
-
+#ifndef USE_GLES2
   if (false) {
     // layer: gradient
     float gradientAlpha = 0.5f;
@@ -734,6 +734,7 @@ GLuint Terrain::GenerateStripesTexture() {
     //render an AtlasSprite full "screen" here!
     glDisable(GL_BLEND);
   }
+#endif
   
   rt->End();
 

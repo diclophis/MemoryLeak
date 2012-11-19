@@ -87,10 +87,12 @@ namespace {
 	
 	void iglDrawVertexGroup(GLuint _mode)
 	{
+#ifndef USE_GLES2
 		glVertexPointer(3, GL_FLOAT, 0, &iglBuffer[0]);
 		glDrawArrays(_mode, 0, iglIndex);
 		delete iglBuffer;
 		iglBuffer = NULL;
+#endif
 	}
 	
 	inline void iglVertexVec3 (const OpenSteer::Vec3& v)
@@ -126,8 +128,10 @@ namespace {
         case GL_INVALID_ENUM:      std::cerr << "GL_INVALID_ENUM";      break;
         case GL_INVALID_VALUE:     std::cerr << "GL_INVALID_VALUE";     break;
         case GL_INVALID_OPERATION: std::cerr << "GL_INVALID_OPERATION"; break;
+    #ifndef USE_GLES2
         case GL_STACK_OVERFLOW:    std::cerr << "GL_STACK_OVERFLOW";    break;
         case GL_STACK_UNDERFLOW:   std::cerr << "GL_STACK_UNDERFLOW";   break;
+    #endif
         case GL_OUT_OF_MEMORY:     std::cerr << "GL_OUT_OF_MEMORY";     break;
     #ifndef _WIN32  
 		#ifndef _iPhoneVersion
@@ -151,11 +155,13 @@ namespace {
     {
         OpenSteer::warnIfInUpdatePhase ("iDrawLine");
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
 		glColor4f(color.r(), color.g(), color.b(),1.0);
 		OpenSteer::glPrepVertexArray(2);
         glVertexVec3(startPoint);
         glVertexVec3(endPoint);
 		OpenSteer::glDrawVertexArray(GL_LINES);	
+#endif
 #else
         glColor3f (color.r(), color.g(), color.b());
         glBegin (GL_LINES);
@@ -175,12 +181,14 @@ namespace {
     {
         OpenSteer::warnIfInUpdatePhase ("iDrawTriangle");
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
 		glColor4f(color.r(), color.g(), color.b(),1.0);
 		OpenSteer::glPrepVertexArray(3);
 		OpenSteer::glVertexVec3 (a);
 		OpenSteer::glVertexVec3 (b);
 		OpenSteer::glVertexVec3 (c);
 		OpenSteer::glDrawVertexArray(GL_TRIANGLES);	
+#endif
 #else		
         glColor3f (color.r(), color.g(), color.b());
         glBegin (GL_TRIANGLES);
@@ -206,6 +214,7 @@ namespace {
         OpenSteer::warnIfInUpdatePhase ("iDrawQuadrangle");
 
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
 		glColor4f(color.r(), color.g(), color.b(),1.0);
 		OpenSteer::glPrepVertexArray(4);
 		OpenSteer::glVertexVec3 (a);
@@ -213,6 +222,7 @@ namespace {
 		OpenSteer::glVertexVec3 (d);
 		OpenSteer::glVertexVec3 (c);
 		OpenSteer::glDrawVertexArray(GL_TRIANGLE_STRIP);	
+#endif
 #else
         glColor3f (color.r(), color.g(), color.b());
         glBegin (GL_QUADS);
@@ -259,6 +269,7 @@ namespace {
 
     inline GLint begin2dDrawing (float w, float h)
     {
+#ifndef USE_GLES2
         // store OpenGL matrix mode
         GLint originalMatrixMode;
         glGetIntegerv (GL_MATRIX_MODE, &originalMatrixMode);
@@ -270,7 +281,9 @@ namespace {
 
         // set up orthogonal projection onto window's screen space
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
         glOrthof(0.0f, w, 0.0f, h, -1.0f, 1.0f);
+#endif
 #else	
         glOrtho (0.0f, w, 0.0f, h, -1.0f, 1.0f);
 #endif
@@ -282,11 +295,13 @@ namespace {
 
         // return original matrix mode for saving (stacking)
         return originalMatrixMode;
+#endif
     }
 
 
     inline void end2dDrawing (GLint originalMatrixMode)
     {
+#ifndef USE_GLES2
         // restore previous model/projection transformation state
         glPopMatrix ();
         glMatrixMode (GL_PROJECTION);
@@ -294,6 +309,7 @@ namespace {
 
         // restore OpenGL matrix mode
         glMatrixMode (originalMatrixMode);
+#endif
     }
 
 }   // end anonymous namespace
@@ -368,11 +384,13 @@ OpenSteer::drawLineAlpha (const Vec3& startPoint,
     warnIfInUpdatePhase ("drawLineAlpha");
 
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
 	glColor4f(color.r(), color.g(), color.b(),1.0);
 	OpenSteer::glPrepVertexArray(2);
     OpenSteer::glVertexVec3 (startPoint);
     OpenSteer::glVertexVec3 (endPoint);
 	OpenSteer::glDrawVertexArray(GL_LINES);	
+#endif
 #else	
     glColor4f (color.r(), color.g(), color.b(), alpha);
     glBegin (GL_LINES);
@@ -479,7 +497,8 @@ OpenSteer::drawCircleOrDisk (const float radius,
     const float step = (2 * OPENSTEER_M_PI) / segments;
 	
 #ifdef _iPhoneVersion
-	
+
+#ifndef USE_GLES2
 	glColor4f(color.r(), color.g(), color.b(),1.0);
 	
     // rotate p around the circle in "segments" steps
@@ -503,6 +522,7 @@ OpenSteer::drawCircleOrDisk (const float radius,
     }
 	
 	glDrawVertexArray(filled ? GL_TRIANGLE_FAN : GL_LINE_LOOP);	
+#endif
 	
 #else
 	
@@ -600,6 +620,7 @@ OpenSteer::drawXZArc (const Vec3& start,
     const float step = arcAngle / segments;
 	
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
 	glColor4f(color.r(), color.g(), color.b(),1.0);
 	glPrepVertexArray(segments);
     // draw each segment along arc
@@ -613,6 +634,7 @@ OpenSteer::drawXZArc (const Vec3& start,
         spoke = spoke.rotateAboutGlobalY (step, sin, cos);
     }
 	glDrawVertexArray(GL_LINE_STRIP);	
+#endif
 
 #else
 	
@@ -801,6 +823,7 @@ OpenSteer::drawXZCheckerboardGrid (const float size,
 		
 #ifdef _iPhoneVersion
 
+#ifndef USE_GLES2
 		glDepthMask(GL_FALSE);
 		glEnable(GL_BLEND);
 		OpenSteer::glPrepVertexArray( (6 * subsquares * subsquares) / 2);
@@ -864,6 +887,7 @@ OpenSteer::drawXZCheckerboardGrid (const float size,
 		OpenSteer::glDrawVertexArray(GL_TRIANGLES);	
 		glDisable(GL_BLEND);
 		glDepthMask(GL_TRUE);	
+#endif
 #else
 	
         for (int i = 0; i < subsquares; i++)
@@ -912,6 +936,7 @@ OpenSteer::drawXZLineGrid (const float size,
     const float spacing = size / subsquares;
 
 #ifdef _iPhoneVersion
+#ifndef USE_GLES2
 	glColor4f(color.r(), color.g(), color.b(),1.0);
 	glPrepVertexArray(4);
 	float q = -half;
@@ -930,6 +955,7 @@ OpenSteer::drawXZLineGrid (const float size,
         q += spacing;
     }
 	glDrawVertexArray(GL_LINES);	
+#endif
 	
 #else
 
@@ -1063,6 +1089,7 @@ OpenSteer::drawCameraLookAt (const Vec3& cameraPosition,
                              const Vec3& pointToLookAt,
                              const Vec3& up)
 {
+#ifndef USE_GLES2
     // check for valid "look at" parameters
     drawCameraLookAtCheck (cameraPosition, pointToLookAt, up);
 
@@ -1073,6 +1100,7 @@ OpenSteer::drawCameraLookAt (const Vec3& cameraPosition,
                pointToLookAt.x,  pointToLookAt.y,  pointToLookAt.z,
                up.x,             up.y,             up.z);
     */
+#endif
 }
 
 

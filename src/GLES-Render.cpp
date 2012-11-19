@@ -123,7 +123,6 @@ void GLESDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const 
 }
 
 void GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {
-	glColor4f(color.r, color.g, color.b,1);
 	GLfloat				glVertices[] = {
 		p1.x * mRatio, p1.y * mRatio,
 		p2.x * mRatio, p2.y * mRatio
@@ -131,6 +130,7 @@ void GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Colo
 
 #ifdef USE_GLES2
 #else
+	glColor4f(color.r, color.g, color.b,1);
 	glVertexPointer(2, GL_FLOAT, 0, glVertices);
 	glDrawArrays(GL_LINES, 0, 2);
 #endif

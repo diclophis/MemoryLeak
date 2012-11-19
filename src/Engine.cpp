@@ -708,8 +708,10 @@ void Engine::CheckGL(const char *s) {
     case GL_INVALID_ENUM:      LOGV("GL_INVALID_ENUM\n\n");      break;
     case GL_INVALID_VALUE:     LOGV("GL_INVALID_VALUE\n\n");     break;
     case GL_INVALID_OPERATION: LOGV("GL_INVALID_OPERATION\n\n"); break;
+#ifndef USE_GLES2
     case GL_STACK_OVERFLOW:    LOGV("GL_STACK_OVERFLOW\n\n");    break;
     case GL_STACK_UNDERFLOW:   LOGV("GL_STACK_UNDERFLOW\n\n");   break;
+#endif
     case GL_OUT_OF_MEMORY:     LOGV("GL_OUT_OF_MEMORY\n\n");     break;
   }
 }

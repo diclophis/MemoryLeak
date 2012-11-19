@@ -54,6 +54,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   public DemoGLSurfaceView(Context context) {
     super(context);
+    setEGLContextClientVersion(2);
     setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
     //Log.v(this.toString(), "DemoGLSurfaceView::onSurfaceCreated");
     mRenderer = new DemoRenderer(context);
