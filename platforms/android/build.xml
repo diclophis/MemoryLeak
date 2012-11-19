@@ -80,4 +80,33 @@
     <!-- version-tag: 1 -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
+
+
+<!--
+<target name="-package-resources" > 
+<exec executable="${aapt}" failonerror="true">
+      <arg value="package" />
+      <arg value="-f" />
+      <arg value="-0" />
+      <arg value="-v" />
+      <arg value="-M" />
+      <arg path="AndroidManifest.xml" />
+      <arg value="-A" />
+      <arg path="assets" />
+      <arg value="-I" />
+      <arg path="${android.jar}" />
+      <arg value="-m" />
+      <arg value="-J" />
+      <arg path="${out.absolute.dir}" />
+      <arg value="-F" />
+      <arg path="${out.absolute.dir}/${resource.package.file.name}" />
+      <arg value="-S" />
+      <arg path="res" />
+      <arg value="-XXX-rename-manifest-package" />
+      <arg value="my.new.package.name" />
+    </exec>
+</target>
+-->
+
+
 </project>
