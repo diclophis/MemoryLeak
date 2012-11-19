@@ -13,13 +13,6 @@ static std::vector<FileHandle *> textures;
 static std::vector<FileHandle *> levels;
 static bool m_WarnedAboutGameFailure = false;
 
-namespace OpenSteer {
-	bool updatePhaseActive = false;
-	bool drawPhaseActive = false;
-}
-
-
-#ifdef USE_GLES2
 
 static const char vertex_shader[] =
 "attribute vec2 Position;\n"
@@ -31,6 +24,7 @@ static const char vertex_shader[] =
 "OutCoord = InCoord;\n"
 "gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0, 1.0);\n"
 "}\n";
+
 
 static const char fragment_shader[] = 
 "#ifdef GL_ES\n"
@@ -44,7 +38,6 @@ static const char fragment_shader[] =
 "}\n";
 
 
-
 void Engine::glTranslatef(float tx, float ty, float tz) {
   ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
   ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
@@ -52,9 +45,6 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
   ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
   glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 }
-
-
-#endif
 
 
 Engine::~Engine() {
@@ -82,16 +72,11 @@ Engine::~Engine() {
 
   free(m_StateFoo);
 
-#ifdef USE_GLES2
-
   glDetachShader(program, v);
   glDetachShader(program, f);
   glDeleteShader(v);
   glDeleteShader(f);
   glDeleteProgram(program);
-
-#endif
-
 }
 
 
@@ -102,15 +87,6 @@ void Engine::ClearSprites() {
   m_AtlasSprites.clear();
   m_SpriteCount = 0;
 }
-
-
-//void Engine::ClearModels() {
-//  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
-//    delete *i;
-//  }
-//  m_Models.clear();
-//  m_ModelCount = 0;
-//}
 
 
 Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_TextureFileHandles(&t), m_ModelFileHandles(&m), m_LevelFileHandles(&l), m_SoundFileHandles(&s) {
@@ -128,11 +104,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
 	m_IsPushingAudio = false;
 
-
-
   m_CurrentSound = 0;
-
-#ifdef USE_GLES2
 
   // Compile the vertex shader
   p = vertex_shader;
@@ -156,16 +128,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glAttachShader(program, v);
   glAttachShader(program, f);
 
-  //glBindAttribLocation(program, 0, "Position");
-  //glBindAttribLocation(program, 1, "InCoord");
-
-
-
-
-#endif
-
   m_StateFoo = new StateFoo(program); //(StateFoo *)malloc(1 * sizeof(StateFoo));
-
 }
 
 
@@ -180,8 +143,9 @@ int Engine::isExtensionSupported(const char *extension) {
   GLubyte *where, *terminator;
   // Extension names should not have spaces.
   where = (GLubyte *) strchr(extension, ' ');
-  if (where || *extension == '\0')
+  if (where || *extension == '\0') {
     return 0;
+  }
   extensions = glGetString(GL_EXTENSIONS);
   LOGV("%s\n", extensions);
   // It takes a bit of care to be fool-proof about parsing the OpenGL extensions string. Don't be fooled by sub-strings, etc.
@@ -204,8 +168,6 @@ void Engine::DrawScreen(float rotation) {
   Run();
 	if (m_IsSceneBuilt && m_IsScreenResized) {
 
-#ifdef USE_GLES2
-
     if (!m_StateFoo->m_EnabledStates) {
       m_StateFoo->Link();
     }
@@ -221,30 +183,8 @@ void Engine::DrawScreen(float rotation) {
 
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
-#endif
-
     // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-#ifdef USE_GLES2
-#else
-    glLoadIdentity();
-#endif
-    
-    // Render 3D
-    //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
-    //glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-    //RenderModelPhase();
-
-    // Reset for switch to 2D
-    //glLoadIdentity();
-    
-    // Render 2D
-
-#ifdef USE_GLES2
-#else
-    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
-#endif
 
     RenderSpritePhase();
 	} else {
@@ -313,13 +253,6 @@ void Engine::DoAudio(short buffer[], int size) {
 }
 
 
-//void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
-//	for (unsigned int i=s; i<e; i++) {
-//		m_Models[i]->Render(m_StateFoo, batch_foo);
-//	}
-//}
-
-
 void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
 	for (unsigned int i=s; i<e; i++) {
 		m_AtlasSprites[i]->Render(m_StateFoo, batch_foo);
@@ -339,110 +272,6 @@ void Engine::ResizeScreen(int width, int height) {
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   m_IsScreenResized = true;
 }
-
-#ifndef USE_GLES2
-
-// This is a modified version of the function of the same name from 
-// the Mesa3D project ( http://mesa3d.org/ ), which is  licensed
-// under the MIT license, which allows use, modification, and 
-// redistribution
-void Engine::glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz)
-{
-	GLfloat m[16];
-	GLfloat x[3], y[3], z[3];
-	GLfloat mag;
-	
-	// Make rotation matrix
-	
-	// Z vector
-	z[0] = eyex - centerx;
-	z[1] = eyey - centery;
-	z[2] = eyez - centerz;
-	mag = sqrtf(z[0] * z[0] + z[1] * z[1] + z[2] * z[2]);
-	if (mag) {			// mpichler, 19950515
-		z[0] /= mag;
-		z[1] /= mag;
-		z[2] /= mag;
-	}
-	
-	// Y vector
-	y[0] = upx;
-	y[1] = upy;
-	y[2] = upz;
-	
-	// X vector = Y cross Z
-	x[0] = y[1] * z[2] - y[2] * z[1];
-	x[1] = -y[0] * z[2] + y[2] * z[0];
-	x[2] = y[0] * z[1] - y[1] * z[0];
-	
-	// Recompute Y = Z cross X
-	y[0] = z[1] * x[2] - z[2] * x[1];
-	y[1] = -z[0] * x[2] + z[2] * x[0];
-	y[2] = z[0] * x[1] - z[1] * x[0];
-	
-	// mpichler, 19950515
-	// cross product gives area of parallelogram, which is < 1.0 for
-	// non-perpendicular unit-length vectors; so normalize x, y here
-	
-	mag = sqrtf(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
-	if (mag) {
-		x[0] /= mag;
-		x[1] /= mag;
-		x[2] /= mag;
-	}
-	
-	mag = sqrtf(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
-	if (mag) {
-		y[0] /= mag;
-		y[1] /= mag;
-		y[2] /= mag;
-	}
-	
-#define M(row,col)  m[col*4+row]
-	M(0, 0) = x[0];
-	M(0, 1) = x[1];
-	M(0, 2) = x[2];
-	M(0, 3) = 0.0;
-	M(1, 0) = y[0];
-	M(1, 1) = y[1];
-	M(1, 2) = y[2];
-	M(1, 3) = 0.0;
-	M(2, 0) = z[0];
-	M(2, 1) = z[1];
-	M(2, 2) = z[2];
-	M(2, 3) = 0.0;
-	M(3, 0) = 0.0;
-	M(3, 1) = 0.0;
-	M(3, 2) = 0.0;
-	M(3, 3) = 1.0;
-#undef M
-	glMultMatrixf(m);
-	
-	// Translate Eye to Origin
-
-	glTranslatef(-eyex, -eyey, -eyez);
-	
-}
-
-
-void Engine::gluePerspective(float fovy, float aspect,
-                           float zNear, float zFar)
-{
-  GLfloat xmin, xmax, ymin, ymax;
-
-  ymax = zNear * (GLfloat)tan(fovy * M_PI / 360);
-  ymin = -ymax;
-  xmin = ymin * aspect;
-  xmax = ymax * aspect;
-
-  glFrustumx((GLfixed)(xmin * 65536), (GLfixed)(xmax * 65536),
-             (GLfixed)(ymin * 65536), (GLfixed)(ymax * 65536),
-             (GLfixed)(zNear * 65536), (GLfixed)(zFar * 65536));
-
-}
-
-#endif
-
 
 void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length) {
   FileHandle *fh = new FileHandle;
@@ -478,11 +307,7 @@ void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset,
 
 void Engine::Start(int i, int w, int h) {
   if (games.size() == 0) {
-    //games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
-    //games.push_back(new GameImpl<RadiantFireEightSixOne>);
-    //games.push_back(new GameImpl<SpaceShipDown>);
-    //games.push_back(new GameImpl<AncientDawn>);
   }
 
   if (m_CurrentGame) {
@@ -558,7 +383,6 @@ void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {
-    //LOGV("CurrentGameDoAudio without m_CurrentGame set\n");
     WarnAboutGameFailure("CurrentGameDoAudio without m_CurrentGame set\n");
   }
 }
@@ -583,28 +407,11 @@ void Engine::LoadSound(int i) {
   fseek(m_SoundFileHandles->at(i)->fp, m_SoundFileHandles->at(i)->off, SEEK_SET);
   size_t r = fread(buffer, 1, m_SoundFileHandles->at(i)->len, m_SoundFileHandles->at(i)->fp);
   if (r > 0) {
-    //LOGV("123--- %d\n", m_SoundFileHandles->at(i)->len);
     m_Sounds.push_back(ModPlug_Load(buffer, m_SoundFileHandles->at(i)->len));
   }
   free(buffer);
   m_IsPushingAudio = true;
 }
-
-
-/*
-void Engine::LoadModel(int i, int s, int e) {
-  //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
-  Assimp::Importer m_Importer;
-	m_Importer.SetIOHandler(new FooSystem(*m_ModelFileHandles));
-	int m_PostProcessFlags = aiProcess_FlipUVs | aiProcess_ImproveCacheLocality;
-	char path[128];
-	snprintf(path, sizeof(s), "%d", i);
-	m_Importer.ReadFile(path, m_PostProcessFlags);
-  const aiScene *scene = m_Importer.GetScene();
-	m_FooFoos.push_back(Model::GetFoo(scene, s, e));
-	m_Importer.FreeScene();	
-}
-*/
 
 
 void Engine::LoadTexture(int i) {
@@ -693,8 +500,6 @@ void Engine::LoadTexture(int i) {
 */
 
 
-//#ifndef USE_GLES2
-
 void Engine::CheckGL(const char *s) {
   // normally (when no error) just return
   const int lastGlError = glGetError();
@@ -706,21 +511,13 @@ void Engine::CheckGL(const char *s) {
     case GL_INVALID_ENUM:      LOGV("GL_INVALID_ENUM\n\n");      break;
     case GL_INVALID_VALUE:     LOGV("GL_INVALID_VALUE\n\n");     break;
     case GL_INVALID_OPERATION: LOGV("GL_INVALID_OPERATION\n\n"); break;
-#ifndef USE_GLES2
-    case GL_STACK_OVERFLOW:    LOGV("GL_STACK_OVERFLOW\n\n");    break;
-    case GL_STACK_UNDERFLOW:   LOGV("GL_STACK_UNDERFLOW\n\n");   break;
-#endif
     case GL_OUT_OF_MEMORY:     LOGV("GL_OUT_OF_MEMORY\n\n");     break;
   }
 }
 
-//#endif
 
-/**
- * Creates an identity 4x4 matrix.
- *
- * @param m the matrix make an identity matrix
- */
+// Creates an identity 4x4 matrix.
+// @param m the matrix make an identity matrix
 void Engine::identity(GLfloat *m) {
   GLfloat t[16] = {
     1.0, 0.0, 0.0, 0.0,
@@ -766,6 +563,7 @@ void Engine::WarnAboutGameFailure(const char *s) {
   }
 }
 
+
 void Engine::CurrentGameStart() {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->StartSimulation();
@@ -773,4 +571,3 @@ void Engine::CurrentGameStart() {
     LOGV("current game not set to start\n");
   }
 }
-

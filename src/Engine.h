@@ -5,22 +5,14 @@
 //  Created by Jon Bardin on 9/7/09.
 //
 
-#ifdef USE_GLES2
 
-#ifndef HAVE_BUILTIN_SINCOS
-#define sincos _sincos
-static void sincos (double a, double *s, double *c) {
-  *s = sin (a);
-  *c = cos (a);
-}
-#endif
-
-
-//TODO
-
-
-
-#endif
+//#ifndef HAVE_BUILTIN_SINCOS
+//#define sincos _sincos
+//static void sincos (double a, double *s, double *c) {
+//  *s = sin (a);
+//  *c = cos (a);
+//}
+//#endif
 
 
 class Engine {
@@ -42,7 +34,6 @@ public:
   virtual void CreateFoos() = 0;
   virtual void DestroyFoos() = 0;
   void DoAudio(short buffer[], int bytes);
-  //void RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
@@ -52,8 +43,6 @@ public:
   void PauseSimulation();
   void LoadSound(int i);
   void LoadTexture(int i);
-  //void LoadModel(int i, int s, int e);
-  //void ClearModels();
   void ClearSprites();
   int isExtensionSupported(const char *extension);
  
@@ -90,7 +79,6 @@ public:
   std::vector<FileHandle *> *m_SoundFileHandles;
 
   std::vector<GLuint> m_Textures;
-  //std::vector<Model *> m_Models;
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;
   std::vector<ModPlugFile *> m_Sounds;
@@ -115,19 +103,11 @@ public:
   void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ);
   void identity(GLfloat *m);
       
-#ifdef USE_GLES2
-
   void glTranslatef(float x, float y, float z);
-  //GLuint ModelViewProjectionMatrix_location;
   GLfloat ProjectionMatrix[16];
-  //static GLuint GetProjectionMatrixLocation();
-  //static GLfloat[] GetProjectionMatrix();
   GLuint v;
   GLuint f;
   const char *p;
   char msg[512];
-
-
-#endif
 
 };
