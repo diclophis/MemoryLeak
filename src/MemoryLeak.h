@@ -130,11 +130,11 @@
 
 #include "OpenGLCommon.h"
 
-#include "assimp.hpp"
-#include "aiScene.h"
-#include "aiPostProcess.h"
-#include <include/IOStream.h>
-#include <include/IOSystem.h>
+//#include "assimp.hpp"
+//#include "aiScene.h"
+//#include "aiPostProcess.h"
+//#include <include/IOStream.h>
+//#include <include/IOSystem.h>
 #include "FileHandle.h"
 #include "StateFoo.h"
 #include "foo.h"
@@ -146,37 +146,34 @@
 
 #define MSG_OUT stdout  
 
-#include "Box2D.h"
+//#include "Box2D.h"
 
-
-
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/Color.h"
+//#include "OpenSteer/SimpleVehicle.h"
+//#include "OpenSteer/Color.h"
 
 #include "stdarg.h"
 #include "octree.h"
 #include "micropather.h"
 #include "AtlasSprite.h"
 #include "SpriteGun.h"
-#include "Model.h"
+//#include "Model.h"
 #include "Game.h"
-#include "FooIO.h"
-#include "RenderTexture.h"
-#include "GLES-Render.h"
+//#include "FooIO.h"
+//#include "RenderTexture.h"
+//#include "GLES-Render.h"
 #include "Engine.h"
 
 #define random rand
 
-#include "MLPoint.h"
-#include "Terrain.h"
+//#include "MLPoint.h"
+//#include "Terrain.h"
 
-#include "BulletHellWorld.h"
+//#include "BulletHellWorld.h"
 
-#include "bulletml/bulletmlparser.h"
-#include "bulletml/bulletmlparser-tinyxml.h"
-#include "bulletml/bulletmlrunner.h"
+//#include "bulletml/bulletmlparser.h"
+//#include "bulletml/bulletmlparser-tinyxml.h"
+//#include "bulletml/bulletmlrunner.h"
 
-#include "BulletCommand.h"
+//#include "BulletCommand.h"
 
 #include "pnglite.h"
-

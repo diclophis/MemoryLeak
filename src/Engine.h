@@ -42,7 +42,7 @@ public:
   virtual void CreateFoos() = 0;
   virtual void DestroyFoos() = 0;
   void DoAudio(short buffer[], int bytes);
-  void RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
+  //void RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
@@ -52,8 +52,8 @@ public:
   void PauseSimulation();
   void LoadSound(int i);
   void LoadTexture(int i);
-  void LoadModel(int i, int s, int e);
-  void ClearModels();
+  //void LoadModel(int i, int s, int e);
+  //void ClearModels();
   void ClearSprites();
   int isExtensionSupported(const char *extension);
  
@@ -90,7 +90,7 @@ public:
   std::vector<FileHandle *> *m_SoundFileHandles;
 
   std::vector<GLuint> m_Textures;
-  std::vector<Model *> m_Models;
+  //std::vector<Model *> m_Models;
   std::vector<SpriteGun *> m_AtlasSprites;
   std::vector<foofoo *> m_FooFoos;
   std::vector<ModPlugFile *> m_Sounds;

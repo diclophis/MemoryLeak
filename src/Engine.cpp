@@ -2,11 +2,7 @@
 
 
 #include "MemoryLeak.h"
-#include "MainMenu.h"
 #include "SuperStarShooter.h"
-#include "RadiantFireEightSixOne.h"
-#include "SpaceShipDown.h"
-#include "AncientDawn.h"
 
 
 static std::vector<Game *> games;
@@ -76,7 +72,7 @@ Engine::~Engine() {
 
   ClearSprites();
 
-  ClearModels();
+  //ClearModels();
 
   for (std::vector<ModPlugFile *>::iterator i = m_Sounds.begin(); i != m_Sounds.end(); ++i) {
     ModPlug_Unload(*i);
@@ -108,13 +104,13 @@ void Engine::ClearSprites() {
 }
 
 
-void Engine::ClearModels() {
-  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
-    delete *i;
-  }
-  m_Models.clear();
-  m_ModelCount = 0;
-}
+//void Engine::ClearModels() {
+//  for (std::vector<Model *>::iterator i = m_Models.begin(); i != m_Models.end(); ++i) {
+//    delete *i;
+//  }
+//  m_Models.clear();
+//  m_ModelCount = 0;
+//}
 
 
 Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_TextureFileHandles(&t), m_ModelFileHandles(&m), m_LevelFileHandles(&l), m_SoundFileHandles(&s) {
@@ -317,11 +313,11 @@ void Engine::DoAudio(short buffer[], int size) {
 }
 
 
-void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
-	for (unsigned int i=s; i<e; i++) {
-		m_Models[i]->Render(m_StateFoo, batch_foo);
-	}
-}
+//void Engine::RenderModelRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
+//	for (unsigned int i=s; i<e; i++) {
+//		m_Models[i]->Render(m_StateFoo, batch_foo);
+//	}
+//}
 
 
 void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
@@ -482,11 +478,11 @@ void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset,
 
 void Engine::Start(int i, int w, int h) {
   if (games.size() == 0) {
-    games.push_back(new GameImpl<MainMenu>);
+    //games.push_back(new GameImpl<MainMenu>);
     games.push_back(new GameImpl<SuperStarShooter>);
-    games.push_back(new GameImpl<RadiantFireEightSixOne>);
-    games.push_back(new GameImpl<SpaceShipDown>);
-    games.push_back(new GameImpl<AncientDawn>);
+    //games.push_back(new GameImpl<RadiantFireEightSixOne>);
+    //games.push_back(new GameImpl<SpaceShipDown>);
+    //games.push_back(new GameImpl<AncientDawn>);
   }
 
   if (m_CurrentGame) {
@@ -595,6 +591,7 @@ void Engine::LoadSound(int i) {
 }
 
 
+/*
 void Engine::LoadModel(int i, int s, int e) {
   //aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph  cause memoryleak
   Assimp::Importer m_Importer;
@@ -607,6 +604,7 @@ void Engine::LoadModel(int i, int s, int e) {
 	m_FooFoos.push_back(Model::GetFoo(scene, s, e));
 	m_Importer.FreeScene();	
 }
+*/
 
 
 void Engine::LoadTexture(int i) {
