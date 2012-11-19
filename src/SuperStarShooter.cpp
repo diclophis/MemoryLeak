@@ -5,8 +5,8 @@
 #include "SuperStarShooter.h"
 
 
-#define ZOOM (4.0)
-#define SUBDIVIDE (16 * 8)
+#define ZOOM (1.0)
+#define SUBDIVIDE (16)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
 #define PURE 97
@@ -14,10 +14,11 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 64)
+#define VELOCITY (SUBDIVIDE * 128)
 #define MAX_WAIT_BEFORE_WARP 0.04
 #define MAX_SEARCH 30
 #define MAX_STATE_POINTERS 1024
+#define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -72,7 +73,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  //m_PlayerFoos = (foofoo **)malloc(sizeof(foofoo *) * 4);
 
   if (false) {
     //int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y
@@ -294,13 +294,9 @@ void SuperStarShooter::DestroyFoos() {
     m_GridFoo = NULL;
   }
 
-  //for (unsigned int i=0; i<4; i++) {
   for (std::vector<foofoo *>::iterator i = m_PlayerFoos.begin(); i != m_PlayerFoos.end(); ++i) {
-
-    //delete m_PlayerFoos[i];
     delete *i;
   }
-  //free(m_PlayerFoos);
   m_PlayerFoos.clear();
 
   if (m_TrailFoo) {
@@ -380,8 +376,6 @@ void SuperStarShooter::RenderSpritePhase() {
       AtlasSprite::RenderFoo(m_StateFoo, *i);
     }
   }
-  //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
-  //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
 }
 
 
@@ -407,7 +401,7 @@ int SuperStarShooter::Simulate() {
 
   float speed_x = fastAbs(tx) * 1.5;
   float speed_y = fastAbs(ty) * 1.5;
-  float speed_max = 800.0;
+  float speed_max = MAX_CAMERA_VELOCITY;
 
   if (speed_x > speed_max) {
     speed_x = speed_max;
@@ -431,31 +425,6 @@ int SuperStarShooter::Simulate() {
   float mx = (tx * speed_x * m_DeltaTime);
   float my = (ty * speed_y * m_DeltaTime);
 
-  //LOGV("%f %f %f\n", mx, tx, speed);
-
-  /*
-  float s = 0.001;
-
-  float mx = (tx * s);// * m_DeltaTime);
-  float my = (ty * s);// * m_DeltaTime);
-  */
-
-  /*
-  if (mx > 0.7) {
-    mx = 0.7;
-  }
-  if (mx < -0.7) {
-    mx = -0.7;
-  }
-  if (my > 0.7) {
-    my = 0.7;
-  }
-  if (my < -0.7) {
-    my = -0.7;
-  }
-  */
-
-
   if (false) {
     m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
     m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
@@ -470,34 +439,32 @@ int SuperStarShooter::Simulate() {
   int dsx = 0;
   int dsy = 0;
 
-  float dx = (m_LastCenterX - m_CameraActualOffsetX);
-  float dy = (m_LastCenterY - m_CameraActualOffsetY);
+  float dx = floor(m_LastCenterX - m_CameraActualOffsetX);
+  float dy = floor(m_LastCenterY - m_CameraActualOffsetY);
 
-  dsx = (dx / SUBDIVIDE) + m_CenterOfWorldX;
-  dsy = (dy / SUBDIVIDE) + m_CenterOfWorldY;
+  dsx = floor((dx / SUBDIVIDE) + m_CenterOfWorldX);
+  dsy = floor((dy / SUBDIVIDE) + m_CenterOfWorldY);
 
-  //if (fastAbs(dx) > (SUBDIVIDE)) {
   if (abs(dsx) > 0) {
     recenter_x = true;
   }
   
-  //if (fastAbs(dy) > (SUBDIVIDE)) {
   if (abs(dsy) > 0) {
     recenter_y = true;
   }
 
   if (recenter_x) {
-    m_LastCenterX -= ((float)dsx * SUBDIVIDE);
+    m_LastCenterX -= floor((float)dsx * SUBDIVIDE);
   }
 
   if (recenter_y) {
-    m_LastCenterY -= ((float)dsy * SUBDIVIDE);
+    m_LastCenterY -= floor((float)dsy * SUBDIVIDE);
   }
 
   int xx = 0;
   int yy = 0;
 
-  m_NeedsTerrainRebatched = true;
+  //m_NeedsTerrainRebatched = true;
 
   if ((recenter_x || recenter_y)) {
     m_NeedsTerrainRebatched = true;
@@ -510,25 +477,22 @@ int SuperStarShooter::Simulate() {
       nsx = sx;
       nsy = sy;
 
-      float px = (((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
-      float py = (((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
+      float px = floor(((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
+      float py = floor(((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = floor(m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = floor(m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = (m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = (m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = floor(m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = floor(m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = (m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = (m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
       if (nsx >= 0 && nsy >= 0) {
-      //LOGV("do this less %f %f %f %d %f\n", fastAbs(dx), fastAbs(dy), m_SimulationTime, m_CenterOfWorldX, m_LastCenterX);
-      //LOGV("%d %d\n", dsx, dsy);
-      //192.000244 224.000244
         m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
         m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
       } else {
@@ -563,13 +527,11 @@ int SuperStarShooter::Simulate() {
     int selected_x = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0] / SUBDIVIDE);
     int selected_y = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE);
 
-    //LOGV("wtf: %d\n", m_TargetX);
     int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
     if (Passable(colliding_index)) {
       m_StatePointer = 0;
       
       int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
-    //LOGV("%d == %d\n", BLANK, colliding_index);
       int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
       startState = startStateTarget;
       float totalCost;
@@ -591,15 +553,12 @@ int SuperStarShooter::Simulate() {
     }
   }
 
-
-  //int stacked = m_TrailCount;
   bool top_of_stack = false;
   for (unsigned int i=0; i<m_TrailCount; i++) {
-    if (i < m_Steps->size()) { // && i < stacked) {
+    if (i < m_Steps->size()) {
       nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
       float tx = ((float)step->x * SUBDIVIDE);
       float ty = ((float)step->y * SUBDIVIDE);
-      //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (i % 5);
       m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 2;
       m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
       m_AtlasSprites[m_TrailStartIndex + i]->m_Life = 0;
@@ -613,11 +572,10 @@ int SuperStarShooter::Simulate() {
         //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 3;
         top_of_stack = true;
       }
-      //stacked--;
       m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
       m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]; //m_TargetX * SUBDIVIDE;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0; //m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0]m_TargetY * SUBDIVIDE;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0;
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0;
     }
   }
 
@@ -714,22 +672,20 @@ float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {
 
   int dx = xStart - xEnd;
   int dy = yStart - yEnd;
-  //int dz = 0;
 
-  float least_cost = dx + dy;//(float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
+  float least_cost = dx + dy;
+  //(float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
 
   return least_cost;
 }
 
 
 bool SuperStarShooter::Passable(int i) {
-
   if (i == 91 || i == 92 || i == 74 || i == 75 || i == 76 || i == 90 || i == 106 || i == 107 || i == 108) {
     return true;
   }
 
   return false;
-  
 }
 
 
@@ -762,25 +718,6 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
       if (Passable(colliding_index)) {
         passable = true;
         pass_cost = 1.0;
-        /*
-        //if (false && (abs(ly) == 1 || abs(lx) == 1)) {
-          if (i==0 || i==2) {
-            if (fastAbs(ly) > fastAbs(lx)) {
-              pass_cost = 0.0;
-            } else {
-              pass_cost = 100.0;
-            }
-          } else {
-            if (fastAbs(lx) > fastAbs(ly)) {
-              pass_cost = 0.0;
-            } else {
-              pass_cost = 100.0;
-            }
-          }
-        //} else {
-        //  pass_cost = 100.0;
-        //}
-        */
       }
     }
     
@@ -843,14 +780,10 @@ void SuperStarShooter::LoadMaze(int level_index) {
     }
   }
   
-  //m_CameraActualOffsetX = (float)width * SUBDIVIDE * 2.0;
-  //m_CameraActualOffsetY = (float)height * SUBDIVIDE * 2.0;
-
   free(level);
 }
 
 void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
-  //BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y)
   int x = row * 3;
   int y = col * 3;
   int bl = 60 + 16 + 16 + 16;
