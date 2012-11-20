@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		C21B2B9E1659E618005EEE4E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C21B2B9D1659E618005EEE4E /* Default-568h@2x.png */; };
 		C23348D415827CA800F64C5E /* StateFoo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C23348D215827CA800F64C5E /* StateFoo.cpp */; };
-		C251C68E158EF4CE00750D11 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */; };
+		C256A04B165B7AEB00D00554 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = C256A04A165B7AEB00D00554 /* MainWindow-iPad.xib */; };
 		C2E2EC991542A4770069C210 /* pnglite.c in Sources */ = {isa = PBXBuildFile; fileRef = C2E2EC971542A4760069C210 /* pnglite.c */; };
 		FC03727E13E7E4E600250EB2 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC03727D13E7E4E600250EB2 /* MediaPlayer.framework */; };
 		FC10A322129E3EB70056E630 /* micropather.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC10A31E129E3EB70056E630 /* micropather.cpp */; };
@@ -62,7 +62,7 @@
 		C21B2B9D1659E618005EEE4E /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		C23348D215827CA800F64C5E /* StateFoo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StateFoo.cpp; sourceTree = "<group>"; };
 		C23348D315827CA800F64C5E /* StateFoo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StateFoo.h; sourceTree = "<group>"; };
-		C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow-iPad.xib"; path = "iPad/MainWindow-iPad.xib"; sourceTree = "<group>"; };
+		C256A04A165B7AEB00D00554 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "MainWindow-iPad.xib"; sourceTree = "<group>"; };
 		C2E2EC961542A4760069C210 /* FileHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileHandle.h; sourceTree = "<group>"; };
 		C2E2EC971542A4760069C210 /* pnglite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pnglite.c; sourceTree = "<group>"; };
 		C2E2EC981542A4760069C210 /* pnglite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pnglite.h; sourceTree = "<group>"; };
@@ -194,19 +194,19 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				C21B2B9D1659E618005EEE4E /* Default-568h@2x.png */,
 				FC141C4A1285429700166578 /* assets */,
+				FC1417731285415800166578 /* src */,
 				FC1417611285413100166578 /* Classes */,
-				FC1417661285413100166578 /* Default.png */,
-				FCF8913213E8AA3900AFEB8E /* Entitlements.plist */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				C251C68C158EF4CE00750D11 /* iPad */,
 				FC1417671285413100166578 /* main.mm */,
 				FC1417681285413100166578 /* MainWindow.xib */,
+				C256A04A165B7AEB00D00554 /* MainWindow-iPad.xib */,
 				FC14176A1285413100166578 /* MemoryLeak-Info.plist */,
 				FC1417691285413100166578 /* MemoryLeak_Prefix.pch */,
+				FC1417661285413100166578 /* Default.png */,
+				C21B2B9D1659E618005EEE4E /* Default-568h@2x.png */,
+				FCF8913213E8AA3900AFEB8E /* Entitlements.plist */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				FC1417731285415800166578 /* src */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -222,14 +222,6 @@
 				FCDE095012D92F17004CE9B7 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C251C68C158EF4CE00750D11 /* iPad */ = {
-			isa = PBXGroup;
-			children = (
-				C251C68D158EF4CE00750D11 /* MainWindow-iPad.xib */,
-			);
-			name = iPad;
 			sourceTree = "<group>";
 		};
 		FC1417611285413100166578 /* Classes */ = {
@@ -442,8 +434,8 @@
 				FC14176F1285413100166578 /* MainWindow.xib in Resources */,
 				FC141C571285429700166578 /* assets in Resources */,
 				FCF8913313E8AA3900AFEB8E /* Entitlements.plist in Resources */,
-				C251C68E158EF4CE00750D11 /* MainWindow-iPad.xib in Resources */,
 				C21B2B9E1659E618005EEE4E /* Default-568h@2x.png in Resources */,
+				C256A04B165B7AEB00D00554 /* MainWindow-iPad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
