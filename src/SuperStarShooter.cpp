@@ -396,43 +396,43 @@ int SuperStarShooter::Simulate() {
   m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
-  float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
-  float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
+  //float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
+  //float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
 
-  float speed_x = fastAbs(tx) * 1.5;
-  float speed_y = fastAbs(ty) * 1.5;
-  float speed_max = MAX_CAMERA_VELOCITY;
+  //float speed_x = fastAbs(tx) * 1.5;
+  //float speed_y = fastAbs(ty) * 1.5;
+  //float speed_max = MAX_CAMERA_VELOCITY;
 
-  if (speed_x > speed_max) {
-    speed_x = speed_max;
-  }
-  if (speed_y > speed_max) {
-    speed_y = speed_max;
-  }
+  //if (speed_x > speed_max) {
+  //  speed_x = speed_max;
+  //}
+  //if (speed_y > speed_max) {
+  //  speed_y = speed_max;
+  //}
 
-  if (tx > 0.0) {
-    tx = 1.0;
-  } else {
-    tx = -1.0;
-  }
+  //if (tx > 0.0) {
+  //  tx = 1.0;
+  //} else {
+  //  tx = -1.0;
+  //}
 
-  if (ty > 0.0) {
-    ty = 1.0;
-  } else {
-    ty = -1.0;
-  }
+  //if (ty > 0.0) {
+  //  ty = 1.0;
+  //} else {
+  //  ty = -1.0;
+  //}
 
-  float mx = (tx * speed_x * m_DeltaTime);
-  float my = (ty * speed_y * m_DeltaTime);
+  //float mx = (tx * speed_x * m_DeltaTime);
+  //float my = (ty * speed_y * m_DeltaTime);
 
-  if (false) {
-    m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-    m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-  } else {
-    // this causes seaming problems
-    m_CameraActualOffsetX -= (mx);
-    m_CameraActualOffsetY -= (my);
-  }
+  //if (false) {
+  m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  //} else {
+  //  // this causes seaming problems
+  //  m_CameraActualOffsetX -= (mx);
+  //  m_CameraActualOffsetY -= (my);
+  //}
 
   bool recenter_x = false;
   bool recenter_y = false;
