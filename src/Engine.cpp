@@ -39,11 +39,18 @@ static const char fragment_shader[] =
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
-  ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
-  ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
-  ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
-  ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
-  glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+  if (tx != ltx || ty != lty || tz != ltz) {
+    ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
+    ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
+    ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
+    ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
+    glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+
+  }
+    
+    ltx = tx;
+    lty = ty;
+    ltz = tz;
 }
 
 
@@ -129,6 +136,8 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glAttachShader(program, f);
 
   m_StateFoo = new StateFoo(program); //(StateFoo *)malloc(1 * sizeof(StateFoo));
+
+  ltx = lty = ltz = 0;
 }
 
 
@@ -172,6 +181,10 @@ void Engine::DrawScreen(float rotation) {
       m_StateFoo->Link();
     }
 
+        
+    // clear the frame, this is required for optimal performance, which I think is odd
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
     float c = (-m_ScreenHalfHeight) * m_Zoom;
@@ -181,10 +194,9 @@ void Engine::DrawScreen(float rotation) {
 
     ortho(ProjectionMatrix, a, b, c, d, e, f);
 
-    glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+    //glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
-    // clear the frame, this is required for optimal performance, which I think is odd
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
 
     RenderSpritePhase();
 	} else {

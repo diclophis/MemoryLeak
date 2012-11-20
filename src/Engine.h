@@ -110,4 +110,8 @@ public:
   const char *p;
   char msg[512];
 
+  float ltx;
+  float lty;
+  float ltz;
+
 };
