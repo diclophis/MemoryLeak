@@ -48,9 +48,9 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
 
   }
     
-    ltx = tx;
-    lty = ty;
-    ltz = tz;
+  ltx = tx;
+  lty = ty;
+  ltz = tz;
 }
 
 
@@ -444,9 +444,25 @@ void Engine::LoadTexture(int i) {
   }
   png_get_data(&tex, data);
 
+  unsigned int* inPixel32;
+  unsigned short* outPixel16;
+
+  void *textureData = data;
+  void *tempData = malloc(tex.height * tex.width * sizeof(unsigned short));
+
+  inPixel32 = (unsigned int *)textureData;
+  outPixel16 = (unsigned short *)tempData;
+
+  //Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
+  for (int i=0; i<(tex.height * tex.width); i++) {
+    unsigned int inP = ((unsigned int *)textureData)[i];
+    outPixel16[i] = ((((inP >> 0) & 0xFF) >> 4) << 12) | ((((inP >> 8) & 0xFF) >> 4) << 8) | ((((inP >> 16) & 0xFF) >> 4) << 4) | ((((inP >> 24) & 0xFF) >> 4) << 0);
+  }
+
   glGenTextures(1, &textureHandle);
   glBindTexture(GL_TEXTURE_2D, textureHandle);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -455,11 +471,25 @@ void Engine::LoadTexture(int i) {
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  //TODO: investigate pixel swizzling
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  bool useSwizzledBits = true;
+  if (useSwizzledBits) {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, tempData);
+  } else {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  }
+  
+  bool generateMipMap = true;
+  if (generateMipMap) {
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+  } else {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  }
+
   glBindTexture(GL_TEXTURE_2D, 0);
 
   free(data);
+  free(tempData);
 
   m_Textures.push_back(textureHandle);
 }
