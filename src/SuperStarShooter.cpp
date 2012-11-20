@@ -6,7 +6,7 @@
 
 
 #define ZOOM (1.0)
-#define SUBDIVIDE (16)
+#define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
 #define PURE 97
@@ -14,7 +14,7 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 128)
+#define VELOCITY (SUBDIVIDE * 64)
 #define MAX_WAIT_BEFORE_WARP 0.04
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
@@ -106,7 +106,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = MAX_SEARCH * 2;
+  m_TrailCount = 0; //MAX_SEARCH * 2;
 
   LoadMaze(0);
   LoadSound(0);
@@ -141,8 +141,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
       m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = BLANK;
     }
 
-    m_AtlasSprites[m_SpriteCount]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0));
-    m_AtlasSprites[m_SpriteCount + m_GridCount]->SetScale((SUBDIVIDE / 2.0), (SUBDIVIDE / 2.0));
+    float sizeOfCell = (SUBDIVIDE / 2.0);
+
+    m_AtlasSprites[m_SpriteCount]->SetScale(sizeOfCell, sizeOfCell);
+    m_AtlasSprites[m_SpriteCount + m_GridCount]->SetScale(sizeOfCell, sizeOfCell);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     m_AtlasSprites[m_SpriteCount + m_GridCount]->Build(0);
 
