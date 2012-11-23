@@ -15,6 +15,9 @@ static bool m_WarnedAboutGameFailure = false;
 
 
 static const char vertex_shader[] =
+"#ifdef GL_ES\n"
+"precision lowp float;\n"
+"#endif\n"
 "attribute vec2 Position;\n"
 "attribute vec2 InCoord;\n"
 "varying vec2 OutCoord;\n"
@@ -28,7 +31,7 @@ static const char vertex_shader[] =
 
 static const char fragment_shader[] = 
 "#ifdef GL_ES\n"
-"precision mediump float;\n"
+"precision lowp float;\n"
 "#endif\n"
 "varying vec2 OutCoord;\n"
 "uniform sampler2D Sampler;\n"
@@ -36,6 +39,7 @@ static const char fragment_shader[] =
 "{\n"
 "gl_FragColor = texture2D(Sampler, OutCoord);\n"
 "}\n";
+//TODO: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/vignette.js
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
