@@ -5,6 +5,144 @@
 #include "SuperStarShooter.h"
 
 
+
+#define EXPECTED_BYTES 5
+
+
+unsigned int Engine::get_all_buf(int sock, char* output, unsigned int maxsize)
+{
+  int bytes;
+
+  //read the socket to see how many bytes are there
+  if (ioctl(sock, FIONREAD, &bytes)) {
+    LOGV("wtf1\n");
+    perror("foo\n");
+    return 0;
+  }
+
+  // how many bytes are available
+  if (bytes == 0) {
+    //LOGV("wtf\n");
+    return 0;
+  }
+
+  char buffer[1024];
+  int n;
+  unsigned int offset = 0;
+  //while((errno = 0, (n = recv(sock, buffer, sizeof(buffer), 0))>0) || errno == EINTR) {
+  errno = 0;
+  n = recv(sock, buffer, sizeof(buffer), 0);
+
+  if (n>0) {
+    //if (((unsigned int) n)+offset > maxsize) { LOGV("too much data!"); exit(EXIT_FAILURE); }
+    //memcpy(output+offset, buffer, n);
+    offset += n;
+  } else {
+    LOGV("error in get_all_buf!");
+  }
+
+  return offset;
+}
+
+
+void Engine::StopNetwork() {
+    shutdown(SocketFD, SHUT_RDWR);
+    close(SocketFD);
+}
+
+
+void Engine::iter(void *arg) {
+  static char out[1024*2];
+  static int pos = 0;
+  int n = get_all_buf(SocketFD, out+pos, 1024-pos);
+  LOGV("read! %d\n", n);
+
+/*
+  pos += n;
+
+  if (pos >= EXPECTED_BYTES) {
+    int i, sum = 0;
+    for (i=0; i < pos; i++) {
+      LOGV("%x\n", out[i]);
+      sum += out[i];
+    }
+
+
+    done = 1;
+
+    LOGV("sum: %d\n", sum);
+
+//#if EMSCRIPTEN
+//    int result = sum;
+//    REPORT_RESULT();
+//#endif
+  }
+*/
+
+}
+
+int Engine::ConnectNetwork(void) {
+  struct sockaddr_in stSockAddr;
+  int Res = 0;
+  done = 0;
+  SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  if (-1 == SocketFD)
+  {
+    LOGV("cannot create socket");
+    return 1;
+  }
+
+  memset(&stSockAddr, 0, sizeof(stSockAddr));
+
+  stSockAddr.sin_family = AF_INET;
+  stSockAddr.sin_port = htons(7001);
+
+  //struct hostent *host0 = gethostbyname("test.com"); // increment hostname counter to check for possible but at 0,0 not differentiating low/high
+  //struct hostent *host = gethostbyname("localhost");
+  struct hostent *host = gethostbyname("127.0.0.1");
+  char **addr_list = host->h_addr_list;
+  int *addr = (int*)*addr_list;
+  LOGV("raw addr: %d\n", *addr);
+  char name[INET_ADDRSTRLEN];
+  if (!inet_ntop(AF_INET, addr, name, sizeof(name))) {
+    LOGV("could not figure out name\n");
+    return 1;
+  }
+  LOGV("localhost has 'ip' of %s\n", name);
+
+  Res = inet_pton(AF_INET, name, &stSockAddr.sin_addr);
+
+  if (0 > Res) {
+    LOGV("error: first parameter is not a valid address family");
+    close(SocketFD);
+    return 1;
+  } else if (0 == Res) {
+    LOGV("char string (second parameter does not contain valid ipaddress)");
+    close(SocketFD);
+    return 1;
+  }
+
+  if (-1 == connect(SocketFD, (struct sockaddr *)&stSockAddr, sizeof(stSockAddr))) {
+    LOGV("connect failed");
+    close(SocketFD);
+    return 1;
+  }
+
+  LOGV("wtf11111 %d\n", SocketFD);
+
+  return 0;
+
+//#if EMSCRIPTEN
+//  emscripten_set_main_loop(iter, 0, 0);
+//#else
+//  while (!done) iter(NULL);
+//#endif
+
+  return EXIT_SUCCESS;
+}
+
+
 static std::vector<Game *> games;
 static Engine *m_CurrentGame;
 static std::vector<FileHandle *> models;
@@ -142,6 +280,8 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   m_StateFoo = new StateFoo(program); //(StateFoo *)malloc(1 * sizeof(StateFoo));
 
   ltx = lty = ltz = 0;
+
+  ConnectNetwork();
 }
 
 
@@ -227,6 +367,7 @@ int Engine::Run() {
         if (Active()) {
           m_SimulationTime += m_DeltaTime;
           Simulate();
+          iter(NULL);
         }
       }
     }
