@@ -3,7 +3,8 @@
 
 #include "MemoryLeak.h"
 #include "SuperStarShooter.h"
-
+#include "contrib/irrXML/irrXML.h"
+#include "contrib/irrXML/CXMLReaderImpl.h"
 
 
 #define EXPECTED_BYTES 5
@@ -131,6 +132,12 @@ int Engine::ConnectNetwork(void) {
 
   LOGV("wtf11111 %d\n", SocketFD);
 
+
+  irr::io::IrrXMLReader* xmlReader = NULL;
+  irr::io::IFileReadCallBack* callback = NULL;
+
+  xmlReader = new irr::io::CXMLReaderImpl<char, irr::io::IXMLBase>(callback, false); 
+
   return 0;
 
 //#if EMSCRIPTEN
@@ -139,7 +146,7 @@ int Engine::ConnectNetwork(void) {
 //  while (!done) iter(NULL);
 //#endif
 
-  return EXIT_SUCCESS;
+  //return EXIT_SUCCESS;
 }
 
 
