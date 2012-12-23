@@ -122,4 +122,8 @@ public:
   int ConnectNetwork(void);
   void StopNetwork();
 
+  //irr::io::IrrXMLReader* xmlReader;
+  //irr::io::StreamXMLReader* xmlReader;
+  irr::io::StreamXMLReader<char, irr::io::IXMLBase>* xmlReader;
+
 };

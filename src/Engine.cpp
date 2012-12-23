@@ -2,10 +2,9 @@
 
 
 #include "MemoryLeak.h"
-#include "SuperStarShooter.h"
-#include "contrib/irrXML/irrXML.h"
-#include "contrib/irrXML/CXMLReaderImpl.h"
 
+
+#include "SuperStarShooter.h"
 
 #define EXPECTED_BYTES 5
 
@@ -36,7 +35,7 @@ unsigned int Engine::get_all_buf(int sock, char* output, unsigned int maxsize)
 
   if (n>0) {
     //if (((unsigned int) n)+offset > maxsize) { LOGV("too much data!"); exit(EXIT_FAILURE); }
-    //memcpy(output+offset, buffer, n);
+    memcpy(output+offset, buffer, n);
     offset += n;
   } else {
     LOGV("error in get_all_buf!");
@@ -56,7 +55,26 @@ void Engine::iter(void *arg) {
   static char out[1024*2];
   static int pos = 0;
   int n = get_all_buf(SocketFD, out+pos, 1024-pos);
-  LOGV("read! %d\n", n);
+  //LOGV("read! %d\n", n);
+
+  bool readSomething = xmlReader->readFile(n, out);
+  //LOGV("readSomething? %d\n", readSomething);
+  while(xmlReader && xmlReader->read()) {
+    switch(xmlReader->getNodeType()) {
+      case irr::io::EXN_TEXT:
+        // in this xml file, the only text which occurs is the messageText
+        //messageText = xml->getNodeData();
+        LOGV("EXN_TEXT");
+      break;
+      case irr::io::EXN_ELEMENT:
+      {
+        LOGV("%s tag\n", xmlReader->getNodeName());
+        LOGV("%s attr\n", xmlReader->getAttributeValue("when"));
+      }
+      break;
+    }
+
+  }
 
 /*
   pos += n;
@@ -133,10 +151,10 @@ int Engine::ConnectNetwork(void) {
   LOGV("wtf11111 %d\n", SocketFD);
 
 
-  irr::io::IrrXMLReader* xmlReader = NULL;
+  //irr::io::IrrXMLReader* xmlReader = NULL;
   irr::io::IFileReadCallBack* callback = NULL;
 
-  xmlReader = new irr::io::CXMLReaderImpl<char, irr::io::IXMLBase>(callback, false); 
+  xmlReader = new irr::io::StreamXMLReader<char, irr::io::IXMLBase>(callback, false); 
 
   return 0;
 
