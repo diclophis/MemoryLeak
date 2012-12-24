@@ -32,6 +32,7 @@ static int reformat_number(void * ctx, const char * s, size_t l)
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_number(g, s, l);
     //LOGV("reformat_number %f\n", strtof(s, (char **)s+l));
+    LOGV("reformat_number\n");
     return 1;
 }
 
@@ -41,7 +42,7 @@ static int reformat_string(void * ctx, const unsigned char * stringVal,
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
     //LOGV("reformat_string %s %d\n", stringVal, stringLen);
-    //LOGV("reformat_string\n");
+    LOGV("reformat_string\n");
     return 1;
 }
 
@@ -145,6 +146,8 @@ void Engine::iter(void *arg) {
   yajl_status stat;
 
   int n = get_all_buf(SocketFD, out, 10);
+
+  out[n] = '\0';
 
   if (n > 0) {
     LOGV("read! n=%d out=%s\n", n, out);
