@@ -131,9 +131,7 @@
 
 #include "modplug.h"
 
-#include "contrib/irrXML/irrXML.h"
-#include "contrib/irrXML/CXMLReaderImpl.h"
-#include "StreamXMLReader.h"
+#include <yajl/yajl_parse.h>
 
 #define DPRINT(x...) LOGV(x)
 

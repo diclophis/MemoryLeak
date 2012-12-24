@@ -6,10 +6,103 @@
 
 #include "SuperStarShooter.h"
 
+#include <stdlib.h>
+
 #define EXPECTED_BYTES 5
 
 
-unsigned int Engine::get_all_buf(int sock, char* output, unsigned int maxsize)
+static int reformat_null(void * ctx)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_null(g);
+    LOGV("reformat_null\n");
+    return 1;
+}
+
+static int reformat_boolean(void * ctx, int boolean)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_bool(g, boolean);
+    LOGV("reformat_boolean %d\n", boolean);
+    return 1;
+}
+
+static int reformat_number(void * ctx, const char * s, size_t l)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_number(g, s, l);
+    //LOGV("reformat_number %f\n", strtof(s, (char **)s+l));
+    return 1;
+}
+
+static int reformat_string(void * ctx, const unsigned char * stringVal,
+                           size_t stringLen)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
+    //LOGV("reformat_string %s %d\n", stringVal, stringLen);
+    //LOGV("reformat_string\n");
+    return 1;
+}
+
+static int reformat_map_key(void * ctx, const unsigned char * stringVal,
+                            size_t stringLen)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
+    //LOGV("reformat_map_key %s\n", stringVal);
+    LOGV("reformat_map_key\n");
+    return 1;
+}
+
+static int reformat_start_map(void * ctx)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_map_open(g);
+    LOGV("reformat_start_map\n");
+    return 1;
+}
+
+
+static int reformat_end_map(void * ctx)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_map_close(g);
+    LOGV("reformat_end_map\n");
+    return 1;
+}
+
+static int reformat_start_array(void * ctx)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_array_open(g);
+    LOGV("reformat_start_array\n");
+    return 1;
+}
+
+static int reformat_end_array(void * ctx)
+{
+    //yajl_gen g = (yajl_gen) ctx;
+    //return yajl_gen_status_ok == yajl_gen_array_close(g);
+    LOGV("reformat_end_array\n");
+    return 1;
+}
+
+static yajl_callbacks callbacks = {
+    reformat_null,
+    reformat_boolean,
+    NULL,
+    NULL,
+    reformat_number,
+    reformat_string,
+    reformat_start_map,
+    reformat_map_key,
+    reformat_end_map,
+    reformat_start_array,
+    reformat_end_array
+};
+
+unsigned int Engine::get_all_buf(int sock, const unsigned char* output, unsigned int maxsize)
 {
   int bytes;
 
@@ -26,22 +119,18 @@ unsigned int Engine::get_all_buf(int sock, char* output, unsigned int maxsize)
     return 0;
   }
 
-  char buffer[1024];
+  LOGV("reading: %d of %d\n", maxsize, bytes);
+
   int n;
-  unsigned int offset = 0;
-  //while((errno = 0, (n = recv(sock, buffer, sizeof(buffer), 0))>0) || errno == EINTR) {
   errno = 0;
-  n = recv(sock, buffer, sizeof(buffer), 0);
+  n = recv(sock, (void *)output, maxsize, 0);
 
   if (n>0) {
-    //if (((unsigned int) n)+offset > maxsize) { LOGV("too much data!"); exit(EXIT_FAILURE); }
-    memcpy(output+offset, buffer, n);
-    offset += n;
   } else {
     LOGV("error in get_all_buf!");
   }
 
-  return offset;
+  return n;
 }
 
 
@@ -52,52 +141,21 @@ void Engine::StopNetwork() {
 
 
 void Engine::iter(void *arg) {
-  static char out[1024*2];
-  static int pos = 0;
-  int n = get_all_buf(SocketFD, out+pos, 1024-pos);
-  //LOGV("read! %d\n", n);
 
-  bool readSomething = xmlReader->readFile(n, out);
-  //LOGV("readSomething? %d\n", readSomething);
-  while(xmlReader && xmlReader->read()) {
-    switch(xmlReader->getNodeType()) {
-      case irr::io::EXN_TEXT:
-        // in this xml file, the only text which occurs is the messageText
-        //messageText = xml->getNodeData();
-        LOGV("EXN_TEXT");
-      break;
-      case irr::io::EXN_ELEMENT:
-      {
-        LOGV("%s tag\n", xmlReader->getNodeName());
-        LOGV("%s attr\n", xmlReader->getAttributeValue("when"));
-      }
-      break;
+  yajl_status stat;
+
+  int n = get_all_buf(SocketFD, out, 10);
+
+  if (n > 0) {
+    LOGV("read! n=%d out=%s\n", n, out);
+    stat = yajl_parse(hand, out, n * sizeof(unsigned char));
+    if (stat == yajl_status_ok) {
+    } else {
+      unsigned char *str = yajl_get_error(hand, 1, out, 1023);
+      fprintf(stderr, "%s", (const char *) str);
+      yajl_free_error(hand, str);
     }
-
   }
-
-/*
-  pos += n;
-
-  if (pos >= EXPECTED_BYTES) {
-    int i, sum = 0;
-    for (i=0; i < pos; i++) {
-      LOGV("%x\n", out[i]);
-      sum += out[i];
-    }
-
-
-    done = 1;
-
-    LOGV("sum: %d\n", sum);
-
-//#if EMSCRIPTEN
-//    int result = sum;
-//    REPORT_RESULT();
-//#endif
-  }
-*/
-
 }
 
 int Engine::ConnectNetwork(void) {
@@ -150,21 +208,15 @@ int Engine::ConnectNetwork(void) {
 
   LOGV("wtf11111 %d\n", SocketFD);
 
+  out = (unsigned char *) malloc(sizeof(unsigned char) * 1024);
 
-  //irr::io::IrrXMLReader* xmlReader = NULL;
-  irr::io::IFileReadCallBack* callback = NULL;
+  void *g = NULL;
 
-  xmlReader = new irr::io::StreamXMLReader<char, irr::io::IXMLBase>(callback, false); 
+  hand = yajl_alloc(&callbacks, NULL, (void *) g);
+  yajl_config(hand, yajl_allow_comments, 1); // allow json comments
+  yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
 
   return 0;
-
-//#if EMSCRIPTEN
-//  emscripten_set_main_loop(iter, 0, 0);
-//#else
-//  while (!done) iter(NULL);
-//#endif
-
-  //return EXIT_SUCCESS;
 }
 
 

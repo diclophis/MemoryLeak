@@ -33,6 +33,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../.
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/unzip/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/zlib/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/libmodplug/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajl/*.c)))
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/*.cpp)))
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Collision/*.cpp)))
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Collision/Shapes/*.cpp)))
@@ -64,6 +65,7 @@ $(build):
 	mkdir -p $(build)/contrib/zlib
 	mkdir -p $(build)/contrib/unzip
 	mkdir -p $(build)/libmodplug
+	mkdir -p $(build)/yajl
 #	mkdir -p $(build)/Box2D
 #	mkdir -p $(build)/Box2D/Collision
 #	mkdir -p $(build)/Box2D/Collision/Shapes

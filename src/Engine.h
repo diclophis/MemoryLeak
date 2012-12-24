@@ -117,13 +117,13 @@ public:
   //network stuff
   int done;
   int SocketFD;
-  unsigned int get_all_buf(int sock, char* output, unsigned int maxsize);
+  unsigned int get_all_buf(int sock, const unsigned char* output, unsigned int maxsize);
   void iter(void *arg);
   int ConnectNetwork(void);
   void StopNetwork();
 
-  //irr::io::IrrXMLReader* xmlReader;
-  //irr::io::StreamXMLReader* xmlReader;
-  irr::io::StreamXMLReader<char, irr::io::IXMLBase>* xmlReader;
+  yajl_handle hand;
+
+  unsigned char *out;
 
 };
