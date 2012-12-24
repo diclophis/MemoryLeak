@@ -36,9 +36,9 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/bulletml/*.cpp)))
 #objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/bulletml/tinyxml/*.cpp)))
 
-#HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
-#hash_dir=~/emscripten.risingcode.com/public/$(HASH)
-HASH=1234
+HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
+hash_dir=~/emscripten.risingcode.com/public/$(HASH)
+#HASH=1234
 
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
