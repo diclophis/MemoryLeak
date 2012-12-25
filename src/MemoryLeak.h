@@ -131,6 +131,11 @@
 
 #include "modplug.h"
 
+
+#ifdef __APPLE__
+#define MSG_NOSIGNAL SO_NOSIGPIPE 
+#endif
+
 #include <yajl/yajl_parse.h>
 
 #define DPRINT(x...) LOGV(x)

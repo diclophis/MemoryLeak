@@ -147,9 +147,8 @@ void Engine::iter(void *arg) {
 
   int n = get_all_buf(SocketFD, out, 10);
 
-  out[n] = '\0';
-
   if (n > 0) {
+    out[n] = '\0';
     LOGV("read! n=%d out=%s\n", n, out);
     stat = yajl_parse(hand, out, n * sizeof(unsigned char));
     if (stat == yajl_status_ok) {
@@ -158,6 +157,12 @@ void Engine::iter(void *arg) {
       fprintf(stderr, "%s", (const char *) str);
       yajl_free_error(hand, str);
     }
+  }
+
+  char payload[4] = "[1]";
+  ssize_t sent = send(SocketFD, payload, 3, 0); //MSG_DONTWAIT
+  if (sent > 0) {
+    //LOGV("wtf11111 %d payload-sent: %d\n", SocketFD, sent);
   }
 }
 
@@ -180,7 +185,7 @@ int Engine::ConnectNetwork(void) {
 
   //struct hostent *host0 = gethostbyname("test.com"); // increment hostname counter to check for possible but at 0,0 not differentiating low/high
   //struct hostent *host = gethostbyname("localhost");
-  struct hostent *host = gethostbyname("127.0.0.1");
+  struct hostent *host = gethostbyname("emscripten.risingcode.com");
   char **addr_list = host->h_addr_list;
   int *addr = (int*)*addr_list;
   LOGV("raw addr: %d\n", *addr);
@@ -209,7 +214,13 @@ int Engine::ConnectNetwork(void) {
     return 1;
   }
 
-  LOGV("wtf11111 %d\n", SocketFD);
+  int set = 1;
+  setsockopt(SocketFD, SOL_SOCKET, MSG_NOSIGNAL, (void *)&set, sizeof(int));
+
+  char magic[1];
+  magic[0] = '{';
+  ssize_t sent = send(SocketFD, magic, 1, 0); //MSG_DONTWAIT
+  LOGV("wtf11111 %d magic-sent: %d\n", SocketFD, sent);
 
   out = (unsigned char *) malloc(sizeof(unsigned char) * 1024);
 
