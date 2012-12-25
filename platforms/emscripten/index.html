@@ -72,11 +72,11 @@
         var manifestUrl = "index.appcache";
         manifestFile.open("GET", manifestUrl, true);
         manifestFile.onload = function(e) {
-          var assets = FS.createFolder("/", "assets", true, false);
-          var sounds = FS.createFolder(assets, "sounds", true, false);
-          var textures = FS.createFolder(assets, "textures", true, false);
-          var levels = FS.createFolder(assets, "levels", true, false);
-          var models = FS.createFolder(assets, "models", true, false);
+          var assets = FS.createFolder("/", "assets", true, true);
+          var sounds = FS.createFolder(assets, "sounds", true, true);
+          var textures = FS.createFolder(assets, "textures", true, true);
+          var levels = FS.createFolder(assets, "levels", true, true);
+          var models = FS.createFolder(assets, "models", true, true);
           var lines = this.response.split("\n");
           for (i in lines) {
             (function() {
