@@ -6,7 +6,7 @@
 
 
 #define ZOOM (1.0)
-#define SUBDIVIDE (32.0)
+#define SUBDIVIDE (16.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
 #define PURE 97
@@ -99,10 +99,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
   }
 
-  GRID_X = (3 * (((m_ScreenWidth * m_Zoom) / SUBDIVIDE) / 3)) + 6;
-  GRID_Y = (3 * (((m_ScreenHeight * m_Zoom) / SUBDIVIDE) / 3)) + 6;
+  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 2;
+  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 2;
 
   m_GridCount = (GRID_X * GRID_Y);
+  LOGV("total cells: %d\n", m_GridCount);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
@@ -118,8 +119,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   for (int i=0; i<m_GridCount; i++) {
 
-    float px = ((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
-    float py = ((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
+    float px = ((xx) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE);
+    float py = ((yy) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE);
     int sx = (int)(px / SUBDIVIDE);
     int sy = (int)(py / SUBDIVIDE);
 
@@ -141,7 +142,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
       m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = BLANK;
     }
 
-    float sizeOfCell = (SUBDIVIDE / 2.0);
+    float sizeOfCell = ceil(SUBDIVIDE / 2.0);
 
     m_AtlasSprites[m_SpriteCount]->SetScale(sizeOfCell, sizeOfCell);
     m_AtlasSprites[m_SpriteCount + m_GridCount]->SetScale(sizeOfCell, sizeOfCell);
@@ -361,7 +362,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
+  glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
 
   if (m_Batches.size() == 2) {
     if (m_NeedsTerrainRebatched) {
@@ -441,11 +442,11 @@ int SuperStarShooter::Simulate() {
   int dsx = 0;
   int dsy = 0;
 
-  float dx = floor(m_LastCenterX - m_CameraActualOffsetX);
-  float dy = floor(m_LastCenterY - m_CameraActualOffsetY);
+  float dx = (m_LastCenterX - m_CameraActualOffsetX);
+  float dy = (m_LastCenterY - m_CameraActualOffsetY);
 
-  dsx = floor((dx / SUBDIVIDE) + m_CenterOfWorldX);
-  dsy = floor((dy / SUBDIVIDE) + m_CenterOfWorldY);
+  dsx = floor((dx / SUBDIVIDE));
+  dsy = floor((dy / SUBDIVIDE));
 
   if (abs(dsx) > 0) {
     recenter_x = true;
@@ -456,11 +457,11 @@ int SuperStarShooter::Simulate() {
   }
 
   if (recenter_x) {
-    m_LastCenterX -= floor((float)dsx * SUBDIVIDE);
+    m_LastCenterX -= ((float)dsx * SUBDIVIDE);
   }
 
   if (recenter_y) {
-    m_LastCenterY -= floor((float)dsy * SUBDIVIDE);
+    m_LastCenterY -= ((float)dsy * SUBDIVIDE);
   }
 
   int xx = 0;
@@ -479,18 +480,21 @@ int SuperStarShooter::Simulate() {
       nsx = sx;
       nsy = sy;
 
-      float px = floor(((xx + m_CenterOfWorldX) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
-      float py = floor(((yy + m_CenterOfWorldY) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
+      float px = (((xx) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
+      float py = (((yy) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
+
+      float foo_x = (m_LastCenterX + px);
+      float foo_y = (m_LastCenterY + py);
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = (m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = (m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = foo_x; //(m_LastCenterX + px);
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = foo_x; //(m_LastCenterX + px);
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = (m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = (m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = foo_y; //(m_LastCenterY + py);
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = foo_y; //(m_LastCenterY + py);
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
@@ -501,6 +505,7 @@ int SuperStarShooter::Simulate() {
         m_AtlasSprites[i]->m_Frame = OVER;
         m_AtlasSprites[i + m_GridCount]->m_Frame = OVER;
       }
+
       xx++;
       if (xx >= GRID_X) {
         xx = 0;
