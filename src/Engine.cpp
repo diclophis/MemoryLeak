@@ -163,6 +163,8 @@ void Engine::iter(void *arg) {
   ssize_t sent = send(SocketFD, payload, 3, 0); //MSG_DONTWAIT
   if (sent > 0) {
     //LOGV("wtf11111 %d payload-sent: %d\n", SocketFD, sent);
+  } else {
+    //LOGV("send failed\n");
   }
 }
 
