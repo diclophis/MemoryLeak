@@ -136,6 +136,12 @@
 #define MSG_NOSIGNAL SO_NOSIGPIPE 
 #endif
 
+#ifdef EMSCRIPTEN
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
+#endif
+
 #include <yajl/yajl_parse.h>
 
 #define DPRINT(x...) LOGV(x)
