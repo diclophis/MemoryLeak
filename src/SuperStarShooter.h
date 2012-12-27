@@ -1,6 +1,6 @@
 // Jon Bardin GPL
 
-class SuperStarShooter : public Engine, public micropather::Graph {
+class SuperStarShooter : public Engine, public micropather::Graph, public MazeNetworkDelegate {
 
 public:
 
@@ -93,4 +93,8 @@ public:
   bool Passable(int index);
 
   float m_SelectTimeout;
+
+  MazeNetwork *m_Network;
+  bool UpdatePlayerAtIndex(int i, int online, float x, float y);
+  float m_NetworkTickTimeout;
 };

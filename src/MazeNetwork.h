@@ -5,6 +5,10 @@
 //  Created by Jon Bardin on 2012.
 //
 
+class MazeNetworkDelegate {
+//public:
+//  virtual bool UpdatePlayerAtIndex(int i, float x, float y);
+};
 
 class MazeNetwork {
 
@@ -12,20 +16,21 @@ class MazeNetwork {
 public:
 
 
-  MazeNetwork();
+  MazeNetwork(MazeNetworkDelegate *theDelegate, size_t bpt);
   virtual ~MazeNetwork();
+  int Tick();
 
+  MazeNetworkDelegate *m_Delegate;
 
   //network stuff
-  int done;
-  int SocketFD;
-  unsigned int get_all_buf(int sock, const unsigned char* output, unsigned int maxsize);
-  void iter(void *arg);
+  int m_Socket;
   int ConnectNetwork(void);
   void StopNetwork();
 
   yajl_handle hand;
-  unsigned char *out;
+  unsigned char *m_InputBuffer;
+  int m_InputBufferSize;
+  size_t bpt;
 
 
 };

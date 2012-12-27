@@ -4,38 +4,32 @@
 #include "MemoryLeak.h"
 
 
-#include <stdlib.h>
-#define EXPECTED_BYTES 5
-
-
-static int reformat_null(void * ctx)
-{
+static int reformat_null(void * ctx) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_null(g);
     LOGV("reformat_null\n");
     return 1;
 }
 
-static int reformat_boolean(void * ctx, int boolean)
-{
+
+static int reformat_boolean(void * ctx, int boolean) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_bool(g, boolean);
     LOGV("reformat_boolean %d\n", boolean);
     return 1;
 }
 
-static int reformat_number(void * ctx, const char * s, size_t l)
-{
+
+static int reformat_number(void * ctx, const char * s, size_t l) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_number(g, s, l);
     //LOGV("reformat_number %f\n", strtof(s, (char **)s+l));
-    LOGV("reformat_number\n");
+    //LOGV("reformat_number\n");
     return 1;
 }
 
-static int reformat_string(void * ctx, const unsigned char * stringVal,
-                           size_t stringLen)
-{
+
+static int reformat_string(void * ctx, const unsigned char * stringVal, size_t stringLen) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
     //LOGV("reformat_string %s %d\n", stringVal, stringLen);
@@ -43,9 +37,8 @@ static int reformat_string(void * ctx, const unsigned char * stringVal,
     return 1;
 }
 
-static int reformat_map_key(void * ctx, const unsigned char * stringVal,
-                            size_t stringLen)
-{
+
+static int reformat_map_key(void * ctx, const unsigned char * stringVal, size_t stringLen) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
     //LOGV("reformat_map_key %s\n", stringVal);
@@ -53,8 +46,8 @@ static int reformat_map_key(void * ctx, const unsigned char * stringVal,
     return 1;
 }
 
-static int reformat_start_map(void * ctx)
-{
+
+static int reformat_start_map(void * ctx) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_map_open(g);
     LOGV("reformat_start_map\n");
@@ -62,29 +55,29 @@ static int reformat_start_map(void * ctx)
 }
 
 
-static int reformat_end_map(void * ctx)
-{
+static int reformat_end_map(void * ctx) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_map_close(g);
     LOGV("reformat_end_map\n");
     return 1;
 }
 
-static int reformat_start_array(void * ctx)
-{
+
+static int reformat_start_array(void * ctx) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_array_open(g);
     LOGV("reformat_start_array\n");
     return 1;
 }
 
-static int reformat_end_array(void * ctx)
-{
+
+static int reformat_end_array(void * ctx) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_array_close(g);
     LOGV("reformat_end_array\n");
     return 1;
 }
+
 
 static yajl_callbacks callbacks = {
     reformat_null,
@@ -100,132 +93,123 @@ static yajl_callbacks callbacks = {
     reformat_end_array
 };
 
-unsigned int MazeNetwork::get_all_buf(int sock, const unsigned char* output, unsigned int maxsize)
-{
-  int bytes;
 
-  //read the socket to see how many bytes are there
-  if (ioctl(sock, FIONREAD, &bytes)) {
-    LOGV("wtf1\n");
-    perror("foo\n");
-    return 0;
-  }
+int MazeNetwork::Tick() {
 
-  // how many bytes are available
-  if (bytes == 0) {
-    //LOGV("wtf\n");
-    return 0;
-  }
+  int network_connected_error = ConnectNetwork();
 
-  LOGV("reading: %d of %d\n", maxsize, bytes);
-
-  int n;
-  errno = 0;
-  n = recv(sock, (void *)output, maxsize, 0);
-
-  if (n>0) {
-  } else {
-    LOGV("error in get_all_buf!");
-  }
-
-  return n;
-}
-
-
-void MazeNetwork::StopNetwork() {
-    shutdown(SocketFD, SHUT_RDWR);
-    close(SocketFD);
-}
-
-
-void MazeNetwork::iter(void *arg) {
-
-  yajl_status stat;
-
-  int n = get_all_buf(SocketFD, out, 10);
-
-  if (n > 0) {
-    out[n] = '\0';
-    LOGV("read! n=%d out=%s\n", n, out);
-    stat = yajl_parse(hand, out, n * sizeof(unsigned char));
-    if (stat == yajl_status_ok) {
-    } else {
-      unsigned char *str = yajl_get_error(hand, 1, out, 1023);
-      fprintf(stderr, "%s", (const char *) str);
-      yajl_free_error(hand, str);
-    }
+  if (network_connected_error > 0) {
+    LOGV("not connected, will try again next tick\n");
+    return network_connected_error;
   }
 
   char payload[4] = "[1]";
-  ssize_t sent = send(SocketFD, payload, 3, 0); //MSG_DONTWAIT
+  ssize_t sent = send(m_Socket, payload, 3, 0); //MSG_DONTWAIT
   if (sent > 0) {
     //LOGV("wtf11111 %d payload-sent: %d\n", SocketFD, sent);
   } else {
-    //LOGV("send failed\n");
-  }
-}
-
-int MazeNetwork::ConnectNetwork(void) {
-  struct sockaddr_in stSockAddr;
-  int Res = 0;
-  done = 0;
-  SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-  if (-1 == SocketFD)
-  {
-    LOGV("cannot create socket");
+    LOGV("send failed\n");
+    StopNetwork();
     return 1;
   }
 
-  memset(&stSockAddr, 0, sizeof(stSockAddr));
+  int bytesAvailableThisTick = -1;
+  int bytesReadThisTick = -1;
 
+  //read the socket to see how many bytes are there
+  if (ioctl(m_Socket, FIONREAD, &bytesAvailableThisTick)) {
+    LOGV("ioctl FIONREAD failed\n");
+    return 2;
+  }
+
+  if (bytesAvailableThisTick == 0) {
+    return 0;
+  }
+
+  bytesReadThisTick = recv(m_Socket, (void *)m_InputBuffer, bpt, 0);
+
+  if (bytesReadThisTick < 1) {
+    perror("recv m_InputBuffer failed\n");
+    return 4;
+  }
+
+  m_InputBuffer[bytesReadThisTick] = '\0';
+  yajl_status stat = yajl_parse(hand, m_InputBuffer, bytesReadThisTick * sizeof(unsigned char));
+  if (stat == yajl_status_ok) {
+    return 0;
+  } else {
+    unsigned char *str = yajl_get_error(hand, 1, m_InputBuffer, 1023);
+    fprintf(stderr, "%s", (const char *) str);
+    yajl_free_error(hand, str);
+    return 5;
+  }
+
+}
+
+
+int MazeNetwork::ConnectNetwork(void) {
+
+  if (m_Socket > 0) {
+    return 0;
+  }
+
+  int addressResolution = 0;
+
+  struct sockaddr_in stSockAddr;
+  memset(&stSockAddr, 0, sizeof(stSockAddr));
   stSockAddr.sin_family = AF_INET;
   stSockAddr.sin_port = htons(7001);
 
-  //struct hostent *host0 = gethostbyname("test.com"); // increment hostname counter to check for possible but at 0,0 not differentiating low/high
-  //struct hostent *host = gethostbyname("localhost");
   struct hostent *host = gethostbyname("emscripten.risingcode.com");
   char **addr_list = host->h_addr_list;
   int *addr = (int*)*addr_list;
-  LOGV("raw addr: %d\n", *addr);
   char name[INET_ADDRSTRLEN];
+
   if (!inet_ntop(AF_INET, addr, name, sizeof(name))) {
-    LOGV("could not figure out name\n");
+    LOGV("gethostbyname failed\n");
+    StopNetwork();
     return 1;
   }
-  LOGV("localhost has 'ip' of %s\n", name);
 
-  Res = inet_pton(AF_INET, name, &stSockAddr.sin_addr);
+  addressResolution = inet_pton(AF_INET, name, &stSockAddr.sin_addr);
 
-  if (0 > Res) {
+  if (0 > addressResolution) {
     LOGV("error: first parameter is not a valid address family");
-    close(SocketFD);
-    return 1;
-  } else if (0 == Res) {
+    StopNetwork();
+    return 2;
+  } else if (0 == addressResolution) {
     LOGV("char string (second parameter does not contain valid ipaddress)");
-    close(SocketFD);
-    return 1;
+    StopNetwork();
+    return 3;
   }
 
-  if (-1 == connect(SocketFD, (struct sockaddr *)&stSockAddr, sizeof(stSockAddr))) {
-    LOGV("connect failed");
-    close(SocketFD);
-    return 1;
+  m_Socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  if (m_Socket < 1) {
+    LOGV("cannot create socket");
+    StopNetwork();
+    return 4;
+  }
+
+  if (-1 == connect(m_Socket, (struct sockaddr *)&stSockAddr, sizeof(stSockAddr))) {
+    LOGV("connect failed\n");
+    StopNetwork();
+    return 5;
   }
 
   int set = 1;
-  setsockopt(SocketFD, SOL_SOCKET, MSG_NOSIGNAL, (void *)&set, sizeof(int));
+  setsockopt(m_Socket, SOL_SOCKET, MSG_NOSIGNAL, (void *)&set, sizeof(int));
 
   char magic[1];
   magic[0] = '{';
-  ssize_t sent = send(SocketFD, magic, 1, 0); //MSG_DONTWAIT
-  //LOGV("wtf11111 %d magic-sent: %d\n", SocketFD, sent);
+  ssize_t sent = send(m_Socket, magic, 1, 0); //MSG_DONTWAIT
+  if (sent == 0) {
+    StopNetwork();
+    return 6;
+  }
 
-  out = (unsigned char *) malloc(sizeof(unsigned char) * 1024);
-
-  void *g = NULL;
-
-  hand = yajl_alloc(&callbacks, NULL, (void *) g);
+  m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
+  hand = yajl_alloc(&callbacks, NULL, (void *)m_Delegate);
   yajl_config(hand, yajl_allow_comments, 1); // allow json comments
   yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
 
@@ -233,11 +217,22 @@ int MazeNetwork::ConnectNetwork(void) {
 }
 
 
-MazeNetwork::~MazeNetwork() {
-  LOGV("MazeNetwork::dealloc\n");
+void MazeNetwork::StopNetwork() {
+  shutdown(m_Socket, SHUT_RDWR);
+  close(m_Socket);
+  m_Socket = -1;
 }
 
 
-MazeNetwork::MazeNetwork() {
-  ConnectNetwork();
+MazeNetwork::~MazeNetwork() {
+  LOGV("MazeNetwork::dealloc\n");
+  StopNetwork();
+}
+
+
+MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
+  bpt = theBpt;
+  m_InputBufferSize = bpt + 1;
+  m_Delegate = theDelegate;
+  m_Socket = -1;
 }

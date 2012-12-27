@@ -49,6 +49,9 @@
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
+  m_Network = new MazeNetwork(this, 1024);
+  m_NetworkTickTimeout = 0.0;
+
   m_NeedsTerrainRebatched = true;
 
 
@@ -383,6 +386,15 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
+
+  m_NetworkTickTimeout += m_DeltaTime;
+  if (m_NetworkTickTimeout > 0.5) {
+    m_NetworkTickTimeout = 0.0;
+    int network_status = m_Network->Tick();
+    if (network_status > 0) {
+      LOGV("incorrect network status %d\n", network_status);
+    }
+  }
 
   bool needs_next_step = false;
 
@@ -1015,3 +1027,6 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
       break;
   };
 }
+
+//bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y) {
+//}
