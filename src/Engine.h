@@ -114,6 +114,7 @@ public:
   float lty;
   float ltz;
 
+  /*
   //network stuff
   int done;
   int SocketFD;
@@ -125,5 +126,6 @@ public:
   yajl_handle hand;
 
   unsigned char *out;
+  */
 
 };

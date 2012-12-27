@@ -6,6 +6,7 @@
 
 #include "SuperStarShooter.h"
 
+/*
 #include <stdlib.h>
 
 #define EXPECTED_BYTES 5
@@ -235,6 +236,7 @@ int Engine::ConnectNetwork(void) {
   return 0;
 }
 
+*/
 
 static std::vector<Game *> games;
 static Engine *m_CurrentGame;
@@ -374,7 +376,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   ltx = lty = ltz = 0;
 
-  ConnectNetwork();
+  //ConnectNetwork();
 }
 
 
@@ -460,7 +462,7 @@ int Engine::Run() {
         if (Active()) {
           m_SimulationTime += m_DeltaTime;
           Simulate();
-          iter(NULL);
+          //iter(NULL);
         }
       }
     }

@@ -149,6 +149,7 @@
 #include "SpriteGun.h"
 #include "Game.h"
 #include "Engine.h"
+#include "MazeNetwork.h"
 
 #define random rand
 
