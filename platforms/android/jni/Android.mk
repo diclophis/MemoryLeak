@@ -18,6 +18,7 @@ CG_SUBDIRS := \
 ../../../src/contrib/ConvertUTF \
 ../../../src/contrib/unzip \
 ../../../src/contrib/zlib \
+../../../src/yajl \
 
 LOCAL_SRC_FILES := $(foreach F, $(CG_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.cpp))))
 LOCAL_SRC_FILES += $(foreach F, $(CG_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))
