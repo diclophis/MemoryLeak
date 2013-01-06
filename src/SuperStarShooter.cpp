@@ -54,7 +54,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_NeedsTerrainRebatched = true;
 
-
   m_CenterOfWorldX = 4;
   m_CenterOfWorldY = 4;
 
@@ -76,7 +75,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-
+  // this will draw a temple
   if (false) {
     //int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y
     int bt_x = m_CenterOfWorldX;
@@ -106,7 +105,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 2;
 
   m_GridCount = (GRID_X * GRID_Y);
-  LOGV("total cells: %d\n", m_GridCount);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
@@ -317,6 +315,7 @@ void SuperStarShooter::DestroyFoos() {
 }
 
 
+// handle touch events
 void SuperStarShooter::Hit(float x, float y, int hitState) {
   float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
 	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
@@ -364,6 +363,7 @@ void SuperStarShooter::RenderModelPhase() {
 }
 
 
+// render the scene
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
 
@@ -387,6 +387,7 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
+  // process network events
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > 0.5) {
     m_NetworkTickTimeout = 0.0;
@@ -396,8 +397,8 @@ int SuperStarShooter::Simulate() {
     }
   }
 
+  // move player towards target
   bool needs_next_step = false;
-
   if (m_AtlasSprites[m_PlayerIndex]->MoveToTargetPosition(m_DeltaTime)) {
     m_WarpTimeout += m_DeltaTime;
     if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
@@ -408,47 +409,13 @@ int SuperStarShooter::Simulate() {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
   }
 
+  // manage camera position
   m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-
-  //float tx = (m_CameraActualOffsetX - m_CameraOffsetX);
-  //float ty = (m_CameraActualOffsetY - m_CameraOffsetY);
-
-  //float speed_x = fastAbs(tx) * 1.5;
-  //float speed_y = fastAbs(ty) * 1.5;
-  //float speed_max = MAX_CAMERA_VELOCITY;
-
-  //if (speed_x > speed_max) {
-  //  speed_x = speed_max;
-  //}
-  //if (speed_y > speed_max) {
-  //  speed_y = speed_max;
-  //}
-
-  //if (tx > 0.0) {
-  //  tx = 1.0;
-  //} else {
-  //  tx = -1.0;
-  //}
-
-  //if (ty > 0.0) {
-  //  ty = 1.0;
-  //} else {
-  //  ty = -1.0;
-  //}
-
-  //float mx = (tx * speed_x * m_DeltaTime);
-  //float my = (ty * speed_y * m_DeltaTime);
-
-  //if (false) {
   m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-  //} else {
-  //  // this causes seaming problems
-  //  m_CameraActualOffsetX -= (mx);
-  //  m_CameraActualOffsetY -= (my);
-  //}
 
+  // manage tilemap
   bool recenter_x = false;
   bool recenter_y = false;
   int dsx = 0;
@@ -479,18 +446,19 @@ int SuperStarShooter::Simulate() {
   int xx = 0;
   int yy = 0;
 
-  //m_NeedsTerrainRebatched = true;
-
   if ((recenter_x || recenter_y)) {
     m_NeedsTerrainRebatched = true;
     for (int i=m_GridStartIndex; i<m_GridStopIndex; i++) {
-      int sx = -1;
-      int sy = -1;
+      //int sx = -1;
+      //int sy = -1;
       int nsx = 0;
       int nsy = 0;
-      IndexToXY(i - m_GridStartIndex, &sx, &sy);
-      nsx = sx;
-      nsy = sy;
+
+      int offset_index = i - m_GridStartIndex;
+      nsx = m_GridPositions[(offset_index * 2)];
+      nsy = m_GridPositions[(offset_index * 2) + 1];
+      //nsx = sx;
+      //nsy = sy;
 
       float px = (((xx) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
       float py = (((yy) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
@@ -500,13 +468,13 @@ int SuperStarShooter::Simulate() {
 
       if (recenter_x) {
         nsx -= dsx;
-        m_AtlasSprites[i]->m_Position[0] = foo_x; //(m_LastCenterX + px);
-        m_AtlasSprites[i + m_GridCount]->m_Position[0] = foo_x; //(m_LastCenterX + px);
+        m_AtlasSprites[i]->m_Position[0] = foo_x;
+        m_AtlasSprites[i + m_GridCount]->m_Position[0] = foo_x;
       }
       if (recenter_y) {
         nsy -= dsy;
-        m_AtlasSprites[i]->m_Position[1] = foo_y; //(m_LastCenterY + py);
-        m_AtlasSprites[i + m_GridCount]->m_Position[1] = foo_y; //(m_LastCenterY + py);
+        m_AtlasSprites[i]->m_Position[1] = foo_y;
+        m_AtlasSprites[i + m_GridCount]->m_Position[1] = foo_y;
       }
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
@@ -524,9 +492,9 @@ int SuperStarShooter::Simulate() {
         yy++;
       }
     }
-  } else {
   }
 
+  // manage trail that indicates player target
   float inverter = -1.0;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
@@ -534,6 +502,7 @@ int SuperStarShooter::Simulate() {
     inverter *= -1.0;
   }
 
+  // manage player target selection and pathfinding
   bool stuck = false;
 
   m_SelectTimeout += m_DeltaTime;
@@ -549,7 +518,6 @@ int SuperStarShooter::Simulate() {
     int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
     if (Passable(colliding_index)) {
       m_StatePointer = 0;
-      
       int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
       int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
       startState = startStateTarget;
@@ -597,7 +565,6 @@ int SuperStarShooter::Simulate() {
       m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0;
     }
   }
-
 
   if (needs_next_step && m_Steps->size() > 0) {
 
@@ -669,7 +636,7 @@ int SuperStarShooter::Simulate() {
   return 1;
 }
 
-
+/*
 void SuperStarShooter::IndexToXY(int index, int* x, int* y) {
   *x = m_GridPositions[(index * 2)];
   *y = m_GridPositions[(index * 2) + 1];
@@ -679,8 +646,10 @@ void SuperStarShooter::IndexToXY(int index, int* x, int* y) {
 int SuperStarShooter::XYToIndex(int x, int y) {
   return (y * GRID_X + x);
 }
+*/
 
 
+// calculate the possible least cost between two states
 float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {	
 
   int xStart = m_States[((intptr_t)nodeStart)]->x;
@@ -699,6 +668,7 @@ float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {
 }
 
 
+// only sand tiles are walkable
 bool SuperStarShooter::Passable(int i) {
   if (i == 91 || i == 92 || i == 74 || i == 75 || i == 76 || i == 90 || i == 106 || i == 107 || i == 108) {
     return true;
@@ -708,6 +678,9 @@ bool SuperStarShooter::Passable(int i) {
 }
 
 
+// calculates the path finding for player movement
+// each node of the graph is an index into the state pool
+// the state pools contain collections of x,y values
 void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCost> *neighbors) {
 
   int ax = m_States[((intptr_t)node)]->x;
@@ -754,6 +727,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
 }
 
 
+// fetch the index of an available State from the shared state pool, based on x/y/z
 int SuperStarShooter::StatePointerFor(int x, int y, int z) {
   bool exists = false;
   int found = -1;
@@ -776,14 +750,19 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
 }
 
 
+// Loads maze from given file handle index
+// mazes are binary files, see top of file for details
+// reads the entire maze into memory
+// pops the first two chars for width and height
+// iterates over remaining chars to fill in octree
+// the octree stores whether or not a cell is passable
+// and what sprite the cell should be draw with
 void SuperStarShooter::LoadMaze(int level_index) {
 
 	uint16_t *level = (uint16_t *)malloc(sizeof(char) * m_LevelFileHandles->at(level_index)->len);
 	fseek(m_LevelFileHandles->at(level_index)->fp, m_LevelFileHandles->at(level_index)->off, SEEK_SET);
 	fread(level, sizeof(char), m_LevelFileHandles->at(level_index)->len, m_LevelFileHandles->at(level_index)->fp);
 
-  //int char_to_int_ratio = sizeof(uint16_t) / sizeof(char);
-  //int int_count = m_LevelFileHandles->at(level_index)->len / char_to_int_ratio;
   int width = level[0];
   int height = level[1];
   int cursor = 0;
