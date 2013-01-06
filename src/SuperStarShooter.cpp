@@ -449,16 +449,11 @@ int SuperStarShooter::Simulate() {
   if ((recenter_x || recenter_y)) {
     m_NeedsTerrainRebatched = true;
     for (int i=m_GridStartIndex; i<m_GridStopIndex; i++) {
-      //int sx = -1;
-      //int sy = -1;
       int nsx = 0;
       int nsy = 0;
-
       int offset_index = i - m_GridStartIndex;
       nsx = m_GridPositions[(offset_index * 2)];
       nsy = m_GridPositions[(offset_index * 2) + 1];
-      //nsx = sx;
-      //nsy = sy;
 
       float px = (((xx) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
       float py = (((yy) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
@@ -636,18 +631,6 @@ int SuperStarShooter::Simulate() {
   return 1;
 }
 
-/*
-void SuperStarShooter::IndexToXY(int index, int* x, int* y) {
-  *x = m_GridPositions[(index * 2)];
-  *y = m_GridPositions[(index * 2) + 1];
-}
-
-
-int SuperStarShooter::XYToIndex(int x, int y) {
-  return (y * GRID_X + x);
-}
-*/
-
 
 // calculate the possible least cost between two states
 float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {	
@@ -780,6 +763,7 @@ void SuperStarShooter::LoadMaze(int level_index) {
   
   free(level);
 }
+
 
 void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   int x = row * 3;
