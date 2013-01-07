@@ -88,40 +88,44 @@ static GLuint g_LastRenderBuffer = -1;
 
     NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
     for (NSString *path in model_names) {
-      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+      FILE *fd = fopen(cPath1, "rb");
       fseek(fd, 0, SEEK_END);
       unsigned int len = ftell(fd);
       rewind(fd);
-      Engine::PushBackFileHandle(MODELS, fd, 0, len);
+      Engine::PushBackFileHandle(MODELS, fd, 0, len, cPath1);
     }
     
     NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
     for (NSString *path in level_names) {
-      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+      FILE *fd = fopen(cPath1, "rb");
       fseek(fd, 0, SEEK_END);
       unsigned int len = ftell(fd);
       rewind(fd);
-      Engine::PushBackFileHandle(LEVELS, fd, 0, len);
+      Engine::PushBackFileHandle(LEVELS, fd, 0, len, cPath1);
     }
 
     
     NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
     for (NSString *path in texture_names) {
-      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+      FILE *fd = fopen(cPath1, "rb");
       fseek(fd, 0, SEEK_END);
       unsigned int len = ftell(fd);
       rewind(fd);
-      Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
+      Engine::PushBackFileHandle(TEXTURES, fd, 0, len, cPath1);
     }
     
     
     NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
     for (NSString *path in sound_names) {
-      FILE *fd = fopen([path cStringUsingEncoding:[NSString defaultCStringEncoding]], "rb");
+      const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+      FILE *fd = fopen(cPath1, "rb");
       fseek(fd, 0, SEEK_END);
       unsigned int len = ftell(fd);
       rewind(fd);
-      Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
+      Engine::PushBackFileHandle(SOUNDS, fd, 0, len, cPath1);
     }
   }
   return self;

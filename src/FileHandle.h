@@ -11,7 +11,7 @@ struct FileHandle {
 	FILE *fp;
 	unsigned int off;
 	unsigned int len;
-  //char *name;
+  const char *name;
 };
 
 enum {

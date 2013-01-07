@@ -335,6 +335,11 @@ void Engine::ClearSprites() {
 
 Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : m_ScreenWidth(w), m_ScreenHeight(h), m_TextureFileHandles(&t), m_ModelFileHandles(&m), m_LevelFileHandles(&l), m_SoundFileHandles(&s) {
 
+  std::sort(m_TextureFileHandles->begin(), m_TextureFileHandles->end(), CompareFileHandles);
+  std::sort(m_ModelFileHandles->begin(), m_ModelFileHandles->end(), CompareFileHandles);
+  std::sort(m_LevelFileHandles->begin(), m_LevelFileHandles->end(), CompareFileHandles);
+  std::sort(m_SoundFileHandles->begin(), m_SoundFileHandles->end(), CompareFileHandles);
+
   m_SpriteCount = 0;
   m_ModelCount = 0;
 
@@ -525,11 +530,20 @@ void Engine::ResizeScreen(int width, int height) {
   m_IsScreenResized = true;
 }
 
-void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length) {
+
+bool Engine::CompareFileHandles(void *pa, void *pb) {
+  FileHandle *a = (FileHandle *)pa;
+  FileHandle *b = (FileHandle *)pb;
+  return strcmp(a->name, b->name) < 0;
+}
+
+
+void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length, const char *name) {
   FileHandle *fh = new FileHandle;
   fh->fp = file;
   fh->off = offset;
   fh->len = length;
+  fh->name = name;
   std::vector<FileHandle *> *collectionHandle = NULL;
   switch(collection) {
     case MODELS:

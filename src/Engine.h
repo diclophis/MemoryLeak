@@ -46,7 +46,7 @@ public:
   void ClearSprites();
   int isExtensionSupported(const char *extension);
  
-  static void PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length);
+  static void PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length, const char *n);
   static void Start(int i, int w, int h);
   static void CurrentGameDestroyFoos();
   static void CurrentGameCreateFoos();
@@ -59,6 +59,7 @@ public:
   static void CheckGL(const char *s);
   static void CurrentGameStart();
   static void WarnAboutGameFailure(const char *s);
+  static bool CompareFileHandles(void *a, void *b);
 
   bool m_IsSceneBuilt;
   bool m_IsScreenResized;

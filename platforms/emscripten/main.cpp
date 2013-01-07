@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
+        Engine::PushBackFileHandle(TEXTURES, fd, 0, len, tmp);
       }
       free(tmp);
       tmp=NULL;
@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(MODELS, fd, 0, len);
+        Engine::PushBackFileHandle(MODELS, fd, 0, len, tmp);
       }
 
       free(tmp);
@@ -213,7 +213,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
+        Engine::PushBackFileHandle(SOUNDS, fd, 0, len, tmp);
       }
     
       free(tmp);
@@ -234,7 +234,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(LEVELS, fd, 0, len);
+        Engine::PushBackFileHandle(LEVELS, fd, 0, len, tmp);
       }
 
       free(tmp);

@@ -274,7 +274,7 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-    Engine::PushBackFileHandle(MODELS, fd, 0, len);
+    Engine::PushBackFileHandle(MODELS, fd, 0, len, [path cStringUsingEncoding:defaultCStringEncoding]);
 	}
   [model_names release];
   [model_path release];
@@ -285,7 +285,7 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-    Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
+    Engine::PushBackFileHandle(TEXTURES, fd, 0, len, [path cStringUsingEncoding:defaultCStringEncoding]);
   }
   [texture_names release];
   [textures_path release];
@@ -296,7 +296,7 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-    Engine::PushBackFileHandle(LEVELS, fd, 0, len);
+    Engine::PushBackFileHandle(LEVELS, fd, 0, len, [path cStringUsingEncoding:defaultCStringEncoding]);
 	}
   [level_names release];
   [levels_path release];
@@ -307,7 +307,7 @@ int main(int argc, char** argv) {
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
 		rewind(fd);
-    Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
+    Engine::PushBackFileHandle(SOUNDS, fd, 0, len, [path cStringUsingEncoding:defaultCStringEncoding]);
 	}
   [sound_names release];
   [sounds_path release];
