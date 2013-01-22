@@ -134,6 +134,9 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 ) {
   activity = (jobject)env->NewGlobalRef(thiz);
 	jclass fdClass = env->FindClass("java/io/FileDescriptor");
+
+  char name[20];
+
 	if (fdClass != NULL) {
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
 		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
@@ -141,22 +144,26 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
       for (int i=0; i<model_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        Engine::PushBackFileHandle(MODELS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off1, 0)[i], env->GetIntArrayElements(len1, 0)[i]);
+        sprintf(name, "%d", myfdx);
+        Engine::PushBackFileHandle(MODELS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off1, 0)[i], env->GetIntArrayElements(len1, 0)[i], name);
       }
       for (int i=0; i<level_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys2, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        Engine::PushBackFileHandle(LEVELS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off2, 0)[i], env->GetIntArrayElements(len2, 0)[i]);
+        sprintf(name, "%d", myfdx);
+        Engine::PushBackFileHandle(LEVELS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off2, 0)[i], env->GetIntArrayElements(len2, 0)[i], name);
       }
       for (int i=0; i<sound_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys3, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        Engine::PushBackFileHandle(SOUNDS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off3, 0)[i], env->GetIntArrayElements(len3, 0)[i]);
+        sprintf(name, "%d", myfdx);
+        Engine::PushBackFileHandle(SOUNDS, fdopen(myfdx, "rb"), env->GetIntArrayElements(off3, 0)[i], env->GetIntArrayElements(len3, 0)[i], name);
       }
       for (int i=0; i<textures_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys4, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
-        Engine::PushBackFileHandle(TEXTURES, fdopen(myfdx, "rb"), env->GetIntArrayElements(off4, 0)[i], env->GetIntArrayElements(len4, 0)[i]);
+        sprintf(name, "%d", myfdx);
+        Engine::PushBackFileHandle(TEXTURES, fdopen(myfdx, "rb"), env->GetIntArrayElements(off4, 0)[i], env->GetIntArrayElements(len4, 0)[i], name);
       }
 		}
 	}
