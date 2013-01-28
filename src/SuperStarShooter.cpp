@@ -391,10 +391,10 @@ int SuperStarShooter::Simulate() {
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > 0.5) {
     m_NetworkTickTimeout = 0.0;
-    //int network_status = m_Network->Tick();
-    //if (network_status > 0) {
-    //  LOGV("incorrect network status %d\n", network_status);
-    //}
+    int network_status = m_Network->Tick();
+    if (network_status > 0) {
+      LOGV("incorrect network status %d\n", network_status);
+    }
   }
 
   // move player towards target

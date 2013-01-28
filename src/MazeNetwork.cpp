@@ -153,36 +153,6 @@ int MazeNetwork::ConnectNetwork(void) {
     return 0;
   }
 
-  int addressResolution = 0;
-
-  struct sockaddr_in stSockAddr;
-  memset(&stSockAddr, 0, sizeof(stSockAddr));
-  stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(7001);
-
-  struct hostent *host = gethostbyname("emscripten.risingcode.com");
-  char **addr_list = host->h_addr_list;
-  int *addr = (int*)*addr_list;
-  char name[INET_ADDRSTRLEN];
-
-  if (!inet_ntop(AF_INET, addr, name, sizeof(name))) {
-    LOGV("gethostbyname failed\n");
-    StopNetwork();
-    return 1;
-  }
-
-  addressResolution = inet_pton(AF_INET, name, &stSockAddr.sin_addr);
-
-  if (0 > addressResolution) {
-    LOGV("error: first parameter is not a valid address family");
-    StopNetwork();
-    return 2;
-  } else if (0 == addressResolution) {
-    LOGV("char string (second parameter does not contain valid ipaddress)");
-    StopNetwork();
-    return 3;
-  }
-
   m_Socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
   if (m_Socket < 1) {
@@ -235,4 +205,37 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
   m_InputBufferSize = bpt + 1;
   m_Delegate = theDelegate;
   m_Socket = -1;
+
+  int addressResolution = 0;
+
+  //struct sockaddr_in stSockAddr;
+  memset(&stSockAddr, 0, sizeof(stSockAddr));
+  stSockAddr.sin_family = AF_INET;
+  stSockAddr.sin_port = htons(7001);
+
+  struct hostent *host = gethostbyname("emscripten.risingcode.com");
+  if (NULL == host) {
+    LOGV("error: gethostbyname failed\n");
+    StopNetwork();
+  } else {
+
+    char **addr_list = host->h_addr_list;
+    int *addr = (int*)*addr_list;
+    char name[INET_ADDRSTRLEN];
+
+    if (!inet_ntop(AF_INET, addr, name, sizeof(name))) {
+      LOGV("gethostbyname failed\n");
+      StopNetwork();
+    }
+
+    addressResolution = inet_pton(AF_INET, name, &stSockAddr.sin_addr);
+
+    if (0 > addressResolution) {
+      LOGV("error: first parameter is not a valid address family");
+      StopNetwork();
+    } else if (0 == addressResolution) {
+      LOGV("char string (second parameter does not contain valid ipaddress)");
+      StopNetwork();
+    }
+  }
 }

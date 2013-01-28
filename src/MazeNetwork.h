@@ -32,5 +32,7 @@ public:
   int m_InputBufferSize;
   size_t bpt;
 
+  struct sockaddr_in stSockAddr;
+
 
 };
