@@ -6,8 +6,9 @@
 //
 
 class MazeNetworkDelegate {
-//public:
+public:
 //  virtual bool UpdatePlayerAtIndex(int i, float x, float y);
+  virtual bool RequestRegistration(int i) = 0;
 };
 
 class MazeNetwork {
@@ -33,6 +34,13 @@ public:
   size_t bpt;
 
   struct sockaddr_in stSockAddr;
+
+  int m_State;
+
+
+  float m_Arg0;
+  float m_Arg1;
+  float m_Arg2;
 
 
 };

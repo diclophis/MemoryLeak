@@ -168,6 +168,7 @@
 #include "Game.h"
 #include "Engine.h"
 #include "MazeNetwork.h"
+#include "SuperStarShooter.h"
 
 #define random rand
 

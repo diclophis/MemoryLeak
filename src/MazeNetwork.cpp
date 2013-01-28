@@ -3,6 +3,9 @@
 
 #include "MemoryLeak.h"
 
+//reformat_start_map
+//reformat_map_key
+//reformat_start_array
 
 static int reformat_null(void * ctx) {
     //yajl_gen g = (yajl_gen) ctx;
@@ -20,61 +23,96 @@ static int reformat_boolean(void * ctx, int boolean) {
 }
 
 
-static int reformat_number(void * ctx, const char * s, size_t l) {
+static int reformat_number(void *ctx, const char *s, size_t l) {
     //yajl_gen g = (yajl_gen) ctx;
     //return yajl_gen_status_ok == yajl_gen_number(g, s, l);
     //LOGV("reformat_number %f\n", strtof(s, (char **)s+l));
-    //LOGV("reformat_number\n");
+
+    MazeNetwork *n = (MazeNetwork *)ctx;
+
+    LOGV("reformat_number enter %d\n", n->m_State);
+
+    if (4 == n->m_State) {
+      // first arg of request_registration is int player id
+      n->m_Arg0 = strtof(s, (char **)NULL);
+    }
+
+    LOGV("reformat_number exit arg0 %d %f\n", n->m_State, n->m_Arg0);
     return 1;
 }
 
 
-static int reformat_string(void * ctx, const unsigned char * stringVal, size_t stringLen) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
-    //LOGV("reformat_string %s %d\n", stringVal, stringLen);
-    LOGV("reformat_string\n");
+static int reformat_string(void *ctx, const unsigned char *stringVal, size_t stringLen) {
+    MazeNetwork *n = (MazeNetwork *)ctx;
+    
+    LOGV("reformat_string enter %d\n", n->m_State);
+
+    if (3 == n->m_State) {
+      if (0 == strncmp("request_registration", (const char *)stringVal, stringLen)) {
+        n->m_State = 4;
+      }
+    }
+
+    LOGV("reformat_string exit %d\n", n->m_State);
+
     return 1;
 }
 
 
-static int reformat_map_key(void * ctx, const unsigned char * stringVal, size_t stringLen) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_string(g, stringVal, stringLen);
-    //LOGV("reformat_map_key %s\n", stringVal);
-    LOGV("reformat_map_key\n");
+static int reformat_map_key(void *ctx, const unsigned char *stringVal, size_t stringLen) {
+    MazeNetwork *n = (MazeNetwork *)ctx;
+
+    if (0 == n->m_State) {
+      if (0 == strncmp("stream", (const char *)stringVal, stringLen)) {
+        n->m_State = 1;
+      }
+    }
+
+    LOGV("reformat_map_key %d\n", n->m_State);
     return 1;
 }
 
 
 static int reformat_start_map(void * ctx) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_map_open(g);
-    LOGV("reformat_start_map\n");
+    MazeNetwork *n = (MazeNetwork *)ctx;
+    LOGV("reformat_start_map %d\n", n->m_State);
     return 1;
 }
 
 
 static int reformat_end_map(void * ctx) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_map_close(g);
     LOGV("reformat_end_map\n");
     return 1;
 }
 
 
 static int reformat_start_array(void * ctx) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_array_open(g);
-    LOGV("reformat_start_array\n");
+    MazeNetwork *n = (MazeNetwork *)ctx;
+
+    LOGV("reformat_start_array enter %d\n", n->m_State);
+
+    if (1 == n->m_State) {
+      n->m_State = 2;
+    } else if (2 == n->m_State) {
+      n->m_State = 3;
+    }
+
+    LOGV("reformat_start_array exit %d\n", n->m_State);
     return 1;
 }
 
 
 static int reformat_end_array(void * ctx) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_array_close(g);
-    LOGV("reformat_end_array\n");
+    MazeNetwork *n = (MazeNetwork *)ctx;
+
+    LOGV("reformat_end_array enter %d\n", n->m_State);
+
+    if (4 == n->m_State) {
+      n->m_Delegate->RequestRegistration((int)n->m_Arg0);
+      n->m_State = 3;
+    }
+
+    LOGV("reformat_end_array enter %d\n", n->m_State);
     return 1;
 }
 
@@ -179,7 +217,7 @@ int MazeNetwork::ConnectNetwork(void) {
   }
 
   m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
-  hand = yajl_alloc(&callbacks, NULL, (void *)m_Delegate);
+  hand = yajl_alloc(&callbacks, NULL, (void *)this);
   yajl_config(hand, yajl_allow_comments, 1); // allow json comments
   yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
 
@@ -191,6 +229,7 @@ void MazeNetwork::StopNetwork() {
   shutdown(m_Socket, SHUT_RDWR);
   close(m_Socket);
   m_Socket = -1;
+  m_State = 0;
 }
 
 
@@ -205,6 +244,11 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
   m_InputBufferSize = bpt + 1;
   m_Delegate = theDelegate;
   m_Socket = -1;
+  m_State = 0;
+
+  m_Arg0 = 0;
+  m_Arg1 = 0;
+  m_Arg2 = 0;
 
   int addressResolution = 0;
 

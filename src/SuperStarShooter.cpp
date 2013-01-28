@@ -2,7 +2,6 @@
 
 
 #include "MemoryLeak.h"
-#include "SuperStarShooter.h"
 
 
 #define ZOOM (1.0)
@@ -993,3 +992,8 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
 
 //bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y) {
 //}
+
+bool SuperStarShooter::RequestRegistration(int i) {
+  LOGV("i am player_id = %d\n", i);
+  return true;
+}
