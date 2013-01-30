@@ -27,7 +27,7 @@ static GLuint g_LastRenderBuffer = -1;
   if ((self = [super initWithCoder:aDecoder])) {
 
     animating = FALSE;
-    animationFrameInterval = 1;
+    animationFrameInterval = 2;
     displayLink = nil;
     
     // Get the layer
@@ -86,7 +86,7 @@ static GLuint g_LastRenderBuffer = -1;
       return nil;
     }
 
-    NSArray *model_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"];
+    NSArray *model_names = [[[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/models"] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     for (NSString *path in model_names) {
       const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
       FILE *fd = fopen(cPath1, "rb");
@@ -96,8 +96,10 @@ static GLuint g_LastRenderBuffer = -1;
       Engine::PushBackFileHandle(MODELS, fd, 0, len, cPath1);
     }
     
-    NSArray *level_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"];
+    NSArray *level_names = [[[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     for (NSString *path in level_names) {
+      NSLog(@"wtf level %@", path);
+        
       const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
       FILE *fd = fopen(cPath1, "rb");
       fseek(fd, 0, SEEK_END);
@@ -107,7 +109,7 @@ static GLuint g_LastRenderBuffer = -1;
     }
 
     
-    NSArray *texture_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"];
+    NSArray *texture_names = [[[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/textures"] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     for (NSString *path in texture_names) {
       const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
       FILE *fd = fopen(cPath1, "rb");
@@ -118,7 +120,7 @@ static GLuint g_LastRenderBuffer = -1;
     }
     
     
-    NSArray *sound_names = [[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"];
+    NSArray *sound_names = [[[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/sounds"] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     for (NSString *path in sound_names) {
       const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
       FILE *fd = fopen(cPath1, "rb");
