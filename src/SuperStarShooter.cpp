@@ -320,40 +320,55 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
   float dx = (xx + m_CameraActualOffsetX) + (SUBDIVIDE / 2.0);
   float dy = (yy + m_CameraActualOffsetY) + (SUBDIVIDE / 2.0);
-	float collide_x = (dx);
-	float collide_y = (dy);
-  int cx = (collide_x / SUBDIVIDE);
-  int cy = (collide_y / SUBDIVIDE);
-  bool collide_index_set = false;
 
-  if (hitState == 0) {
-    m_SelectTimeout = 0;
-    m_CameraStopOffsetX = (xx + m_CameraOffsetX);
-    m_CameraStopOffsetY = (yy + m_CameraOffsetY);
-    m_StartedSwipe = false;
-  }
-
-  if (hitState == 1) {
-    m_SelectTimeout = 0;
-  }
-
-  if (hitState != 0) {
-    if (m_SwipedBeforeUp) {
-      //end swipe
-    } else {
-      if (cx >= 0 && cy >= 0) {
-        collide_index_set = true;
-        //collide_index = m_Space->at(cx, cy, 0);
-      }
-
-      if (collide_index_set) {
-        m_TargetX = cx;
-        m_TargetY = cy;
-        m_TargetIsDirty = true;
-        //m_WarpTimeout += MAX_WAIT_BEFORE_WARP;
-      }
+    if (hitState == 0) {
+      m_SelectTimeout = 0;
+      m_CameraStopOffsetX = (xx + m_CameraOffsetX);
+      m_CameraStopOffsetY = (yy + m_CameraOffsetY);
+      m_StartedSwipe = false;
     }
-    m_SwipedBeforeUp = false;
+
+    if (hitState == 1) {
+      m_CameraOffsetX = m_CameraStopOffsetX - xx;
+      m_CameraOffsetY = m_CameraStopOffsetY - yy;
+    }
+
+  if (false) {
+    float collide_x = (dx);
+    float collide_y = (dy);
+    int cx = (collide_x / SUBDIVIDE);
+    int cy = (collide_y / SUBDIVIDE);
+    bool collide_index_set = false;
+
+    if (hitState == 0) {
+      m_SelectTimeout = 0;
+      m_CameraStopOffsetX = (xx + m_CameraOffsetX);
+      m_CameraStopOffsetY = (yy + m_CameraOffsetY);
+      m_StartedSwipe = false;
+    }
+
+    if (hitState == 1) {
+      m_SelectTimeout = 0;
+    }
+
+    if (hitState != 0) {
+      if (m_SwipedBeforeUp) {
+        //end swipe
+      } else {
+        if (cx >= 0 && cy >= 0) {
+          collide_index_set = true;
+          //collide_index = m_Space->at(cx, cy, 0);
+        }
+
+        if (collide_index_set) {
+          m_TargetX = cx;
+          m_TargetY = cy;
+          m_TargetIsDirty = true;
+          //m_WarpTimeout += MAX_WAIT_BEFORE_WARP;
+        }
+      }
+      m_SwipedBeforeUp = false;
+    }
   }
 }
 
@@ -365,6 +380,8 @@ void SuperStarShooter::RenderModelPhase() {
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
+  //LOGV("%f\n%f\n", m_CameraActualOffsetX, m_CameraActualOffsetY);
+  //glTranslatef(-128.0, -144.0, 0);
 
   if (m_Batches.size() == 2) {
     if (m_NeedsTerrainRebatched) {
@@ -409,10 +426,17 @@ int SuperStarShooter::Simulate() {
   }
 
   // manage camera position
-  m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-  m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  //m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  //m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
+  m_CameraActualOffsetX = m_CameraOffsetX;
+  m_CameraActualOffsetY = m_CameraOffsetY;
+
+  //m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  //m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+
+  //m_CameraActualOffsetX = -128;
+  //m_CameraActualOffsetY = -140;
 
   // manage tilemap
   bool recenter_x = false;
