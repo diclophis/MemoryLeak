@@ -282,7 +282,6 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
     ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
     ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
-
   }
     
   ltx = tx;
@@ -425,7 +424,6 @@ void Engine::DrawScreen(float rotation) {
       m_StateFoo->Link();
     }
 
-        
     // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         
@@ -436,11 +434,9 @@ void Engine::DrawScreen(float rotation) {
     float e = 1.0;
     float f = -1.0;
 
-    ortho(ProjectionMatrix, a, b, c, d, e, f);
+    ortho(ProjectionMatrix, (a), (b), (c), (d), (e), (f));
 
     //glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
-
-
 
     RenderSpritePhase();
 	} else {

@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.0)
+#define ZOOM (2.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
@@ -379,7 +379,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-floor(m_CameraActualOffsetX), -floor(m_CameraActualOffsetY), 0.0);
+  glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
   //LOGV("%f\n%f\n", m_CameraActualOffsetX, m_CameraActualOffsetY);
   //glTranslatef(-128.0, -144.0, 0);
 
@@ -1007,7 +1007,7 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
     //  break;
     default:
       if (mask > 0) {
-        LOGV("%d %d %d\n", row, col, mask);
+        LOGV("missing blit pattern %d %d %d\n", row, col, mask);
         //BlitIntoSpace(0, bl, 3, 3, x, y);
       }
       break;
