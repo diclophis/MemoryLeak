@@ -142,7 +142,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
       m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = BLANK;
     }
 
-    float sizeOfCell = ceil(SUBDIVIDE / 2.0);
+    float sizeOfCell = (SUBDIVIDE / 2.0);
 
     m_AtlasSprites[m_SpriteCount]->SetScale(sizeOfCell, sizeOfCell);
     m_AtlasSprites[m_SpriteCount + m_GridCount]->SetScale(sizeOfCell, sizeOfCell);
