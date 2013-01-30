@@ -134,21 +134,29 @@ static yajl_callbacks callbacks = {
 
 int MazeNetwork::Tick() {
 
+  // attempt to establish connection, check existing connection
   int network_connected_error = ConnectNetwork();
 
+  // if the connection state is invalid, return the invalid state
   if (network_connected_error > 0) {
-    LOGV("not connected, will try again next tick\n");
     return network_connected_error;
   }
 
+  // if we are still waiting for a connection, don't bother with anything else
+  // but still return an OK status so we don't freak out the upper levels
+  if (m_ConnectionState < 2) {
+    return 0;
+  }
+
+  // we need to try and send on every tick to make sure the connection
+  // is still active, if it fails, restart networking
   char payload[4] = "[1]";
   ssize_t sent = send(m_Socket, payload, 3, 0); //MSG_DONTWAIT
   if (sent > 0) {
-    //LOGV("wtf11111 %d payload-sent: %d\n", SocketFD, sent);
+    //LOGV("wtf11111 %d payload-sent: %d\n", m_Socket, sent);
   } else {
     LOGV("send failed\n");
-    StopNetwork();
-    return 1;
+    return StopNetwork();
   }
 
   int bytesAvailableThisTick = -1;
@@ -181,55 +189,128 @@ int MazeNetwork::Tick() {
     yajl_free_error(hand, str);
     return 5;
   }
-
 }
 
 
 int MazeNetwork::ConnectNetwork(void) {
 
+  // if we have a socket created
   if (m_Socket > 0) {
-    return 0;
+    // and this connection is connected and ready to write to
+    if (m_ConnectionState > 1) {
+      // return OK status
+      return 0;
+    }
   }
 
-  m_Socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+  // if this is the initial state
+  if (m_ConnectionState == 0) {
+    // create socket
+    m_Socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (m_Socket < 1) {
+      // reset everything if we cannot create a socket, and return not-OK
+      return StopNetwork();
+    }
 
-  if (m_Socket < 1) {
-    LOGV("cannot create socket");
-    StopNetwork();
-    return 4;
+    // Get the file access mode and the file status flags, and set to non-blocking
+    int x;
+    x = fcntl(m_Socket, F_GETFL, 0);
+    fcntl(m_Socket, F_SETFL, x | O_NONBLOCK);
+
+    // attempt to connect, best case scenario, it finishes right away with 0 status code
+    if (-1 == connect(m_Socket, (struct sockaddr *)&stSockAddr, sizeof(stSockAddr))) {
+      // next best case, we are still in the progress of connecting, upgrade the connection state
+      if (EINPROGRESS == errno) {
+        // upgrade the connection state to waiting-for-write
+        m_ConnectionState = 1;
+      } else {
+        // the connection totally failed early, return not-OK state
+        return StopNetwork();
+      }
+    } else {
+      // yay, we connected right away, upgrade connection state to waiting-for-write
+      m_ConnectionState = 1;
+    }
   }
 
-  if (-1 == connect(m_Socket, (struct sockaddr *)&stSockAddr, sizeof(stSockAddr))) {
-    LOGV("connect failed\n");
-    StopNetwork();
-    return 5;
+  // setup arguments to poll for writability on connection thats in-progress to connect
+  fd_set wset;
+  struct timeval tval;
+  int retVal;
+  FD_ZERO(&wset);
+  FD_SET(m_Socket, &wset);
+  tval.tv_sec = 0;
+  tval.tv_usec = 0;
+
+  // poll the socket, testing if we can write to it
+  retVal = select(m_Socket + 1, NULL, &wset, NULL, &tval);
+
+  // if select returns 0, it means we timed out, we should retry on the next tick
+  if (0 == retVal) {
+    // but if we timeout too many times, just reset the whole network
+    if (m_ConnectionSelectsAttempted++ > 10) {
+      return StopNetwork();
+    } else {
+      // return OK state, but don't increment the connection state
+      return 0;
+    }
+  } else if (retVal > 0) {
+    // we might be connected at this point in time, so lets check for an error
+    int valopt;
+    socklen_t lon;
+    lon = sizeof(int); 
+    // check for socket errors, this check may occur
+    if (getsockopt(m_Socket, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon) < 0) { 
+      // if it does fail, the sockets totally fucked, return not-OK so we can retry on next tick
+      return StopNetwork();
+    } else {
+      // the checking was successful, but do we have an error or not?
+      if (valopt > 0) {
+        // yes we do have an error, the socket is fucked, retry on next tick
+        return StopNetwork();
+      } else {
+        // awesome, the socket is in the writable set, lets proceed to send magic cookie
+        if (FD_ISSET(m_Socket, &wset)) {
+          // lets not block when we try to send data, it will get there when it gets there
+          int set = 1;
+          setsockopt(m_Socket, SOL_SOCKET, MSG_NOSIGNAL, (void *)&set, sizeof(int));
+
+          // setup the magic cookie, which begins the outbound json stream the server
+          // uses to maintain client state for each player
+          char magic[1];
+          magic[0] = '{';
+          ssize_t sent = send(m_Socket, magic, 1, 0); //MSG_DONTWAIT
+          if (sent == 0) {
+            // if we cant send any bytes... the socket is fucked, retry on next tick
+            return StopNetwork();
+          } else {
+            // we are fully connected, and the magic cookie is sent, lets
+            // increment the connection state so we dont have to do all of this
+            // on the next tick
+            m_ConnectionState++;
+            return 0;
+          }
+        } else {
+          LOGV("wtf this shouldnt happen\n");
+          return StopNetwork();
+        }
+      }
+    }
+  } else {
+    // select failed, the socket is probably fucked, retry on next tick
+    return StopNetwork();
   }
-
-  int set = 1;
-  setsockopt(m_Socket, SOL_SOCKET, MSG_NOSIGNAL, (void *)&set, sizeof(int));
-
-  char magic[1];
-  magic[0] = '{';
-  ssize_t sent = send(m_Socket, magic, 1, 0); //MSG_DONTWAIT
-  if (sent == 0) {
-    StopNetwork();
-    return 6;
-  }
-
-  m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
-  hand = yajl_alloc(&callbacks, NULL, (void *)this);
-  yajl_config(hand, yajl_allow_comments, 1); // allow json comments
-  yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
-
-  return 0;
 }
 
 
-void MazeNetwork::StopNetwork() {
+int MazeNetwork::StopNetwork() {
   shutdown(m_Socket, SHUT_RDWR);
   close(m_Socket);
   m_Socket = -1;
   m_State = 0;
+  m_ConnectionState = 0;
+  m_ConnectionSelectsAttempted = 0;
+  return 1;
 }
 
 
@@ -245,12 +326,20 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
   m_Delegate = theDelegate;
   m_Socket = -1;
   m_State = 0;
+  m_ConnectionState = 0;
+  m_ConnectionSelectsAttempted = 0;
 
   m_Arg0 = 0;
   m_Arg1 = 0;
   m_Arg2 = 0;
 
   int addressResolution = 0;
+
+  // setup the json stream parser
+  m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
+  hand = yajl_alloc(&callbacks, NULL, (void *)this);
+  yajl_config(hand, yajl_allow_comments, 1); // allow json comments
+  yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
 
   //struct sockaddr_in stSockAddr;
   memset(&stSockAddr, 0, sizeof(stSockAddr));
@@ -280,6 +369,7 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
     } else if (0 == addressResolution) {
       LOGV("char string (second parameter does not contain valid ipaddress)");
       StopNetwork();
+    } else {
     }
   }
 }

@@ -409,7 +409,7 @@ int SuperStarShooter::Simulate() {
     m_NetworkTickTimeout = 0.0;
     int network_status = m_Network->Tick();
     if (network_status > 0) {
-      LOGV("incorrect network status %d\n", network_status);
+      //LOGV("incorrect network status %d\n", network_status);
     }
   }
 

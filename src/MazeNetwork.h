@@ -26,7 +26,7 @@ public:
   //network stuff
   int m_Socket;
   int ConnectNetwork(void);
-  void StopNetwork();
+  int StopNetwork();
 
   yajl_handle hand;
   unsigned char *m_InputBuffer;
@@ -41,6 +41,9 @@ public:
   float m_Arg0;
   float m_Arg1;
   float m_Arg2;
+
+  int m_ConnectionState;
+  int m_ConnectionSelectsAttempted;
 
 
 };
