@@ -99,6 +99,6 @@ public:
   //};
   float m_NetworkTickTimeout;
 
-  float dx;
-  float dy;
+  float cdx;
+  float cdy;
 };

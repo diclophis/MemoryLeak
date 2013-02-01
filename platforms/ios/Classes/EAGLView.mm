@@ -27,7 +27,7 @@ static GLuint g_LastRenderBuffer = -1;
   if ((self = [super initWithCoder:aDecoder])) {
 
     animating = FALSE;
-    animationFrameInterval = 2;
+    animationFrameInterval = 1;
     displayLink = nil;
     
     // Get the layer

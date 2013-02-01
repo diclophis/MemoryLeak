@@ -195,7 +195,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_TargetX = m_CenterOfWorldX;
   m_TargetY = m_CenterOfWorldY;
 
-  m_TargetIsDirty = false;
+  m_TargetIsDirty = true;
   m_SelectTimeout = 2.0;
 
   m_GotLastSwipeAt = -10.0;
@@ -330,9 +330,8 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     }
 
     if (hitState == 1) {
-      m_CameraOffsetX = m_CameraStopOffsetX - xx;
-      m_CameraOffsetY = m_CameraStopOffsetY - yy;
-
+      m_CameraOffsetX = m_CameraStopOffsetX - (xx);
+      m_CameraOffsetY = m_CameraStopOffsetY - (yy);
     }
 
   if (false) {
@@ -385,7 +384,7 @@ void SuperStarShooter::RenderSpritePhase() {
   //LOGV("%f\n%f\n", m_CameraActualOffsetX, m_CameraActualOffsetY);
   //glTranslatef(-GRID_X + SUBDIVIDE, -GRID_Y + SUBDIVIDE, 0);
   //LOGV("%f\n", dx);
-  glTranslatef(dx + SUBDIVIDE, dy + SUBDIVIDE, 0);
+  glTranslatef(cdx + SUBDIVIDE, cdy + SUBDIVIDE, 0);
 
   if (m_Batches.size() == 2) {
     if (m_NeedsTerrainRebatched) {
@@ -437,8 +436,8 @@ int SuperStarShooter::Simulate() {
   //m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   //m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
-  m_CameraActualOffsetX = m_CameraOffsetX;
-  m_CameraActualOffsetY = m_CameraOffsetY;
+  m_CameraActualOffsetX = (m_CameraOffsetX);
+  m_CameraActualOffsetY = (m_CameraOffsetY);
 
   //m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
   //m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
@@ -452,20 +451,20 @@ int SuperStarShooter::Simulate() {
   int dsx = 0;
   int dsy = 0;
 
-  dx = (m_LastCenterX - m_CameraActualOffsetX);
-  dy = (m_LastCenterY - m_CameraActualOffsetY);
+  cdx = (m_LastCenterX - m_CameraActualOffsetX);
+  cdy = (m_LastCenterY - m_CameraActualOffsetY);
 
-  dsx = ((dx / SUBDIVIDE));
-  dsy = ((dy / SUBDIVIDE));
+  dsx = ((cdx / SUBDIVIDE));
+  dsy = ((cdy / SUBDIVIDE));
 
   if (abs(dsx) > 0) {
     recenter_x = true;
-    dx = 0;
+    cdx = 0;
   }
   
   if (abs(dsy) > 0) {
     recenter_y = true;
-    dy = 0;
+    cdy = 0;
   }
 
   if (recenter_x) {
