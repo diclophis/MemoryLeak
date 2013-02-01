@@ -34,7 +34,7 @@ public:
   virtual void CreateFoos() = 0;
   virtual void DestroyFoos() = 0;
   void DoAudio(short buffer[], int bytes);
-  void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo = NULL);
+  void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo, float offsetX = 0, float offsetY = 0);
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
   bool Active();

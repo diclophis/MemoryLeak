@@ -98,4 +98,7 @@ public:
   //  return true;
   //};
   float m_NetworkTickTimeout;
+
+  float dx;
+  float dy;
 };

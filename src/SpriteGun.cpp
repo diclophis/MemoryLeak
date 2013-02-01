@@ -101,16 +101,15 @@ bool SpriteGun::SortByLife(const AtlasSprite* d1, const AtlasSprite* d2)
   return d1->m_Life > d2->m_Life;
 }
 
-void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo) {
+void SpriteGun::Render(StateFoo *sf, foofoo *batch_foo, float offsetX, float offsetY) {
   //std::sort(m_AtlasSprites.begin(), m_AtlasSprites.end(), SortByLife);
-  AtlasSprite::Render(sf, batch_foo);
+  AtlasSprite::Render(sf, batch_foo, offsetX, offsetY);
   for (std::vector<AtlasSprite *>::const_iterator citer = m_AtlasSprites.begin(); citer != m_AtlasSprites.end(); ++citer) {
     AtlasSprite *c = *citer;
     if (c->m_IsAlive && m_RenderBullets) {
-      c->Render(sf, batch_foo);
+      c->Render(sf, batch_foo, offsetX, offsetY);
     }
   }
-
 }
 
 

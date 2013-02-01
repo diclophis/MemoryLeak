@@ -276,7 +276,7 @@ static const char fragment_shader[] =
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
-  if (tx != ltx || ty != lty || tz != ltz) {
+  if (true || tx != ltx || ty != lty || tz != ltz) {
     ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
     ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
     ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
@@ -506,9 +506,9 @@ void Engine::DoAudio(short buffer[], int size) {
 }
 
 
-void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo) {
+void Engine::RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo, float offsetX, float offsetY) {
 	for (unsigned int i=s; i<e; i++) {
-		m_AtlasSprites[i]->Render(m_StateFoo, batch_foo);
+		m_AtlasSprites[i]->Render(m_StateFoo, batch_foo, offsetX, offsetY);
 	}
 }
 

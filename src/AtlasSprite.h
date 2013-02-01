@@ -46,7 +46,7 @@ public:
 	
   ~AtlasSprite();
 	AtlasSprite(foofoo *ff);
-	void Render(StateFoo *sf, foofoo *batch_foo = NULL);
+	void Render(StateFoo *sf, foofoo *batch_foo, float offsetX, float offsetY);
 	static void RenderFoo(StateFoo *sf, foofoo *foo);
 	
 	unsigned int m_Count;

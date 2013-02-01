@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (2.0)
+#define ZOOM (1.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
@@ -54,7 +54,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_NeedsTerrainRebatched = true;
 
   m_CenterOfWorldX = 4;
-  m_CenterOfWorldY = 4;
+  m_CenterOfWorldY = 0;
 
   int xx = 0;
   int yy = 0;
@@ -100,8 +100,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
   }
 
-  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 2;
-  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 2;
+  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 4;
+  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 4;
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -168,7 +168,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_PlayerIndex = sub_index;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
     m_AtlasSprites[sub_index]->SetVelocity(VELOCITY, VELOCITY);
-    m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), (m_CenterOfWorldY * (SUBDIVIDE)) + PLAYER_OFFSET);
+    m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))) + PLAYER_OFFSET);
+    //m_AtlasSprites[sub_index]->SetPosition(0, 0);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 20;
     m_AtlasSprites[sub_index]->m_Frame = 0;
@@ -191,10 +192,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_States.push_back(new nodexyz());
   }
 
-  m_TargetX = 4;
-  m_TargetY = 4;
+  m_TargetX = m_CenterOfWorldX;
+  m_TargetY = m_CenterOfWorldY;
 
-  m_TargetIsDirty = true;
+  m_TargetIsDirty = false;
   m_SelectTimeout = 2.0;
 
   m_GotLastSwipeAt = -10.0;
@@ -213,8 +214,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   }
   m_TrailStopIndex = m_SpriteCount;
 
-  m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+  //m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+  //m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
 }
 
@@ -331,6 +332,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     if (hitState == 1) {
       m_CameraOffsetX = m_CameraStopOffsetX - xx;
       m_CameraOffsetY = m_CameraStopOffsetY - yy;
+
     }
 
   if (false) {
@@ -379,9 +381,11 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
+  //glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
   //LOGV("%f\n%f\n", m_CameraActualOffsetX, m_CameraActualOffsetY);
-  //glTranslatef(-128.0, -144.0, 0);
+  //glTranslatef(-GRID_X + SUBDIVIDE, -GRID_Y + SUBDIVIDE, 0);
+  //LOGV("%f\n", dx);
+  glTranslatef(dx + SUBDIVIDE, dy + SUBDIVIDE, 0);
 
   if (m_Batches.size() == 2) {
     if (m_NeedsTerrainRebatched) {
@@ -391,8 +395,12 @@ void SuperStarShooter::RenderSpritePhase() {
     }
     
     m_Batches[1]->m_NumBatched = 0;
-    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[1]);
-    RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[1]);
+    //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[1]);
+    float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
+    float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
+    if (fastAbs(offX) < (GRID_X + (SUBDIVIDE / 2)) && fastAbs(offY) < (GRID_Y + (SUBDIVIDE / 2))) {
+      RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[1], offX, offY);
+    }
 
     for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
       AtlasSprite::RenderFoo(m_StateFoo, *i);
@@ -444,18 +452,20 @@ int SuperStarShooter::Simulate() {
   int dsx = 0;
   int dsy = 0;
 
-  float dx = (m_LastCenterX - m_CameraActualOffsetX);
-  float dy = (m_LastCenterY - m_CameraActualOffsetY);
+  dx = (m_LastCenterX - m_CameraActualOffsetX);
+  dy = (m_LastCenterY - m_CameraActualOffsetY);
 
-  dsx = floor((dx / SUBDIVIDE));
-  dsy = floor((dy / SUBDIVIDE));
+  dsx = ((dx / SUBDIVIDE));
+  dsy = ((dy / SUBDIVIDE));
 
   if (abs(dsx) > 0) {
     recenter_x = true;
+    dx = 0;
   }
   
   if (abs(dsy) > 0) {
     recenter_y = true;
+    dy = 0;
   }
 
   if (recenter_x) {
@@ -481,8 +491,8 @@ int SuperStarShooter::Simulate() {
       float px = (((xx) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
       float py = (((yy) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
 
-      float foo_x = (m_LastCenterX + px);
-      float foo_y = (m_LastCenterY + py);
+      float foo_x = (0 + px);
+      float foo_y = (0 + py);
 
       if (recenter_x) {
         nsx -= dsx;
@@ -526,6 +536,7 @@ int SuperStarShooter::Simulate() {
   m_SelectTimeout += m_DeltaTime;
 
   if (m_SelectTimeout > 0.02 && m_TargetIsDirty) {
+  LOGV("wtf!!\n");
 
     m_TargetIsDirty = false;
 
@@ -598,25 +609,25 @@ int SuperStarShooter::Simulate() {
 
     float tx = ((float)step->x * SUBDIVIDE);
     float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
-    dx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-    dy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
+    float pdx = tx - m_AtlasSprites[m_PlayerIndex]->m_Position[0];
+    float pdy = ty - m_AtlasSprites[m_PlayerIndex]->m_Position[1];
 
-    if (dy > 0.0) {
+    if (pdy > 0.0) {
       //UP
       m_PlayerIndex = m_PlayerStartIndex + 0;
     }
 
-    if (dx > 0.0) {
+    if (pdx > 0.0) {
       //RIGHT
       m_PlayerIndex = m_PlayerStartIndex + 1;
     }
 
-    if (dy < 0.0) {
+    if (pdy < 0.0) {
       //DOWN
       m_PlayerIndex = m_PlayerStartIndex + 2;
     }
 
-    if (dx < 0.0) {
+    if (pdx < 0.0) {
       //LEFT
       m_PlayerIndex = m_PlayerStartIndex + 3;
     }

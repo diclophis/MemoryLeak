@@ -46,7 +46,7 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
 }
 
 
-void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
+void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo, float offsetX, float offsetY) {
   if (m_FooFoo->m_numFrames == 0) {
     return;
   }
@@ -194,8 +194,8 @@ void AtlasSprite::Render(StateFoo *sf, foofoo *batch_foo) {
     }
   } else {
     for (unsigned int i=0; i<4; i++) {
-      vx = m_FooFoo->m_SpriteFoos[(frame_times_four) + i].vertex[0] * m_Scale[0];
-      vy = m_FooFoo->m_SpriteFoos[(frame_times_four) + i].vertex[1] * m_Scale[1];
+      vx = (m_FooFoo->m_SpriteFoos[(frame_times_four) + i].vertex[0] + offsetX) * m_Scale[0];
+      vy = (m_FooFoo->m_SpriteFoos[(frame_times_four) + i].vertex[1] + offsetY) * m_Scale[1];
       tx = m_FooFoo->m_SpriteFoos[(frame_times_four) + i].texture[0];
       ty = m_FooFoo->m_SpriteFoos[(frame_times_four) + i].texture[1];
       BlitVertice(batch_foo, i, vx, vy, tx, ty, cos_r, sin_r, use_r);
@@ -558,7 +558,7 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
     vertices[6] = (-w / 2.0);
     vertices[7] = (h / 2.0);
 
-    float fuzz = 0.045;
+    float fuzz = 0.0425;
     GLfloat tx = m_Sprites[i].tx1 + (fuzz * (m_Sprites[i].tx2 - m_Sprites[i].tx1));
     GLfloat ty = m_Sprites[i].ty1 + (fuzz * (m_Sprites[i].ty2 - m_Sprites[i].ty1));
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1) * (1.0 - fuzz * 2.0);
