@@ -533,7 +533,7 @@ int SuperStarShooter::Simulate() {
   }
 
   // manage player target selection and pathfinding
-  bool stuck = false;
+  //bool stuck = false;
 
   m_SelectTimeout += m_DeltaTime;
 
@@ -590,7 +590,7 @@ int SuperStarShooter::Simulate() {
           m_Steps->erase(m_Steps->begin());
           break;
         case micropather::MicroPather::NO_SOLUTION:
-          stuck = true;
+          //stuck = true;
           m_Steps->clear();
           break;
         case micropather::MicroPather::START_END_SAME:
@@ -675,6 +675,7 @@ int SuperStarShooter::Simulate() {
     }
   }
 
+  /*
   if (false && m_TargetY > 0 && m_TargetX > 0 && m_TargetY < 1024 && m_TargetX < 1024 && m_Steps->size() == 0 && !stuck) {
     switch (m_PlayerIndex - m_PlayerStartIndex) {
       case (0):
@@ -693,6 +694,7 @@ int SuperStarShooter::Simulate() {
 
     m_TargetIsDirty = true;
   }
+  */
   
   return 1;
 }
@@ -808,7 +810,7 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
 // and what sprite the cell should be draw with
 void SuperStarShooter::LoadMaze(int level_index) {
 
-	uint16_t *level = (uint16_t *)malloc(sizeof(char) * m_LevelFileHandles->at(level_index)->len);
+	uint16_t *level = (uint16_t *)malloc(sizeof(uint16_t) * m_LevelFileHandles->at(level_index)->len);
 	fseek(m_LevelFileHandles->at(level_index)->fp, m_LevelFileHandles->at(level_index)->off, SEEK_SET);
 	fread(level, sizeof(char), m_LevelFileHandles->at(level_index)->len, m_LevelFileHandles->at(level_index)->fp);
 

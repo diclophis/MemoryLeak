@@ -690,13 +690,13 @@ void Engine::LoadTexture(int i) {
   }
   png_get_data(&tex, data);
 
-  unsigned int* inPixel32;
+  //unsigned int* inPixel32;
   unsigned short* outPixel16;
 
   void *textureData = data;
   void *tempData = malloc(tex.height * tex.width * sizeof(unsigned short));
 
-  inPixel32 = (unsigned int *)textureData;
+  //inPixel32 = (unsigned int *)textureData;
   outPixel16 = (unsigned short *)tempData;
 
   //Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
