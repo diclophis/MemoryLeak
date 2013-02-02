@@ -452,19 +452,15 @@ int Engine::Run() {
   float step = t2 - t1;
   gettimeofday(&tim, NULL);
   t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  int times = 1;
-  for (int i=0; i<times; i++) {
-    if (m_GameState > 1) {
-      //paused
-    } else {
-      float steps = 1.0; //4 for overdrive
-      m_DeltaTime = step / steps;
-      for (int j=0; j<(int)steps; j++) {
-        if (Active()) {
-          m_SimulationTime += m_DeltaTime;
-          Simulate();
-          //iter(NULL);
-        }
+  if (m_GameState > 1) {
+    //paused
+  } else {
+    float steps = 1.0; //4 for overdrive
+    m_DeltaTime = step / steps;
+    for (int j=0; j<(int)steps; j++) {
+      if (Active()) {
+        m_SimulationTime += m_DeltaTime;
+        Simulate();
       }
     }
   }
