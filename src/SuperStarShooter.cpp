@@ -325,59 +325,62 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   float dx = (xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
   float dy = (yy + m_CameraActualOffsetY) - (SUBDIVIDE / 2.0);
 
-    float collide_x = (dx);
-    float collide_y = (dy);
-    int cx = (collide_x / SUBDIVIDE);
-    int cy = (collide_y / SUBDIVIDE);
-    bool collide_index_set = false;
+  float collide_x = (dx);
+  float collide_y = (dy);
+  int cx = (collide_x / SUBDIVIDE);
+  int cy = (collide_y / SUBDIVIDE);
+  bool collide_index_set = false;
 
-    if (hitState == 0) {
-      m_SelectTimeout = 0;
-      m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
-      m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
-      m_StartedSwipe = false;
-      m_SwipedBeforeUp = false;
-    }
+  if (hitState == 0) {
+    m_SelectTimeout = 0;
+    m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
+    m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
+    m_StartedSwipe = false;
+    m_SwipedBeforeUp = false;
+  }
 
-    if (hitState != 0) {
+  if (hitState != 0) {
 
-      //if (hitState == 1) {
-      //  m_SelectTimeout = 0;
-      //  m_StartedSwipe = true;
-      //  m_DesiredTargetX = (xx - m_CameraStopOffsetX);
-      //  m_DesiredTargetY = (yy - m_CameraStopOffsetY);
-      //}
+    //if (hitState == 1) {
+    //  m_SelectTimeout = 0;
+    //  m_StartedSwipe = true;
+    //  m_DesiredTargetX = (xx - m_CameraStopOffsetX);
+    //  m_DesiredTargetY = (yy - m_CameraStopOffsetY);
+    //}
 
-      if (m_SwipedBeforeUp) {
-        //end swipe
-        if (hitState == 1) {
-          m_StartedSwipe = true;
-        } else {
-          m_StartedSwipe = false;
-        }
+    if (m_SwipedBeforeUp) {
+      //end swipe
+      if (hitState == 1) {
+        m_StartedSwipe = true;
       } else {
-        if (cx >= 0 && cy >= 0) {
-          collide_index_set = true;
-        }
-
-        if (collide_index_set) {
-          if (hitState == 2 && !m_SwipedBeforeUp) {
-            m_TargetX = cx;
-            m_TargetY = cy;
-            m_TargetIsDirty = true;
-          }
-        }
+        m_StartedSwipe = false;
+      }
+    } else {
+      if (cx >= 0 && cy >= 0) {
+        collide_index_set = true;
       }
 
-      m_DesiredTargetX = (xx - m_CameraStopOffsetX);
-      m_DesiredTargetY = (yy - m_CameraStopOffsetY);
-
-      if (fastAbs(m_CameraStopOffsetX - m_DesiredTargetX) > 0 || fastAbs(m_CameraStopOffsetY - m_DesiredTargetY)) {
-        m_SwipedBeforeUp = true;
-      } else {
-        m_SwipedBeforeUp = false;
+      if (collide_index_set) {
+        if (hitState == 2 && !m_SwipedBeforeUp) {
+          m_TargetX = cx;
+          m_TargetY = cy;
+          m_TargetIsDirty = true;
+        }
       }
     }
+
+    m_DesiredTargetX = (xx - m_CameraStopOffsetX);
+    m_DesiredTargetY = (yy - m_CameraStopOffsetY);
+
+    float movedX = fastAbs(m_CameraStopOffsetX - (xx + m_CameraActualOffsetX));
+    float movedY = fastAbs(m_CameraStopOffsetY - (yy + m_CameraActualOffsetY));
+
+    if (fastAbs(movedX) > (SUBDIVIDE / 4.0) || fastAbs(movedY) > (SUBDIVIDE / 4.0)) {
+      m_SwipedBeforeUp = true;
+    } else {
+      //m_SwipedBeforeUp = false; instant follow
+    }
+  }
 }
 
 
@@ -544,19 +547,37 @@ int SuperStarShooter::Simulate() {
 
     int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
 
-    bool foundEndState = false
+    bool foundEndState = false;
 
     if (Passable(colliding_index)) {
       foundEndState = true;
     } else {
       int dirs[16] = {
+        +1, +0,
+        +0, +1,
+        +0, -1,
+        -1, +0,
+        -1, +1,
+        +1, +1,
+        +1, -1,
+        -1, -1
       };
-
-      //if ((m_TargetX - 1) > 0) {
-      //}
+      for (int i=0; i<16; i+=2) {
+        int altTargetX = m_TargetX + dirs[i];
+        int altTargetY = m_TargetY + dirs[i+1];
+        if (altTargetX >= 0 && altTargetY) {
+          colliding_index = m_Space->at(altTargetX, altTargetY, 0);
+          if (Passable(colliding_index)) {
+            m_TargetX = altTargetX;
+            m_TargetY = altTargetY;
+            foundEndState = true;
+            break;
+          }
+        }
+      }
     }
 
-    if (Passable(colliding_index)) {
+    if (foundEndState) {
       m_StatePointer = 0;
       int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
       int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
