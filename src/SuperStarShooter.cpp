@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.0)
+#define ZOOM (2.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
@@ -201,6 +201,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GotLastSwipeAt = -10.0;
   m_SwipedBeforeUp = false;
 
+  m_DesiredTargetX = 0;
+  m_DesiredTargetY = 0;
+
   m_TrailStartIndex = m_SpriteCount;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_TrailFoo, NULL));
@@ -324,14 +327,18 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
     if (hitState == 0) {
       m_SelectTimeout = 0;
-      m_CameraStopOffsetX = (xx + m_CameraOffsetX);
-      m_CameraStopOffsetY = (yy + m_CameraOffsetY);
-      m_StartedSwipe = false;
+      m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
+      m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
     }
 
     if (hitState == 1) {
-      m_CameraOffsetX = m_CameraStopOffsetX - (xx);
-      m_CameraOffsetY = m_CameraStopOffsetY - (yy);
+      m_StartedSwipe = true;
+      m_DesiredTargetX = (xx - m_CameraStopOffsetX);
+      m_DesiredTargetY = (yy - m_CameraStopOffsetY);
+    }
+
+    if (hitState == 2) {
+      m_StartedSwipe = false;
     }
 
   if (false) {
@@ -432,18 +439,11 @@ int SuperStarShooter::Simulate() {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
   }
 
-  // manage camera position
-  //m_CameraOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  //m_CameraOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-
-  m_CameraActualOffsetX = (m_CameraOffsetX);
-  m_CameraActualOffsetY = (m_CameraOffsetY);
-
-  //m_CameraActualOffsetX = m_AtlasSprites[m_PlayerIndex]->m_Position[0];
-  //m_CameraActualOffsetY = m_AtlasSprites[m_PlayerIndex]->m_Position[1];
-
-  //m_CameraActualOffsetX = -128;
-  //m_CameraActualOffsetY = -140;
+  if (m_StartedSwipe) {
+    m_CameraActualOffsetX = -m_DesiredTargetX;
+    m_CameraActualOffsetY = -m_DesiredTargetY;
+  } else {
+  }
 
   // manage tilemap
   bool recenter_x = false;

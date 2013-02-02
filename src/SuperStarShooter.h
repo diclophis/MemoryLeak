@@ -101,4 +101,8 @@ public:
 
   float cdx;
   float cdy;
+
+  float m_DesiredTargetX;
+  float m_DesiredTargetY;
+
 };
