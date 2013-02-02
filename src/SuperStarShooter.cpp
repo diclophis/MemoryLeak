@@ -543,6 +543,19 @@ int SuperStarShooter::Simulate() {
     int selected_y = (m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1] / SUBDIVIDE);
 
     int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
+
+    bool foundEndState = false
+
+    if (Passable(colliding_index)) {
+      foundEndState = true;
+    } else {
+      int dirs[16] = {
+      };
+
+      //if ((m_TargetX - 1) > 0) {
+      //}
+    }
+
     if (Passable(colliding_index)) {
       m_StatePointer = 0;
       int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
