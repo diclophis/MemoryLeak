@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (2.0)
+#define ZOOM (1.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
@@ -322,26 +322,9 @@ void SuperStarShooter::DestroyFoos() {
 void SuperStarShooter::Hit(float x, float y, int hitState) {
   float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
 	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
-  float dx = (xx + m_CameraActualOffsetX) + (SUBDIVIDE / 2.0);
-  float dy = (yy + m_CameraActualOffsetY) + (SUBDIVIDE / 2.0);
+  float dx = (xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
+  float dy = (yy + m_CameraActualOffsetY) - (SUBDIVIDE / 2.0);
 
-    if (hitState == 0) {
-      m_SelectTimeout = 0;
-      m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
-      m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
-    }
-
-    if (hitState == 1) {
-      m_StartedSwipe = true;
-      m_DesiredTargetX = (xx - m_CameraStopOffsetX);
-      m_DesiredTargetY = (yy - m_CameraStopOffsetY);
-    }
-
-    if (hitState == 2) {
-      m_StartedSwipe = false;
-    }
-
-  if (false) {
     float collide_x = (dx);
     float collide_y = (dy);
     int cx = (collide_x / SUBDIVIDE);
@@ -350,34 +333,51 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
     if (hitState == 0) {
       m_SelectTimeout = 0;
-      m_CameraStopOffsetX = (xx + m_CameraOffsetX);
-      m_CameraStopOffsetY = (yy + m_CameraOffsetY);
+      m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
+      m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
       m_StartedSwipe = false;
-    }
-
-    if (hitState == 1) {
-      m_SelectTimeout = 0;
+      m_SwipedBeforeUp = false;
     }
 
     if (hitState != 0) {
+
+      //if (hitState == 1) {
+      //  m_SelectTimeout = 0;
+      //  m_StartedSwipe = true;
+      //  m_DesiredTargetX = (xx - m_CameraStopOffsetX);
+      //  m_DesiredTargetY = (yy - m_CameraStopOffsetY);
+      //}
+
       if (m_SwipedBeforeUp) {
         //end swipe
+        if (hitState == 1) {
+          m_StartedSwipe = true;
+        } else {
+          m_StartedSwipe = false;
+        }
       } else {
         if (cx >= 0 && cy >= 0) {
           collide_index_set = true;
-          //collide_index = m_Space->at(cx, cy, 0);
         }
 
         if (collide_index_set) {
-          m_TargetX = cx;
-          m_TargetY = cy;
-          m_TargetIsDirty = true;
-          //m_WarpTimeout += MAX_WAIT_BEFORE_WARP;
+          if (hitState == 2 && !m_SwipedBeforeUp) {
+            m_TargetX = cx;
+            m_TargetY = cy;
+            m_TargetIsDirty = true;
+          }
         }
       }
-      m_SwipedBeforeUp = false;
+
+      m_DesiredTargetX = (xx - m_CameraStopOffsetX);
+      m_DesiredTargetY = (yy - m_CameraStopOffsetY);
+
+      if (fastAbs(m_CameraStopOffsetX - m_DesiredTargetX) > 0 || fastAbs(m_CameraStopOffsetY - m_DesiredTargetY)) {
+        m_SwipedBeforeUp = true;
+      } else {
+        m_SwipedBeforeUp = false;
+      }
     }
-  }
 }
 
 
@@ -387,10 +387,6 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  //glTranslatef(-(m_CameraActualOffsetX), -(m_CameraActualOffsetY), 0.0);
-  //LOGV("%f\n%f\n", m_CameraActualOffsetX, m_CameraActualOffsetY);
-  //glTranslatef(-GRID_X + SUBDIVIDE, -GRID_Y + SUBDIVIDE, 0);
-  //LOGV("%f\n", dx);
   glTranslatef(cdx + SUBDIVIDE, cdy + SUBDIVIDE, 0);
 
   if (m_Batches.size() == 2) {
@@ -404,9 +400,13 @@ void SuperStarShooter::RenderSpritePhase() {
     //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[1]);
     float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
     float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
-    if (fastAbs(offX) < (GRID_X + (SUBDIVIDE / 2)) && fastAbs(offY) < (GRID_Y + (SUBDIVIDE / 2))) {
+
+    float poffX = (-m_AtlasSprites[m_PlayerIndex]->m_Position[0] / (SUBDIVIDE / 2.0));
+    float poffY = -m_AtlasSprites[m_PlayerIndex]->m_Position[1] / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
+
+    //if (fastAbs(offX) < (GRID_X + (SUBDIVIDE / 2)) && fastAbs(offY) < (GRID_Y + (SUBDIVIDE / 2))) {
       RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[1], offX, offY);
-    }
+    //}
 
     for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
       AtlasSprite::RenderFoo(m_StateFoo, *i);
@@ -534,8 +534,7 @@ int SuperStarShooter::Simulate() {
 
   m_SelectTimeout += m_DeltaTime;
 
-  if (m_SelectTimeout > 0.02 && m_TargetIsDirty) {
-  LOGV("wtf!!\n");
+  if (m_SelectTimeout > 0.0 && m_TargetIsDirty) {
 
     m_TargetIsDirty = false;
 
