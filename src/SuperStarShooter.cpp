@@ -404,8 +404,8 @@ void SuperStarShooter::RenderSpritePhase() {
     float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
     float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
-    float poffX = (-m_AtlasSprites[m_PlayerIndex]->m_Position[0] / (SUBDIVIDE / 2.0));
-    float poffY = -m_AtlasSprites[m_PlayerIndex]->m_Position[1] / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
+    //float poffX = (-m_AtlasSprites[m_PlayerIndex]->m_Position[0] / (SUBDIVIDE / 2.0));
+    //float poffY = -m_AtlasSprites[m_PlayerIndex]->m_Position[1] / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
     //if (fastAbs(offX) < (GRID_X + (SUBDIVIDE / 2)) && fastAbs(offY) < (GRID_Y + (SUBDIVIDE / 2))) {
       RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[1], offX, offY);
