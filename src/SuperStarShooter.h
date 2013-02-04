@@ -103,4 +103,8 @@ public:
   float m_DesiredTargetX;
   float m_DesiredTargetY;
 
+  void AddPlayer(float x, float y);
+
+  int m_PlayerId;
+
 };
