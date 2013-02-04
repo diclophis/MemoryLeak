@@ -118,7 +118,9 @@
             console.log(text);
           };
         })(),
-        canvas: (function() { var canvas = document.createElement("canvas"); document.body.appendChild(canvas); return canvas; })(),
+        canvas: (function() {
+          var canvas = document.createElement("canvas"); canvas.width = document.body.offsetWidth; canvas.height = document.body.offsetHeight; console.log(canvas); document.body.appendChild(canvas); return canvas; 
+        })(),
         setStatus: function(text) {
           console.log(text);
         },
