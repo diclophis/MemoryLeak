@@ -208,6 +208,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   */
   m_TrailStopIndex = m_SpriteCount;
 
+  m_PlayerStartIndex = m_SpriteCount;
+  AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
+
 
 }
 
@@ -417,7 +420,6 @@ void SuperStarShooter::RenderSpritePhase() {
     struct my_struct *s;
 
     for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
-      //printf("user id %d: name %s\n", s->id, s->name);
       RenderSpriteRange(s->render, s->render + 1, m_Batches[1], offX, offY);
     }
 
@@ -434,7 +436,10 @@ int SuperStarShooter::Simulate() {
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > 0.5) {
     m_NetworkTickTimeout = 0.0;
-    int network_status = m_Network->Tick(m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], 0, 0);
+    int network_status = m_Network->Tick(
+      m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[1],
+      m_AtlasSprites[m_PlayerStartIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerStartIndex]->m_TargetPosition[1]
+    );
     if (network_status > 0) {
       //LOGV("incorrect network status %d\n", network_status);
     }
@@ -1099,7 +1104,6 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
 
 
 bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, float b) {
-  //LOGV("updating player: %d %f %f\n", i, x, y);
 
   struct my_struct *s = NULL;
 
@@ -1114,10 +1118,12 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     HASH_ADD_INT(users, id, s);
   }
 
-  m_AtlasSprites[s->render]->m_TargetPosition[0] = (a * SUBDIVIDE);
-  m_AtlasSprites[s->render]->m_TargetPosition[1] = (b * SUBDIVIDE) + PLAYER_OFFSET;
+  m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
+  m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
 
-  m_AtlasSprites[s->render]->SetPosition(x * SUBDIVIDE, (y * SUBDIVIDE) + PLAYER_OFFSET);
+  m_AtlasSprites[s->render]->SetPosition(x, (y));
+
+  //LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
 
   return true;
 }
@@ -1125,8 +1131,6 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
 
 bool SuperStarShooter::RequestRegistration(int i) {
   struct my_struct *s = (struct my_struct *)malloc(sizeof(struct my_struct));
-  m_PlayerStartIndex = m_SpriteCount;
-  AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
   m_PlayerId = s->id = i;
   s->index = m_PlayerStartIndex;
   s->render = m_PlayerStartIndex;
