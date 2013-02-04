@@ -52,6 +52,8 @@ int getsockopt(int s, int level, int optname, void *optval, socklen_t *optlen) {
     optval = 0;
     return 0;
   }
+
+  return 0;
 }
 
 
