@@ -105,7 +105,7 @@ static int reformat_map_key(void *ctx, const unsigned char *stringVal, size_t st
 
 
 static int reformat_start_map(void * ctx) {
-    MazeNetwork *n = (MazeNetwork *)ctx;
+    //MazeNetwork *n = (MazeNetwork *)ctx;
     //LOGV("reformat_start_map %d\n", n->m_State);
     return 1;
 }

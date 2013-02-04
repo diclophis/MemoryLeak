@@ -214,7 +214,13 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_PlayerStartIndex = m_SpriteCount;
   AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
 
-
+  struct my_struct *ss = (struct my_struct *)malloc(sizeof(struct my_struct));
+  m_PlayerId = 0;
+  ss->id = m_PlayerId;
+  ss->index = m_PlayerStartIndex;
+  ss->render = m_PlayerStartIndex;
+  m_PlayerIndex = m_PlayerStartIndex;
+  HASH_ADD_INT(users, id, ss);    
 }
 
 
@@ -440,8 +446,8 @@ int SuperStarShooter::Simulate() {
   if (m_NetworkTickTimeout > 0.25) {
     m_NetworkTickTimeout = 0.0;
     int network_status = m_Network->Tick(
-      m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[1],
-      m_AtlasSprites[m_PlayerStartIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerStartIndex]->m_TargetPosition[1]
+      m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1],
+      m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
     );
     if (network_status > 0) {
       //LOGV("incorrect network status %d\n", network_status);
@@ -459,17 +465,16 @@ int SuperStarShooter::Simulate() {
   }
 
   if (s != NULL) {
-
     m_SelectTimeout += m_DeltaTime;
 
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
-        m_DesiredTargetX = m_DeltaTime * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
-        m_DesiredTargetY = m_DeltaTime * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
-        m_CameraActualOffsetX += -m_DesiredTargetX;
-        m_CameraActualOffsetY += -m_DesiredTargetY;
+      m_DesiredTargetX = m_DeltaTime * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
+      m_DesiredTargetY = m_DeltaTime * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
+      m_CameraActualOffsetX += -m_DesiredTargetX;
+      m_CameraActualOffsetY += -m_DesiredTargetY;
     } else if (m_StartedSwipe) {
-        m_CameraActualOffsetX = -m_DesiredTargetX;
-        m_CameraActualOffsetY = -m_DesiredTargetY;
+      m_CameraActualOffsetX = -m_DesiredTargetX;
+      m_CameraActualOffsetY = -m_DesiredTargetY;
     }
   }
 
@@ -1133,11 +1138,6 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
 
 
 bool SuperStarShooter::RequestRegistration(int i) {
-  struct my_struct *s = (struct my_struct *)malloc(sizeof(struct my_struct));
-  m_PlayerId = s->id = i;
-  s->index = m_PlayerStartIndex;
-  s->render = m_PlayerStartIndex;
-  //LOGV("i am player_id = %d\n", i);
-  HASH_ADD_INT(users, id, s);    
+  //m_PlayerId = i;
   return true;
 }
