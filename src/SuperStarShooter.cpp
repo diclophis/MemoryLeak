@@ -44,6 +44,9 @@
 #define UNDER_SHIFT 8
 
 
+#define BYTES_AT_A_TIME (4096) //((2 ^ 16) - 1)
+
+
 struct my_struct {
   int id;            /* we'll use this field as the key */
   int index;
@@ -55,7 +58,7 @@ struct my_struct *users = NULL;
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
-  m_Network = new MazeNetwork(this, 1024 * 2);
+  m_Network = new MazeNetwork(this, BYTES_AT_A_TIME);
   m_NetworkTickTimeout = 0.0;
 
   m_NeedsTerrainRebatched = true;
@@ -434,7 +437,7 @@ int SuperStarShooter::Simulate() {
 
   // process network events
   m_NetworkTickTimeout += m_DeltaTime;
-  if (m_NetworkTickTimeout > 0.5) {
+  if (m_NetworkTickTimeout > 0.25) {
     m_NetworkTickTimeout = 0.0;
     int network_status = m_Network->Tick(
       m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[1],
