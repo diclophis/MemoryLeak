@@ -3,34 +3,23 @@
 
 #include "MemoryLeak.h"
 
-//reformat_start_map
-//reformat_map_key
-//reformat_start_array
 
 static int reformat_null(void * ctx) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_null(g);
     LOGV("reformat_null\n");
     return 1;
 }
 
 
 static int reformat_boolean(void * ctx, int boolean) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_bool(g, boolean);
     LOGV("reformat_boolean %d\n", boolean);
     return 1;
 }
 
 
 static int reformat_number(void *ctx, const char *s, size_t l) {
-    //yajl_gen g = (yajl_gen) ctx;
-    //return yajl_gen_status_ok == yajl_gen_number(g, s, l);
-    //LOGV("reformat_number %f\n", strtof(s, (char **)s+l));
-
     MazeNetwork *n = (MazeNetwork *)ctx;
 
-    LOGV("reformat_number enter %d\n", n->m_State);
+    //LOGV("reformat_number enter %d\n", n->m_State);
 
     switch(n->m_State) {
       case 4:
@@ -75,7 +64,7 @@ static int reformat_number(void *ctx, const char *s, size_t l) {
         break;
     };
 
-    LOGV("reformat_number exit arg0 %d %f\n", n->m_State, n->m_Arg0);
+    //LOGV("reformat_number exit arg0 %d %f\n", n->m_State, n->m_Arg0);
     return 1;
 }
 
@@ -83,7 +72,7 @@ static int reformat_number(void *ctx, const char *s, size_t l) {
 static int reformat_string(void *ctx, const unsigned char *stringVal, size_t stringLen) {
     MazeNetwork *n = (MazeNetwork *)ctx;
     
-    LOGV("reformat_string enter %d\n", n->m_State);
+    //LOGV("reformat_string enter %d\n", n->m_State);
 
     if (3 == n->m_State) {
       if (0 == strncmp("request_registration", (const char *)stringVal, stringLen)) {
@@ -94,7 +83,7 @@ static int reformat_string(void *ctx, const unsigned char *stringVal, size_t str
       }
     }
 
-    LOGV("reformat_string exit %d\n", n->m_State);
+    //LOGV("reformat_string exit %d\n", n->m_State);
 
     return 1;
 }
@@ -109,20 +98,21 @@ static int reformat_map_key(void *ctx, const unsigned char *stringVal, size_t st
       }
     }
 
-    LOGV("reformat_map_key %d\n", n->m_State);
+    //LOGV("reformat_map_key %d\n", n->m_State);
+
     return 1;
 }
 
 
 static int reformat_start_map(void * ctx) {
     MazeNetwork *n = (MazeNetwork *)ctx;
-    LOGV("reformat_start_map %d\n", n->m_State);
+    //LOGV("reformat_start_map %d\n", n->m_State);
     return 1;
 }
 
 
 static int reformat_end_map(void * ctx) {
-    LOGV("reformat_end_map\n");
+    //LOGV("reformat_end_map\n");
     return 1;
 }
 
@@ -130,7 +120,7 @@ static int reformat_end_map(void * ctx) {
 static int reformat_start_array(void * ctx) {
     MazeNetwork *n = (MazeNetwork *)ctx;
 
-    LOGV("reformat_start_array enter %d\n", n->m_State);
+    //LOGV("reformat_start_array enter %d\n", n->m_State);
 
     if (1 == n->m_State) {
       n->m_State = 2;
@@ -138,7 +128,8 @@ static int reformat_start_array(void * ctx) {
       n->m_State = 3;
     }
 
-    LOGV("reformat_start_array exit %d\n", n->m_State);
+    //LOGV("reformat_start_array exit %d\n", n->m_State);
+
     return 1;
 }
 
@@ -146,7 +137,7 @@ static int reformat_start_array(void * ctx) {
 static int reformat_end_array(void * ctx) {
     MazeNetwork *n = (MazeNetwork *)ctx;
 
-    LOGV("reformat_end_array enter %d\n", n->m_State);
+    //LOGV("reformat_end_array enter %d\n", n->m_State);
 
     if (4 == n->m_State) {
       n->m_Delegate->RequestRegistration((int)n->m_Arg0);
@@ -158,7 +149,8 @@ static int reformat_end_array(void * ctx) {
       n->m_State = 3;
     }
 
-    LOGV("reformat_end_array enter %d\n", n->m_State);
+    //LOGV("reformat_end_array enter %d\n", n->m_State);
+
     return 1;
 }
 
@@ -196,12 +188,8 @@ int MazeNetwork::Tick(float x, float y, float a, float b) {
 
   // we need to try and send on every tick to make sure the connection
   // is still active, if it fails, restart networking
-
   char payload[2048];
-
   int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%f, %f, %f, %f]}\n", x, y, a, b);
-
-  LOGV("%s\n", payload);
 
   //char payload[4] = "[1]";
   ssize_t sent = send(m_Socket, payload, out, 0); //MSG_DONTWAIT
