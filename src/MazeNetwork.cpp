@@ -300,7 +300,7 @@ int MazeNetwork::ConnectNetwork(void) {
     }
   } else if (retVal > 0) {
     // we might be connected at this point in time, so lets check for an error
-    int valopt;
+    int valopt = 0;
     socklen_t lon;
     lon = sizeof(int); 
     // check for socket errors, this check may occur

@@ -46,6 +46,14 @@ void sinkJsInit(SinkJs_writeCallback writeFunc, int frames, int sizeOfFrames, in
 
 }
 
+int getsockopt(int s, int level, int optname, void *optval, socklen_t *optlen) {
+  //m_Socket, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon
+  if (SO_ERROR == optname) {
+    optval = 0;
+    return 0;
+  }
+}
+
 
 void sinkJsWriteFunc(Uint8 *buffer, int size, int channels) {
   Engine::CurrentGameDoAudio((short *)buffer, size);
