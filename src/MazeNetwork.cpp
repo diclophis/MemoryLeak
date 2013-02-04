@@ -243,7 +243,11 @@ int MazeNetwork::ConnectNetwork(void) {
   tval.tv_usec = 0;
 
   // poll the socket, testing if we can write to it
+  #ifdef EMSCRIPTEN
+  retVal = select(m_Socket + 1, &wset, NULL, NULL, &tval);
+  #else
   retVal = select(m_Socket + 1, NULL, &wset, NULL, &tval);
+  #endif
 
   // if select returns 0, it means we timed out, we should retry on the next tick
   if (0 == retVal) {
