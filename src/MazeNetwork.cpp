@@ -55,6 +55,24 @@ static int reformat_number(void *ctx, const char *s, size_t l) {
         n->m_Arg2 = strtof(s, (char **)NULL);
         n->m_State = 8;
         break;
+
+      case 8:
+        // thirg arg is float
+        n->m_Arg3 = strtof(s, (char **)NULL);
+        n->m_State = 9;
+        break;
+
+      case 9:
+        // thirg arg is float
+        n->m_Arg4 = strtof(s, (char **)NULL);
+        n->m_State = 10;
+        break;
+
+      case 10:
+        // thirg arg is float
+        n->m_Arg5 = strtof(s, (char **)NULL);
+        n->m_State = 11;
+        break;
     };
 
     LOGV("reformat_number exit arg0 %d %f\n", n->m_State, n->m_Arg0);
@@ -135,8 +153,8 @@ static int reformat_end_array(void * ctx) {
       n->m_State = 3;
     }
 
-    if (8 == n->m_State) {
-      n->m_Delegate->UpdatePlayerAtIndex((int)n->m_Arg0, n->m_Arg1, n->m_Arg2);
+    if (11 == n->m_State) {
+      n->m_Delegate->UpdatePlayerAtIndex((int)n->m_Arg0, n->m_Arg1, n->m_Arg2, n->m_Arg3, n->m_Arg4);
       n->m_State = 3;
     }
 
@@ -160,7 +178,7 @@ static yajl_callbacks callbacks = {
 };
 
 
-int MazeNetwork::Tick() {
+int MazeNetwork::Tick(float x, float y, float a, float b) {
 
   // attempt to establish connection, check existing connection
   int network_connected_error = ConnectNetwork();
@@ -178,8 +196,15 @@ int MazeNetwork::Tick() {
 
   // we need to try and send on every tick to make sure the connection
   // is still active, if it fails, restart networking
-  char payload[4] = "[1]";
-  ssize_t sent = send(m_Socket, payload, 3, 0); //MSG_DONTWAIT
+
+  char payload[2048];
+
+  int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%f, %f, %f, %f]}\n", x, y, a, b);
+
+  LOGV("%s\n", payload);
+
+  //char payload[4] = "[1]";
+  ssize_t sent = send(m_Socket, payload, out, 0); //MSG_DONTWAIT
   if (sent > 0) {
     //LOGV("wtf11111 %d payload-sent: %d\n", m_Socket, sent);
   } else {
@@ -309,9 +334,9 @@ int MazeNetwork::ConnectNetwork(void) {
 
           // setup the magic cookie, which begins the outbound json stream the server
           // uses to maintain client state for each player
-          char magic[1];
-          magic[0] = '{';
-          ssize_t sent = send(m_Socket, magic, 1, 0); //MSG_DONTWAIT
+          //char magic[] = "{\"stream\":[";
+          char magic[] = "{\"-1\":[]}\n";
+          ssize_t sent = send(m_Socket, magic, strlen(magic), 0); //MSG_DONTWAIT
           if (sent == 0) {
             // if we cant send any bytes... the socket is fucked, retry on next tick
             return StopNetwork();
@@ -361,9 +386,14 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
   m_ConnectionState = 0;
   m_ConnectionSelectsAttempted = 0;
 
+  m_MessageIndex = 0;
+
   m_Arg0 = 0;
   m_Arg1 = 0;
   m_Arg2 = 0;
+  m_Arg3 = 0;
+  m_Arg4 = 0;
+  m_Arg5 = 0;
 
   int addressResolution = 0;
 

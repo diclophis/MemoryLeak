@@ -34,18 +34,15 @@
 #define NE = 0x20 // Northeast
 #define SW = 0x40 // Southwest
 #define SE = 0x80 // Southeast
-
 // bitmask identifying directional bits on the primary plane
 #define PRIMARY 0x000000FF
-
 // bitmask identifying directional bits under the primary plane
 #define UNDER 0x0000FF00
-
 // bits reserved for use by individual algorithm implementations
 #define RESERVED 0xFFFF0000
-
 // The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
 #define UNDER_SHIFT 8
+
 
 struct my_struct {
   int id;            /* we'll use this field as the key */
@@ -58,7 +55,7 @@ struct my_struct *users = NULL;
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
-  m_Network = new MazeNetwork(this, 1024);
+  m_Network = new MazeNetwork(this, 1024 * 2);
   m_NetworkTickTimeout = 0.0;
 
   m_NeedsTerrainRebatched = true;
@@ -417,19 +414,12 @@ void SuperStarShooter::RenderSpritePhase() {
     float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
     float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
-    //float poffX = (-m_AtlasSprites[m_PlayerIndex]->m_Position[0] / (SUBDIVIDE / 2.0));
-    //float poffY = -m_AtlasSprites[m_PlayerIndex]->m_Position[1] / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
-
-    //if (fastAbs(offX) < (GRID_X + (SUBDIVIDE / 2)) && fastAbs(offY) < (GRID_Y + (SUBDIVIDE / 2))) {
-      //RenderSpriteRange(m_PlayerIndex, m_PlayerIndex + 1, m_Batches[1], offX, offY);
-    //}
-
     struct my_struct *s;
+
     for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
       //printf("user id %d: name %s\n", s->id, s->name);
       RenderSpriteRange(s->render, s->render + 1, m_Batches[1], offX, offY);
     }
-
 
     for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
       AtlasSprite::RenderFoo(m_StateFoo, *i);
@@ -444,7 +434,7 @@ int SuperStarShooter::Simulate() {
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > 0.5) {
     m_NetworkTickTimeout = 0.0;
-    int network_status = m_Network->Tick();
+    int network_status = m_Network->Tick(m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], 0, 0);
     if (network_status > 0) {
       //LOGV("incorrect network status %d\n", network_status);
     }
@@ -454,17 +444,13 @@ int SuperStarShooter::Simulate() {
   HASH_FIND_INT(users, &m_PlayerId, s);
 
   bool needs_next_step = false;
+  m_WarpTimeout += m_DeltaTime;
+  if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
+    needs_next_step = true;  
+    m_WarpTimeout = 0.0;
+  }
+
   if (s != NULL) {
-    // move player towards target
-    if (m_AtlasSprites[s->render]->MoveToTargetPosition(m_DeltaTime)) {
-      m_WarpTimeout += m_DeltaTime;
-      if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
-        needs_next_step = true;  
-        m_WarpTimeout = 0.0;
-      }
-    } else {
-      m_AtlasSprites[s->render]->Simulate(m_DeltaTime);
-    }
 
     m_SelectTimeout += m_DeltaTime;
 
@@ -478,6 +464,168 @@ int SuperStarShooter::Simulate() {
         m_CameraActualOffsetY = -m_DesiredTargetY;
     }
   }
+
+  // manage player target selection and pathfinding
+
+  if (s != NULL) {
+    if (m_TargetIsDirty) {
+      m_TargetIsDirty = false;
+
+      int startState = -1;
+      int selected_x = (m_AtlasSprites[s->render]->m_TargetPosition[0] / SUBDIVIDE);
+      int selected_y = (m_AtlasSprites[s->render]->m_TargetPosition[1] / SUBDIVIDE);
+
+      int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
+
+      bool foundEndState = false;
+
+      if (Passable(colliding_index)) {
+        foundEndState = true;
+      } else {
+        int dirs[16] = {
+          +1, +0,
+          +0, +1,
+          +0, -1,
+          -1, +0,
+          -1, +1,
+          +1, +1,
+          +1, -1,
+          -1, -1
+        };
+        for (int i=0; i<16; i+=2) {
+          int altTargetX = m_TargetX + dirs[i];
+          int altTargetY = m_TargetY + dirs[i+1];
+          if (altTargetX >= 0 && altTargetY >= 0) {
+            colliding_index = m_Space->at(altTargetX, altTargetY, 0);
+            if (Passable(colliding_index)) {
+              m_TargetX = altTargetX;
+              m_TargetY = altTargetY;
+              foundEndState = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (foundEndState) {
+        m_StatePointer = 0;
+        int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
+        int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
+        startState = startStateTarget;
+        float totalCost;
+        m_Pather->Reset();
+        int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
+        switch (solved) {
+          case micropather::MicroPather::SOLVED:
+            m_Steps->erase(m_Steps->begin());
+            break;
+          case micropather::MicroPather::NO_SOLUTION:
+            //stuck = true;
+            m_Steps->clear();
+            break;
+          case micropather::MicroPather::START_END_SAME:
+            break;	
+          default:
+            break;
+        }
+      }
+    }
+
+    if (needs_next_step && m_Steps->size() > 0) {
+
+      nodexyz *step = m_States[(intptr_t)m_Steps->at(0)];
+      m_Steps->erase(m_Steps->begin());
+
+      float tx = ((float)step->x * SUBDIVIDE);
+      float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
+      m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
+      m_AtlasSprites[s->render]->m_TargetPosition[1] = ty;
+      /*
+      float pdx = tx - m_AtlasSprites[s->render]->m_Position[0];
+      float pdy = ty - m_AtlasSprites[s->render]->m_Position[1];
+
+      
+      if (pdy > 0.0) {
+        //UP
+        m_PlayerIndex = m_PlayerStartIndex + 0;
+      }
+
+      if (pdx > 0.0) {
+        //RIGHT
+        m_PlayerIndex = m_PlayerStartIndex + 1;
+      }
+
+      if (pdy < 0.0) {
+        //DOWN
+        m_PlayerIndex = m_PlayerStartIndex + 2;
+      }
+
+      if (pdx < 0.0) {
+        //LEFT
+        m_PlayerIndex = m_PlayerStartIndex + 3;
+      }
+
+      s->render = m_PlayerIndex;
+      */
+
+
+      for (int i=0; i<4; i++) {
+        if ((m_PlayerStartIndex + i) != s->render) {
+          m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[s->render]->m_TargetPosition[0];
+          m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[s->render]->m_TargetPosition[1];
+        }
+      }
+    }
+  }
+
+  struct my_struct *ss;
+
+  for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
+    // move player towards target
+    //LOGV("%d %f %f\n", ss->index, m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
+
+    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
+    } else {
+      m_AtlasSprites[ss->render]->Simulate(m_DeltaTime);
+    }
+
+    int rStartIndex = ss->index;
+
+    for (int i=0; i<4; i++) {
+      if ((rStartIndex + i) != ss->render) {
+        m_AtlasSprites[rStartIndex + i]->m_Position[0] = m_AtlasSprites[ss->render]->m_Position[0];
+        m_AtlasSprites[rStartIndex + i]->m_Position[1] = m_AtlasSprites[ss->render]->m_Position[1];
+        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[ss->render]->m_TargetPosition[0];
+        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[ss->render]->m_TargetPosition[1];
+      }
+    }
+
+    float tx = m_AtlasSprites[rStartIndex]->m_TargetPosition[0];
+    float ty = m_AtlasSprites[rStartIndex]->m_TargetPosition[1];
+    float pdx = tx - m_AtlasSprites[rStartIndex]->m_Position[0];
+    float pdy = ty - m_AtlasSprites[rStartIndex]->m_Position[1];
+
+    if (pdy > 0.0) {
+      //UP
+      ss->render = rStartIndex + 0;
+    }
+
+    if (pdx > 0.0) {
+      //RIGHT
+      ss->render = rStartIndex + 1;
+    }
+
+    if (pdy < 0.0) {
+      //DOWN
+      ss->render = rStartIndex + 2;
+    }
+
+    if (pdx < 0.0) {
+      //LEFT
+      ss->render = rStartIndex + 3;
+    }
+  }
+
 
   // manage tilemap
   bool recenter_x = false;
@@ -563,151 +711,7 @@ int SuperStarShooter::Simulate() {
     inverter *= -1.0;
   }
 
-  // manage player target selection and pathfinding
-  //bool stuck = false;
-
-
-  if (s != NULL && m_TargetIsDirty) {
-
-    m_TargetIsDirty = false;
-
-    int startState = -1;
-    int selected_x = (m_AtlasSprites[s->render]->m_TargetPosition[0] / SUBDIVIDE);
-    int selected_y = (m_AtlasSprites[s->render]->m_TargetPosition[1] / SUBDIVIDE);
-
-    int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
-
-    bool foundEndState = false;
-
-    if (Passable(colliding_index)) {
-      foundEndState = true;
-    } else {
-      int dirs[16] = {
-        +1, +0,
-        +0, +1,
-        +0, -1,
-        -1, +0,
-        -1, +1,
-        +1, +1,
-        +1, -1,
-        -1, -1
-      };
-      for (int i=0; i<16; i+=2) {
-        int altTargetX = m_TargetX + dirs[i];
-        int altTargetY = m_TargetY + dirs[i+1];
-        if (altTargetX >= 0 && altTargetY) {
-          colliding_index = m_Space->at(altTargetX, altTargetY, 0);
-          if (Passable(colliding_index)) {
-            m_TargetX = altTargetX;
-            m_TargetY = altTargetY;
-            foundEndState = true;
-            break;
-          }
-        }
-      }
-    }
-
-    if (foundEndState) {
-      m_StatePointer = 0;
-      int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
-      int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
-      startState = startStateTarget;
-      float totalCost;
-      m_Pather->Reset();
-      int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
-      switch (solved) {
-        case micropather::MicroPather::SOLVED:
-          m_Steps->erase(m_Steps->begin());
-          break;
-        case micropather::MicroPather::NO_SOLUTION:
-          //stuck = true;
-          m_Steps->clear();
-          break;
-        case micropather::MicroPather::START_END_SAME:
-          break;	
-        default:
-          break;
-      }
-    }
-  }
-
-  bool top_of_stack = false;
-  for (unsigned int i=0; i<m_TrailCount; i++) {
-    if (i < m_Steps->size()) {
-      nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
-      float tx = ((float)step->x * SUBDIVIDE);
-      float ty = ((float)step->y * SUBDIVIDE);
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 2;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Life = 0;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = true;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = tx;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = ty;
-    } else {
-      if (top_of_stack) {
-        //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = (int)fastAbs((stacked) % 5);
-      } else {
-        //m_AtlasSprites[m_TrailStartIndex + i]->m_Frame = 3;
-        top_of_stack = true;
-      }
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Fps = 0;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_IsAlive = false;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = 0;
-      m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = 0;
-    }
-  }
-
-  if (s != NULL) {
-    for (int i=0; i<4; i++) {
-      if ((m_PlayerStartIndex + i) != s->render) {
-        m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[0] = m_AtlasSprites[s->render]->m_Position[0];
-        m_AtlasSprites[m_PlayerStartIndex + i]->m_Position[1] = m_AtlasSprites[s->render]->m_Position[1];
-      }
-    }
-
-    if (needs_next_step && m_Steps->size() > 0) {
-
-      nodexyz *step = m_States[(intptr_t)m_Steps->at(0)];
-      m_Steps->erase(m_Steps->begin());
-
-      float tx = ((float)step->x * SUBDIVIDE);
-      float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
-      float pdx = tx - m_AtlasSprites[s->render]->m_Position[0];
-      float pdy = ty - m_AtlasSprites[s->render]->m_Position[1];
-
-      if (pdy > 0.0) {
-        //UP
-        m_PlayerIndex = m_PlayerStartIndex + 0;
-      }
-
-      if (pdx > 0.0) {
-        //RIGHT
-        m_PlayerIndex = m_PlayerStartIndex + 1;
-      }
-
-      if (pdy < 0.0) {
-        //DOWN
-        m_PlayerIndex = m_PlayerStartIndex + 2;
-      }
-
-      if (pdx < 0.0) {
-        //LEFT
-        m_PlayerIndex = m_PlayerStartIndex + 3;
-      }
-
-      s->render = m_PlayerIndex;
-
-      m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
-      m_AtlasSprites[s->render]->m_TargetPosition[1] = ty;
-
-      for (int i=0; i<4; i++) {
-        if ((m_PlayerStartIndex + i) != s->render) {
-          m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[s->render]->m_TargetPosition[0];
-          m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[s->render]->m_TargetPosition[1];
-        }
-      }
-    }
-  }
+  //}
 
   /*
   if (false && m_TargetY > 0 && m_TargetX > 0 && m_TargetY < 1024 && m_TargetX < 1024 && m_Steps->size() == 0 && !stuck) {
@@ -1093,36 +1097,40 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   };
 }
 
-bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y) {
-  LOGV("updating player: %d %f %f\n", i, x, y);
 
-  struct my_struct *s;
+bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, float b) {
+  //LOGV("updating player: %d %f %f\n", i, x, y);
 
-  HASH_FIND_INT(users, &i, s);  /* id already in the hash? */
+  struct my_struct *s = NULL;
+
+  HASH_FIND_INT(users, &i, s);
 
   if (NULL == s) {
-      s = (struct my_struct*)malloc(sizeof(struct my_struct));
-      s->id = i;
-      s->index = m_SpriteCount;
-      s->render = m_SpriteCount;
-      AddPlayer(x, y);
-      HASH_ADD_INT(users, id, s);  /* id: name of key field */
+    s = (struct my_struct*)malloc(sizeof(struct my_struct));
+    s->id = i;
+    s->index = m_SpriteCount;
+    s->render = s->index;
+    AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE);
+    HASH_ADD_INT(users, id, s);
   }
 
-  m_AtlasSprites[s->render]->SetPosition(x * 100.0, y);
+  m_AtlasSprites[s->render]->m_TargetPosition[0] = (a * SUBDIVIDE);
+  m_AtlasSprites[s->render]->m_TargetPosition[1] = (b * SUBDIVIDE) + PLAYER_OFFSET;
 
-  //  strcpy(s->name, name);
+  m_AtlasSprites[s->render]->SetPosition(x * SUBDIVIDE, (y * SUBDIVIDE) + PLAYER_OFFSET);
+
+  return true;
 }
 
+
 bool SuperStarShooter::RequestRegistration(int i) {
-  struct my_struct *s;
-  s = (struct my_struct *)malloc(sizeof(struct my_struct));
+  struct my_struct *s = (struct my_struct *)malloc(sizeof(struct my_struct));
   m_PlayerStartIndex = m_SpriteCount;
   AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
   m_PlayerId = s->id = i;
   s->index = m_PlayerStartIndex;
   s->render = m_PlayerStartIndex;
-  LOGV("i am player_id = %d\n", i);
+  //LOGV("i am player_id = %d\n", i);
   HASH_ADD_INT(users, id, s);    
   return true;
 }

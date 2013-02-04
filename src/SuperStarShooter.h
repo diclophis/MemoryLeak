@@ -93,7 +93,7 @@ public:
   float m_SelectTimeout;
 
   MazeNetwork *m_Network;
-  bool UpdatePlayerAtIndex(int i, float x, float y);
+  bool UpdatePlayerAtIndex(int i, float x, float y, float a, float b);
   bool RequestRegistration(int i);
   float m_NetworkTickTimeout;
 
