@@ -32,10 +32,30 @@ static int reformat_number(void *ctx, const char *s, size_t l) {
 
     LOGV("reformat_number enter %d\n", n->m_State);
 
-    if (4 == n->m_State) {
-      // first arg of request_registration is int player id
-      n->m_Arg0 = strtof(s, (char **)NULL);
-    }
+    switch(n->m_State) {
+      case 4:
+        // first arg of request_registration is int player id
+        n->m_Arg0 = strtof(s, (char **)NULL);
+        break;
+
+      case 5:
+        // first arg of update_player is int player id
+        n->m_Arg0 = strtof(s, (char **)NULL);
+        n->m_State = 6;
+        break;
+
+      case 6:
+        // second arg is float
+        n->m_Arg1 = strtof(s, (char **)NULL);
+        n->m_State = 7;
+        break;
+    
+      case 7:
+        // thirg arg is float
+        n->m_Arg2 = strtof(s, (char **)NULL);
+        n->m_State = 8;
+        break;
+    };
 
     LOGV("reformat_number exit arg0 %d %f\n", n->m_State, n->m_Arg0);
     return 1;
@@ -50,6 +70,9 @@ static int reformat_string(void *ctx, const unsigned char *stringVal, size_t str
     if (3 == n->m_State) {
       if (0 == strncmp("request_registration", (const char *)stringVal, stringLen)) {
         n->m_State = 4;
+      }
+      if (0 == strncmp("update_player", (const char *)stringVal, stringLen)) {
+        n->m_State = 5;
       }
     }
 
@@ -109,6 +132,11 @@ static int reformat_end_array(void * ctx) {
 
     if (4 == n->m_State) {
       n->m_Delegate->RequestRegistration((int)n->m_Arg0);
+      n->m_State = 3;
+    }
+
+    if (8 == n->m_State) {
+      n->m_Delegate->UpdatePlayerAtIndex((int)n->m_Arg0, n->m_Arg1, n->m_Arg2);
       n->m_State = 3;
     }
 

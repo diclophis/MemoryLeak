@@ -13,11 +13,12 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 64)
+#define VELOCITY (SUBDIVIDE * 32)
 #define MAX_WAIT_BEFORE_WARP 0.04
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
+#define MANUAL_SCROLL_TIMEOUT 1.0
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -45,6 +46,16 @@
 
 // The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
 #define UNDER_SHIFT 8
+
+
+
+struct my_struct {
+  int id;            /* we'll use this field as the key */
+  int index;
+  UT_hash_handle hh; /* makes this structure hashable */
+};
+
+struct my_struct *users = NULL;
 
 SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandle *> &m, std::vector<FileHandle *> &l, std::vector<FileHandle *> &s) : Engine(w, h, t, m, l, s) {
 
@@ -196,7 +207,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_TargetY = m_CenterOfWorldY;
 
   m_TargetIsDirty = true;
-  m_SelectTimeout = 2.0;
+  m_SelectTimeout = MANUAL_SCROLL_TIMEOUT;
 
   m_GotLastSwipeAt = -10.0;
   m_SwipedBeforeUp = false;
@@ -332,7 +343,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   bool collide_index_set = false;
 
   if (hitState == 0) {
-    m_SelectTimeout = 0;
     m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
     m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
     m_StartedSwipe = false;
@@ -351,6 +361,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     if (m_SwipedBeforeUp) {
       //end swipe
       if (hitState == 1) {
+        m_SelectTimeout = 0;
         m_StartedSwipe = true;
       } else {
         m_StartedSwipe = false;
@@ -442,10 +453,16 @@ int SuperStarShooter::Simulate() {
     m_AtlasSprites[m_PlayerIndex]->Simulate(m_DeltaTime);
   }
 
-  if (m_StartedSwipe) {
-    m_CameraActualOffsetX = -m_DesiredTargetX;
-    m_CameraActualOffsetY = -m_DesiredTargetY;
-  } else {
+  m_SelectTimeout += m_DeltaTime;
+
+  if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
+      m_DesiredTargetX = m_DeltaTime * (m_CameraActualOffsetX - m_AtlasSprites[m_PlayerIndex]->m_Position[0]);
+      m_DesiredTargetY = m_DeltaTime * (m_CameraActualOffsetY - m_AtlasSprites[m_PlayerIndex]->m_Position[1]);
+      m_CameraActualOffsetX += -m_DesiredTargetX;
+      m_CameraActualOffsetY += -m_DesiredTargetY;
+  } else if (m_StartedSwipe) {
+      m_CameraActualOffsetX = -m_DesiredTargetX;
+      m_CameraActualOffsetY = -m_DesiredTargetY;
   }
 
   // manage tilemap
@@ -535,9 +552,8 @@ int SuperStarShooter::Simulate() {
   // manage player target selection and pathfinding
   //bool stuck = false;
 
-  m_SelectTimeout += m_DeltaTime;
 
-  if (m_SelectTimeout > 0.0 && m_TargetIsDirty) {
+  if (m_TargetIsDirty) {
 
     m_TargetIsDirty = false;
 
@@ -1059,10 +1075,30 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   };
 }
 
-//bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y) {
-//}
+bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y) {
+  LOGV("updating player: %d %f %f\n", i, x, y);
+
+  struct my_struct *s;
+
+  HASH_FIND_INT(users, &i, s);  /* id already in the hash? */
+
+  if (NULL == s) {
+      s = (struct my_struct*)malloc(sizeof(struct my_struct));
+      s->id = i;
+      s->index = //
+
+      HASH_ADD_INT(users, id, s);  /* id: name of key field */
+  }
+
+  //  strcpy(s->name, name);
+}
 
 bool SuperStarShooter::RequestRegistration(int i) {
+  struct my_struct *s;
+  s = (struct my_struct *)malloc(sizeof(struct my_struct));
+  s->id = i;
+  s->index = m_PlayerIndex;
   LOGV("i am player_id = %d\n", i);
+  HASH_ADD_INT(users, id, s);    
   return true;
 }

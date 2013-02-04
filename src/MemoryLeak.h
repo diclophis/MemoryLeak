@@ -160,6 +160,8 @@
 #include <sys/ioctl.h>
 #include <netdb.h>
 
+#include "uthash.h"
+
 #include "stdarg.h"
 #include "octree.h"
 #include "micropather.h"

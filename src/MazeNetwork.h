@@ -7,7 +7,7 @@
 
 class MazeNetworkDelegate {
 public:
-//  virtual bool UpdatePlayerAtIndex(int i, float x, float y);
+  virtual bool UpdatePlayerAtIndex(int i, float x, float y) = 0;
   virtual bool RequestRegistration(int i) = 0;
 };
 
