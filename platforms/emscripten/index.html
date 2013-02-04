@@ -6,7 +6,7 @@
     <title>MemoryLeak</title>
     <style>
       body { margin: 0; }
-      canvas { padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; width: 100%; height 100%; }
+      canvas { padding-left: 0; padding-right: 0; margin-left: auto; margin-right: auto; display: block; width: 512px; height 512px; }
     </style>
     <script>
       // Checking for an update. Always the first event fired in the sequence.
@@ -119,7 +119,12 @@
           };
         })(),
         canvas: (function() {
-          var canvas = document.createElement("canvas"); canvas.width = document.body.offsetWidth; canvas.height = document.body.offsetHeight; console.log(canvas); document.body.appendChild(canvas); return canvas; 
+          var canvas = document.createElement("canvas");
+          //canvas.width = document.body.offsetWidth;
+          //canvas.height = document.body.offsetHeight;
+          //console.log(canvas);
+          document.body.appendChild(canvas);
+          return canvas; 
         })(),
         setStatus: function(text) {
           console.log(text);
