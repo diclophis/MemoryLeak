@@ -191,10 +191,9 @@ int MazeNetwork::Tick(float x, float y, float a, float b) {
   char payload[2048];
   int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%f, %f, %f, %f]}\n", x, y, a, b);
 
-  //char payload[4] = "[1]";
   ssize_t sent = send(m_Socket, payload, out, 0); //MSG_DONTWAIT
   if (sent > 0) {
-    //LOGV("wtf11111 %d payload-sent: %d\n", m_Socket, sent);
+    //LOGV("fd: %d sent: %d %s\n", m_Socket, sent, payload);
   } else {
     LOGV("send failed\n");
     return StopNetwork();
