@@ -172,10 +172,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_SecondGridStopIndex = m_GridStopIndex + m_GridCount;
   m_SpriteCount += m_GridCount;
 
-  m_PlayerStartIndex = m_SpriteCount;
-  m_PlayerId = 0;
-  //m_PlayerIndex = m_PlayerStartIndex;
-  AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
 
   m_WarpTimeout = 0.0;
 
@@ -1113,12 +1109,16 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y) {
       HASH_ADD_INT(users, id, s);  /* id: name of key field */
   }
 
+  m_AtlasSprites[s->render]->SetPosition(x * 100.0, y);
+
   //  strcpy(s->name, name);
 }
 
 bool SuperStarShooter::RequestRegistration(int i) {
   struct my_struct *s;
   s = (struct my_struct *)malloc(sizeof(struct my_struct));
+  m_PlayerStartIndex = m_SpriteCount;
+  AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
   m_PlayerId = s->id = i;
   s->index = m_PlayerStartIndex;
   s->render = m_PlayerStartIndex;
