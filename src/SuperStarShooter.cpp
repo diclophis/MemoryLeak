@@ -44,7 +44,7 @@
 #define UNDER_SHIFT 8
 
 
-#define BYTES_AT_A_TIME 1024 //((2 ^ 16) - 1)
+#define BYTES_AT_A_TIME 4 //((2 ^ 16) - 1)
 
 
 struct my_struct {
@@ -445,7 +445,8 @@ int SuperStarShooter::Simulate() {
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > 0.01) {
     m_NetworkTickTimeout = 0.0;
-    int network_status = m_Network->Tick(
+    int network_status = m_Network->Tick(true,
+      //0, 0, 0, 0
       m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1],
       m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
     );
@@ -588,6 +589,16 @@ int SuperStarShooter::Simulate() {
           m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[s->render]->m_TargetPosition[1];
         }
       }
+
+      /*
+      int network_status = m_Network->Tick(true,
+        m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1],
+        m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
+      );
+      if (network_status > 0) {
+        //LOGV("incorrect network status %d\n", network_status);
+      }
+      */
     }
   }
 
@@ -598,7 +609,9 @@ int SuperStarShooter::Simulate() {
     //LOGV("%d %f %f\n", ss->index, m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
 
     if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
+      //m_AtlasSprites[ss->index]->m_IsAlive = false;
     } else {
+      //m_AtlasSprites[ss->render]->m_IsAlive = false;
       m_AtlasSprites[ss->render]->Simulate(m_DeltaTime);
     }
 
@@ -1126,12 +1139,31 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     HASH_ADD_INT(users, id, s);
   }
 
-  m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
-  m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
+  /*
+  //if (false == m_AtlasSprites[s->index+0]->m_IsAlive) {
+  //  m_AtlasSprites[s->index+0]->m_IsAlive = true;
+  if (
+    (m_AtlasSprites[s->render]->m_TargetPosition[0] == m_AtlasSprites[s->render]->m_Position[0] &&
+    m_AtlasSprites[s->render]->m_TargetPosition[1] == m_AtlasSprites[s->render]->m_Position[1])
 
-  m_AtlasSprites[s->render]->SetPosition(x, (y));
+    &&
 
-  //LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
+    (
+      (m_AtlasSprites[s->render]->m_TargetPosition[0] != a) ||
+      //(m_AtlasSprites[s->render]->m_Position[0] != x) ||
+      (m_AtlasSprites[s->render]->m_TargetPosition[1] != b)
+      //(m_AtlasSprites[s->render]->m_Position[1] != y)
+    )
+  ) {
+  */
+
+    LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
+    m_AtlasSprites[s->render]->SetPosition(x, (y));
+    m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
+    m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
+
+  //}
+
 
   return true;
 }

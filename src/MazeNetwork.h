@@ -19,7 +19,7 @@ public:
 
   MazeNetwork(MazeNetworkDelegate *theDelegate, size_t bpt);
   virtual ~MazeNetwork();
-  int Tick(float, float, float, float);
+  int Tick(bool, float, float, float, float);
 
   MazeNetworkDelegate *m_Delegate;
 

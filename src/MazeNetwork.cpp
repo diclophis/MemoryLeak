@@ -170,7 +170,7 @@ static yajl_callbacks callbacks = {
 };
 
 
-int MazeNetwork::Tick(float x, float y, float a, float b) {
+int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
 
   // attempt to establish connection, check existing connection
   int network_connected_error = ConnectNetwork();
@@ -186,17 +186,19 @@ int MazeNetwork::Tick(float x, float y, float a, float b) {
     return 0;
   }
 
-  // we need to try and send on every tick to make sure the connection
-  // is still active, if it fails, restart networking
-  char payload[2048];
-  int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%f, %f, %f, %f]}\n", x, y, a, b);
+  if (write) {
+    // we need to try and send on every tick to make sure the connection
+    // is still active, if it fails, restart networking
+    char payload[2048];
+    int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%f, %f, %f, %f]}\n", x, y, a, b);
 
-  ssize_t sent = send(m_Socket, payload, out, 0); //MSG_DONTWAIT
-  if (sent > 0) {
-    //LOGV("fd: %d sent: %d %s\n", m_Socket, sent, payload);
-  } else {
-    LOGV("send failed\n");
-    return StopNetwork();
+    ssize_t sent = send(m_Socket, payload, out, 0); //MSG_DONTWAIT
+    if (sent > 0) {
+      //LOGV("fd: %d sent: %d %s\n", m_Socket, sent, payload);
+    } else {
+      LOGV("send failed\n");
+      return StopNetwork();
+    }
   }
 
   int bytesAvailableThisTick = -1;

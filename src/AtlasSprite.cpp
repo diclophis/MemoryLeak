@@ -418,7 +418,7 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 void AtlasSprite::Simulate(float deltaTime) {
   m_Life += deltaTime;
   m_AnimationLife += deltaTime;
-  if (m_IsAlive) {
+  //if (m_IsAlive) {
     if (m_Fps > 0) {
       if (m_AnimationLife > (1.0 / (float)m_Fps)) {
         //LOGV("m_Frame: %d\n", m_Frame);
@@ -439,7 +439,7 @@ void AtlasSprite::Simulate(float deltaTime) {
       //  m_Frame = m_FooFoo->m_numFrames - 1;
       //}
     }
-  }
+  //}
 }
 
 
