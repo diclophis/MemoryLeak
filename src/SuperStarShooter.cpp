@@ -44,7 +44,7 @@
 #define UNDER_SHIFT 8
 
 
-#define BYTES_AT_A_TIME 4 //((2 ^ 16) - 1)
+#define BYTES_AT_A_TIME 1024 //((2 ^ 16) - 1)
 
 
 struct my_struct {
