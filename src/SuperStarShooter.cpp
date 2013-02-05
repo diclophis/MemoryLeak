@@ -1155,7 +1155,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     )
   ) {
 
-    LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
+    //LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
     m_AtlasSprites[s->render]->SetPosition(x, (y));
   }
 
