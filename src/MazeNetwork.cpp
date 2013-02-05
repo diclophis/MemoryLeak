@@ -295,9 +295,11 @@ int MazeNetwork::ConnectNetwork(void) {
   // if select returns 0, it means we timed out, we should retry on the next tick
   if (0 == retVal) {
     // but if we timeout too many times, just reset the whole network
-    if (m_ConnectionSelectsAttempted++ > 10) {
+    if (m_ConnectionSelectsAttempted++ > 1024) {
+      LOGV("shit\n");
       return StopNetwork();
     } else {
+      LOGV("stall\n");
       // return OK state, but don't increment the connection state
       return 0;
     }
