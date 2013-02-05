@@ -443,7 +443,7 @@ int SuperStarShooter::Simulate() {
 
   // process network events
   m_NetworkTickTimeout += m_DeltaTime;
-  if (m_NetworkTickTimeout > 0.01) {
+  if (m_NetworkTickTimeout > 0.125) {
     m_NetworkTickTimeout = 0.0;
     int network_status = m_Network->Tick(true,
       //0, 0, 0, 0
