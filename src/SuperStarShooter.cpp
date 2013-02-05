@@ -14,7 +14,7 @@
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define VELOCITY (SUBDIVIDE * 32)
-#define MAX_WAIT_BEFORE_WARP 0.04
+#define MAX_WAIT_BEFORE_WARP 0.75
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -486,8 +486,6 @@ int SuperStarShooter::Simulate() {
       m_TargetIsDirty = false;
 
       int startState = -1;
-      int selected_x = (m_AtlasSprites[s->render]->m_TargetPosition[0] / SUBDIVIDE);
-      int selected_y = (m_AtlasSprites[s->render]->m_TargetPosition[1] / SUBDIVIDE);
 
       int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
 
@@ -524,6 +522,10 @@ int SuperStarShooter::Simulate() {
       if (foundEndState) {
         m_StatePointer = 0;
         int endState = StatePointerFor(m_TargetX, m_TargetY, 0);
+
+        int selected_x = (m_AtlasSprites[s->render]->m_Position[0] / SUBDIVIDE);
+        int selected_y = (m_AtlasSprites[s->render]->m_Position[1] / SUBDIVIDE);
+
         int startStateTarget = StatePointerFor(selected_x, selected_y, 0);
         startState = startStateTarget;
         float totalCost;
@@ -534,7 +536,6 @@ int SuperStarShooter::Simulate() {
             m_Steps->erase(m_Steps->begin());
             break;
           case micropather::MicroPather::NO_SOLUTION:
-            //stuck = true;
             m_Steps->clear();
             break;
           case micropather::MicroPather::START_END_SAME:
@@ -650,6 +651,7 @@ int SuperStarShooter::Simulate() {
       //LEFT
       ss->render = rStartIndex + 3;
     }
+
   }
 
 
@@ -1139,15 +1141,12 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     HASH_ADD_INT(users, id, s);
   }
 
-  /*
   //if (false == m_AtlasSprites[s->index+0]->m_IsAlive) {
   //  m_AtlasSprites[s->index+0]->m_IsAlive = true;
   if (
-    (m_AtlasSprites[s->render]->m_TargetPosition[0] == m_AtlasSprites[s->render]->m_Position[0] &&
-    m_AtlasSprites[s->render]->m_TargetPosition[1] == m_AtlasSprites[s->render]->m_Position[1])
-
-    &&
-
+    //(m_AtlasSprites[s->render]->m_TargetPosition[0] == m_AtlasSprites[s->render]->m_Position[0] &&
+    //m_AtlasSprites[s->render]->m_TargetPosition[1] == m_AtlasSprites[s->render]->m_Position[1])
+    //&&
     (
       (m_AtlasSprites[s->render]->m_TargetPosition[0] != a) ||
       //(m_AtlasSprites[s->render]->m_Position[0] != x) ||
@@ -1155,15 +1154,13 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
       //(m_AtlasSprites[s->render]->m_Position[1] != y)
     )
   ) {
-  */
 
     LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
     m_AtlasSprites[s->render]->SetPosition(x, (y));
-    m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
-    m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
+  }
 
-  //}
-
+  m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
+  m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
 
   return true;
 }
