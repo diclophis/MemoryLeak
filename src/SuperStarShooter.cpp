@@ -44,7 +44,7 @@
 #define UNDER_SHIFT 8
 
 
-#define BYTES_AT_A_TIME 1024 //((2 ^ 16) - 1)
+#define BYTES_AT_A_TIME ((2 ^ 16) - 1)
 
 
 struct my_struct {
@@ -1155,7 +1155,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     )
   ) {
 
-    //LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
+    LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
     m_AtlasSprites[s->render]->SetPosition(x, (y));
   }
 
