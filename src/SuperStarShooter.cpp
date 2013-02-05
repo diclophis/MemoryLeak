@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.0)
+#define ZOOM (1.66)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 6)
 #define TREASURE 10
@@ -13,8 +13,8 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 32)
-#define MAX_WAIT_BEFORE_WARP 0.75
+#define VELOCITY (SUBDIVIDE * 42)
+#define MAX_WAIT_BEFORE_WARP (0.65)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -51,6 +51,7 @@ struct my_struct {
   int id;            /* we'll use this field as the key */
   int index;
   int render;
+  int update;
   UT_hash_handle hh; /* makes this structure hashable */
 };
 
@@ -185,7 +186,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   }
 
   m_TargetX = m_CenterOfWorldX;
-  m_TargetY = m_CenterOfWorldY;
+  m_TargetY = m_CenterOfWorldY + 1;
 
   m_TargetIsDirty = true;
   m_SelectTimeout = MANUAL_SCROLL_TIMEOUT;
@@ -429,7 +430,9 @@ void SuperStarShooter::RenderSpritePhase() {
     struct my_struct *s;
 
     for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
-      RenderSpriteRange(s->render, s->render + 1, m_Batches[1], offX, offY);
+      if ((m_SimulationTime - s->update) < 10.0) { 
+        RenderSpriteRange(s->render, s->render + 1, m_Batches[1], offX, offY);
+      }
     }
 
     for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
@@ -443,7 +446,7 @@ int SuperStarShooter::Simulate() {
 
   // process network events
   m_NetworkTickTimeout += m_DeltaTime;
-  if (m_NetworkTickTimeout > 0.125) {
+  if (m_NetworkTickTimeout > 0.01) {
     m_NetworkTickTimeout = 0.0;
     int network_status = m_Network->Tick(true,
       //0, 0, 0, 0
@@ -467,6 +470,7 @@ int SuperStarShooter::Simulate() {
 
   if (s != NULL) {
     m_SelectTimeout += m_DeltaTime;
+    s->update = m_SimulationTime;
 
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
       m_DesiredTargetX = m_DeltaTime * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
@@ -1161,6 +1165,8 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
 
   m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
   m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
+
+  s->update = m_SimulationTime;
 
   return true;
 }
