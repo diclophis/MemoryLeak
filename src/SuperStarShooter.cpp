@@ -45,6 +45,7 @@
 
 
 #define BYTES_AT_A_TIME ((2 ^ 16) - 1)
+#define NETWORK_TIMEOUT 0.0
 
 
 struct my_struct {
@@ -446,7 +447,7 @@ int SuperStarShooter::Simulate() {
 
   // process network events
   m_NetworkTickTimeout += m_DeltaTime;
-  if (m_NetworkTickTimeout > 0.01) {
+  if (m_NetworkTickTimeout > 0.0) {
     m_NetworkTickTimeout = 0.0;
     int network_status = m_Network->Tick(true,
       //0, 0, 0, 0
