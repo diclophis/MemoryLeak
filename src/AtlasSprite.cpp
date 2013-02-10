@@ -350,19 +350,23 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
     //states are enabled via VAO
     glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
+    //glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_ALWAYS);
 
 
 #else
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+LOGV("wtf\n");
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
+    glEnable(GL_BLEND);
+    //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_ALWAYS);
 
 #ifdef USE_GLES2
 
