@@ -234,9 +234,7 @@ void SuperStarShooter::AddPlayer(float x, float y) {
     int sub_index = m_SpriteCount;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
     m_AtlasSprites[sub_index]->SetVelocity(VELOCITY, VELOCITY);
-    //m_AtlasSprites[sub_index]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))) + PLAYER_OFFSET);
-    m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET); //(m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))) + PLAYER_OFFSET);
-    //m_AtlasSprites[sub_index]->SetPosition(0, 0);
+    m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 20;
     m_AtlasSprites[sub_index]->m_Frame = 0;
@@ -369,13 +367,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
   if (hitState != 0) {
 
-    //if (hitState == 1) {
-    //  m_SelectTimeout = 0;
-    //  m_StartedSwipe = true;
-    //  m_DesiredTargetX = (xx - m_CameraStopOffsetX);
-    //  m_DesiredTargetY = (yy - m_CameraStopOffsetY);
-    //}
-
     if (m_SwipedBeforeUp) {
       //end swipe
       if (hitState == 1) {
@@ -427,12 +418,10 @@ void SuperStarShooter::RenderSpritePhase() {
       m_Batches[1]->m_NumBatched = 0;
       RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0]);
       RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1]);
-      //RenderSpriteRange(m_GridStartIndex, m_GridStopIndex * 2, m_Batches[0]);
       m_NeedsTerrainRebatched = false;
     }
     
     m_Batches[2]->m_NumBatched = 0;
-    //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[1]);
     float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
     float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
@@ -447,6 +436,7 @@ void SuperStarShooter::RenderSpritePhase() {
     //for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
     //  AtlasSprite::RenderFoo(m_StateFoo, *i);
     //}
+
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
@@ -478,16 +468,12 @@ int SuperStarShooter::Simulate() {
   bool player_at_target = false;
 
   for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
-    // move player towards target
-    //LOGV("%d %f %f\n", ss->index, m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
 
     if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
-      //m_AtlasSprites[ss->index]->m_IsAlive = false;
       if (ss->index == s->index) {
         player_at_target = true;
       }
     } else {
-      //m_AtlasSprites[ss->render]->m_IsAlive = false;
       m_AtlasSprites[ss->render]->Simulate(m_DeltaTime);
     }
 
@@ -732,29 +718,6 @@ int SuperStarShooter::Simulate() {
     inverter *= -1.0;
   }
 
-  //}
-
-  /*
-  if (false && m_TargetY > 0 && m_TargetX > 0 && m_TargetY < 1024 && m_TargetX < 1024 && m_Steps->size() == 0 && !stuck) {
-    switch (m_PlayerIndex - m_PlayerStartIndex) {
-      case (0):
-        m_TargetY++;
-        break;
-      case (1):
-        m_TargetX++;
-        break;
-      case (2):
-        m_TargetY--;
-        break;
-      case (3):
-        m_TargetX--;
-        break;
-    }
-
-    m_TargetIsDirty = true;
-  }
-  */
-  
   return 1;
 }
 
@@ -909,9 +872,6 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
   int bc = (12 * 16) + 12;
   int bd = (6 * 16) + 7;
   int be = (4 * 16) + 9;
-
-  //void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y) {
-  //BlitIntoSpace(0, WATER, 1, 1, (x + 0) * 3), ((y + 2) * 3));
 
   switch(mask) {
     case 5:
