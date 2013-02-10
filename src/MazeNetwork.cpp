@@ -214,7 +214,7 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
     return 0;
   }
 
-  bytesReadThisTick = recv(m_Socket, (void *)m_InputBuffer, bpt, 0);
+  bytesReadThisTick = recv(m_Socket, (void *)m_InputBuffer, bytesAvailableThisTick, 0);
 
   if (bytesReadThisTick < 1) {
     perror("recv m_InputBuffer failed\n");
@@ -222,6 +222,7 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
   }
 
   m_InputBuffer[bytesReadThisTick] = '\0';
+  LOGV("read: %s\n", m_InputBuffer);
   yajl_status stat = yajl_parse(hand, m_InputBuffer, bytesReadThisTick * sizeof(unsigned char));
   if (stat == yajl_status_ok) {
     return 0;
