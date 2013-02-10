@@ -13,12 +13,12 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 42)
-#define MAX_WAIT_BEFORE_WARP (0.65)
+#define VELOCITY (SUBDIVIDE * 40)
+#define MAX_WAIT_BEFORE_WARP (1.0)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
-#define MANUAL_SCROLL_TIMEOUT 1.0
+#define MANUAL_SCROLL_TIMEOUT 2.0
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -44,8 +44,8 @@
 #define UNDER_SHIFT 8
 
 
-#define BYTES_AT_A_TIME ((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT 0.0
+#define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
+#define NETWORK_TIMEOUT 0.01
 
 
 struct my_struct {
@@ -596,7 +596,6 @@ int SuperStarShooter::Simulate() {
         }
       }
 
-      /*
       int network_status = m_Network->Tick(true,
         m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1],
         m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
@@ -604,7 +603,6 @@ int SuperStarShooter::Simulate() {
       if (network_status > 0) {
         //LOGV("incorrect network status %d\n", network_status);
       }
-      */
     }
   }
 
