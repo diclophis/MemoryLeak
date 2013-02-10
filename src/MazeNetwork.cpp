@@ -222,7 +222,7 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
   }
 
   m_InputBuffer[bytesReadThisTick] = '\0';
-  LOGV("read: %s\n", m_InputBuffer);
+  //LOGV("read: %s\n", m_InputBuffer);
   yajl_status stat = yajl_parse(hand, m_InputBuffer, bytesReadThisTick * sizeof(unsigned char));
   if (stat == yajl_status_ok) {
     return 0;

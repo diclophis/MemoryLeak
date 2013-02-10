@@ -13,7 +13,7 @@
 #define FILL BLANK
 #define OVER BLANK
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 40)
+#define VELOCITY (SUBDIVIDE * 10)
 #define MAX_WAIT_BEFORE_WARP (1.0)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
@@ -462,8 +462,66 @@ int SuperStarShooter::Simulate() {
   struct my_struct *s;
   HASH_FIND_INT(users, &m_PlayerId, s);
 
+  struct my_struct *ss;
+
+  bool player_at_target = false;
+
+  for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
+    // move player towards target
+    //LOGV("%d %f %f\n", ss->index, m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
+
+    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
+      //m_AtlasSprites[ss->index]->m_IsAlive = false;
+      if (ss->index == s->index) {
+        player_at_target = true;
+      }
+    } else {
+      //m_AtlasSprites[ss->render]->m_IsAlive = false;
+      m_AtlasSprites[ss->render]->Simulate(m_DeltaTime);
+    }
+
+    int rStartIndex = ss->index;
+
+    for (int i=0; i<4; i++) {
+      if ((rStartIndex + i) != ss->render) {
+        m_AtlasSprites[rStartIndex + i]->m_Position[0] = m_AtlasSprites[ss->render]->m_Position[0];
+        m_AtlasSprites[rStartIndex + i]->m_Position[1] = m_AtlasSprites[ss->render]->m_Position[1];
+        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[ss->render]->m_TargetPosition[0];
+        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[ss->render]->m_TargetPosition[1];
+      }
+    }
+
+    float tx = m_AtlasSprites[rStartIndex]->m_TargetPosition[0];
+    float ty = m_AtlasSprites[rStartIndex]->m_TargetPosition[1];
+    float pdx = tx - m_AtlasSprites[rStartIndex]->m_Position[0];
+    float pdy = ty - m_AtlasSprites[rStartIndex]->m_Position[1];
+
+    if (pdy > 0.0) {
+      //UP
+      ss->render = rStartIndex + 0;
+    }
+
+    if (pdx > 0.0) {
+      //RIGHT
+      ss->render = rStartIndex + 1;
+    }
+
+    if (pdy < 0.0) {
+      //DOWN
+      ss->render = rStartIndex + 2;
+    }
+
+    if (pdx < 0.0) {
+      //LEFT
+      ss->render = rStartIndex + 3;
+    }
+  }
+
   bool needs_next_step = false;
-  m_WarpTimeout += m_DeltaTime;
+  if (player_at_target) {
+    m_WarpTimeout += m_DeltaTime;
+  }
+
   if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
     needs_next_step = true;  
     m_WarpTimeout = 0.0;
@@ -560,34 +618,6 @@ int SuperStarShooter::Simulate() {
       float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
       m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
       m_AtlasSprites[s->render]->m_TargetPosition[1] = ty;
-      /*
-      float pdx = tx - m_AtlasSprites[s->render]->m_Position[0];
-      float pdy = ty - m_AtlasSprites[s->render]->m_Position[1];
-
-      
-      if (pdy > 0.0) {
-        //UP
-        m_PlayerIndex = m_PlayerStartIndex + 0;
-      }
-
-      if (pdx > 0.0) {
-        //RIGHT
-        m_PlayerIndex = m_PlayerStartIndex + 1;
-      }
-
-      if (pdy < 0.0) {
-        //DOWN
-        m_PlayerIndex = m_PlayerStartIndex + 2;
-      }
-
-      if (pdx < 0.0) {
-        //LEFT
-        m_PlayerIndex = m_PlayerStartIndex + 3;
-      }
-
-      s->render = m_PlayerIndex;
-      */
-
 
       for (int i=0; i<4; i++) {
         if ((m_PlayerStartIndex + i) != s->render) {
@@ -604,57 +634,6 @@ int SuperStarShooter::Simulate() {
         //LOGV("incorrect network status %d\n", network_status);
       }
     }
-  }
-
-  struct my_struct *ss;
-
-  for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
-    // move player towards target
-    //LOGV("%d %f %f\n", ss->index, m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
-
-    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
-      //m_AtlasSprites[ss->index]->m_IsAlive = false;
-    } else {
-      //m_AtlasSprites[ss->render]->m_IsAlive = false;
-      m_AtlasSprites[ss->render]->Simulate(m_DeltaTime);
-    }
-
-    int rStartIndex = ss->index;
-
-    for (int i=0; i<4; i++) {
-      if ((rStartIndex + i) != ss->render) {
-        m_AtlasSprites[rStartIndex + i]->m_Position[0] = m_AtlasSprites[ss->render]->m_Position[0];
-        m_AtlasSprites[rStartIndex + i]->m_Position[1] = m_AtlasSprites[ss->render]->m_Position[1];
-        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[ss->render]->m_TargetPosition[0];
-        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[ss->render]->m_TargetPosition[1];
-      }
-    }
-
-    float tx = m_AtlasSprites[rStartIndex]->m_TargetPosition[0];
-    float ty = m_AtlasSprites[rStartIndex]->m_TargetPosition[1];
-    float pdx = tx - m_AtlasSprites[rStartIndex]->m_Position[0];
-    float pdy = ty - m_AtlasSprites[rStartIndex]->m_Position[1];
-
-    if (pdy > 0.0) {
-      //UP
-      ss->render = rStartIndex + 0;
-    }
-
-    if (pdx > 0.0) {
-      //RIGHT
-      ss->render = rStartIndex + 1;
-    }
-
-    if (pdy < 0.0) {
-      //DOWN
-      ss->render = rStartIndex + 2;
-    }
-
-    if (pdx < 0.0) {
-      //LEFT
-      ss->render = rStartIndex + 3;
-    }
-
   }
 
 
