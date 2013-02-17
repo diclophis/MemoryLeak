@@ -79,7 +79,7 @@ public:
   int m_CenterOfWorldX;
   int m_CenterOfWorldY;
 
-  void LoadMaze(int level_index);
+  void LoadMaze(); //int level_index);
 
   void BlitMazeCell(int row, int col, int mask);
 
@@ -106,5 +106,11 @@ public:
   void AddPlayer(float x, float y);
 
   int m_PlayerId;
+
+  float m_LevelLoadTimeout;
+  bool m_LoadedLevel;
+  int m_LevelIndex;
+  int m_MazeCursor;
+  uint16_t *m_Level;
 
 };

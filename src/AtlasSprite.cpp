@@ -637,7 +637,7 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
     m_Position[1] = m_TargetPosition[1];
   }
 
-  if (m_Position[0] == m_TargetPosition[0] && m_Position[1] == m_TargetPosition[1]) {
+  if ((m_Position[0] == m_TargetPosition[0]) && (m_Position[1] == m_TargetPosition[1])) {
     done = true;
   }
 

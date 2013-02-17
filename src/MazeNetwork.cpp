@@ -299,7 +299,7 @@ int MazeNetwork::ConnectNetwork(void) {
       LOGV("shit\n");
       return StopNetwork();
     } else {
-      LOGV("stall\n");
+      //LOGV("stall\n");
       // return OK state, but don't increment the connection state
       return 0;
     }
