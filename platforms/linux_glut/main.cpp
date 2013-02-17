@@ -12,8 +12,8 @@
 #include <alsa/asoundlib.h>
 #include <vector>
 
-#define kWindowWidth 320
-#define kWindowHeight 480
+#define kWindowWidth 512
+#define kWindowHeight 512
 
 static pthread_t audio_thread;
 
@@ -35,7 +35,7 @@ snd_pcm_hw_params_t *hwparams;
 // the second number is the number of the device.
 char *pcm_name;
 
-static int game_index = 4;
+static int game_index = 0;
 static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
@@ -152,9 +152,9 @@ int is_not_dot_or_dot_dot(const struct dirent *dp) {
 int main(int argc, char** argv) {
 
   glutInit(&argc,argv);
-  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(kWindowWidth, kWindowHeight);
-  glutInitWindowPosition(0,0);
+  glutInitWindowPosition(256,256);
   glutCreateWindow("simple");
   glutKeyboardFunc(processNormalKeys);
   glutKeyboardUpFunc(processNormalKeys);
@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
     fseek(fd, 0, SEEK_END);
     unsigned int len = ftell(fd);
     rewind(fd);
-    Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
+    Engine::PushBackFileHandle(TEXTURES, fd, 0, len, tmp);
     free(tmp);
     tmp=NULL;
   }
@@ -200,7 +200,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(MODELS, fd, 0, len);
+        Engine::PushBackFileHandle(MODELS, fd, 0, len, tmp);
       }
 
       free(tmp);
@@ -221,7 +221,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
+        Engine::PushBackFileHandle(SOUNDS, fd, 0, len, tmp);
       }
     
       free(tmp);
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
         fseek(fd, 0, SEEK_END);
         unsigned int len = ftell(fd);
         rewind(fd);
-        Engine::PushBackFileHandle(LEVELS, fd, 0, len);
+        Engine::PushBackFileHandle(LEVELS, fd, 0, len, tmp);
       }
 
       free(tmp);

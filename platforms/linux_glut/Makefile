@@ -7,12 +7,14 @@ CXXFLAGS=\
 -DMODPLUG_FASTSOUNDLIB \
 -I/usr/include \
 -I../../src \
+-I../../yajl \
 -I../../src/include \
 -I../../src/include/libmodplug \
 -I../../src/octree \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/Box2D \
--I../../src/OpenSteer
+-I../../src/OpenSteer \
+-DUSE_GLES2 \
 
 CFLAGS=$(CXXFLAGS)
 
@@ -27,6 +29,7 @@ objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../.
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/unzip/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/contrib/zlib/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/libmodplug/*.cpp)))
+objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.o, $(wildcard ../../src/yajl/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Collision/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.o, $(wildcard ../../src/Box2D/Collision/Shapes/*.cpp)))
@@ -50,6 +53,7 @@ $(build)/%.o: ../../src/%.c
 
 $(build):
 	mkdir -p $(build)
+	mkdir -p $(build)/yajl
 	mkdir -p $(build)/assimp
 	mkdir -p $(build)/contrib/irrXML
 	mkdir -p $(build)/contrib/ConvertUTF

@@ -48,8 +48,7 @@
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
 #define NETWORK_TIMEOUT 1.0
 
-#define LEVEL_LOAD_TIMEOUT 0.1
-
+#define LEVEL_LOAD_TIMEOUT 0.01
 
 struct my_struct {
   int id;            /* we'll use this field as the key */
@@ -470,6 +469,7 @@ int SuperStarShooter::Simulate() {
   m_LevelLoadTimeout += m_DeltaTime;
   if (m_LevelLoadTimeout > LEVEL_LOAD_TIMEOUT) {
     LoadMaze();
+    m_LevelLoadTimeout = 0;
   }
 
   struct my_struct *s;
@@ -483,7 +483,7 @@ int SuperStarShooter::Simulate() {
 
     if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
       if (ss->index == s->index) {
-        LOGV("player is at target\n");
+        //LOGV("player is at target\n");
         player_at_target = true;
       }
     } else {
@@ -529,7 +529,7 @@ int SuperStarShooter::Simulate() {
 
   bool needs_next_step = false;
   if (player_at_target) {
-    LOGV("waiting to warp\n");
+    //LOGV("waiting to warp\n");
     m_WarpTimeout += m_DeltaTime;
   }
 
@@ -636,14 +636,6 @@ int SuperStarShooter::Simulate() {
           m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[s->render]->m_TargetPosition[1];
         }
       }
-
-      //int network_status = m_Network->Tick(true,
-      //  m_AtlasSprites[m_PlayerIndex]->m_Position[0], m_AtlasSprites[m_PlayerIndex]->m_Position[1],
-      //  m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
-      //);
-      //if (network_status > 0) {
-      //  //LOGV("incorrect network status %d\n", network_status);
-      //}
     }
   }
 
@@ -681,7 +673,7 @@ int SuperStarShooter::Simulate() {
   int xx = 0;
   int yy = 0;
 
-  if ((recenter_x || recenter_y)) {
+  if ((recenter_x || recenter_y) || m_NeedsTerrainRebatched) {
     m_NeedsTerrainRebatched = true;
     for (int i=m_GridStartIndex; i<m_GridStopIndex; i++) {
       int nsx = 0;
@@ -864,6 +856,7 @@ void SuperStarShooter::LoadMaze() {
     r = m_MazeCursor / (width);
     BlitMazeCell(r, cursor, m_Level[m_MazeCursor+2]);
     m_MazeCursor++;
+    m_NeedsTerrainRebatched = true;
   }
 
 
