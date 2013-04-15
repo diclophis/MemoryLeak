@@ -359,8 +359,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
 
 #else
 
-LOGV("wtf\n");
-
     glEnable(GL_BLEND);
     //glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

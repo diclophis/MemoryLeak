@@ -27,7 +27,7 @@ void StateFoo::Link() {
   char msg[512];
   glLinkProgram(m_Program);
   glGetProgramInfoLog(m_Program, sizeof msg, NULL, msg);
-  LOGV("info: %s\n", msg);
+  //LOGV("info: %s\n", msg);
 
   glUseProgram(m_Program);
 

@@ -126,7 +126,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glShaderSource(v, 1, &p, NULL);
   glCompileShader(v);
   glGetShaderInfoLog(v, sizeof msg, NULL, msg);
-  LOGV("vertex shader info: %s\n", msg);
+  //LOGV("vertex shader info: %s\n", msg);
 
   // Compile the fragment shader
   p = fragment_shader;
@@ -134,11 +134,11 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glShaderSource(f, 1, &p, NULL);
   glCompileShader(f);
   glGetShaderInfoLog(f, sizeof msg, NULL, msg);
-  LOGV("fragment shader info: %s\n", msg);
+  //LOGV("fragment shader info: %s\n", msg);
 
   // Create and link the shader program
   program = glCreateProgram();
-  LOGV("engine program ID: %d\n", program);
+  //LOGV("engine program ID: %d\n", program);
   glAttachShader(program, v);
   glAttachShader(program, f);
 
@@ -163,7 +163,7 @@ int Engine::isExtensionSupported(const char *extension) {
     return 0;
   }
   extensions = glGetString(GL_EXTENSIONS);
-  LOGV("%s\n", extensions);
+  //LOGV("%s\n", extensions);
   // It takes a bit of care to be fool-proof about parsing the OpenGL extensions string. Don't be fooled by sub-strings, etc.
   start = extensions;
   for (;;) {
