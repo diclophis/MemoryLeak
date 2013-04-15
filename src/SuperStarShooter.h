@@ -60,6 +60,7 @@ public:
 
 	micropather::MicroPather *m_Pather;
 	std::vector<void *> *m_Steps;
+  int m_CurrentStep;
 
   int m_MaxStatePointers;
   int m_StatePointer;

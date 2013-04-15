@@ -14,8 +14,8 @@
 #define FILL BLANK
 #define OVER WATER
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 10)
-#define MAX_WAIT_BEFORE_WARP (1.1)
+#define VELOCITY (SUBDIVIDE * 25)
+#define MAX_WAIT_BEFORE_WARP (0.25)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -187,6 +187,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
 	m_Pather = new micropather::MicroPather(this);
 	m_Steps = new std::vector<void *>;
+  m_CurrentStep = 0;
 
   m_MaxStatePointers = MAX_STATE_POINTERS;
   m_StatePointer = 0;
@@ -451,7 +452,6 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
-
   // process network events
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > NETWORK_TIMEOUT) {
@@ -534,7 +534,7 @@ int SuperStarShooter::Simulate() {
   }
 
   if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
-    LOGV("warp wait over\n");
+    //LOGV("warp wait over\n");
     needs_next_step = true;  
     m_WarpTimeout = 0.0;
   }
@@ -584,6 +584,7 @@ int SuperStarShooter::Simulate() {
               m_TargetX = altTargetX;
               m_TargetY = altTargetY;
               foundEndState = true;
+              //LOGV("foundEndState\n");
               break;
             }
           }
@@ -601,31 +602,39 @@ int SuperStarShooter::Simulate() {
         startState = startStateTarget;
         float totalCost;
         m_Pather->Reset();
+        m_Steps->clear();
+        m_CurrentStep = 0;
         int solved = m_Pather->Solve((void *)startState, (void *)endState, m_Steps, &totalCost);
         switch (solved) {
           case micropather::MicroPather::SOLVED:
-            m_Steps->erase(m_Steps->begin());
+            m_CurrentStep = 1;
+            //m_Steps->erase(m_Steps->begin());
+            //for (int i=0; i<m_Steps->size(); i++) {
+            //  nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
+            //  LOGV("step %d: %d %d %f %f\n", i, step->x, step->y, ((float)step->x * SUBDIVIDE), ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET);
+            //}
             break;
           case micropather::MicroPather::NO_SOLUTION:
-            m_Steps->clear();
             break;
           case micropather::MicroPather::START_END_SAME:
-            break;	
+            break;
           default:
             break;
         }
       }
     }
 
-    if (needs_next_step && m_Steps->size() > 0) {
-
-      nodexyz *step = m_States[(intptr_t)m_Steps->at(0)];
-      m_Steps->erase(m_Steps->begin());
+    if (needs_next_step && m_Steps->size() > 0 && m_CurrentStep < m_Steps->size()) {
+      nodexyz *step = m_States[(intptr_t)m_Steps->at(m_CurrentStep)];
+      //m_Steps->erase(m_Steps->begin());
+      m_CurrentStep++;
 
       float tx = ((float)step->x * SUBDIVIDE);
       float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
 
-      LOGV("setting next step / %d to %f %f => %f %f\n", m_Steps->size(), m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[1], tx, ty);
+      //LOGV(
+      //  "setting next step / %d to %f %f => %f %f\n",
+      //  m_Steps->size(), m_AtlasSprites[m_PlayerStartIndex]->m_Position[0], m_AtlasSprites[m_PlayerStartIndex]->m_Position[1], tx, ty);
 
       m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
       m_AtlasSprites[s->render]->m_TargetPosition[1] = ty;
@@ -730,7 +739,6 @@ int SuperStarShooter::Simulate() {
 
 // calculate the possible least cost between two states
 float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {	
-
   int xStart = m_States[((intptr_t)nodeStart)]->x;
   int yStart = m_States[((intptr_t)nodeStart)]->y;
 
@@ -739,9 +747,10 @@ float SuperStarShooter::LeastCostEstimate(void *nodeStart, void *nodeEnd) {
 
   int dx = xStart - xEnd;
   int dy = yStart - yEnd;
+  int dz = 0;
 
-  float least_cost = dx + dy;
-  //(float) sqrt( (double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
+  //float least_cost = dx + dy;
+  float least_cost = (float) sqrt((double)(dx * dx) + (double)(dy * dy) + (double)(dz * dz));
 
   return least_cost;
 }
@@ -761,12 +770,11 @@ bool SuperStarShooter::Passable(int i) {
 // each node of the graph is an index into the state pool
 // the state pools contain collections of x,y values
 void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCost> *neighbors) {
-
   int ax = m_States[((intptr_t)node)]->x;
   int ay = m_States[((intptr_t)node)]->y;
 
-  const int dx[8] = { 1, 0, -1, 0};
-  const int dy[8] = { 0, 1, 0, -1};
+  const int dx[4] = { 1, 0, -1, 0};
+  const int dy[4] = { 0, 1, 0, -1};
   
   int lx = m_States[0]->x - ax;
   int ly = m_States[0]->y - ay;
@@ -780,7 +788,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   
   float pass_cost = 0;
   
-  for( int i=0; i<4; ++i ) {
+  for( int i=0; i<4; i++) {
     int nx = ax + dx[i];
     int ny = ay + dy[i];	
     bool passable = false;
@@ -837,7 +845,6 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
 // the octree stores whether or not a cell is passable
 // and what sprite the cell should be draw with
 void SuperStarShooter::LoadMaze() {
-
   if (!m_LoadedLevel) {
       m_Level = (uint16_t *)malloc(sizeof(uint16_t) * m_LevelFileHandles->at(m_LevelIndex)->len);
       fseek(m_LevelFileHandles->at(m_LevelIndex)->fp, m_LevelFileHandles->at(m_LevelIndex)->off, SEEK_SET);
