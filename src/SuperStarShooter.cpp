@@ -44,7 +44,7 @@
 #define UNDER_SHIFT 8
 
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT 0.05
+#define NETWORK_TIMEOUT 0.025
 
 #define LEVEL_LOAD_TIMEOUT 0.01
 
