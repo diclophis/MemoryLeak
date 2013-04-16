@@ -17,29 +17,16 @@ CXXFLAGS=\
 CFLAGS=$(CXXFLAGS)
 
 objects   = $(patsubst %,build/%, $(patsubst %.cpp,%.bc, $(wildcard *.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/contrib/irrXML/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../../src/contrib/ConvertUTF/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../../src/contrib/unzip/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../../src/contrib/zlib/*.c)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../../src/yajl/*.c)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/assimp/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/libmodplug/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/*.cpp)))
 objects   += $(patsubst ../../src/%,build/%, $(patsubst %.c,%.bc, $(wildcard ../../src/*.c)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Collision/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Collision/Shapes/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Dynamics/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Dynamics/Contacts/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Dynamics/Joints/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/Box2D/Common/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/OpenSteer/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/bulletml/*.cpp)))
-#objects   += $(patsubst ../../src/%,build/%, $(patsubst %.cpp,%.bc, $(wildcard ../../src/bulletml/tinyxml/*.cpp)))
 
 HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
 hash_dir=~/emscripten.risingcode.com/public/$(HASH)
-#HASH=1234
 
 raptor_island: $(build) $(objects)
 	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
@@ -60,19 +47,7 @@ $(build):
 	mkdir -p $(build)/contrib/ConvertUTF
 	mkdir -p $(build)/contrib/zlib
 	mkdir -p $(build)/contrib/unzip
-#	mkdir -p $(build)/assimp
 	mkdir -p $(build)/libmodplug
-#	mkdir -p $(build)/Box2D
-#	mkdir -p $(build)/Box2D/Collision
-#	mkdir -p $(build)/Box2D/Collision/Shapes
-#	mkdir -p $(build)/Box2D/Common
-#	mkdir -p $(build)/Box2D/Dynamics
-#	mkdir -p $(build)/Box2D/Dynamics/Contacts
-#	mkdir -p $(build)/Box2D/Dynamics/Joints
-#	mkdir -p $(build)/Box2D/Dynamics/Rope
-#	mkdir -p $(build)/OpenSteer
-#	mkdir -p $(build)/bulletml
-#	mkdir -p $(build)/bulletml/tinyxml
 
 clean:
 	rm -R /tmp/emscripten_temp
@@ -87,7 +62,5 @@ install: $(hash_dir) build/raptor_island.js
 	cp -R ../../assets ~/emscripten.risingcode.com/public/latest
 	touch ~/emscripten.risingcode.com/public/latest/favicon.ico
 	install -C index.html ~/emscripten.risingcode.com/public/latest
-	#install -C sink.js ~/emscripten.risingcode.com/public/latest
-	#install -C library_sink.js ~/emscripten.risingcode.com/public/latest
 	install -C $(build)/raptor_island.js ~/emscripten.risingcode.com/public/latest
 	#ruby s3_uploader.rb $(HASH)
