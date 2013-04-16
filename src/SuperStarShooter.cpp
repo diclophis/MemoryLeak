@@ -21,7 +21,6 @@
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 2.0
 
-
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
 // to the PRIMARY bitmask) represent passages on the normal plane. Bits
@@ -44,18 +43,17 @@
 // The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
 #define UNDER_SHIFT 8
 
-
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT 1.0
+#define NETWORK_TIMEOUT 0.05
 
 #define LEVEL_LOAD_TIMEOUT 0.01
 
 struct my_struct {
-  int id;            /* we'll use this field as the key */
+  int id;            // we'll use this field as the key
   int index;
   int render;
   int update;
-  UT_hash_handle hh; /* makes this structure hashable */
+  UT_hash_handle hh; // makes this structure hashable
 };
 
 struct my_struct *users = NULL;
@@ -182,7 +180,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_SecondGridStopIndex = m_GridStopIndex + m_GridCount;
   m_SpriteCount += m_GridCount;
 
-
   m_WarpTimeout = 0.0;
 
 	m_Pather = new micropather::MicroPather(this);
@@ -232,7 +229,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   ss->render = m_PlayerStartIndex;
   m_PlayerIndex = m_PlayerStartIndex;
   HASH_ADD_INT(users, id, ss);    
-
 }
 
 
@@ -373,7 +369,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   }
 
   if (hitState != 0) {
-
     if (m_SwipedBeforeUp) {
       //end swipe
       if (hitState == 1) {
@@ -404,8 +399,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
     if (fastAbs(movedX) > (SUBDIVIDE / 4.0) || fastAbs(movedY) > (SUBDIVIDE / 4.0)) {
       m_SwipedBeforeUp = true;
-    } else {
-      //m_SwipedBeforeUp = false; instant follow
     }
   }
 }
@@ -439,10 +432,6 @@ void SuperStarShooter::RenderSpritePhase() {
         RenderSpriteRange(s->render, s->render + 1, m_Batches[2], offX, offY);
       }
     }
-
-    //for (std::vector<foofoo *>::iterator i = m_Batches.begin(); i != m_Batches.end(); ++i) {
-    //  AtlasSprite::RenderFoo(m_StateFoo, *i);
-    //}
 
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
@@ -483,7 +472,6 @@ int SuperStarShooter::Simulate() {
 
     if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
       if (ss->index == s->index) {
-        //LOGV("player is at target\n");
         player_at_target = true;
       }
     } else {
@@ -529,12 +517,10 @@ int SuperStarShooter::Simulate() {
 
   bool needs_next_step = false;
   if (player_at_target) {
-    //LOGV("waiting to warp\n");
     m_WarpTimeout += m_DeltaTime;
   }
 
   if (m_WarpTimeout > MAX_WAIT_BEFORE_WARP) {
-    //LOGV("warp wait over\n");
     needs_next_step = true;  
     m_WarpTimeout = 0.0;
   }
@@ -542,7 +528,6 @@ int SuperStarShooter::Simulate() {
   if (s != NULL) {
     m_SelectTimeout += m_DeltaTime;
     s->update = m_SimulationTime;
-
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
       m_DesiredTargetX = m_DeltaTime * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
       m_DesiredTargetY = m_DeltaTime * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
@@ -555,7 +540,6 @@ int SuperStarShooter::Simulate() {
   }
 
   // manage player target selection and pathfinding
-
   if (s != NULL) {
     if (m_TargetIsDirty) {
       m_TargetIsDirty = false;
@@ -584,7 +568,6 @@ int SuperStarShooter::Simulate() {
               m_TargetX = altTargetX;
               m_TargetY = altTargetY;
               foundEndState = true;
-              //LOGV("foundEndState\n");
               break;
             }
           }
@@ -608,11 +591,6 @@ int SuperStarShooter::Simulate() {
         switch (solved) {
           case micropather::MicroPather::SOLVED:
             m_CurrentStep = 1;
-            //m_Steps->erase(m_Steps->begin());
-            //for (int i=0; i<m_Steps->size(); i++) {
-            //  nodexyz *step = m_States[(intptr_t)m_Steps->at(i)];
-            //  LOGV("step %d: %d %d %f %f\n", i, step->x, step->y, ((float)step->x * SUBDIVIDE), ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET);
-            //}
             break;
           case micropather::MicroPather::NO_SOLUTION:
             break;
@@ -846,12 +824,11 @@ int SuperStarShooter::StatePointerFor(int x, int y, int z) {
 // and what sprite the cell should be draw with
 void SuperStarShooter::LoadMaze() {
   if (!m_LoadedLevel) {
-      m_Level = (uint16_t *)malloc(sizeof(uint16_t) * m_LevelFileHandles->at(m_LevelIndex)->len);
-      fseek(m_LevelFileHandles->at(m_LevelIndex)->fp, m_LevelFileHandles->at(m_LevelIndex)->off, SEEK_SET);
-      fread(m_Level, sizeof(char), m_LevelFileHandles->at(m_LevelIndex)->len, m_LevelFileHandles->at(m_LevelIndex)->fp);
-      m_LoadedLevel = true;
+    m_Level = (uint16_t *)malloc(sizeof(uint16_t) * m_LevelFileHandles->at(m_LevelIndex)->len);
+    fseek(m_LevelFileHandles->at(m_LevelIndex)->fp, m_LevelFileHandles->at(m_LevelIndex)->off, SEEK_SET);
+    fread(m_Level, sizeof(char), m_LevelFileHandles->at(m_LevelIndex)->len, m_LevelFileHandles->at(m_LevelIndex)->fp);
+    m_LoadedLevel = true;
   }
-
 
   int width = m_Level[0];
   int height = m_Level[1];
@@ -865,24 +842,6 @@ void SuperStarShooter::LoadMaze() {
     m_MazeCursor++;
     m_NeedsTerrainRebatched = true;
   }
-
-
-  /*
-  int cursor = 0;
-  int r = 0;
-  unsigned int i=0;
-
-  for (i=0; i<width*height; i++) {
-    BlitMazeCell(r, cursor, m_Level[i+2]);
-    cursor++;
-    if (cursor > (width - 1)) {
-      r++;
-      cursor = 0;
-    }
-  }
-  */
-  
-  //free(level);
 }
 
 
@@ -1127,6 +1086,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     s->render = s->index;
     AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE);
     HASH_ADD_INT(users, id, s);
+    LOGV("creating player from network: %d\n", i);
   }
 
   //if (false == m_AtlasSprites[s->index+0]->m_IsAlive) {
@@ -1142,8 +1102,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     //  //(m_AtlasSprites[s->render]->m_Position[1] != y)
     //)
   //) {
-
-    LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
+    //LOGV("updating player: %d %d %f %f\n", i, s->index, x, y);
     m_AtlasSprites[s->render]->SetPosition(x, (y));
   //}
 

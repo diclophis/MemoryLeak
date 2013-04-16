@@ -223,6 +223,10 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
 
   m_InputBuffer[bytesReadThisTick] = '\0';
   //LOGV("read: %s\n", m_InputBuffer);
+  //if (NULL == m_InputBuffer) {
+  //  LOGV("the fuck\n");
+  //  return 0;
+  //}
   yajl_status stat = yajl_parse(hand, m_InputBuffer, bytesReadThisTick * sizeof(unsigned char));
   if (stat == yajl_status_ok) {
     return 0;
@@ -395,7 +399,6 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
   yajl_config(hand, yajl_allow_comments, 1); // allow json comments
   yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
 
-  //struct sockaddr_in stSockAddr;
   memset(&stSockAddr, 0, sizeof(stSockAddr));
   stSockAddr.sin_family = AF_INET;
   stSockAddr.sin_port = htons(7001);
@@ -423,7 +426,6 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
     } else if (0 == addressResolution) {
       LOGV("char string (second parameter does not contain valid ipaddress)");
       StopNetwork();
-    } else {
     }
   }
 }
