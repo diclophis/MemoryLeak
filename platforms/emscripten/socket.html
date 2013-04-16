@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <script>
+      var exampleSocket = new WebSocket("ws://emscripten.risingcode.com:7001", ['binary']);
+      exampleSocket.onopen = function (event) {
+        console.log("open", event);
+        exampleSocket.send("{");
+        setInterval(function() {
+          exampleSocket.send("[");
+        }, 1000);
+      };
+      exampleSocket.onclose = function (event) {
+        console.log("close", event);
+      };
+      exampleSocket.onmessage = function (event) {
+        console.log(event.data);
+      };
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
