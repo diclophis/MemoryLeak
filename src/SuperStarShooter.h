@@ -97,6 +97,7 @@ public:
   bool UpdatePlayerAtIndex(int i, float x, float y, float a, float b);
   bool RequestRegistration(int i);
   float m_NetworkTickTimeout;
+  bool m_PerformNetworkWrite;
 
   float cdx;
   float cdy;
