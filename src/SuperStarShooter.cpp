@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.66)
+#define ZOOM (1.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
@@ -14,12 +14,15 @@
 #define FILL BLANK
 #define OVER WATER
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 33)
+#define VELOCITY (SUBDIVIDE * 35)
 #define MAX_WAIT_BEFORE_WARP (0.1)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 2.0
+#define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
+#define NETWORK_TIMEOUT 0.025
+#define LEVEL_LOAD_TIMEOUT 0.005
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
@@ -43,10 +46,6 @@
 // The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
 #define UNDER_SHIFT 8
 
-#define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT 0.025
-
-#define LEVEL_LOAD_TIMEOUT 0.01
 
 struct my_struct {
   int id;            // we'll use this field as the key
