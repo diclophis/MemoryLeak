@@ -102,7 +102,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   LoadMaze();
 
   // this will draw a temple
-  if (true) {
+  if (false) {
     //int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y
     int bt_x = 10;
     int bt_y = 10;
@@ -833,12 +833,14 @@ void SuperStarShooter::LoadMaze() {
   int height = m_Level[1];
 
   if (m_MazeCursor < (width * height)) {
-    int r = 0;
-    int cursor = 0;
-    cursor = m_MazeCursor % (width);
-    r = m_MazeCursor / (width);
-    BlitMazeCell(r, cursor, m_Level[m_MazeCursor+2]);
-    m_MazeCursor++;
+    for (int i=0; i<16; i++) {
+      int r = 0;
+      int cursor = 0;
+      cursor = m_MazeCursor % (width);
+      r = m_MazeCursor / (width);
+      BlitMazeCell(r, cursor, m_Level[m_MazeCursor+2]);
+      m_MazeCursor++;
+    }
     m_NeedsTerrainRebatched = true;
   }
 }
