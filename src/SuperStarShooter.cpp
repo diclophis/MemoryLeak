@@ -15,13 +15,13 @@
 #define OVER WATER
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define VELOCITY (SUBDIVIDE * 20)
-#define MAX_WAIT_BEFORE_WARP (0.1)
+#define MAX_WAIT_BEFORE_WARP (0.125)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 2.0
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT 0.0125
+#define NETWORK_TIMEOUT 0.125
 #define LEVEL_LOAD_TIMEOUT 0.005
 
 
@@ -429,7 +429,7 @@ void SuperStarShooter::RenderSpritePhase() {
     struct my_struct *s;
 
     for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
-      if ((m_SimulationTime - s->update) < 10.0) { 
+      if ((m_SimulationTime - s->update) < 30.0) { 
         RenderSpriteRange(s->render, s->render + 1, m_Batches[2], offX, offY);
       }
     }
@@ -1087,13 +1087,15 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE);
     HASH_ADD_INT(users, id, s);
     LOGV("creating player from network: %d\n", i);
+    m_AtlasSprites[s->render]->SetPosition(x, y);
   }
 
-  m_AtlasSprites[s->render]->SetPosition(x, y);
-  m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
-  m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
-
-  s->update = m_SimulationTime;
+  if (m_AtlasSprites[s->render]->m_TargetPosition[0] != a || m_AtlasSprites[s->render]->m_TargetPosition[1] != b) {
+    //m_AtlasSprites[s->render]->SetPosition(x, y);
+    m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
+    m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
+    s->update = m_SimulationTime;
+  }
 
   return true;
 }
