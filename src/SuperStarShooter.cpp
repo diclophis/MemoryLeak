@@ -4,8 +4,8 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.0)
-#define SUBDIVIDE (32.0)
+#define ZOOM (24.0)
+#define SUBDIVIDE (256.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -14,15 +14,15 @@
 #define FILL BLANK
 #define OVER WATER
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
-#define VELOCITY (SUBDIVIDE * 20)
-#define MAX_WAIT_BEFORE_WARP (0.125)
+#define VELOCITY (SUBDIVIDE * 100)
+#define MAX_WAIT_BEFORE_WARP (0.01)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 2.0
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT 0.125
-#define LEVEL_LOAD_TIMEOUT 0.005
+#define NETWORK_TIMEOUT (1.0 / 16.0)
+#define LEVEL_LOAD_TIMEOUT 0.0025
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -240,7 +240,7 @@ void SuperStarShooter::AddPlayer(float x, float y) {
     m_AtlasSprites[sub_index]->SetVelocity(VELOCITY, VELOCITY);
     m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 20;
+    m_AtlasSprites[sub_index]->m_Fps = 40;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
@@ -442,19 +442,6 @@ void SuperStarShooter::RenderSpritePhase() {
 
 
 int SuperStarShooter::Simulate() {
-  // process network events
-  m_NetworkTickTimeout += m_DeltaTime;
-  if (m_NetworkTickTimeout > NETWORK_TIMEOUT) {
-    m_NetworkTickTimeout = 0.0;
-    int network_status = m_Network->Tick(m_PerformNetworkWrite,
-      (int) m_AtlasSprites[m_PlayerIndex]->m_Position[0], (int) m_AtlasSprites[m_PlayerIndex]->m_Position[1],
-      (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
-    );
-    if (network_status > 0) {
-      //LOGV("incorrect network status %d\n", network_status);
-    }
-    //m_PerformNetworkWrite = false;
-  }
 
   // process network events
   m_LevelLoadTimeout += m_DeltaTime;
@@ -605,6 +592,7 @@ int SuperStarShooter::Simulate() {
     }
 
     if (needs_next_step && m_Steps->size() > 0 && m_CurrentStep < m_Steps->size()) {
+      m_NetworkTickTimeout += NETWORK_TIMEOUT;
       nodexyz *step = m_States[(intptr_t)m_Steps->at(m_CurrentStep)];
       //m_Steps->erase(m_Steps->begin());
       m_CurrentStep++;
@@ -707,6 +695,20 @@ int SuperStarShooter::Simulate() {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
     m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
     inverter *= -1.0;
+  }
+
+  // process network events
+  m_NetworkTickTimeout += m_DeltaTime;
+  if (m_NetworkTickTimeout > NETWORK_TIMEOUT) {
+    m_NetworkTickTimeout = 0.0;
+    int network_status = m_Network->Tick(m_PerformNetworkWrite,
+      (int) m_AtlasSprites[m_PlayerIndex]->m_Position[0], (int) m_AtlasSprites[m_PlayerIndex]->m_Position[1],
+      (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
+    );
+    if (network_status > 0) {
+      //LOGV("incorrect network status %d\n", network_status);
+    }
+    //m_PerformNetworkWrite = false;
   }
 
   return 1;
@@ -1086,7 +1088,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     s->render = s->index;
     AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE);
     HASH_ADD_INT(users, id, s);
-    LOGV("creating player from network: %d\n", i);
+    //LOGV("creating player from network: %d\n", i);
     m_AtlasSprites[s->render]->SetPosition(x, y);
   }
 
