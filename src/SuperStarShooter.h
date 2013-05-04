@@ -105,7 +105,7 @@ public:
   float m_DesiredTargetX;
   float m_DesiredTargetY;
 
-  void AddPlayer(float x, float y);
+  void AddPlayer(float x, float y, float v);
 
   int m_PlayerId;
 
@@ -113,6 +113,11 @@ public:
   bool m_LoadedLevel;
   int m_LevelIndex;
   int m_MazeCursor;
+  int m_MazeLoadStride;
+  int m_MazeWalkX;
+  int m_MazeWalkY;
+  int m_MazeWalkXX;
+  int m_MazeWalkYY;
   uint16_t *m_Level;
 
 };

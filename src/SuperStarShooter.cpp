@@ -22,7 +22,7 @@
 #define MANUAL_SCROLL_TIMEOUT 2.0
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
 #define NETWORK_TIMEOUT (1.0 / 16.0)
-#define LEVEL_LOAD_TIMEOUT 0.0025
+#define LEVEL_LOAD_TIMEOUT 0.01
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -100,8 +100,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_MazeCursor = 0;
   m_LevelIndex = 0;
   m_LevelLoadTimeout = 0;
+  m_MazeLoadStride = 1;
+  m_MazeWalkX = m_MazeWalkY = m_MazeWalkXX = m_MazeWalkYY = 0;
 
-  LoadMaze();
+  //LoadMaze();
 
   // this will draw a temple
   if (false) {
@@ -221,7 +223,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_TrailStopIndex = m_SpriteCount;
 
   m_PlayerStartIndex = m_SpriteCount;
-  AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
+  AddPlayer((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))), VELOCITY);
 
   struct my_struct *ss = (struct my_struct *)malloc(sizeof(struct my_struct));
   m_PlayerId = 0;
@@ -233,11 +235,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 }
 
 
-void SuperStarShooter::AddPlayer(float x, float y) {
+void SuperStarShooter::AddPlayer(float x, float y, float v) {
   for (unsigned int i=0; i<4; i++) {
     int sub_index = m_SpriteCount;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(VELOCITY, VELOCITY);
+    m_AtlasSprites[sub_index]->SetVelocity(v, v);
     m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 40;
@@ -751,8 +753,8 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   int ax = m_States[((intptr_t)node)]->x;
   int ay = m_States[((intptr_t)node)]->y;
 
-  const int dx[4] = { 1, 0, -1, 0};
-  const int dy[4] = { 0, 1, 0, -1};
+  const int dx[8] = { 1, 0, -1,  0,   1, -1,  1, -1};
+  const int dy[8] = { 0, 1,  0, -1,   1, -1, -1,  1};
   
   int lx = m_States[0]->x - ax;
   int ly = m_States[0]->y - ay;
@@ -766,7 +768,7 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
   
   float pass_cost = 0;
   
-  for( int i=0; i<4; i++) {
+  for( int i=0; i<8; i++) {
     int nx = ax + dx[i];
     int ny = ay + dy[i];	
     bool passable = false;
@@ -833,16 +835,57 @@ void SuperStarShooter::LoadMaze() {
   int width = m_Level[0];
   int height = m_Level[1];
 
+  //if (m_MazeCursor < (width * height)) {
+  //  for (int i=0; i<m_MazeLoadStride; i++) {
+  //    int r = 0;
+  //    int col = 0;
+  //    col = m_MazeCursor % (width);
+  //    row = m_MazeCursor / (width);
+  //    BlitMazeCell(row, col, m_Level[m_MazeCursor+2]);
+  //    m_MazeCursor++;
+  //  }
+  //  m_NeedsTerrainRebatched = true;
+  //}
+
+  int d = 15;
   if (m_MazeCursor < (width * height)) {
-    for (int i=0; i<16; i++) {
-      int r = 0;
-      int cursor = 0;
-      cursor = m_MazeCursor % (width);
-      r = m_MazeCursor / (width);
-      BlitMazeCell(r, cursor, m_Level[m_MazeCursor+2]);
+    if (m_MazeCursor == 0) {
+      BlitMazeCell(0, 0, d);
+      m_NeedsTerrainRebatched = true;
+      m_MazeWalkXX = 1;
       m_MazeCursor++;
+    } else {
+      if (m_MazeWalkYY == 0) {
+        if (m_MazeWalkY < (m_MazeWalkXX)) {
+          m_MazeWalkX = m_MazeWalkXX;
+          BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+          m_NeedsTerrainRebatched = true;
+          m_MazeCursor++;
+          m_MazeWalkY++;
+        } else {
+          BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+          m_NeedsTerrainRebatched = true;
+          m_MazeCursor++;
+          m_MazeWalkYY = 1;
+          m_MazeWalkX = (m_MazeWalkY - 1);
+          return;
+        }
+      }
+
+      if (m_MazeWalkYY == 1) {
+        BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+        m_NeedsTerrainRebatched = true;
+        m_MazeCursor++;
+        if (m_MazeWalkX == 0) {
+          m_MazeWalkXX++;
+          m_MazeWalkX = m_MazeWalkXX;
+          m_MazeWalkYY = 0;
+          m_MazeWalkY = 0;
+        } else {
+          m_MazeWalkX--;
+        }
+      }
     }
-    m_NeedsTerrainRebatched = true;
   }
 }
 
@@ -1086,7 +1129,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
     s->id = i;
     s->index = m_SpriteCount;
     s->render = s->index;
-    AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE);
+    AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE, VELOCITY * 0.75);
     HASH_ADD_INT(users, id, s);
     //LOGV("creating player from network: %d\n", i);
     m_AtlasSprites[s->render]->SetPosition(x, y);
@@ -1107,3 +1150,35 @@ bool SuperStarShooter::RequestRegistration(int i) {
   //m_PlayerId = i;
   return true;
 }
+
+/*
+public static void DrawCircle(int x0, int y0, int radius)
+{
+  int x = radius, y = 0;
+  int xChange = 1 - radius*2;
+  int yChange = 0;
+  int radiusError = 0;
+ 
+  while(x >= y)
+  {
+    DrawPixel(x + x0, y + y0);
+    DrawPixel(y + x0, x + y0);
+    DrawPixel(-x + x0, y + y0);
+    DrawPixel(-y + x0, x + y0);
+    DrawPixel(-x + x0, -y + y0);
+    DrawPixel(-y + x0, -x + y0);
+    DrawPixel(x + x0, -y + y0);
+    DrawPixel(y + x0, -x + y0);
+ 
+    y++;
+    radiusError += yChange;
+    yChange += 2;
+    if(((radiusError << 1) + xChange) > 0)
+    {
+      x--;
+      radiusError += xChange;
+      xChange += 2;
+    }
+  }
+}
+*/
