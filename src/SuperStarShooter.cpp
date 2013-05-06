@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.0)
+#define ZOOM (1.1)
 #define SUBDIVIDE (16.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
@@ -19,16 +19,16 @@
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
-#define VELOCITY (SUBDIVIDE * 100)
-#define MAX_WAIT_BEFORE_WARP (0.01)
+#define VELOCITY (SUBDIVIDE * 66)
+#define MAX_WAIT_BEFORE_WARP (0.03334)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
 #define NETWORK_TIMEOUT (1.0 / 16.0)
-#define LEVEL_LOAD_TIMEOUT 0.3333
-#define LEVEL_LOAD_STRIDE (16)
+#define LEVEL_LOAD_TIMEOUT 0.3334
+#define LEVEL_LOAD_STRIDE (8)
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -93,8 +93,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 2; //+ 2
-  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 2; //+ 2
+  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 3;
+  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -253,7 +253,7 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
     m_AtlasSprites[sub_index]->SetVelocity(v, v);
     m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 40;
+    m_AtlasSprites[sub_index]->m_Fps = 15;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     //m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.5, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.5);
     m_AtlasSprites[sub_index]->SetScale(PLAYER_SCALE_X, PLAYER_SCALE_Y); //(SUBDIVIDE / 2.0) * 1.5, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.5);
