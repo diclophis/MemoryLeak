@@ -36,7 +36,6 @@ public:
 	float m_Rotation;
   float m_LastRotation;
 
-  float *m_TargetPosition;
 
   bool MoveToTargetPosition(float dt);
 
@@ -60,7 +59,8 @@ public:
 	
 	static void ReleaseBuffers();
 	
-	float *m_Position;
+	double *m_Position;
+  double *m_TargetPosition;
 	float *m_Velocity;
 
 	void SetVelocity(float x, float y) {

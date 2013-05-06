@@ -25,10 +25,10 @@ AtlasSprite::~AtlasSprite() {
 AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
   m_Fps = 0;
   m_Rotation = m_LastRotation = 0.0;
-  m_Position = new float[2];
+  m_Position = new double[2];
   m_Velocity = new float[2];
   m_Scale = new float[2];
-  m_TargetPosition = new float[2];
+  m_TargetPosition = new double[2];
   m_TargetPosition[0] = 0.0;
   m_TargetPosition[1] = 0.0;
   m_Scale[0] = 1.0;
