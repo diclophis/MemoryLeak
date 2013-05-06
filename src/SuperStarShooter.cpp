@@ -4,8 +4,8 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (32.0)
-#define SUBDIVIDE (128.0 * 4)
+#define ZOOM (1.0)
+#define SUBDIVIDE (16.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -13,8 +13,8 @@
 #define SAND 98
 #define FILL BLANK
 #define OVER WATER
-#define PLAYER_SCALE_X ((SUBDIVIDE * 0.5) * 4.0)
-#define PLAYER_SCALE_Y ((SUBDIVIDE * 0.5) + (SUBDIVIDE * 0.2))
+#define PLAYER_SCALE_X ((SUBDIVIDE * 0.5) * 1.0)
+#define PLAYER_SCALE_Y ((SUBDIVIDE * 0.5) + (SUBDIVIDE * 0.2) * 1.0)
 //((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
@@ -93,8 +93,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 4;
-  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 4;
+  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 2; //+ 2
+  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 2; //+ 2
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
@@ -201,10 +201,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_States.push_back(new nodexyz());
   }
 
-  m_TargetX = m_CenterOfWorldX;
-  m_TargetY = m_CenterOfWorldY + 1;
+  //m_TargetX = m_CenterOfWorldX;
+  //m_TargetY = m_CenterOfWorldY + 1;
 
-  m_TargetIsDirty = true;
+  m_TargetIsDirty = false;
   m_SelectTimeout = MANUAL_SCROLL_TIMEOUT;
 
   m_GotLastSwipeAt = -10.0;
@@ -238,6 +238,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   ss->render = m_PlayerStartIndex;
   m_PlayerIndex = m_PlayerStartIndex;
   HASH_ADD_INT(users, id, ss);    
+
+	m_CameraActualOffsetX = (m_CenterOfWorldX * (SUBDIVIDE)); //m_m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
+  m_CameraActualOffsetY = (((m_CenterOfWorldY) * (SUBDIVIDE))) + PLAYER_OFFSET;
+  m_ForceRebuffer = true;
+	//m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 }
 
 
@@ -246,7 +251,7 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
     int sub_index = m_SpriteCount;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
     m_AtlasSprites[sub_index]->SetVelocity(v, v);
-    m_AtlasSprites[sub_index]->SetPosition(x + PLAYER_OFFSET_X, y + PLAYER_OFFSET);
+    m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 40;
     m_AtlasSprites[sub_index]->m_Frame = 0;
@@ -367,8 +372,8 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 
   float collide_x = (dx);
   float collide_y = (dy);
-  int cx = (collide_x / SUBDIVIDE);
-  int cy = (collide_y / SUBDIVIDE);
+  int cx = ((collide_x + PLAYER_OFFSET) / SUBDIVIDE);
+  int cy = ((collide_y + PLAYER_OFFSET) / SUBDIVIDE);
   bool collide_index_set = false;
 
   if (hitState == 0) {
@@ -376,6 +381,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
     m_StartedSwipe = false;
     m_SwipedBeforeUp = false;
+    m_ForceRebuffer = false;
   }
 
   if (hitState != 0) {
@@ -420,7 +426,7 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(cdx + SUBDIVIDE, cdy + SUBDIVIDE, 0);
+  glTranslatef(cdx + (SUBDIVIDE / 2), cdy + (SUBDIVIDE / 2), 0);
 
   if (m_Batches.size() == 3) {
     if (m_NeedsTerrainRebatched) {
@@ -607,10 +613,10 @@ int SuperStarShooter::Simulate() {
       m_CurrentStep++;
 
       float tx = ((float)step->x * SUBDIVIDE);
-      float ty = ((float)step->y * SUBDIVIDE) + PLAYER_OFFSET;
+      float ty = ((float)step->y * SUBDIVIDE);
 
       m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
-      m_AtlasSprites[s->render]->m_TargetPosition[1] = ty;
+      m_AtlasSprites[s->render]->m_TargetPosition[1] = ty + PLAYER_OFFSET;
 
       for (int i=0; i<4; i++) {
         if ((m_PlayerStartIndex + i) != s->render) {
@@ -657,7 +663,7 @@ int SuperStarShooter::Simulate() {
 
   if ((recenter_x || recenter_y) || m_NeedsTerrainRebatched) {
     m_NeedsTerrainRebatched = true;
-    for (int i=m_GridStartIndex; i<m_GridStopIndex; i++) {
+    for (int i=m_GridStartIndex; i<(m_GridStopIndex); i++) {
       int nsx = 0;
       int nsy = 0;
       int offset_index = i - m_GridStartIndex;
@@ -683,11 +689,50 @@ int SuperStarShooter::Simulate() {
       m_GridPositions[(i * 2)] = nsx;
       m_GridPositions[(i * 2) + 1] = nsy;
       if (nsx >= 0 && nsy >= 0) {
-        m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
-        m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
+        bool shorted = false;
+        bool fast_short = false;
+        m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
+
+        if ((recenter_x && recenter_y) || nsx == 0 || nsy == 0) {
+          shorted = false;
+          fast_short = true;
+        }
+
+        if (!fast_short && recenter_y) {
+          if (dsy < 0) {
+            if (i < (m_GridStopIndex + (GRID_X * dsy))) {
+              shorted = true;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + (GRID_X * -dsy)]->m_Frame; //m_Space->at(nsx, nsy, 0);
+            }
+          } else {
+            if (offset_index > (GRID_X * dsy)) {
+              shorted = true;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + (GRID_X * -dsy)]->m_OldFrame; //m_Space->at(nsx, nsy, 0);
+            }
+          }
+        } 
+        
+        if (!fast_short && recenter_x) {
+          if (dsx < 0) {
+            if ((offset_index % GRID_X) < (GRID_X + dsx)) {
+              shorted = true;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + -dsx]->m_Frame; //m_Space->at(nsx, nsy, 0);
+            }
+          } else {
+            if ((offset_index % GRID_X) > dsx) {
+              shorted = true;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + -dsx]->m_OldFrame; //m_Space->at(nsx, nsy, 0);
+            }
+          }
+        }
+
+        if (m_ForceRebuffer || !shorted) {
+          m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
+          m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
+        }
       } else {
         m_AtlasSprites[i]->m_Frame = OVER;
-        m_AtlasSprites[i + m_GridCount]->m_Frame = OVER;
+        m_AtlasSprites[i + m_GridCount]->m_Frame = BLANK;
       }
 
       xx++;
@@ -696,6 +741,10 @@ int SuperStarShooter::Simulate() {
         yy++;
       }
     }
+  }
+
+  if (m_ForceRebuffer) {
+    m_ForceRebuffer = false;
   }
 
   // manage trail that indicates player target

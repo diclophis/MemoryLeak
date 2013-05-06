@@ -119,5 +119,6 @@ public:
   int m_MazeWalkXX;
   int m_MazeWalkYY;
   uint16_t *m_Level;
+  bool m_ForceRebuffer;
 
 };
