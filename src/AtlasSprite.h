@@ -27,6 +27,7 @@ public:
 	int m_SpritesPerRow;
 	int m_Rows;
 	int m_Frame;
+	int m_OldFrame;
 	int m_Start;
 	int m_End;
 	unsigned int m_AnimationLength;
@@ -41,6 +42,7 @@ public:
 
 	void SetFrame(int f) {
 		m_Frame = f;
+    m_OldFrame = f;
 	};
 	
   ~AtlasSprite();

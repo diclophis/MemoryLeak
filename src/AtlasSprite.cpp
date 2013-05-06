@@ -41,6 +41,7 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
   m_AnimationLife = 0.0;
   m_IsAlive = true;
   m_Frame = 0;
+  m_OldFrame = 0;
   m_IsNinePatch = false;
   m_LastUsedBullet = 0;
 }
@@ -560,7 +561,7 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
     vertices[6] = (-w / 2.0);
     vertices[7] = (h / 2.0);
 
-    float fuzz = 0.0425;
+    float fuzz = 0.066;
     GLfloat tx = m_Sprites[i].tx1 + (fuzz * (m_Sprites[i].tx2 - m_Sprites[i].tx1));
     GLfloat ty = m_Sprites[i].ty1 + (fuzz * (m_Sprites[i].ty2 - m_Sprites[i].ty1));
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1) * (1.0 - fuzz * 2.0);
