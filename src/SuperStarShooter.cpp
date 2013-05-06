@@ -4,8 +4,8 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (24.0)
-#define SUBDIVIDE (256.0)
+#define ZOOM (32.0)
+#define SUBDIVIDE (128.0 * 4)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -13,16 +13,22 @@
 #define SAND 98
 #define FILL BLANK
 #define OVER WATER
+#define PLAYER_SCALE_X ((SUBDIVIDE * 0.5) * 4.0)
+#define PLAYER_SCALE_Y ((SUBDIVIDE * 0.5) + (SUBDIVIDE * 0.2))
+//((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
+
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
+#define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (SUBDIVIDE * 100)
 #define MAX_WAIT_BEFORE_WARP (0.01)
 #define MAX_SEARCH 60
 #define MAX_STATE_POINTERS 2048
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
-#define MANUAL_SCROLL_TIMEOUT 2.0
+#define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
 #define NETWORK_TIMEOUT (1.0 / 16.0)
-#define LEVEL_LOAD_TIMEOUT 0.01
+#define LEVEL_LOAD_TIMEOUT 0.3333
+#define LEVEL_LOAD_STRIDE (16)
 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -100,10 +106,10 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_MazeCursor = 0;
   m_LevelIndex = 0;
   m_LevelLoadTimeout = 0;
-  m_MazeLoadStride = 1;
+  m_MazeLoadStride = LEVEL_LOAD_STRIDE;
   m_MazeWalkX = m_MazeWalkY = m_MazeWalkXX = m_MazeWalkYY = 0;
 
-  //LoadMaze();
+  LoadMaze();
 
   // this will draw a temple
   if (false) {
@@ -131,7 +137,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
   }
 
-  LoadSound(0);
+  //LoadSound(0);
   CreateFoos();
 
   for (int i=0; i<(m_GridCount * 2); i++) {
@@ -240,11 +246,12 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
     int sub_index = m_SpriteCount;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
     m_AtlasSprites[sub_index]->SetVelocity(v, v);
-    m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
+    m_AtlasSprites[sub_index]->SetPosition(x + PLAYER_OFFSET_X, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 40;
     m_AtlasSprites[sub_index]->m_Frame = 0;
-    m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
+    //m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.5, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.5);
+    m_AtlasSprites[sub_index]->SetScale(PLAYER_SCALE_X, PLAYER_SCALE_Y); //(SUBDIVIDE / 2.0) * 1.5, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.5);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
     m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
@@ -520,8 +527,8 @@ int SuperStarShooter::Simulate() {
     m_SelectTimeout += m_DeltaTime;
     s->update = m_SimulationTime;
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
-      m_DesiredTargetX = m_DeltaTime * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
-      m_DesiredTargetY = m_DeltaTime * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
+      m_DesiredTargetX = m_DeltaTime * 4.0 * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
+      m_DesiredTargetY = m_DeltaTime * 4.0 * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
       m_CameraActualOffsetX += -m_DesiredTargetX;
       m_CameraActualOffsetY += -m_DesiredTargetY;
     } else if (m_StartedSwipe) {
@@ -847,42 +854,44 @@ void SuperStarShooter::LoadMaze() {
   //  m_NeedsTerrainRebatched = true;
   //}
 
-  int d = 15;
-  if (m_MazeCursor < (width * height)) {
-    if (m_MazeCursor == 0) {
-      BlitMazeCell(0, 0, d);
-      m_NeedsTerrainRebatched = true;
-      m_MazeWalkXX = 1;
-      m_MazeCursor++;
-    } else {
-      if (m_MazeWalkYY == 0) {
-        if (m_MazeWalkY < (m_MazeWalkXX)) {
-          m_MazeWalkX = m_MazeWalkXX;
-          BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
-          m_NeedsTerrainRebatched = true;
-          m_MazeCursor++;
-          m_MazeWalkY++;
-        } else {
-          BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
-          m_NeedsTerrainRebatched = true;
-          m_MazeCursor++;
-          m_MazeWalkYY = 1;
-          m_MazeWalkX = (m_MazeWalkY - 1);
-          return;
-        }
-      }
-
-      if (m_MazeWalkYY == 1) {
-        BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+  for (int i=0; i<m_MazeLoadStride; i++) {
+    int d = 15;
+    if (m_MazeCursor < (width * height)) {
+      if (m_MazeCursor == 0) {
+        BlitMazeCell(0, 0, d);
         m_NeedsTerrainRebatched = true;
+        m_MazeWalkXX = 1;
         m_MazeCursor++;
-        if (m_MazeWalkX == 0) {
-          m_MazeWalkXX++;
-          m_MazeWalkX = m_MazeWalkXX;
-          m_MazeWalkYY = 0;
-          m_MazeWalkY = 0;
-        } else {
-          m_MazeWalkX--;
+      } else {
+        if (m_MazeWalkYY == 0) {
+          if (m_MazeWalkY < (m_MazeWalkXX)) {
+            m_MazeWalkX = m_MazeWalkXX;
+            BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+            m_NeedsTerrainRebatched = true;
+            m_MazeCursor++;
+            m_MazeWalkY++;
+          } else {
+            BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+            m_NeedsTerrainRebatched = true;
+            m_MazeCursor++;
+            m_MazeWalkYY = 1;
+            m_MazeWalkX = (m_MazeWalkY - 1);
+            continue;
+          }
+        }
+
+        if (m_MazeWalkYY == 1) {
+          BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
+          m_NeedsTerrainRebatched = true;
+          m_MazeCursor++;
+          if (m_MazeWalkX == 0) {
+            m_MazeWalkXX++;
+            m_MazeWalkX = m_MazeWalkXX;
+            m_MazeWalkYY = 0;
+            m_MazeWalkY = 0;
+          } else {
+            m_MazeWalkX--;
+          }
         }
       }
     }
