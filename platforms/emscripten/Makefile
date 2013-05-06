@@ -3,6 +3,9 @@
 build=build
 
 CXXFLAGS=\
+-O2 \
+-s ASM_JS=1 \
+-s TOTAL_MEMORY=268435456 \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/include \
 -I../../src/include/libmodplug \
@@ -29,8 +32,8 @@ HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
 hash_dir=~/emscripten.risingcode.com/public/$(HASH)
 
 raptor_island: $(build) $(objects)
-	EMCC_DEBUG=1 $(CXX) $(objects) -o $(build)/raptor_island.bc
-	EMCC_DEBUG=1 $(CXX) --closure 0 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game', '_command']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
+	EMCC_DEBUG=1 $(CXX) -O2 -s ASM_JS=1 -s TOTAL_MEMORY=268435456 $(objects) -o $(build)/raptor_island.bc
+	EMCC_DEBUG=1 $(CXX) -O2 -s ASM_JS=1 -s TOTAL_MEMORY=268435456 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game', '_command']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
 
 $(build)/%.bc: %.cpp
 	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@

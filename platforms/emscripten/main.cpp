@@ -14,8 +14,8 @@
 #include "SDL.h"
 #include "SDL_audio.h"
 
-#define kWindowWidth 512
-#define kWindowHeight 512
+#define kWindowWidth 1024
+#define kWindowHeight 1024
 
 
 static int game_index = 0;
@@ -254,7 +254,7 @@ int main(int argc, char** argv) {
   }
 
   //sinkJsInit(sinkJsWriteFunc, 128, sizeof(short), 2);
-  sinkJsInit(sinkJsWriteFunc, 4096, sizeof(short), 2);
+  //sinkJsInit(sinkJsWriteFunc, 4096, sizeof(short), 2);
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight);
 
