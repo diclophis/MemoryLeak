@@ -97,9 +97,7 @@ static GLuint g_LastRenderBuffer = -1;
     }
     
     NSArray *level_names = [[[NSBundle mainBundle] pathsForResourcesOfType:nil inDirectory:@"assets/levels"] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-    for (NSString *path in level_names) {
-      NSLog(@"wtf level %@", path);
-        
+    for (NSString *path in level_names) {        
       const char *cPath1 = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
       FILE *fd = fopen(cPath1, "rb");
       fseek(fd, 0, SEEK_END);
