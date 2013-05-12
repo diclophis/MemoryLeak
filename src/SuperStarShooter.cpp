@@ -4,7 +4,7 @@
 #include "MemoryLeak.h"
 
 
-#define ZOOM (1.1)
+#define ZOOM (1.0)
 #define SUBDIVIDE (16.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
@@ -15,21 +15,19 @@
 #define OVER WATER
 #define PLAYER_SCALE_X ((SUBDIVIDE * 0.5) * 1.0)
 #define PLAYER_SCALE_Y ((SUBDIVIDE * 0.5) + (SUBDIVIDE * 0.2) * 1.0)
-//((SUBDIVIDE / 2.0) * 1.0, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.0);
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
-#define VELOCITY (SUBDIVIDE * 66)
-#define MAX_WAIT_BEFORE_WARP (0.03334)
-#define MAX_SEARCH 60
-#define MAX_STATE_POINTERS 2048
+#define VELOCITY (SUBDIVIDE * 65.5)
+#define MAX_WAIT_BEFORE_WARP (0.03345)
+#define MAX_SEARCH 32
+#define MAX_STATE_POINTERS 1024
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
 #define NETWORK_TIMEOUT (1.0 / 16.0)
 #define LEVEL_LOAD_TIMEOUT 0.3334
 #define LEVEL_LOAD_STRIDE (8)
-
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
@@ -137,7 +135,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     BlitIntoSpace(1, 249, 10, 7, bt_x, bt_y + 7);
   }
 
-  //LoadSound(0);
+  LoadSound(0);
   CreateFoos();
 
   for (int i=0; i<(m_GridCount * 2); i++) {
@@ -214,18 +212,16 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_DesiredTargetY = 0;
 
   m_TrailStartIndex = m_SpriteCount;
-  /*
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_TrailFoo, NULL));
-    m_AtlasSprites[m_SpriteCount]->SetPosition(0.0, 0.0);
-    m_AtlasSprites[m_SpriteCount]->m_IsAlive = true;
-    m_AtlasSprites[m_SpriteCount]->m_Fps = 0; 
-    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE / 2.5, SUBDIVIDE / 2.5);
+    m_AtlasSprites[m_SpriteCount]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
+    //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 15; 
+    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE, SUBDIVIDE);
     m_AtlasSprites[m_SpriteCount]->Build(0);
-    m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
+    //m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
     m_SpriteCount++;
   }
-  */
   m_TrailStopIndex = m_SpriteCount;
 
   m_PlayerStartIndex = m_SpriteCount;
@@ -294,8 +290,6 @@ void SuperStarShooter::BlitIntoSpace(int layer, int bottom_right_start, int widt
 
 
 void SuperStarShooter::CreateFoos() {
-  LOGV("SuperStarShooter::CreateFoos\n");
-
   ResetStateFoo();
 
   LoadTexture(0);
@@ -310,7 +304,7 @@ void SuperStarShooter::CreateFoos() {
 
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 128)); //1 + 1 + m_TrailCount));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 128 + m_TrailCount)); //1 + 1 + m_TrailCount));
   
   int p_foo = 0;
   if (m_SimulationTime > 0.0) {
@@ -385,7 +379,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   }
 
   if (hitState != 0) {
-    if (m_SwipedBeforeUp) {
+    if (false && m_SwipedBeforeUp) {
       //end swipe
       if (hitState == 1) {
         m_SelectTimeout = 0;
@@ -427,6 +421,7 @@ void SuperStarShooter::RenderModelPhase() {
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
   glTranslatef(cdx + (SUBDIVIDE / 2), cdy + (SUBDIVIDE / 2), 0);
+  //glTranslatef(0, 0, 0); //cdy + (SUBDIVIDE / 2), 0);
 
   if (m_Batches.size() == 3) {
     if (m_NeedsTerrainRebatched) {
@@ -438,6 +433,8 @@ void SuperStarShooter::RenderSpritePhase() {
     }
     
     m_Batches[2]->m_NumBatched = 0;
+
+
     float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
     float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
@@ -449,9 +446,12 @@ void SuperStarShooter::RenderSpritePhase() {
       }
     }
 
+    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[2], 0, 0);
+
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
+
   }
 }
 
@@ -468,12 +468,14 @@ int SuperStarShooter::Simulate() {
   struct my_struct *s;
   HASH_FIND_INT(users, &m_PlayerId, s);
 
+  //m_AtlasSprites[m_TrailStartIndex]->m_Position[0] = m_AtlasSprites[s->render]->m_Position[0];
+  //m_AtlasSprites[m_TrailStartIndex]->m_Position[1] = m_AtlasSprites[s->render]->m_Position[1];
+
   struct my_struct *ss;
 
   bool player_at_target = false;
 
   for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
-
     if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
       if (ss->index == s->index) {
         player_at_target = true;
@@ -640,6 +642,7 @@ int SuperStarShooter::Simulate() {
   dsx = ((cdx / SUBDIVIDE));
   dsy = ((cdy / SUBDIVIDE));
 
+
   if (abs(dsx) > 0) {
     recenter_x = true;
     cdx = 0;
@@ -691,7 +694,8 @@ int SuperStarShooter::Simulate() {
       if (nsx >= 0 && nsy >= 0) {
         bool shorted = false;
         bool fast_short = false;
-        m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
+
+        fast_short = true;
 
         if ((recenter_x && recenter_y) || nsx == 0 || nsy == 0) {
           shorted = false;
@@ -702,31 +706,36 @@ int SuperStarShooter::Simulate() {
           if (dsy < 0) {
             if (i < (m_GridStopIndex + (GRID_X * dsy))) {
               shorted = true;
-              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + (GRID_X * -dsy)]->m_Frame; //m_Space->at(nsx, nsy, 0);
+              m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + (GRID_X * -dsy)]->m_Frame;
             }
           } else {
             if (offset_index > (GRID_X * dsy)) {
               shorted = true;
-              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + (GRID_X * -dsy)]->m_OldFrame; //m_Space->at(nsx, nsy, 0);
+              m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + (GRID_X * -dsy)]->m_OldFrame;
             }
           }
         } 
         
         if (!fast_short && recenter_x) {
           if (dsx < 0) {
-            if ((offset_index % GRID_X) < (GRID_X + dsx)) {
+            if (((offset_index % GRID_X) < (GRID_X + dsx))) {
               shorted = true;
-              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + -dsx]->m_Frame; //m_Space->at(nsx, nsy, 0);
+              m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + -dsx]->m_Frame;
             }
           } else {
-            if ((offset_index % GRID_X) > dsx) {
+            if (((offset_index % GRID_X) > dsx)) {
               shorted = true;
-              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + -dsx]->m_OldFrame; //m_Space->at(nsx, nsy, 0);
+              m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
+              m_AtlasSprites[i]->m_Frame = m_AtlasSprites[i + -dsx]->m_OldFrame;
             }
           }
         }
 
         if (m_ForceRebuffer || !shorted) {
+          m_AtlasSprites[i]->m_OldFrame = m_AtlasSprites[i]->m_Frame;
           m_AtlasSprites[i]->m_Frame = m_Space->at(nsx, nsy, 0);
           m_AtlasSprites[i + m_GridCount]->m_Frame = m_Space->at(nsx, nsy, 1);
         }
@@ -751,7 +760,7 @@ int SuperStarShooter::Simulate() {
   float inverter = -1.0;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
+    //m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
     inverter *= -1.0;
   }
 
@@ -766,7 +775,6 @@ int SuperStarShooter::Simulate() {
     if (network_status > 0) {
       //LOGV("incorrect network status %d\n", network_status);
     }
-    //m_PerformNetworkWrite = false;
   }
 
   return 1;
@@ -904,9 +912,10 @@ void SuperStarShooter::LoadMaze() {
   //}
 
   for (int i=0; i<m_MazeLoadStride; i++) {
-    int d = 15;
+    int d = width;
     if (m_MazeCursor < (width * height)) {
       if (m_MazeCursor == 0) {
+        //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
         BlitMazeCell(0, 0, d);
         m_NeedsTerrainRebatched = true;
         m_MazeWalkXX = 1;
@@ -915,11 +924,13 @@ void SuperStarShooter::LoadMaze() {
         if (m_MazeWalkYY == 0) {
           if (m_MazeWalkY < (m_MazeWalkXX)) {
             m_MazeWalkX = m_MazeWalkXX;
+            //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
             BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
             m_NeedsTerrainRebatched = true;
             m_MazeCursor++;
             m_MazeWalkY++;
           } else {
+            //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
             BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
             m_NeedsTerrainRebatched = true;
             m_MazeCursor++;
@@ -930,6 +941,7 @@ void SuperStarShooter::LoadMaze() {
         }
 
         if (m_MazeWalkYY == 1) {
+          //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
           BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
           m_NeedsTerrainRebatched = true;
           m_MazeCursor++;
@@ -948,7 +960,10 @@ void SuperStarShooter::LoadMaze() {
 }
 
 
-void SuperStarShooter::BlitMazeCell(int row, int col, int mask) {
+void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
+  //    col = m_MazeCursor % (width);
+  //    row = m_MazeCursor / (width);
+  int mask = m_Level[2 + (row * w + col)];
   int x = row * 3;
   int y = col * 3;
   int bl = 60 + 16 + 16 + 16;

@@ -561,7 +561,7 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
     vertices[6] = (-w / 2.0);
     vertices[7] = (h / 2.0);
 
-    float fuzz = 0.033;
+    float fuzz = 0.0555533333;
     GLfloat tx = m_Sprites[i].tx1 + (fuzz * (m_Sprites[i].tx2 - m_Sprites[i].tx1));
     GLfloat ty = m_Sprites[i].ty1 + (fuzz * (m_Sprites[i].ty2 - m_Sprites[i].ty1));
     GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1) * (1.0 - fuzz * 2.0);
