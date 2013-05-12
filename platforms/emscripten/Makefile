@@ -6,16 +6,18 @@ CXXFLAGS=\
 -O2 \
 -s ASM_JS=1 \
 -s TOTAL_MEMORY=268435456 \
+-fno-rtti \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/include \
 -I../../src/include/libmodplug \
 -I../../src \
 -DDESKTOP \
--I../../src/Box2D \
 -I../../src/octree \
 -DMODPLUG_BASIC_SUPPORT \
 -DMODPLUG_FASTSOUNDLIB \
 -DUSE_GLES2 \
+#-fno-exceptions \
+#-funroll-loops \
 
 CFLAGS=$(CXXFLAGS)
 
