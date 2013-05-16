@@ -24,10 +24,11 @@
 #define MAX_STATE_POINTERS 1024
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
-#define BYTES_AT_A_TIME 65535 //((2 ^ 16) - 1)
-#define NETWORK_TIMEOUT (1.0 / 16.0)
-#define LEVEL_LOAD_TIMEOUT 0.3334
+#define BYTES_AT_A_TIME (65535)
+#define NETWORK_TIMEOUT (1.0 / 2.0)
+#define LEVEL_LOAD_TIMEOUT 0.34
 #define LEVEL_LOAD_STRIDE (8)
+#define MAX_OTHER_PLAYERS 128
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
@@ -66,7 +67,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   m_Network = new MazeNetwork(this, BYTES_AT_A_TIME);
   m_NetworkTickTimeout = 0.0;
-  m_PerformNetworkWrite = true;
+  m_PerformNetworkWrite = false;
 
   m_NeedsTerrainRebatched = true;
 
@@ -199,9 +200,6 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_States.push_back(new nodexyz());
   }
 
-  //m_TargetX = m_CenterOfWorldX;
-  //m_TargetY = m_CenterOfWorldY + 1;
-
   m_TargetIsDirty = false;
   m_SelectTimeout = MANUAL_SCROLL_TIMEOUT;
 
@@ -235,10 +233,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_PlayerIndex = m_PlayerStartIndex;
   HASH_ADD_INT(users, id, ss);    
 
-	m_CameraActualOffsetX = (m_CenterOfWorldX * (SUBDIVIDE)); //m_m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
+	m_CameraActualOffsetX = (m_CenterOfWorldX * (SUBDIVIDE));
   m_CameraActualOffsetY = (((m_CenterOfWorldY) * (SUBDIVIDE))) + PLAYER_OFFSET;
   m_ForceRebuffer = true;
-	//m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 }
 
 
@@ -251,8 +248,7 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 15;
     m_AtlasSprites[sub_index]->m_Frame = 0;
-    //m_AtlasSprites[sub_index]->SetScale((SUBDIVIDE / 2.0) * 1.5, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.5);
-    m_AtlasSprites[sub_index]->SetScale(PLAYER_SCALE_X, PLAYER_SCALE_Y); //(SUBDIVIDE / 2.0) * 1.5, ((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)) * 1.5);
+    m_AtlasSprites[sub_index]->SetScale(PLAYER_SCALE_X, PLAYER_SCALE_Y);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
     m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
@@ -304,7 +300,7 @@ void SuperStarShooter::CreateFoos() {
 
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), 128 + m_TrailCount)); //1 + 1 + m_TrailCount));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), MAX_OTHER_PLAYERS + 1 + m_TrailCount)); //1 + 1 + m_TrailCount));
   
   int p_foo = 0;
   if (m_SimulationTime > 0.0) {
@@ -446,7 +442,7 @@ void SuperStarShooter::RenderSpritePhase() {
       }
     }
 
-    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[2], 0, 0);
+    //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[2], 0, 0);
 
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
@@ -458,7 +454,6 @@ void SuperStarShooter::RenderSpritePhase() {
 
 int SuperStarShooter::Simulate() {
 
-  // process network events
   m_LevelLoadTimeout += m_DeltaTime;
   if (m_LevelLoadTimeout > LEVEL_LOAD_TIMEOUT) {
     LoadMaze();
@@ -611,7 +606,6 @@ int SuperStarShooter::Simulate() {
     if (needs_next_step && m_Steps->size() > 0 && m_CurrentStep < m_Steps->size()) {
       m_NetworkTickTimeout += NETWORK_TIMEOUT;
       nodexyz *step = m_States[(intptr_t)m_Steps->at(m_CurrentStep)];
-      //m_Steps->erase(m_Steps->begin());
       m_CurrentStep++;
 
       float tx = ((float)step->x * SUBDIVIDE);
@@ -768,14 +762,18 @@ int SuperStarShooter::Simulate() {
   m_NetworkTickTimeout += m_DeltaTime;
   if (m_NetworkTickTimeout > NETWORK_TIMEOUT) {
     m_NetworkTickTimeout = 0.0;
-    int network_status = m_Network->Tick(m_PerformNetworkWrite,
-      (int) m_AtlasSprites[m_PlayerIndex]->m_Position[0], (int) m_AtlasSprites[m_PlayerIndex]->m_Position[1],
-      (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
-    );
-    if (network_status > 0) {
-      //LOGV("incorrect network status %d\n", network_status);
-    }
+    m_PerformNetworkWrite = true;
   }
+
+  int network_status = m_Network->Tick(m_PerformNetworkWrite,
+    (int) m_AtlasSprites[m_PlayerIndex]->m_Position[0], (int) m_AtlasSprites[m_PlayerIndex]->m_Position[1],
+    (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[0], (int) m_AtlasSprites[m_PlayerIndex]->m_TargetPosition[1]
+  );
+  if (network_status > 0) {
+    //LOGV("incorrect network status %d\n", network_status);
+  }
+
+  m_PerformNetworkWrite = false;
 
   return 1;
 }
@@ -899,23 +897,10 @@ void SuperStarShooter::LoadMaze() {
   int width = m_Level[0];
   int height = m_Level[1];
 
-  //if (m_MazeCursor < (width * height)) {
-  //  for (int i=0; i<m_MazeLoadStride; i++) {
-  //    int r = 0;
-  //    int col = 0;
-  //    col = m_MazeCursor % (width);
-  //    row = m_MazeCursor / (width);
-  //    BlitMazeCell(row, col, m_Level[m_MazeCursor+2]);
-  //    m_MazeCursor++;
-  //  }
-  //  m_NeedsTerrainRebatched = true;
-  //}
-
   for (int i=0; i<m_MazeLoadStride; i++) {
     int d = width;
     if (m_MazeCursor < (width * height)) {
       if (m_MazeCursor == 0) {
-        //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
         BlitMazeCell(0, 0, d);
         m_NeedsTerrainRebatched = true;
         m_MazeWalkXX = 1;
@@ -924,13 +909,11 @@ void SuperStarShooter::LoadMaze() {
         if (m_MazeWalkYY == 0) {
           if (m_MazeWalkY < (m_MazeWalkXX)) {
             m_MazeWalkX = m_MazeWalkXX;
-            //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
             BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
             m_NeedsTerrainRebatched = true;
             m_MazeCursor++;
             m_MazeWalkY++;
           } else {
-            //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
             BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
             m_NeedsTerrainRebatched = true;
             m_MazeCursor++;
@@ -941,7 +924,6 @@ void SuperStarShooter::LoadMaze() {
         }
 
         if (m_MazeWalkYY == 1) {
-          //d = m_Level[2 + (m_MazeWalkX * m_MazeWalkY)];
           BlitMazeCell(m_MazeWalkX, m_MazeWalkY, d);
           m_NeedsTerrainRebatched = true;
           m_MazeCursor++;
@@ -1198,18 +1180,22 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
   HASH_FIND_INT(users, &i, s);
 
   if (NULL == s) {
-    s = (struct my_struct*)malloc(sizeof(struct my_struct));
-    s->id = i;
-    s->index = m_SpriteCount;
-    s->render = s->index;
-    AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE, VELOCITY * 0.75);
-    HASH_ADD_INT(users, id, s);
-    //LOGV("creating player from network: %d\n", i);
-    m_AtlasSprites[s->render]->SetPosition(x, y);
+    if ((((m_PlayerStopIndex - m_PlayerStartIndex) / 4) - 1) < MAX_OTHER_PLAYERS) {
+      s = (struct my_struct*)malloc(sizeof(struct my_struct));
+      s->id = i;
+      s->index = m_SpriteCount;
+      s->render = s->index;
+      AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE, VELOCITY * 0.75);
+      HASH_ADD_INT(users, id, s);
+      m_AtlasSprites[s->render]->SetPosition(x, y);
+    } else {
+      return true;
+    }
   }
 
   if (m_AtlasSprites[s->render]->m_TargetPosition[0] != a || m_AtlasSprites[s->render]->m_TargetPosition[1] != b) {
-    //m_AtlasSprites[s->render]->SetPosition(x, y);
+    //m_AtlasSprites[s->render]->m_Position[0] = (x);
+    //m_AtlasSprites[s->render]->m_Position[1] = (y);
     m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
     m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
     s->update = m_SimulationTime;
@@ -1223,35 +1209,3 @@ bool SuperStarShooter::RequestRegistration(int i) {
   //m_PlayerId = i;
   return true;
 }
-
-/*
-public static void DrawCircle(int x0, int y0, int radius)
-{
-  int x = radius, y = 0;
-  int xChange = 1 - radius*2;
-  int yChange = 0;
-  int radiusError = 0;
- 
-  while(x >= y)
-  {
-    DrawPixel(x + x0, y + y0);
-    DrawPixel(y + x0, x + y0);
-    DrawPixel(-x + x0, y + y0);
-    DrawPixel(-y + x0, x + y0);
-    DrawPixel(-x + x0, -y + y0);
-    DrawPixel(-y + x0, -x + y0);
-    DrawPixel(x + x0, -y + y0);
-    DrawPixel(y + x0, -x + y0);
- 
-    y++;
-    radiusError += yChange;
-    yChange += 2;
-    if(((radiusError << 1) + xChange) > 0)
-    {
-      x--;
-      radiusError += xChange;
-      xChange += 2;
-    }
-  }
-}
-*/
