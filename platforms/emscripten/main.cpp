@@ -253,8 +253,7 @@ int main(int argc, char** argv) {
     closedir(dir);
   }
 
-  //sinkJsInit(sinkJsWriteFunc, 128, sizeof(short), 2);
-  //sinkJsInit(sinkJsWriteFunc, 4096, sizeof(short), 2);
+  sinkJsInit(sinkJsWriteFunc, 4096, sizeof(short), 2);
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight);
 
