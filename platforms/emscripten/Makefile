@@ -1,11 +1,16 @@
 # OSX Makefile, needs to know where the main src root is
 
+TOTAL_ALLOWED_RAM=268435456
+OPTIMIZE_LEVEL=-O2
+USE_ASM_JS=1
+USE_CLOSURE=0
+
 build=build
 
 CXXFLAGS=\
--O2 \
--s ASM_JS=1 \
--s TOTAL_MEMORY=268435456 \
+$(OPTIMIZE_LEVEL) \
+-s ASM_JS=$(USE_ASM_JS) \
+-s TOTAL_MEMORY=$(TOTAL_ALLOWED_RAM) \
 -fno-rtti \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/include \
@@ -18,6 +23,8 @@ CXXFLAGS=\
 -DUSE_GLES2 \
 #-fno-exceptions \
 #-funroll-loops \
+#-O2 \
+#-s ASM_JS=1 \
 
 CFLAGS=$(CXXFLAGS)
 
@@ -34,8 +41,8 @@ HASH=$(shell md5sum build/raptor_island.js | cut -d" " -f 1)
 hash_dir=~/emscripten.risingcode.com/public/$(HASH)
 
 raptor_island: $(build) $(objects)
-	EMCC_DEBUG=1 $(CXX) -O2 -s ASM_JS=1 -s TOTAL_MEMORY=268435456 $(objects) -o $(build)/raptor_island.bc
-	EMCC_DEBUG=1 $(CXX) -O2 -s ASM_JS=1 -s TOTAL_MEMORY=268435456 -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game', '_command']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
+	EMCC_DEBUG=1 $(CXX) $(OPTIMIZE_LEVEL) -s ASM_JS=$(USE_ASM_JS) --closure $(USE_CLOSURE) -s TOTAL_MEMORY=$(TOTAL_ALLOWED_RAM) $(objects) -o $(build)/raptor_island.bc
+	EMCC_DEBUG=1 $(CXX) $(OPTIMIZE_LEVEL) -s ASM_JS=$(USE_ASM_JS) --closure $(USE_CLOSURE) -s TOTAL_MEMORY=$(TOTAL_ALLOWED_RAM) -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_free', '_start_game', '_command']" --js-library library_sink.js $(build)/raptor_island.bc -o $(build)/raptor_island.js
 
 $(build)/%.bc: %.cpp
 	EMCC_DEBUG=1 $(CXX) $(CXXFLAGS) -c $< -o $@
