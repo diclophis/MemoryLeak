@@ -49,5 +49,7 @@ public:
 
   int m_MessageIndex;
 
+  char m_ArgumentBuffer[2048];
+
 
 };

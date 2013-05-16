@@ -20,46 +20,49 @@ static int reformat_number(void *ctx, const char *s, size_t l) {
     MazeNetwork *n = (MazeNetwork *)ctx;
 
     //LOGV("reformat_number enter %d\n", n->m_State);
-
+    strncpy(n->m_ArgumentBuffer, s, l);
+  
+    n->m_ArgumentBuffer[l] = '\0';
+  
     switch(n->m_State) {
       case 4:
         // first arg of request_registration is int player id
-        n->m_Arg0 = strtof(s, (char **)NULL);
+        n->m_Arg0 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         break;
 
       case 5:
         // first arg of update_player is int player id
-        n->m_Arg0 = strtof(s, (char **)NULL);
+        n->m_Arg0 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         n->m_State = 6;
         break;
 
       case 6:
         // second arg is float
-        n->m_Arg1 = strtof(s, (char **)NULL);
+        n->m_Arg1 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         n->m_State = 7;
         break;
     
       case 7:
         // thirg arg is float
-        n->m_Arg2 = strtof(s, (char **)NULL);
+        n->m_Arg2 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         n->m_State = 8;
         break;
 
       case 8:
         // thirg arg is float
-        n->m_Arg3 = strtof(s, (char **)NULL);
+        n->m_Arg3 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         n->m_State = 9;
         break;
 
       case 9:
         // thirg arg is float
-        n->m_Arg4 = strtof(s, (char **)NULL);
+        n->m_Arg4 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         n->m_State = 10;
         break;
 
       case 10:
         // thirg arg is float
-        n->m_Arg5 = strtof(s, (char **)NULL);
+        n->m_Arg5 = strtof(n->m_ArgumentBuffer, (char **)NULL);
         n->m_State = 11;
         break;
     };
@@ -190,7 +193,7 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
     // we need to try and send on every tick to make sure the connection
     // is still active, if it fails, restart networking
     char payload[2048];
-    int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%f, %f, %f, %f]}\n", x, y, a, b);
+    int out = snprintf(payload, 2048 - 1, "{\"update_player\":[%d, %d, %d, %d]}\n", (int)x, (int)y, (int)a, (int)b);
 
     ssize_t sent = send(m_Socket, payload, out, 0); //MSG_DONTWAIT
     if (sent > 0) {
@@ -214,7 +217,13 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
     return 0;
   }
 
-  bytesReadThisTick = recv(m_Socket, (void *)m_InputBuffer, bytesAvailableThisTick, 0);
+  int bytesGoingToReadThisTick = bytesAvailableThisTick;
+
+  if (bytesGoingToReadThisTick > m_InputBufferSize) {
+    bytesGoingToReadThisTick = m_InputBufferSize;
+  }
+  
+  bytesReadThisTick = recv(m_Socket, (void *)m_InputBuffer, bytesGoingToReadThisTick, 0);
 
   if (bytesReadThisTick < 1) {
     perror("recv m_InputBuffer failed\n");
@@ -222,11 +231,7 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
   }
 
   m_InputBuffer[bytesReadThisTick] = '\0';
-  //LOGV("read: %s\n", m_InputBuffer);
-  //if (NULL == m_InputBuffer) {
-  //  LOGV("the fuck\n");
-  //  return 0;
-  //}
+
   yajl_status stat = yajl_parse(hand, m_InputBuffer, bytesReadThisTick * sizeof(unsigned char));
   if (stat == yajl_status_ok) {
     return 0;
@@ -299,11 +304,9 @@ int MazeNetwork::ConnectNetwork(void) {
   // if select returns 0, it means we timed out, we should retry on the next tick
   if (0 == retVal) {
     // but if we timeout too many times, just reset the whole network
-    if (m_ConnectionSelectsAttempted++ > 1024) {
-      LOGV("shit\n");
+    if (m_ConnectionSelectsAttempted++ > 2048) {
       return StopNetwork();
     } else {
-      //LOGV("stall\n");
       // return OK state, but don't increment the connection state
       return 0;
     }
