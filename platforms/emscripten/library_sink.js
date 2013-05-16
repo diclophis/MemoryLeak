@@ -29,7 +29,8 @@ var LibrarySinkJs = {
     SinkJs.sink = Sink();
     SinkJs.proxy = SinkJs.sink.createProxy(SinkJs.frames, SinkJs.channels);
     SinkJs.proxy.on('audioprocess', function(buffer, channels) {
-      FUNCTION_TABLE[SinkJs.writeFunc](SinkJs.nativeBuffer, SinkJs.nativeBufferSize, channels);
+      //FUNCTION_TABLE[SinkJs.writeFunc](SinkJs.nativeBuffer, SinkJs.nativeBufferSize, channels);
+      Runtime.dynCall('viii', SinkJs.writeFunc, [SinkJs.nativeBuffer, SinkJs.nativeBufferSize, channels]);
       SinkJs.nativeBufferToJavascriptBuffer(SinkJs.nativeBuffer, buffer, SinkJs.sizeOfFrame);
     });
   }
