@@ -5,7 +5,7 @@
 
 
 #define ZOOM (1.0)
-#define SUBDIVIDE (16.0)
+#define SUBDIVIDE (64.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -20,7 +20,7 @@
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (SUBDIVIDE * 65.5)
 #define MAX_WAIT_BEFORE_WARP (0.03345)
-#define MAX_SEARCH 32
+#define MAX_SEARCH 64
 #define MAX_STATE_POINTERS 1024
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
@@ -92,14 +92,14 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  GRID_X = ceil((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 3;
-  GRID_Y = ceil((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 3;
+  GRID_X = ((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 3;
+  GRID_Y = ((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 0; //MAX_SEARCH * 2;
+  m_TrailCount = 1; //MAX_SEARCH * 2;
 
   m_LoadedLevel = false;
   m_MazeCursor = 0;
@@ -212,10 +212,11 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_TrailStartIndex = m_SpriteCount;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites.push_back(new SpriteGun(m_TrailFoo, NULL));
-    m_AtlasSprites[m_SpriteCount]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
+    //m_AtlasSprites[m_SpriteCount]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
+    m_AtlasSprites[m_SpriteCount]->SetPosition(0, 0);
     //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
-    m_AtlasSprites[m_SpriteCount]->m_Fps = 15; 
-    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE, SUBDIVIDE);
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 25;
+    m_AtlasSprites[m_SpriteCount]->SetScale(100, 100);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     //m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
     m_SpriteCount++;
@@ -300,7 +301,8 @@ void SuperStarShooter::CreateFoos() {
 
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), MAX_OTHER_PLAYERS + 1 + m_TrailCount)); //1 + 1 + m_TrailCount));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), MAX_OTHER_PLAYERS + 1)); //1 + 1 + m_TrailCount));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), m_TrailCount)); //1 + 1 + m_TrailCount));
   
   int p_foo = 0;
   if (m_SimulationTime > 0.0) {
@@ -416,38 +418,46 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  glTranslatef(cdx + (SUBDIVIDE / 2), cdy + (SUBDIVIDE / 2), 0);
-  //glTranslatef(0, 0, 0); //cdy + (SUBDIVIDE / 2), 0);
+  float a = cdx + (SUBDIVIDE / 2);
+  float b = cdy + (SUBDIVIDE / 2);
+  float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
+  float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
-  if (m_Batches.size() == 3) {
+  float offX2 = (-0 / (SUBDIVIDE / 2.0));
+  float offY2 = -0 / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
+
+
+  if (m_Batches.size() == 4) {
     if (m_NeedsTerrainRebatched) {
       m_Batches[0]->m_NumBatched = 0;
       m_Batches[1]->m_NumBatched = 0;
-      RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0]);
-      RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1]);
+      RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0], 0, 0);
+      //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1], 0, 0);
       m_NeedsTerrainRebatched = false;
     }
     
     m_Batches[2]->m_NumBatched = 0;
-
-
-    float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
-    float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
+    m_Batches[3]->m_NumBatched = 0;
 
     struct my_struct *s;
 
     for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
       if ((m_SimulationTime - s->update) < 30.0) { 
         RenderSpriteRange(s->render, s->render + 1, m_Batches[2], offX, offY);
+        //RenderSpriteRange(s->render, s->render + 1, m_Batches[2], 0, 0);
       }
     }
 
-    //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[2], 0, 0);
 
+    glTranslatef(a, b, 0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
 
+    glTranslatef(-m_LastCenterX, -m_LastCenterY, 0);
+    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0, 0);
+  
+    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
+    //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
   }
 }
 
@@ -532,6 +542,8 @@ int SuperStarShooter::Simulate() {
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
       m_DesiredTargetX = m_DeltaTime * 4.0 * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
       m_DesiredTargetY = m_DeltaTime * 4.0 * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
+      //m_DesiredTargetX = (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
+      //m_DesiredTargetY = (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
       m_CameraActualOffsetX += -m_DesiredTargetX;
       m_CameraActualOffsetY += -m_DesiredTargetY;
     } else if (m_StartedSwipe) {
@@ -635,7 +647,6 @@ int SuperStarShooter::Simulate() {
 
   dsx = ((cdx / SUBDIVIDE));
   dsy = ((cdy / SUBDIVIDE));
-
 
   if (abs(dsx) > 0) {
     recenter_x = true;
@@ -754,6 +765,8 @@ int SuperStarShooter::Simulate() {
   float inverter = -1.0;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = m_TargetX * SUBDIVIDE;
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = m_TargetY * SUBDIVIDE;
     //m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
     inverter *= -1.0;
   }
