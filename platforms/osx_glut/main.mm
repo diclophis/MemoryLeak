@@ -318,6 +318,12 @@ int main(int argc, char** argv) {
 
   audioUnitSetup();
 
+#if defined(__APPLE__) && !defined (VMDMESA)
+int swap_interval = 1;
+CGLContextObj cgl_context = CGLGetCurrentContext();
+CGLSetParameter(cgl_context, kCGLCPSwapInterval, &swap_interval);
+#endif
+
   glutMainLoop();
 
   [pool release];
