@@ -562,11 +562,11 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
     vertices[7] = (h / 2.0);
 
     //float fuzz = 0.0553533333;
-    float fuzz = 0.01;
-    GLfloat tx = m_Sprites[i].tx1 + (fuzz * (m_Sprites[i].tx2 - m_Sprites[i].tx1));
-    GLfloat ty = m_Sprites[i].ty1 + (fuzz * (m_Sprites[i].ty2 - m_Sprites[i].ty1));
-    GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1) * (1.0 - fuzz * 2.0);
-    GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1) * (1.0 - fuzz * 2.0);
+    //float fuzz = 0.0;
+    GLfloat tx = (m_Sprites[i].tx1); // + (fuzz * (m_Sprites[i].tx2 - m_Sprites[i].tx1))); // - 0.000000000000000001; //(1.0f / 8192.0f * 32.0);
+    GLfloat ty = (m_Sprites[i].ty1); // + (fuzz * (m_Sprites[i].ty2 - m_Sprites[i].ty1))); // - (1.0f / 8192.0f);
+    GLfloat tw = (m_Sprites[i].tx2 - m_Sprites[i].tx1); // - (1.0 / 32.0); // * (1.0 - fuzz * 2.0);
+    GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1); // * (1.0 - fuzz * 2.0);
 
     texture = (GLfloat *) malloc(8 * sizeof(GLfloat));
     texture[0] = tx;
@@ -581,7 +581,7 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
     for (unsigned int j=0; j<4; j++) {
       sprite_foos[sprite_foo_offset].vertex[0] = vertices[(j * 2) + 0]; 
       sprite_foos[sprite_foo_offset].vertex[1] = vertices[(j * 2) + 1];
-      sprite_foos[sprite_foo_offset].texture[0] = (texture[(j * 2) + 0]); 
+      sprite_foos[sprite_foo_offset].texture[0] = (texture[(j * 2) + 0]);
       sprite_foos[sprite_foo_offset].texture[1] = (texture[(j * 2) + 1]);
       sprite_foo_offset++;
     }

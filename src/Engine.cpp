@@ -25,6 +25,7 @@ static const char vertex_shader[] =
 "{\n"
 "OutCoord = InCoord;\n"
 "gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0, 1.0);\n"
+//"gl_Position.x += 0.5;\n"
 "}\n";
 
 
@@ -37,6 +38,8 @@ static const char fragment_shader[] =
 "void main()\n"
 "{\n"
 "gl_FragColor = texture2D(Sampler, OutCoord);\n"
+//"gl_FragColor = texture2D(Sampler,  gl_TexCoord[0].st);\n"
+//"gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
 "}\n";
 //TODO: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/vignette.js
 
@@ -114,6 +117,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 	m_SimulationTime = 0.0;		
 	m_GameState = 2;
   m_Zoom = 1.0;
+  m_Zoom2 = 1.0;
   m_Fov = 10.0;
 
 	m_IsPushingAudio = false;
@@ -191,10 +195,10 @@ void Engine::DrawScreen(float rotation) {
     // clear the frame, this is required for optimal performance, which I think is odd
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         
-    float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
-    float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom;
-    float c = (-m_ScreenHalfHeight) * m_Zoom;
-    float d = m_ScreenHalfHeight * m_Zoom;
+    float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom2;
+    float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom2;
+    float c = (-m_ScreenHalfHeight) * m_Zoom2;
+    float d = m_ScreenHalfHeight * m_Zoom2;
     float e = 1.0;
     float f = -1.0;
 
@@ -471,6 +475,27 @@ void Engine::LoadTexture(int i) {
   glBindTexture(GL_TEXTURE_2D, textureHandle);
 
 
+
+  bool useSwizzledBits = true;
+  if (useSwizzledBits) {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, tempData);
+  } else {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  }
+ 
+  
+  bool generateMipMap = true;
+  if (generateMipMap) {
+    glGenerateMipmap(GL_TEXTURE_2D);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+  }// else {
+  //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  //}
+  
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -484,21 +509,6 @@ void Engine::LoadTexture(int i) {
 
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  bool useSwizzledBits = true;
-  if (useSwizzledBits) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, tempData);
-  } else {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-  }
-  
-  bool generateMipMap = true;
-  if (generateMipMap) {
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-  } else {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  }
 
   glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -608,7 +618,6 @@ void Engine::ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfl
   tmp[14] = -(nearZ + farZ) / deltaZ;
   
   memcpy(m, tmp, sizeof(tmp));
-  
 }
 
 

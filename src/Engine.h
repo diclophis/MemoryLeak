@@ -89,6 +89,7 @@ public:
 
   bool m_IsPushingAudio;
   float m_Zoom;
+  float m_Zoom2;
 
   int m_SpriteCount;
   int m_ModelCount;

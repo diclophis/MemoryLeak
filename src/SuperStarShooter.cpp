@@ -5,7 +5,8 @@
 
 
 #define ZOOM (1.0)
-#define SUBDIVIDE (64.0)
+#define ZOOM2 (1.0 / 32.0)
+#define SUBDIVIDE (4.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -78,6 +79,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   int yy = 0;
 
   m_Zoom = ZOOM;
+  m_Zoom2 = ZOOM2;
 
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
@@ -92,14 +94,18 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  GRID_X = ((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))) + 3;
-  GRID_Y = ((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))) + 3;
+  GRID_X = 20; //((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))); // + 3;
+  GRID_Y = 20; //((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))); // + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
+  float sizeOfCell = (SUBDIVIDE / 2.0);
+
+  LOGV("%f %d %d %d\n", sizeOfCell, m_GridCount, GRID_X, GRID_Y);
+
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 1; //MAX_SEARCH * 2;
+  m_TrailCount = 0; //MAX_SEARCH * 2;
 
   m_LoadedLevel = false;
   m_MazeCursor = 0;
@@ -168,7 +174,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
       m_AtlasSprites[m_SpriteCount + m_GridCount]->m_Frame = BLANK;
     }
 
-    float sizeOfCell = (SUBDIVIDE / 2.0);
+
 
     m_AtlasSprites[m_SpriteCount]->SetScale(sizeOfCell, sizeOfCell);
     m_AtlasSprites[m_SpriteCount + m_GridCount]->SetScale(sizeOfCell, sizeOfCell);
@@ -357,8 +363,8 @@ void SuperStarShooter::DestroyFoos() {
 
 // handle touch events
 void SuperStarShooter::Hit(float x, float y, int hitState) {
-  float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom;
-	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom;
+  float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom2;
+	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom2;
   float dx = (xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
   float dy = (yy + m_CameraActualOffsetY) - (SUBDIVIDE / 2.0);
 
@@ -415,23 +421,26 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 void SuperStarShooter::RenderModelPhase() {
 }
 
+float roundp(float num, int precision)
+{
+    return floorf(num * pow(10.0f,precision) + .5f)/pow(10.0f,precision);
+    }
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = cdx + (SUBDIVIDE / 2);
-  float b = cdy + (SUBDIVIDE / 2);
+  float a = roundp(cdx, 1); //(((int)cdx) + (SUBDIVIDE / 2.0)) + 1000;
+  float b = roundp(cdy, 1); //(((int)cdy) + (SUBDIVIDE / 2.0)) + 1000;
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
-  float offY = -m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
+  float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
-  float offX2 = (-0 / (SUBDIVIDE / 2.0));
-  float offY2 = -0 / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
-
+  //float offX2 = (-0 / (SUBDIVIDE / 2.0));
+  //float offY2 = -0 / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
   if (m_Batches.size() == 4) {
     if (m_NeedsTerrainRebatched) {
       m_Batches[0]->m_NumBatched = 0;
       m_Batches[1]->m_NumBatched = 0;
-      RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0], 0, 0);
+      RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0], 0.0, 0.0);
       //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1], 0, 0);
       m_NeedsTerrainRebatched = false;
     }
@@ -448,15 +457,15 @@ void SuperStarShooter::RenderSpritePhase() {
       }
     }
 
-
-    glTranslatef(a, b, 0);
+    glTranslatef(a, b, 0.0);
+    //glTranslatef(0.0, 0.0, 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
 
-    glTranslatef(-m_LastCenterX, -m_LastCenterY, 0);
-    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0, 0);
+    //glTranslatef(-m_LastCenterX, -m_LastCenterY, 0.0);
+    //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
   
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
+    //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
     //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
   }
 }
@@ -681,8 +690,8 @@ int SuperStarShooter::Simulate() {
       float px = (((xx) * SUBDIVIDE) - ((GRID_X / 2) * SUBDIVIDE));
       float py = (((yy) * SUBDIVIDE) - ((GRID_Y / 2) * SUBDIVIDE));
 
-      float foo_x = (0 + px);
-      float foo_y = (0 + py);
+      float foo_x = (px);
+      float foo_y = (py);
 
       if (recenter_x) {
         nsx -= dsx;
