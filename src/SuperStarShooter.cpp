@@ -5,8 +5,8 @@
 
 
 #define ZOOM (1.0)
-#define ZOOM2 (1.0 / 32.0)
-#define SUBDIVIDE (4.0)
+#define ZOOM2 (1.0 / 3.9)
+#define SUBDIVIDE (8.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -94,8 +94,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  GRID_X = 20; //((((m_ScreenWidth * m_Zoom) / SUBDIVIDE))); // + 3;
-  GRID_Y = 20; //((((m_ScreenHeight * m_Zoom) / SUBDIVIDE))); // + 3;
+  float overX = 0.33;
+  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
+  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
@@ -423,13 +424,13 @@ void SuperStarShooter::RenderModelPhase() {
 
 float roundp(float num, int precision)
 {
-    return floorf(num * pow(10.0f,precision) + .5f)/pow(10.0f,precision);
-    }
+  return floorf(num * pow(10.0f,precision) + .5f)/pow(10.0f,precision);
+}
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = roundp(cdx, 1); //(((int)cdx) + (SUBDIVIDE / 2.0)) + 1000;
-  float b = roundp(cdy, 1); //(((int)cdy) + (SUBDIVIDE / 2.0)) + 1000;
+  float a = roundp(cdx, 32) + 0.375; //(((int)cdx) + (SUBDIVIDE / 2.0)) + 1000;
+  float b = roundp(cdy, 32) + 0.375; //(((int)cdy) + (SUBDIVIDE / 2.0)) + 1000;
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
@@ -437,13 +438,13 @@ void SuperStarShooter::RenderSpritePhase() {
   //float offY2 = -0 / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
 
   if (m_Batches.size() == 4) {
-    if (m_NeedsTerrainRebatched) {
+    //if (m_NeedsTerrainRebatched) {
       m_Batches[0]->m_NumBatched = 0;
       m_Batches[1]->m_NumBatched = 0;
       RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0], 0.0, 0.0);
       //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1], 0, 0);
       m_NeedsTerrainRebatched = false;
-    }
+    //}
     
     m_Batches[2]->m_NumBatched = 0;
     m_Batches[3]->m_NumBatched = 0;
