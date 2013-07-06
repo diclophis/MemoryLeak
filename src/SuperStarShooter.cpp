@@ -5,7 +5,7 @@
 
 
 #define ZOOM (1.0)
-#define ZOOM2 (1.0 / 3.0)
+#define ZOOM2 (1.0 / 1.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 5) + 6)
