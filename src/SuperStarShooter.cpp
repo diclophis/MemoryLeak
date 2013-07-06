@@ -5,7 +5,7 @@
 
 
 #define ZOOM (1.0)
-#define ZOOM2 (3.0 / 1.0)
+#define ZOOM2 (1.0 / 3.0)
 #define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
@@ -971,20 +971,27 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
   int mask = m_Level[2 + (row * w + col)];
   int x = row * 3;
   int y = col * 3;
-  int bl = 60 + 16 + 16 + 16;
-  int b2 = (2 * 16) + (16 + 16 + 16 + 16 + 16 + 16 + 16 + 16) + 15;
-  int b3 = (9 * 16) + 12;
-  int b4 = (8 * 16) + 13;
-  int b5 = (6 * 16) + 9;
-  int b6 = (10 * 16) + 11;
-  int b7 = (12 * 16) + 15;
+
+
   int b8 = (12 * 16) + 12;
-  int b9 = (4 * 16) + 7;
-  int ba = (12 * 16) + 13;
-  int bb = (9 * 16) + 15;
   int bc = (12 * 16) + 12;
-  int bd = (6 * 16) + 7;
+  int ba = (12 * 16) + 13;
+  int b7 = (12 * 16) + 15;
+
+  int b9 = (4 * 16) + 7;
   int be = (4 * 16) + 9;
+
+  int bd = (6 * 16) + 7;
+  int b5 = (6 * 16) + 9;
+  int bl = (6 * 16) + 12;
+
+  int b4 = (8 * 16) + 13;
+
+  int b3 = (9 * 16) + 12;
+  int bb = (9 * 16) + 15;
+
+  int b6 = (10 * 16) + 11;
+  int b2 = (10 * 16) + 15;
 
   switch(mask) {
     case 5:
