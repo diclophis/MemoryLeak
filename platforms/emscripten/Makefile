@@ -1,7 +1,7 @@
 # OSX Makefile, needs to know where the main src root is
 
 TOTAL_ALLOWED_RAM=268435456
-OPTIMIZE_LEVEL=-O2
+OPTIMIZE_LEVEL=-O0
 USE_ASM_JS=0
 USE_CLOSURE=0
 
@@ -16,9 +16,10 @@ CXXFLAGS=\
 -I../../src \
 -DDESKTOP \
 -I../../src/octree \
--DMODPLUG_BASIC_SUPPORT \
--DMODPLUG_FASTSOUNDLIB \
 -DUSE_GLES2 \
+-DMODPLUG_BASIC_SUPPORT \
+#-DMODPLUG_FASTSOUNDLIB \
+
 #$(OPTIMIZE_LEVEL) \
 #-fno-rtti \
 #-fno-exceptions \

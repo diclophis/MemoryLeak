@@ -11,8 +11,8 @@
 #include <dirent.h>
 #include <vector>
 
-#include "SDL.h"
-#include "SDL_audio.h"
+//#include "SDL.h"
+//#include "SDL_audio.h"
 
 #define kWindowWidth 1024
 #define kWindowHeight 1024
@@ -40,7 +40,7 @@ int __attribute__((used)) start_game (int i) {
 //  return Engine::CurrentGameCommand(i, s);
 //}
 
-typedef void (__cdecl * SinkJs_writeCallback) (Uint8 *buffer, int size, int channels);
+typedef void (__cdecl * SinkJs_writeCallback) (short *buffer, int size, int channels);
 void sinkJsInit(SinkJs_writeCallback writeFunc, int frames, int sizeOfFrames, int channels);
 
 
@@ -57,7 +57,7 @@ int getsockopt(int s, int level, int optname, void *optval, socklen_t *optlen) {
 }
 
 
-void sinkJsWriteFunc(Uint8 *buffer, int size, int channels) {
+void sinkJsWriteFunc(short *buffer, int size, int channels) {
   Engine::CurrentGameDoAudio((short *)buffer, size);
 }
 

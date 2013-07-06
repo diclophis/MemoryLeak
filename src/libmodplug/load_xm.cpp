@@ -268,7 +268,7 @@ BOOL CSoundFile::ReadXM(const BYTE *lpStream, DWORD dwMemLength)
 		dwMemPos++;
 	}
 	memset(samples_used, 0, sizeof(samples_used));
-	//unused_samples = 0;
+	int unused_samples = 0;
 	// Reading instruments
 	for (UINT iIns=1; iIns<=instruments; iIns++)
 	{
