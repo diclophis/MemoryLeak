@@ -6,7 +6,7 @@
 
 #define ZOOM (1.0)
 #define ZOOM2 (1.0 / 1.0)
-#define SUBDIVIDE (8.0)
+#define SUBDIVIDE (32.0)
 #define BLANK ((16 * 3) + 2)
 #define WATER ((16 * 3) + 6)
 #define TREASURE 10
@@ -95,8 +95,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   }
 
   float overX = 0.33;
-  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
-  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
+  GRID_X = 10; //((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
+  GRID_Y = 10; //((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
@@ -429,8 +429,8 @@ float roundp(float num, int precision)
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = roundp(cdx, 32) + 0.375; //(((int)cdx) + (SUBDIVIDE / 2.0)) + 1000;
-  float b = roundp(cdy, 32) + 0.375; //(((int)cdy) + (SUBDIVIDE / 2.0)) + 1000;
+  float a = roundp(cdx, 1); //(((int)cdx) + (SUBDIVIDE / 2.0)) + 1000;
+  float b = roundp(cdy, 1); //(((int)cdy) + (SUBDIVIDE / 2.0)) + 1000;
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
