@@ -23,7 +23,7 @@ static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
 static int game_index = 0;
-static short *outData;
+static void *outData;
 
 
 static void CheckError(OSStatus error, const char *operation) {
@@ -140,7 +140,7 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
     AudioBuffer *ioData = &ioDataList->mBuffers[iBuffer];
     float *buffer = (float *)ioData->mData;
     for (unsigned int j = 0; j < inNumberFrames; j++) {
-      buffer[j] = (float)outData[(j * 2) + iBuffer] / (float)INT16_MAX;
+      buffer[j] = (float)((short *)outData)[(j * 2) + iBuffer] / (float)INT16_MAX;
     }
 
     ioData->mDataByteSize = size; // is this redundant?
@@ -153,7 +153,7 @@ OSStatus renderCallback (void *inRefCon, AudioUnitRenderActionFlags * ioActionFl
 void audioUnitSetup() {
 
   //TODO: this uses 16kb, could it be smaller?
-  outData = (short *)calloc(8192, sizeof(short));
+  outData = (void *)malloc(8192); //, sizeof(short));
 
   AudioUnit outputUnit;
 

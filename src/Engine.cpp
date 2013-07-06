@@ -259,10 +259,11 @@ void Engine::StartSimulation() {
 }
 
 
-void Engine::DoAudio(short buffer[], int size) {
+void Engine::DoAudio(void *buffer, int size) {
   memset(buffer, 0, size);
   if (Active() && m_IsPushingAudio) {
     int read = ModPlug_Read(m_Sounds[m_CurrentSound], buffer, size);
+    LOGV("%f\n", ((short *)buffer)[101]);
     if (read == 0) {
       ModPlug_Seek(m_Sounds[m_CurrentSound], 0);
     }
@@ -403,7 +404,7 @@ void Engine::CurrentGameDrawScreen(float rotation) {
 }
 
 
-void Engine::CurrentGameDoAudio(short buffer[], int bytes) {
+void Engine::CurrentGameDoAudio(void*buffer, int bytes) {
   if (m_CurrentGame != NULL) {
     m_CurrentGame->DoAudio(buffer, bytes);
   } else {

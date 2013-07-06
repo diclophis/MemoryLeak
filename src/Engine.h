@@ -33,7 +33,7 @@ public:
   virtual void RenderSpritePhase() = 0;
   virtual void CreateFoos() = 0;
   virtual void DestroyFoos() = 0;
-  void DoAudio(short buffer[], int bytes);
+  void DoAudio(void *buffer, int bytes);
   void RenderSpriteRange(unsigned int s, unsigned int e, foofoo *batch_foo, float offsetX = 0, float offsetY = 0);
   void glueLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez, GLfloat centerx, GLfloat centery, GLfloat centerz, GLfloat upx, GLfloat upy, GLfloat upz);
   void gluePerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
@@ -54,7 +54,7 @@ public:
   static void CurrentGameHit(float x, float y, int hitState);
   static void CurrentGameResizeScreen(int width, int height);
   static void CurrentGameDrawScreen(float rotation);
-  static void CurrentGameDoAudio(short buffer[], int bytes);
+  static void CurrentGameDoAudio(void *buffer, int bytes);
   static bool CurrentGame();
   static void CheckGL(const char *s);
   static void CurrentGameStart();
