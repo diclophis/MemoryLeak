@@ -487,7 +487,7 @@ void Engine::LoadTexture(int i) {
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
   //static const GLfloat border[] = { 0.0, 1.0, 0.0, 1.0 };
-  //glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+  //glTexParamete rfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
 
 
   
