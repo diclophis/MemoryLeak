@@ -95,8 +95,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   }
 
   float overX = 0.33;
-  GRID_X = 10; //((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
-  GRID_Y = 10; //((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
+  GRID_X = 12; //((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
+  GRID_Y = 15; //((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
@@ -422,15 +422,15 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 void SuperStarShooter::RenderModelPhase() {
 }
 
-float roundp(float num, int precision)
-{
-  return floorf(num * pow(10.0f,precision) + .5f)/pow(10.0f,precision);
-}
+//float roundp(float num, int precision)
+//{
+//  return floorf(num * pow(10.0f,precision) + .5f)/pow(10.0f,precision);
+//}
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = roundp(cdx, 1); //(((int)cdx) + (SUBDIVIDE / 2.0)) + 1000;
-  float b = roundp(cdy, 1); //(((int)cdy) + (SUBDIVIDE / 2.0)) + 1000;
+  float a = (((int)cdx) + (SUBDIVIDE / 2.0));
+  float b = (((int)cdy) + (SUBDIVIDE / 2.0));
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 

@@ -15,7 +15,7 @@ static bool m_WarnedAboutGameFailure = false;
 
 static const char vertex_shader[] =
 "#ifdef GL_ES\n"
-"precision highp float;\n"
+"precision lowp float;\n"
 "#endif\n"
 "attribute vec2 Position;\n"
 "attribute vec2 InCoord;\n"
@@ -31,7 +31,7 @@ static const char vertex_shader[] =
 
 static const char fragment_shader[] = 
 "#ifdef GL_ES\n"
-"precision highp float;\n"
+"precision lowp float;\n"
 "#endif\n"
 "varying vec2 OutCoord;\n"
 "uniform sampler2D Sampler;\n"
