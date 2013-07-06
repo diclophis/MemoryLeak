@@ -45,13 +45,13 @@ static const char fragment_shader[] =
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
-  //if (tx != ltx || ty != lty || tz != ltz) {
+  if (tx != ltx || ty != lty || tz != ltz) {
     ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
     ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
     ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
     ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
-  //}
+  }
     
   ltx = tx;
   lty = ty;

@@ -94,9 +94,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  float overX = 0.33;
-  GRID_X = 12; //((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
-  GRID_Y = 15; //((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
+  float overX = 1.1;
+  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
+  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
