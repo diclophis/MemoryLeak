@@ -2,16 +2,14 @@
 
 TOTAL_ALLOWED_RAM=268435456
 OPTIMIZE_LEVEL=-O2
-USE_ASM_JS=1
+USE_ASM_JS=0
 USE_CLOSURE=0
 
 build=build
 
 CXXFLAGS=\
-$(OPTIMIZE_LEVEL) \
 -s ASM_JS=$(USE_ASM_JS) \
 -s TOTAL_MEMORY=$(TOTAL_ALLOWED_RAM) \
--fno-rtti \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/include \
 -I../../src/include/libmodplug \
@@ -21,6 +19,8 @@ $(OPTIMIZE_LEVEL) \
 -DMODPLUG_BASIC_SUPPORT \
 -DMODPLUG_FASTSOUNDLIB \
 -DUSE_GLES2 \
+#$(OPTIMIZE_LEVEL) \
+#-fno-rtti \
 #-fno-exceptions \
 #-funroll-loops \
 #-O2 \
