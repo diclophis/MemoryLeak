@@ -40,7 +40,7 @@ int __attribute__((used)) start_game (int i) {
 //  return Engine::CurrentGameCommand(i, s);
 //}
 
-typedef void (__cdecl * SinkJs_writeCallback) (short *buffer, int size, int channels);
+typedef void (__cdecl * SinkJs_writeCallback) (void *buffer, int size, int channels);
 void sinkJsInit(SinkJs_writeCallback writeFunc, int frames, int sizeOfFrames, int channels);
 
 
@@ -57,8 +57,8 @@ int getsockopt(int s, int level, int optname, void *optval, socklen_t *optlen) {
 }
 
 
-void sinkJsWriteFunc(short *buffer, int size, int channels) {
-  Engine::CurrentGameDoAudio((short *)buffer, size);
+void sinkJsWriteFunc(void *buffer, int size, int channels) {
+  Engine::CurrentGameDoAudio(buffer, size);
 }
 
 
