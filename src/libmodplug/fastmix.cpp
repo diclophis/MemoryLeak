@@ -1790,6 +1790,7 @@ DWORD MPPASMCALL X86_Convert32To16(LPVOID lp16, int *pBuffer, DWORD lSampleCount
 			vumax = n;
 		p[i] = n >> (16-MIXING_ATTENUATION);	// 16-bit signed
 	}
+  printf("---- %d\n", p[0]);
 	*lpMin = vumin;
 	*lpMax = vumax;
 	return lSampleCount * 2;
