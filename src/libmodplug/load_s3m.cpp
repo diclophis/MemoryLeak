@@ -403,7 +403,6 @@ BOOL CSoundFile::ReadS3M(const BYTE *lpStream, DWORD dwMemLength)
 	m_nMinPeriod = 64;
 	m_nMaxPeriod = 32767;
 	if (psfh.flags & 0x10) m_dwSongFlags |= SONG_AMIGALIMITS;
-  if (dwMemPos) {}
 	return TRUE;
 }
 

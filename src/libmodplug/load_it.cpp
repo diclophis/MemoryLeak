@@ -320,7 +320,6 @@ BOOL CSoundFile::ReadIT(const BYTE *lpStream, DWORD dwMemLength)
 	{
 		dwMemPos += LoadMixPlugins(lpStream+dwMemPos, dwMemLength-dwMemPos);
 	}
-  if (dwMemPos) {}
 	// Checking for unused channels
 	UINT npatterns = pifh.patnum;
 	if (npatterns > MAX_PATTERNS) npatterns = MAX_PATTERNS;
@@ -1214,7 +1213,7 @@ void ITUnpack8Bit(signed char *pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwM
 {
 	signed char *pDst = pSample;
 	LPBYTE pSrc = lpMemFile;
-	//DWORD wHdr = 0;
+	DWORD wHdr = 0;
 	DWORD wCount = 0;
 	DWORD bitbuf = 0;
 	UINT bitnum = 0;
@@ -1225,7 +1224,7 @@ void ITUnpack8Bit(signed char *pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwM
 		if (!wCount)
 		{
 			wCount = 0x8000;
-			//wHdr = bswapLE16(*((LPWORD)pSrc));
+			wHdr = bswapLE16(*((LPWORD)pSrc));
 			pSrc += 2;
 			bLeft = 9;
 			bTemp = bTemp2 = 0;
@@ -1296,7 +1295,7 @@ void ITUnpack16Bit(signed char *pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dw
 {
 	signed short *pDst = (signed short *)pSample;
 	LPBYTE pSrc = lpMemFile;
-	//DWORD wHdr = 0;
+	DWORD wHdr = 0;
 	DWORD wCount = 0;
 	DWORD bitbuf = 0;
 	UINT bitnum = 0;
@@ -1308,7 +1307,7 @@ void ITUnpack16Bit(signed char *pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dw
 		if (!wCount)
 		{
 			wCount = 0x4000;
-			//wHdr = bswapLE16(*((LPWORD)pSrc));
+			wHdr = bswapLE16(*((LPWORD)pSrc));
 			pSrc += 2;
 			bLeft = 17;
 			wTemp = wTemp2 = 0;

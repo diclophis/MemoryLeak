@@ -106,7 +106,6 @@ unsigned int ModPlug_GetMasterVolume(ModPlugFile* file) ;
 void ModPlug_SetMasterVolume(ModPlugFile* file,unsigned int cvol) ;
 
 int ModPlug_GetCurrentSpeed(ModPlugFile* file);
-void ModPlug_SetCurrentSpeed(ModPlugFile* file, int s);
 int ModPlug_GetCurrentTempo(ModPlugFile* file);
 int ModPlug_GetCurrentOrder(ModPlugFile* file);
 int ModPlug_GetCurrentPattern(ModPlugFile* file);

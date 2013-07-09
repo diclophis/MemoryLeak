@@ -5,7 +5,6 @@
  *          Markus Fick <webmaster@mark-f.de> spline + fir-resampler
 */
 
-#include <stdint.h>
 #include "stdafx.h"
 #include "sndfile.h"
 #include <math.h>
@@ -573,9 +572,8 @@ CzWINDOWEDFIR sfir;
 // Interfaces
 
 typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
-//this seems like a hack to define and implement right next to each other
+
 #define BEGIN_MIX_INTERFACE(func)\
-  VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax);\
 	VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax)\
 	{\
 		LONG nPos;
@@ -1487,13 +1485,13 @@ UINT CSoundFile::CreateStereoMix(int count)
 	{
 		const LPMIXINTERFACE *pMixFuncTable;
 		MODCHANNEL * const pChannel = &Chn[ChnMix[nChn]];
-		UINT nFlags; //, nMasterCh;
+		UINT nFlags, nMasterCh;
 		LONG nSmpCount;
 		int nsamples;
 		int *pbuffer;
 
 		if (!pChannel->pCurrentSample) continue;
-		//nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
+		nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
 		pOfsR = &gnDryROfsVol;
 		pOfsL = &gnDryLOfsVol;
 		nFlags = 0;
@@ -1790,7 +1788,6 @@ DWORD MPPASMCALL X86_Convert32To16(LPVOID lp16, int *pBuffer, DWORD lSampleCount
 			vumax = n;
 		p[i] = n >> (16-MIXING_ATTENUATION);	// 16-bit signed
 	}
-  printf("---- %d\n", p[0]);
 	*lpMin = vumin;
 	*lpMax = vumax;
 	return lSampleCount * 2;
