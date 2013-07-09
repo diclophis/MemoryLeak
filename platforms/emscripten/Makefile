@@ -1,15 +1,20 @@
 # OSX Makefile, needs to know where the main src root is
 
 TOTAL_ALLOWED_RAM=268435456
-OPTIMIZE_LEVEL=-O0
-USE_ASM_JS=0
+OPTIMIZE_LEVEL=-O2
+USE_ASM_JS=1
 USE_CLOSURE=0
 
 build=build
 
 CXXFLAGS=\
+-m32 \
+--closure $(USE_CLOSURE) \
+$(OPTIMIZE_LEVEL) \
 -s ASM_JS=$(USE_ASM_JS) \
 -s TOTAL_MEMORY=$(TOTAL_ALLOWED_RAM) \
+-s PRECISE_I64_MATH=1 \
+-s PRECISE_I32_MATH=1 \
 -I../../src/assimp/BoostWorkaround \
 -I../../src/include \
 -I../../src/include/libmodplug \
@@ -18,7 +23,9 @@ CXXFLAGS=\
 -I../../src/octree \
 -DUSE_GLES2 \
 -DMODPLUG_BASIC_SUPPORT \
-#-DMODPLUG_FASTSOUNDLIB \
+-DMODPLUG_FASTSOUNDLIB \
+-DHAVE_STDINT_H \
+-DHAVE_SINF \
 
 #$(OPTIMIZE_LEVEL) \
 #-fno-rtti \
