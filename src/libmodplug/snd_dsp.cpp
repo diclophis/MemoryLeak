@@ -448,7 +448,7 @@ BOOL CSoundFile::SetXBassParameters(UINT nDepth, UINT nRange)
 	m_nXBassDepth = 8 - gain;	// filter attenuation 1/256 .. 1/16
 	UINT range = nRange / 5;
 	if (range > 5) range -= 5; else range = 0;
-	//if (nRange > 16) nRange = 16;
+	if (nRange > 16) nRange = 16;
 	m_nXBassRange = 21 - range;	// filter average on 0.5-1.6ms
 	return TRUE;
 }

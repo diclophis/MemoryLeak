@@ -92,7 +92,7 @@ ModPlugFile* ModPlug_Load(const void* data, int size)
 	}
 	else
 	{
-		//delete result;
+		delete result;
 		return NULL;
 	}
 }
@@ -145,11 +145,6 @@ void ModPlug_SetMasterVolume(ModPlugFile* file,unsigned int cvol)
 int ModPlug_GetCurrentSpeed(ModPlugFile* file)
 {
 	return file->mSoundFile.m_nMusicSpeed;
-}
-
-void ModPlug_SetCurrentSpeed(ModPlugFile* file, int s)
-{
-	file->mSoundFile.SetTempo(s);
 }
 
 int ModPlug_GetCurrentTempo(ModPlugFile* file)

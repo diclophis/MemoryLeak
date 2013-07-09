@@ -19,6 +19,8 @@ CXXFLAGS=\
 -I../../src/include/libmodplug \
 -I../../src/octree \
 -DUSE_GLES2 \
+-DHAVE_STDINT_H \
+-DHAVE_SINF \
 
 
 CFLAGS=$(CXXFLAGS)

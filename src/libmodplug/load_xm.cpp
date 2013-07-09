@@ -84,6 +84,7 @@ BOOL CSoundFile::ReadXM(const BYTE *lpStream, DWORD dwMemLength)
 	BYTE channels_used[MAX_CHANNELS];
 	BYTE pattern_map[256];
 	BOOL samples_used[MAX_SAMPLES];
+	UINT unused_samples;
 	tagXMFILEHEADER xmhead;
 
 	m_nChannels = 0;
@@ -268,7 +269,7 @@ BOOL CSoundFile::ReadXM(const BYTE *lpStream, DWORD dwMemLength)
 		dwMemPos++;
 	}
 	memset(samples_used, 0, sizeof(samples_used));
-	int unused_samples = 0;
+	unused_samples = 0;
 	// Reading instruments
 	for (UINT iIns=1; iIns<=instruments; iIns++)
 	{
@@ -576,7 +577,6 @@ BOOL CSoundFile::ReadXM(const BYTE *lpStream, DWORD dwMemLength)
 	{
 		dwMemPos += LoadMixPlugins(lpStream+dwMemPos, dwMemLength-dwMemPos);
 	}
-  if (dwMemPos) {}
 	return TRUE;
 }
 
