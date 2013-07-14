@@ -53,6 +53,9 @@
 // The size of the PRIMARY bitmask (e.g. how far to the left the UNDER bitmask is shifted).
 #define UNDER_SHIFT 8
 
+#define CELL_HEIGHT 16
+#define INDEX(i, a, b) ((a * CELL_HEIGHT) + b)
+
 
 struct my_struct {
   int id;            // we'll use this field as the key
@@ -95,8 +98,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   }
 
   float overX = 1.1;
-  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))); // + 3;
-  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))); // + 3;
+  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE)));
+  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE)));
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
@@ -308,8 +311,8 @@ void SuperStarShooter::CreateFoos() {
 
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
   m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), (m_GridCount)));
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), MAX_OTHER_PLAYERS + 1)); //1 + 1 + m_TrailCount));
-  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), m_TrailCount)); //1 + 1 + m_TrailCount));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), MAX_OTHER_PLAYERS + 1));
+  m_Batches.push_back(AtlasSprite::GetBatchFoo(m_Textures.at(0), m_TrailCount));
   
   int p_foo = 0;
   if (m_SimulationTime > 0.0) {
@@ -422,10 +425,6 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
 void SuperStarShooter::RenderModelPhase() {
 }
 
-//float roundp(float num, int precision)
-//{
-//  return floorf(num * pow(10.0f,precision) + .5f)/pow(10.0f,precision);
-//}
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
@@ -434,17 +433,14 @@ void SuperStarShooter::RenderSpritePhase() {
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
-  //float offX2 = (-0 / (SUBDIVIDE / 2.0));
-  //float offY2 = -0 / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE)));
-
   if (m_Batches.size() == 4) {
-    //if (m_NeedsTerrainRebatched) {
+    if (m_NeedsTerrainRebatched) {
       m_Batches[0]->m_NumBatched = 0;
       m_Batches[1]->m_NumBatched = 0;
       RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0], 0.0, 0.0);
       //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1], 0, 0);
       m_NeedsTerrainRebatched = false;
-    //}
+    }
     
     m_Batches[2]->m_NumBatched = 0;
     m_Batches[3]->m_NumBatched = 0;
@@ -483,8 +479,11 @@ int SuperStarShooter::Simulate() {
   struct my_struct *s;
   HASH_FIND_INT(users, &m_PlayerId, s);
 
-  //m_AtlasSprites[m_TrailStartIndex]->m_Position[0] = m_AtlasSprites[s->render]->m_Position[0];
-  //m_AtlasSprites[m_TrailStartIndex]->m_Position[1] = m_AtlasSprites[s->render]->m_Position[1];
+  bool trail_tracks_player = false;
+  if (trail_tracks_player) {
+    m_AtlasSprites[m_TrailStartIndex]->m_Position[0] = m_AtlasSprites[s->render]->m_Position[0];
+    m_AtlasSprites[m_TrailStartIndex]->m_Position[1] = m_AtlasSprites[s->render]->m_Position[1];
+  }
 
   struct my_struct *ss;
 
@@ -552,8 +551,6 @@ int SuperStarShooter::Simulate() {
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
       m_DesiredTargetX = m_DeltaTime * 4.0 * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
       m_DesiredTargetY = m_DeltaTime * 4.0 * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
-      //m_DesiredTargetX = (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
-      //m_DesiredTargetY = (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
       m_CameraActualOffsetX += -m_DesiredTargetX;
       m_CameraActualOffsetY += -m_DesiredTargetY;
     } else if (m_StartedSwipe) {
@@ -966,36 +963,27 @@ void SuperStarShooter::LoadMaze() {
 
 
 void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
-  //    col = m_MazeCursor % (width);
-  //    row = m_MazeCursor / (width);
   int mask = m_Level[2 + (row * w + col)];
   int x = row * 3;
   int y = col * 3;
 
+  int b8 = INDEX(b8, 12, 12); //(12 * 16) + 12;
+  int ba = INDEX(ba, 12, 13); //(12 * 16) + 13;
+  int b7 = INDEX(b7, 12, 15); //(12 * 16) + 15;
 
-  int b8 = (12 * 16) + 12;
-  int bc = (12 * 16) + 12;
-  int ba = (12 * 16) + 13;
-  int b7 = (12 * 16) + 15;
+  int b9 = INDEX(b9, 6, 6); ////(rOff * 16) + (4 * 16) + 7 + cOff;
+  int be = INDEX(be, 6, 8); //(rOff * 16) + (4 * 16) + 9 + cOff;
+  int bl = INDEX(bl, 6, 12); //(0 * 16) + (6 * 16) + 12;
 
-  int rOff = 2;
-  int cOff = -1;
+  int bd = INDEX(bd, 8, 6); //(rOff * 16) + (6 * 16) + 7 + cOff;
+  int b5 = INDEX(b5, 8, 8); //(rOff * 16) + (6 * 16) + 9 + cOff;
+  int b4 = INDEX(b4, 8, 13); //(0 * 16) + (8 * 16) + 13;
 
-  int b9 = (rOff * 16) + (4 * 16) + 7 + cOff;
-  int be = (rOff * 16) + (4 * 16) + 9 + cOff;
+  int b3 = INDEX(b3, 9, 12); //(0 * 16) + (9 * 16) + 12;
+  int bb = INDEX(bb, 9, 15); //(0 * 16) + (9 * 16) + 15;
 
-  int bd = (rOff * 16) + (6 * 16) + 7 + cOff;
-  int b5 = (rOff * 16) + (6 * 16) + 9 + cOff;
-
-  int bl = (0 * 16) + (6 * 16) + 12;
-
-  int b4 = (0 * 16) + (8 * 16) + 13;
-
-  int b3 = (0 * 16) + (9 * 16) + 12;
-  int bb = (0 * 16) + (9 * 16) + 15;
-
-  int b6 = (0 * 16) + (10 * 16) + 11;
-  int b2 = (10 * 16) + 15;
+  int b6 = INDEX(b6, 10, 11); //(0 * 16) + (10 * 16) + 11;
+  int b2 = INDEX(b2, 10, 15); //(10 * 16) + 15;
 
   switch(mask) {
     case 5:
@@ -1023,7 +1011,7 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
       BlitIntoSpace(0, b2, 3, 2, ((x + 0) * 3), ((y + 2) * 3));
       BlitIntoSpace(0, b2, 3, 1, ((x + 0) * 3), ((y + 2) * 3) + 2);
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 2) * 3));
-      BlitIntoSpace(0, bc, 3, 3, ((x + 2) * 3), ((y + 2) * 3));
+      BlitIntoSpace(0, b8, 3, 3, ((x + 2) * 3), ((y + 2) * 3));
       BlitIntoSpace(0, b2, 3, 2, ((x + 0) * 3), ((y + 1) * 3));
       BlitIntoSpace(0, b2, 3, 1, ((x + 0) * 3), ((y + 1) * 3) + 2);
       BlitIntoSpace(0, bl, 3, 3, ((x + 1) * 3), ((y + 1) * 3));
@@ -1228,8 +1216,6 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
   }
 
   if (m_AtlasSprites[s->render]->m_TargetPosition[0] != a || m_AtlasSprites[s->render]->m_TargetPosition[1] != b) {
-    //m_AtlasSprites[s->render]->m_Position[0] = (x);
-    //m_AtlasSprites[s->render]->m_Position[1] = (y);
     m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
     m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
     s->update = m_SimulationTime;
