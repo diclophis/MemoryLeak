@@ -54,7 +54,7 @@
 #define UNDER_SHIFT 8
 
 #define CELL_HEIGHT 16
-#define INDEX(i, a, b) ((a * CELL_HEIGHT) + b)
+#define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) ((a * CELL_HEIGHT) + b)
 
 
 struct my_struct {
@@ -963,28 +963,30 @@ void SuperStarShooter::LoadMaze() {
 
 
 void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
-  int mask = m_Level[2 + (row * w + col)];
+  int mask = m_Level[2 + (row * w + col)]; // 3rd indice and above in level data is maze data
   int x = row * 3;
   int y = col * 3;
 
-  int b8 = INDEX(b8, 12, 12); //(12 * 16) + 12;
-  int ba = INDEX(ba, 12, 13); //(12 * 16) + 13;
-  int b7 = INDEX(b7, 12, 15); //(12 * 16) + 15;
+  //top left of water, 6
+  int b8 = CELL_INDEX_FOR_MAP_SPRITE(b8, 12, 12); //(12 * 16) + 12;
+  int ba = CELL_INDEX_FOR_MAP_SPRITE(ba, 12, 13); //(12 * 16) + 13;
+  int b7 = CELL_INDEX_FOR_MAP_SPRITE(b7, 12, 15); //(12 * 16) + 15;
 
-  int b9 = INDEX(b9, 6, 6); ////(rOff * 16) + (4 * 16) + 7 + cOff;
-  int be = INDEX(be, 6, 8); //(rOff * 16) + (4 * 16) + 9 + cOff;
-  int bl = INDEX(bl, 6, 12); //(0 * 16) + (6 * 16) + 12;
+  int b9 = CELL_INDEX_FOR_MAP_SPRITE(b9, 6, 6); ////(rOff * 16) + (4 * 16) + 7 + cOff;
+  int be = CELL_INDEX_FOR_MAP_SPRITE(be, 6, 8); //(rOff * 16) + (4 * 16) + 9 + cOff;
+  int bl = CELL_INDEX_FOR_MAP_SPRITE(bl, 6, 12); //(0 * 16) + (6 * 16) + 12;
 
-  int bd = INDEX(bd, 8, 6); //(rOff * 16) + (6 * 16) + 7 + cOff;
-  int b5 = INDEX(b5, 8, 8); //(rOff * 16) + (6 * 16) + 9 + cOff;
-  int b4 = INDEX(b4, 8, 13); //(0 * 16) + (8 * 16) + 13;
+  int bd = CELL_INDEX_FOR_MAP_SPRITE(bd, 8, 6); //(rOff * 16) + (6 * 16) + 7 + cOff;
+  int b5 = CELL_INDEX_FOR_MAP_SPRITE(b5, 8, 8); //(rOff * 16) + (6 * 16) + 9 + cOff;
+  int b4 = CELL_INDEX_FOR_MAP_SPRITE(b4, 8, 13); //(0 * 16) + (8 * 16) + 13;
 
-  int b3 = INDEX(b3, 9, 12); //(0 * 16) + (9 * 16) + 12;
-  int bb = INDEX(bb, 9, 15); //(0 * 16) + (9 * 16) + 15;
+  int b3 = CELL_INDEX_FOR_MAP_SPRITE(b3, 9, 12); //(0 * 16) + (9 * 16) + 12;
+  int bb = CELL_INDEX_FOR_MAP_SPRITE(bb, 9, 15); //(0 * 16) + (9 * 16) + 15;
 
-  int b6 = INDEX(b6, 10, 11); //(0 * 16) + (10 * 16) + 11;
-  int b2 = INDEX(b2, 10, 15); //(10 * 16) + 15;
+  int b6 = CELL_INDEX_FOR_MAP_SPRITE(b6, 10, 11); //(0 * 16) + (10 * 16) + 11;
+  int b2 = CELL_INDEX_FOR_MAP_SPRITE(b2, 10, 15); //(10 * 16) + 15;
 
+  //BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y)
   switch(mask) {
     case 5:
       //7#6
@@ -1005,7 +1007,7 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
       BlitIntoSpace(0, b5, 2, 2, ((x + 2) * 3), ((y + 0) * 3) + 1);
       break;
     case 6:
-      //2#c
+      //2#8
       //2##
       //d44
       BlitIntoSpace(0, b2, 3, 2, ((x + 0) * 3), ((y + 2) * 3));
