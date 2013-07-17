@@ -7,12 +7,13 @@
 #define ZOOM (1.0)
 #define ZOOM2 (1.0 / 1.0)
 #define SUBDIVIDE (32.0)
-#define BLANK ((16 * 3) + 2)
+#define BLANK 0 //((16 * 3) + 2)
 #define WATER ((16 * 5) + 6)
-#define TREASURE 10
-#define PURE 97
-#define SAND 98
+//#define TREASURE 10
+//#define PURE 97
+//#define SAND 98
 #define FILL BLANK
+#define BASE WATER
 #define OVER WATER
 #define PLAYER_SCALE_X ((SUBDIVIDE * 0.5) * 1.0)
 #define PLAYER_SCALE_Y ((SUBDIVIDE * 0.5) + (SUBDIVIDE * 0.2) * 1.0)
@@ -54,7 +55,7 @@
 #define UNDER_SHIFT 8
 
 #define CELL_HEIGHT 16
-#define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) ((a * CELL_HEIGHT) + b)
+#define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) (((a - 1) * CELL_HEIGHT) + (b - 1))
 
 
 struct my_struct {
@@ -87,7 +88,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 	m_TouchStartX = m_LastCenterX = m_CameraActualOffsetX = m_CameraStopOffsetX = m_CameraOffsetX = 0.0;
 	m_TouchStartY = m_LastCenterY = m_CameraActualOffsetY = m_CameraStopOffsetY = m_CameraOffsetY = 0.0;
 
-  m_Space = new Octree<int>(2048, WATER);
+  m_Space = new Octree<int>(2048, BASE);
 
   if (false) {
     for (unsigned int i=0; i<124; i++) {
@@ -968,25 +969,32 @@ void SuperStarShooter::BlitMazeCell(int row, int col, int w) {
   int y = col * 3;
 
   //top left of water, 6
-  int b8 = CELL_INDEX_FOR_MAP_SPRITE(b8, 12, 12); //(12 * 16) + 12;
-  int ba = CELL_INDEX_FOR_MAP_SPRITE(ba, 12, 13); //(12 * 16) + 13;
-  int b7 = CELL_INDEX_FOR_MAP_SPRITE(b7, 12, 15); //(12 * 16) + 15;
+  // Y, X
+  int b8 = CELL_INDEX_FOR_MAP_SPRITE(b8, 13, 13); //(12 * 16) + 12;
+  int ba = CELL_INDEX_FOR_MAP_SPRITE(ba, 13, 14); //(12 * 16) + 13;
+  int b7 = CELL_INDEX_FOR_MAP_SPRITE(b7, 13, 16); //(12 * 16) + 15;
 
-  int b9 = CELL_INDEX_FOR_MAP_SPRITE(b9, 6, 6); ////(rOff * 16) + (4 * 16) + 7 + cOff;
-  int be = CELL_INDEX_FOR_MAP_SPRITE(be, 6, 8); //(rOff * 16) + (4 * 16) + 9 + cOff;
-  int bl = CELL_INDEX_FOR_MAP_SPRITE(bl, 6, 12); //(0 * 16) + (6 * 16) + 12;
+  int b9 = CELL_INDEX_FOR_MAP_SPRITE(b9, 7, 7); ////(rOff * 16) + (4 * 16) + 7 + cOff;
+  int be = CELL_INDEX_FOR_MAP_SPRITE(be, 7, 9); //(rOff * 16) + (4 * 16) + 9 + cOff;
+  int bl = CELL_INDEX_FOR_MAP_SPRITE(bl, 7, 13); //(0 * 16) + (6 * 16) + 12;
+  //int bl2 = CELL_INDEX_FOR_MAP_SPRITE(bl2, 8, 13); //(0 * 16) + (6 * 16) + 12;
+  //int bl2 = CELL_INDEX_FOR_MAP_SPRITE(bl2, 7, 13); //(0 * 16) + (6 * 16) + 12;
 
-  int bd = CELL_INDEX_FOR_MAP_SPRITE(bd, 8, 6); //(rOff * 16) + (6 * 16) + 7 + cOff;
-  int b5 = CELL_INDEX_FOR_MAP_SPRITE(b5, 8, 8); //(rOff * 16) + (6 * 16) + 9 + cOff;
-  int b4 = CELL_INDEX_FOR_MAP_SPRITE(b4, 8, 13); //(0 * 16) + (8 * 16) + 13;
+  int bd = CELL_INDEX_FOR_MAP_SPRITE(bd, 9, 7); //(rOff * 16) + (6 * 16) + 7 + cOff;
+  int b5 = CELL_INDEX_FOR_MAP_SPRITE(b5, 9, 9); //(rOff * 16) + (6 * 16) + 9 + cOff;
+  int b4 = CELL_INDEX_FOR_MAP_SPRITE(b4, 9, 14); //(0 * 16) + (8 * 16) + 13;
 
-  int b3 = CELL_INDEX_FOR_MAP_SPRITE(b3, 9, 12); //(0 * 16) + (9 * 16) + 12;
-  int bb = CELL_INDEX_FOR_MAP_SPRITE(bb, 9, 15); //(0 * 16) + (9 * 16) + 15;
+  int b3 = CELL_INDEX_FOR_MAP_SPRITE(b3, 10, 13); //(0 * 16) + (9 * 16) + 12;
+  int bb = CELL_INDEX_FOR_MAP_SPRITE(bb, 10, 16); //(0 * 16) + (9 * 16) + 15;
 
-  int b6 = CELL_INDEX_FOR_MAP_SPRITE(b6, 10, 11); //(0 * 16) + (10 * 16) + 11;
-  int b2 = CELL_INDEX_FOR_MAP_SPRITE(b2, 10, 15); //(10 * 16) + 15;
+  int b6 = CELL_INDEX_FOR_MAP_SPRITE(b6, 11, 12); //(0 * 16) + (10 * 16) + 11;
+  int b2 = CELL_INDEX_FOR_MAP_SPRITE(b2, 11, 16); //(10 * 16) + 15;
 
   //BlitIntoSpace(int layer, int bottom_right_start, int width, int height, int offset_x, int offset_y)
+  //offset based from bottom Y
+  //2xx
+  //1xx
+  //012
   switch(mask) {
     case 5:
       //7#6
