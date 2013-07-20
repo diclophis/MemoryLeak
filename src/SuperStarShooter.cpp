@@ -20,16 +20,16 @@
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
-#define VELOCITY (SUBDIVIDE * 65.5)
-#define MAX_WAIT_BEFORE_WARP (0.03345)
-#define MAX_SEARCH 64
-#define MAX_STATE_POINTERS 1024
+#define VELOCITY (SUBDIVIDE * 128.0)
+#define MAX_WAIT_BEFORE_WARP (0.03)
+#define MAX_SEARCH 16
+#define MAX_STATE_POINTERS 16 * 4
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 2.0)
 #define LEVEL_LOAD_TIMEOUT 0.34
-#define LEVEL_LOAD_STRIDE (8)
+#define LEVEL_LOAD_STRIDE (16)
 #define MAX_OTHER_PLAYERS 128
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -110,7 +110,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 0; //MAX_SEARCH * 2;
+  m_TrailCount = 1; //MAX_SEARCH * 2;
 
   m_LoadedLevel = false;
   m_MazeCursor = 0;
@@ -226,7 +226,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     //m_AtlasSprites[m_SpriteCount]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
     m_AtlasSprites[m_SpriteCount]->SetPosition(0, 0);
     //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
-    m_AtlasSprites[m_SpriteCount]->m_Fps = 25;
+    m_AtlasSprites[m_SpriteCount]->m_Fps = 5;
     m_AtlasSprites[m_SpriteCount]->SetScale(100, 100);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     //m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
@@ -258,7 +258,7 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
     m_AtlasSprites[sub_index]->SetVelocity(v, v);
     m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
-    m_AtlasSprites[sub_index]->m_Fps = 15;
+    m_AtlasSprites[sub_index]->m_Fps = 30;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale(PLAYER_SCALE_X, PLAYER_SCALE_Y);
     m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
@@ -402,7 +402,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
       }
 
       if (collide_index_set) {
-        if (hitState == 2 && !m_SwipedBeforeUp) {
+        if ((hitState == 1 || hitState == 2) && !m_SwipedBeforeUp) {
           m_TargetX = cx;
           m_TargetY = cy;
           m_TargetIsDirty = true;
@@ -417,7 +417,7 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
     float movedY = fastAbs(m_CameraStopOffsetY - (yy + m_CameraActualOffsetY));
 
     if (fastAbs(movedX) > (SUBDIVIDE / 4.0) || fastAbs(movedY) > (SUBDIVIDE / 4.0)) {
-      m_SwipedBeforeUp = true;
+      //m_SwipedBeforeUp = true;
     }
   }
 }
@@ -460,10 +460,10 @@ void SuperStarShooter::RenderSpritePhase() {
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
 
-    //glTranslatef(-m_LastCenterX, -m_LastCenterY, 0.0);
-    //RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
+    glTranslatef(-m_LastCenterX, -m_LastCenterY, 0.0);
+    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
   
-    //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
+    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
     //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
   }
 }
@@ -550,8 +550,8 @@ int SuperStarShooter::Simulate() {
     m_SelectTimeout += m_DeltaTime;
     s->update = m_SimulationTime;
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
-      m_DesiredTargetX = m_DeltaTime * 4.0 * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
-      m_DesiredTargetY = m_DeltaTime * 4.0 * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
+      m_DesiredTargetX = m_DeltaTime * 3.0 * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
+      m_DesiredTargetY = m_DeltaTime * 3.0 * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
       m_CameraActualOffsetX += -m_DesiredTargetX;
       m_CameraActualOffsetY += -m_DesiredTargetY;
     } else if (m_StartedSwipe) {
