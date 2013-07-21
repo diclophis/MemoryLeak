@@ -22,14 +22,14 @@
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (SUBDIVIDE * 128.0)
 #define MAX_WAIT_BEFORE_WARP (0.03)
-#define MAX_SEARCH 16
-#define MAX_STATE_POINTERS 16 * 4
+#define MAX_SEARCH 20
+#define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 2.0)
-#define LEVEL_LOAD_TIMEOUT 0.34
-#define LEVEL_LOAD_STRIDE (16)
+#define LEVEL_LOAD_TIMEOUT 0.00333333
+#define LEVEL_LOAD_STRIDE (8)
 #define MAX_OTHER_PLAYERS 128
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -248,6 +248,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 	m_CameraActualOffsetX = (m_CenterOfWorldX * (SUBDIVIDE));
   m_CameraActualOffsetY = (((m_CenterOfWorldY) * (SUBDIVIDE))) + PLAYER_OFFSET;
   m_ForceRebuffer = true;
+  m_TrackSwipe = false;
+  collide_index_set = false;
 }
 
 
@@ -366,61 +368,6 @@ void SuperStarShooter::DestroyFoos() {
 }
 
 
-// handle touch events
-void SuperStarShooter::Hit(float x, float y, int hitState) {
-  float xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom2;
-	float yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom2;
-  float dx = (xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
-  float dy = (yy + m_CameraActualOffsetY) - (SUBDIVIDE / 2.0);
-
-  float collide_x = (dx);
-  float collide_y = (dy);
-  int cx = ((collide_x + PLAYER_OFFSET) / SUBDIVIDE);
-  int cy = ((collide_y + PLAYER_OFFSET) / SUBDIVIDE);
-  bool collide_index_set = false;
-
-  if (hitState == 0) {
-    m_CameraStopOffsetX = (xx + m_CameraActualOffsetX);
-    m_CameraStopOffsetY = (yy + m_CameraActualOffsetY);
-    m_StartedSwipe = false;
-    m_SwipedBeforeUp = false;
-    m_ForceRebuffer = false;
-  }
-
-  if (hitState != 0) {
-    if (false && m_SwipedBeforeUp) {
-      //end swipe
-      if (hitState == 1) {
-        m_SelectTimeout = 0;
-        m_StartedSwipe = true;
-      } else {
-        m_StartedSwipe = false;
-      }
-    } else {
-      if (cx >= 0 && cy >= 0) {
-        collide_index_set = true;
-      }
-
-      if (collide_index_set) {
-        if ((hitState == 1 || hitState == 2) && !m_SwipedBeforeUp) {
-          m_TargetX = cx;
-          m_TargetY = cy;
-          m_TargetIsDirty = true;
-        }
-      }
-    }
-
-    m_DesiredTargetX = (xx - m_CameraStopOffsetX);
-    m_DesiredTargetY = (yy - m_CameraStopOffsetY);
-
-    float movedX = fastAbs(m_CameraStopOffsetX - (xx + m_CameraActualOffsetX));
-    float movedY = fastAbs(m_CameraStopOffsetY - (yy + m_CameraActualOffsetY));
-
-    if (fastAbs(movedX) > (SUBDIVIDE / 4.0) || fastAbs(movedY) > (SUBDIVIDE / 4.0)) {
-      //m_SwipedBeforeUp = true;
-    }
-  }
-}
 
 
 void SuperStarShooter::RenderModelPhase() {
@@ -469,7 +416,70 @@ void SuperStarShooter::RenderSpritePhase() {
 }
 
 
+// handle touch events
+void SuperStarShooter::Hit(float x, float y, int hitState) {
+  m_xx = (((x) - (0.5 * (m_ScreenWidth)))) * m_Zoom2;
+  m_yy = ((0.5 * (m_ScreenHeight) - (y))) * m_Zoom2;
+  m_HitState = hitState;
+  m_LastHit = m_SimulationTime;
+
+  if (m_HitState == 0) {
+    m_StartedSwipe = false;
+    m_SwipedBeforeUp = false;
+  }
+
+  if (m_HitState != 0) {
+    if (m_TrackSwipe && m_SwipedBeforeUp) {
+      //end swipe
+      if (m_HitState == 1) {
+        m_SelectTimeout = 0;
+        m_StartedSwipe = true;
+      } else {
+        m_StartedSwipe = false;
+      }
+    } else {
+      collide_index_set = true;
+    }
+
+    //m_DesiredTargetX = (m_xx - m_CameraStopOffsetX);
+    //m_DesiredTargetY = (m_yy - m_CameraStopOffsetY);
+
+    //float movedX = fastAbs(m_CameraStopOffsetX - (xx + m_CameraActualOffsetX));
+    //float movedY = fastAbs(m_CameraStopOffsetY - (yy + m_CameraActualOffsetY));
+
+    //if (fastAbs(movedX) > (SUBDIVIDE / 4.0) || fastAbs(movedY) > (SUBDIVIDE / 4.0)) {
+    //  //m_SwipedBeforeUp = true;
+    //}
+  }
+}
+
+
 int SuperStarShooter::Simulate() {
+
+  bool keepTracking = false;
+
+  if (m_HitState == 1) {
+    keepTracking = true;
+  }
+
+  float dx = (m_xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
+  float dy = (m_yy + m_CameraActualOffsetY) - (SUBDIVIDE / 2.0);
+
+  if (collide_index_set || keepTracking) {
+
+    float collide_x = (dx);
+    float collide_y = (dy);
+
+    int cx = ((collide_x + PLAYER_OFFSET) / SUBDIVIDE);
+    int cy = ((collide_y + PLAYER_OFFSET) / SUBDIVIDE);
+
+    if (cx >= 0 && cy >= 0) {
+      m_TargetX = cx;
+      m_TargetY = cy;
+      m_TargetIsDirty = true;
+      collide_index_set = false;
+    }
+  }
 
   m_LevelLoadTimeout += m_DeltaTime;
   if (m_LevelLoadTimeout > LEVEL_LOAD_TIMEOUT) {
@@ -480,11 +490,11 @@ int SuperStarShooter::Simulate() {
   struct my_struct *s;
   HASH_FIND_INT(users, &m_PlayerId, s);
 
-  bool trail_tracks_player = false;
-  if (trail_tracks_player) {
-    m_AtlasSprites[m_TrailStartIndex]->m_Position[0] = m_AtlasSprites[s->render]->m_Position[0];
-    m_AtlasSprites[m_TrailStartIndex]->m_Position[1] = m_AtlasSprites[s->render]->m_Position[1];
-  }
+  //bool trail_tracks_player = false;
+  //if (trail_tracks_player) {
+  //  m_AtlasSprites[m_TrailStartIndex]->m_Position[0] = m_AtlasSprites[s->render]->m_Position[0];
+  //  m_AtlasSprites[m_TrailStartIndex]->m_Position[1] = m_AtlasSprites[s->render]->m_Position[1];
+  //}
 
   struct my_struct *ss;
 
@@ -773,8 +783,8 @@ int SuperStarShooter::Simulate() {
   float inverter = -1.0;
   for (unsigned int i=0; i<m_TrailCount; i++) {
     m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = m_TargetX * SUBDIVIDE;
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = m_TargetY * SUBDIVIDE;
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
     //m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
     inverter *= -1.0;
   }

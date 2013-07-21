@@ -121,4 +121,11 @@ public:
   uint16_t *m_Level;
   bool m_ForceRebuffer;
 
+  float m_xx;
+  float m_yy;
+  int m_HitState;
+  float m_LastHit;
+  bool collide_index_set;
+  bool m_TrackSwipe;
+
 };
