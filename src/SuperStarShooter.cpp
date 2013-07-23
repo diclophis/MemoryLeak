@@ -20,7 +20,7 @@
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
-#define VELOCITY (SUBDIVIDE * 128.0)
+#define VELOCITY (100.0)
 #define MAX_WAIT_BEFORE_WARP (0.03)
 #define MAX_SEARCH 20
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
@@ -110,7 +110,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 1; //MAX_SEARCH * 2;
+  m_TrailCount = 0; //MAX_SEARCH * 2;
 
   m_LoadedLevel = false;
   m_MazeCursor = 0;
@@ -501,7 +501,7 @@ int SuperStarShooter::Simulate() {
   bool player_at_target = false;
 
   for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
-    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
+    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(1.0)) {
       if (ss->index == s->index) {
         player_at_target = true;
       }

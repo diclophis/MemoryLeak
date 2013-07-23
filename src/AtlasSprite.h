@@ -63,6 +63,7 @@ public:
 	
 	double *m_Position;
   double *m_TargetPosition;
+  double *m_StartPosition;
 	float *m_Velocity;
 
 	void SetVelocity(float x, float y) {

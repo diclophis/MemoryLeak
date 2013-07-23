@@ -18,6 +18,7 @@ AtlasSprite::~AtlasSprite() {
   delete m_Position;
   delete m_Velocity;
   delete m_Scale;
+  delete m_StartPosition;
   delete m_TargetPosition;
 }
 
@@ -26,11 +27,14 @@ AtlasSprite::AtlasSprite(foofoo *ff) : m_FooFoo(ff) {
   m_Fps = 0;
   m_Rotation = m_LastRotation = 0.0;
   m_Position = new double[2];
+  m_StartPosition = new double[2];
   m_Velocity = new float[2];
   m_Scale = new float[2];
   m_TargetPosition = new double[2];
   m_TargetPosition[0] = 0.0;
   m_TargetPosition[1] = 0.0;
+  m_StartPosition[0] = 0.0;
+  m_StartPosition[1] = 0.0;
   m_Scale[0] = 1.0;
   m_Scale[1] = 1.0;
   m_Position[0] = 0.0;
@@ -602,33 +606,64 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 
 
 bool AtlasSprite::MoveToTargetPosition(float dt) {
-  bool done = false;
-  float dx = m_Position[0] - m_TargetPosition[0];
-  float dy = m_Position[1] - m_TargetPosition[1];
 
-  float dir_x = 1.0;
-  if (dx < 0.0) {
-    dir_x = -1.0;
+
+  //    v^2 = u^2 + 2 a d
+  //      v = u + a t
+  //          d = u t + a (t^2) / 2
+
+  float percent_complete = m_Life / dt;
+
+
+  if (percent_complete >= 1.0) {
+    m_StartPosition[0] = m_Position[0];
+    m_StartPosition[1] = m_Position[1];
+    return true;
   }
 
-  float dir_y = 1.0;
-  if (dy < 0.0) {
-    dir_y = -1.0;
-  }
+
+  float dx = m_StartPosition[0] - m_TargetPosition[0];
+  float dy = m_StartPosition[1] - m_TargetPosition[1];
+
+  //m_Position[0] = percent_complete * dx;
+  //m_Position[1] = percent_complete * dy;
+
+  LOGV("x: %f %f ... dx: %f, dy: %f, perc: %f, life: %f\n", m_Position[0], m_TargetPosition[0], dx, dy, percent_complete, m_Life);
+
+  return false;
+
+  /*
+
+  //float dir_x = 1.0;
+  //if (dx < 0.0) {
+  //  dir_x = -1.0;
+  //}
+  //float dir_x = dx;
+
+  float dir_x = atan2(m_TargetPosition[0] - m_Position[1], m_TargetPosition[1] - m_Position[0]);
+
+  //x = ((cos_r * vx) - (sin_r * vy));
+  //y = ((sin_r * vx) + (cos_r * vy));
+
+  //float dir_y = 1.0;
+  //if (dy < 0.0) {
+  //  dir_y = -1.0;
+  //}
 
   float tx = 0.0;
   float ty = 0.0;
 
   if (dx != 0.0) {
-    tx = -(0.1 * dt) * m_Velocity[0] * dir_x;
+    tx = (dt) * m_Velocity[0] * (fastSinf((M_PI / 2.0) - dir_x));
   }
 
   if (dy != 0.0) {
-    ty = -(0.1 * dt) * m_Velocity[1] * dir_y;
+    ty = (dt) * m_Velocity[1] * (fastSinf(dir_x));
   }
 
-  m_Position[0] += tx;
-  m_Position[1] += ty;
+
+  //m_Position[0] += tx;
+  //m_Position[1] += ty;
 
 	if ((fastAbs(tx) > fastAbs(dx)) || (fastAbs(dx) < 1.0)) {
     m_Position[0] = m_TargetPosition[0];
@@ -640,11 +675,14 @@ bool AtlasSprite::MoveToTargetPosition(float dt) {
   if ((m_Position[0] == m_TargetPosition[0]) && (m_Position[1] == m_TargetPosition[1])) {
     done = true;
   }
+  */
 
-  return done;
+
 }
 
 void AtlasSprite::SetPosition(float x,float y) {
   m_Position[0] = x;
   m_Position[1] = y;
+  m_StartPosition[0] = x;
+  m_StartPosition[1] = y;
 }
