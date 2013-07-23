@@ -9,4 +9,6 @@ cd platforms/android
 
 #~/android-ndk-r7-crystax-5.beta2/ndk-build clean && 
 
-~/android-ndk-r7-crystax-5.beta2/ndk-build && ant debug && ant debug uninstall && ant debug install
+CRYSTAX=~/android-ndk-r8-crystax-1
+
+$CRYSTAX/ndk-build && ant debug && ant debug uninstall && ant debug install

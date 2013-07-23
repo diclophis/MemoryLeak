@@ -263,7 +263,7 @@ void Engine::DoAudio(void *buffer, int size) {
   memset(buffer, 0, size);
   if (Active() && m_IsPushingAudio) {
     int read = ModPlug_Read(m_Sounds[m_CurrentSound], buffer, size);
-    LOGV("%d %d\n", ((short *)buffer)[0], ((short *)buffer)[(size / sizeof(float)) + 1]);
+    //LOGV("audio %d %d\n", ((short *)buffer)[0], ((short *)buffer)[(size / sizeof(float)) + 1]);
     if (read == 0) {
       ModPlug_Seek(m_Sounds[m_CurrentSound], 0);
     }
