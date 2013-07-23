@@ -97,7 +97,6 @@
                   console.log(line, this);
                   var arrayBuffer = this.response;
                   var byteArray = arrayBuffer.byteLength ? new Uint8Array(arrayBuffer) : arrayBuffer;
-                  debugger;
                   Module.FS_createDataFile(dirName, baseName, byteArray, true, false);
                   removeRunDependency(line);
                 }
