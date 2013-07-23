@@ -427,6 +427,9 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
   if (m_HitState == 0) {
     m_StartedSwipe = false;
     m_SwipedBeforeUp = false;
+    for (int i=0; i<m_TrailCount; i++) {
+      m_AtlasSprites[m_TrailStartIndex + i]->m_Life = 0.0;
+    }
   }
 
   if (m_HitState != 0) {
@@ -784,12 +787,54 @@ int SuperStarShooter::Simulate() {
     m_ForceRebuffer = false;
   }
 
+      m_AtlasSprites[m_TrailStartIndex + 0]->m_Position[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+      m_AtlasSprites[m_TrailStartIndex + 0]->m_Position[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
+
   // manage trail that indicates player target
   float inverter = -1.0;
-  for (unsigned int i=0; i<m_TrailCount; i++) {
-    m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
+  for (unsigned int i=m_TrailCount; i>0; i--) {
+    int j = i-1;
+    if (0 == j) {
+      //m_AtlasSprites[m_TrailStartIndex + j]->m_Life = 0;
+      //m_AtlasSprites[m_TrailStartIndex + j]->m_AnimationLife = 0;
+      //m_AtlasSprites[m_TrailStartIndex + j]->Simulate(0);
+
+    } else {
+    //monkey
+        //m_AtlasSprites[m_TrailStartIndex + j]->Simulate(m_DeltaTime * i);
+        //m_AtlasSprites[m_TrailStartIndex + (j)]->m_Velocity[0] = 1.0;
+        //m_AtlasSprites[m_TrailStartIndex + (j)]->m_Velocity[1] = 100.0;
+
+        //m_AtlasSprites[m_TrailStartIndex + (j)]->m_TargetPosition[0] =  (m_AtlasSprites[m_TrailStartIndex + (j - 1)]->m_Position[0]);
+        //m_AtlasSprites[m_TrailStartIndex + (j)]->m_TargetPosition[1] =  (m_AtlasSprites[m_TrailStartIndex + (j - 1)]->m_Position[1]);
+
+        //m_AtlasSprites[m_TrailStartIndex + j]->Simulate(m_DeltaTime);
+      
+        //if (m_AtlasSprites[m_TrailStartIndex + j]->MoveToTargetPosition(m_DeltaTime)) {
+        //}
+
+//if (m_NetworkTickTimeout > NETWORK_TIMEOUT) {
+//m_AtlasSprites[m_TrailStartIndex + j]->m_Life = m_AtlasSprites[m_TrailStartIndex + (j - 1)]->m_Life * 1.1;
+//m_AtlasSprites[m_TrailStartIndex + j]->m_AnimationLife = m_AtlasSprites[m_TrailStartIndex + (j - 1)]->m_AnimationLife * 1.1;
+//m_AtlasSprites[m_TrailStartIndex + j]->Simulate(0);
+/*
+        float f_dx = ((1.0 / (float)j)) * (m_AtlasSprites[m_TrailStartIndex + (0 - 0)]->m_Position[0] - m_AtlasSprites[m_TrailStartIndex + (j - 0)]->m_Position[0]); // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+        float f_dy = ((1.0 / (float)j)) * (m_AtlasSprites[m_TrailStartIndex + (0 - 0)]->m_Position[1] - m_AtlasSprites[m_TrailStartIndex + (j - 0)]->m_Position[1]); // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+        LOGV("%f %d %f %f\n", j, dx, f_dx, m_AtlasSprites[m_TrailStartIndex + j]->m_Life);
+
+        if (m_AtlasSprites[m_TrailStartIndex + j]->m_Life < 1.0) {
+          m_AtlasSprites[m_TrailStartIndex + j]->m_Life += 0.01 * m_DeltaTime;
+        } else {
+          m_AtlasSprites[m_TrailStartIndex + j]->m_Life = 1.0;
+        }
+
+        m_AtlasSprites[m_TrailStartIndex + j]->m_Position[0] = f_dx; //m_AtlasSprites[m_TrailStartIndex + (0 - 0)]->m_Position[0] - f_dx;// m_AtlasSprites[m_TrailStartIndex + (j - 1)]->m_Position[0]; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+        m_AtlasSprites[m_TrailStartIndex + j]->m_Position[1] = f_dy; //m_AtlasSprites[m_TrailStartIndex + (0 - 0)]->m_Position[1] - f_dy;// m_AtlasSprites[m_TrailStartIndex + (j - 1)]->m_Position[1]; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+  */
+        ////m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
+      //}
+    }
+
     //m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
     inverter *= -1.0;
   }
