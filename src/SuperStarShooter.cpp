@@ -110,7 +110,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 0; //MAX_SEARCH * 2;
+  m_TrailCount = 32; //MAX_SEARCH * 2;
 
   m_LoadedLevel = false;
   m_MazeCursor = 0;
@@ -225,6 +225,8 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     m_AtlasSprites.push_back(new SpriteGun(m_TrailFoo, NULL));
     //m_AtlasSprites[m_SpriteCount]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
     m_AtlasSprites[m_SpriteCount]->SetPosition(0, 0);
+    m_AtlasSprites[m_SpriteCount]->SetTargetPosition(0, 0);
+    m_AtlasSprites[m_SpriteCount]->SetVelocity(VELOCITY * 1.5, VELOCITY * 1.5); // * (1.0 / ((float)i * 10)), VELOCITY * (1.0 / ((float)i * 2)));
     //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 5;
     m_AtlasSprites[m_SpriteCount]->SetScale(100, 100);
@@ -460,7 +462,7 @@ int SuperStarShooter::Simulate() {
   bool keepTracking = false;
 
   if (m_HitState == 1) {
-    keepTracking = true;
+    //keepTracking = true;
   }
 
   float dx = (m_xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
@@ -575,7 +577,39 @@ int SuperStarShooter::Simulate() {
 
   // manage player target selection and pathfinding
   if (s != NULL) {
+
+    // manage trail that indicates player target
+    for (unsigned int j=(m_TrailCount); j>0; j--) {
+      unsigned int i = (j - 1);
+      if (i == 0) {
+        m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+      } else {
+        //LOGV("sdf\n");
+        //m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_AtlasSprites[s->render]->m_Position[0], m_AtlasSprites[s->render]->m_Position[1]);
+        //m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(dx, dy);
+        m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[m_TrailStartIndex + (i - 1)]->m_Position[0]; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+        m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_TrailStartIndex + (i - 1)]->m_Position[1]; //m_yy; //m_TargetY * SUBDIVIDE;
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_Velocity[0] = 0.01;
+        m_AtlasSprites[m_TrailStartIndex + i]->MoveToTargetPosition(m_DeltaTime); // * (1.0 / ((float)(j))));
+      }
+    }
+
     if (m_TargetIsDirty) {
+
+    for (unsigned int j=(m_TrailCount); j>0; j--) {
+      unsigned int i = (j - 1);
+      if (i == 0) {
+        m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+      } else {
+        //LOGV("sdf\n");
+        //m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_AtlasSprites[s->render]->m_Position[0], m_AtlasSprites[s->render]->m_Position[1]);
+        m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_Velocity[0] = 0.01;
+      }
+    }
+
       m_TargetIsDirty = false;
       int startState = -1;
       int colliding_index = m_Space->at(m_TargetX, m_TargetY, 0);
@@ -784,15 +818,6 @@ int SuperStarShooter::Simulate() {
     m_ForceRebuffer = false;
   }
 
-  // manage trail that indicates player target
-  float inverter = -1.0;
-  for (unsigned int i=0; i<m_TrailCount; i++) {
-    m_AtlasSprites[m_TrailStartIndex + i]->Simulate(m_DeltaTime);
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
-    m_AtlasSprites[m_TrailStartIndex + i]->m_Position[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
-    //m_AtlasSprites[m_TrailStartIndex + i]->m_Rotation += (m_DeltaTime * 4.0 * inverter);
-    inverter *= -1.0;
-  }
 
   // process network events
   m_NetworkTickTimeout += m_DeltaTime;
