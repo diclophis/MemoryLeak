@@ -53,6 +53,7 @@ public:
 	unsigned int m_Count;
 		
 	void SetPosition(float x,float y);
+	void SetTargetPosition(float x,float y);
 
 	void SetScale(float x,float y) {
 		m_Scale[0] = x;

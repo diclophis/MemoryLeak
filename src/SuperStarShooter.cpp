@@ -20,7 +20,7 @@
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
-#define VELOCITY (100.0)
+#define VELOCITY (10)
 #define MAX_WAIT_BEFORE_WARP (0.03)
 #define MAX_SEARCH 20
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
@@ -259,12 +259,13 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
     m_AtlasSprites[sub_index]->SetVelocity(v, v);
     m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
+    m_AtlasSprites[sub_index]->SetTargetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
     m_AtlasSprites[sub_index]->m_Fps = 30;
     m_AtlasSprites[sub_index]->m_Frame = 0;
     m_AtlasSprites[sub_index]->SetScale(PLAYER_SCALE_X, PLAYER_SCALE_Y);
-    m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
-    m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
+    //m_AtlasSprites[sub_index]->m_TargetPosition[0] = m_AtlasSprites[sub_index]->m_Position[0];
+    //m_AtlasSprites[sub_index]->m_TargetPosition[1] = m_AtlasSprites[sub_index]->m_Position[1];
     m_AtlasSprites[sub_index]->Build(0);
     m_SpriteCount++;
   }
@@ -501,7 +502,7 @@ int SuperStarShooter::Simulate() {
   bool player_at_target = false;
 
   for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
-    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(1.0)) {
+    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
       if (ss->index == s->index) {
         player_at_target = true;
       }
@@ -513,10 +514,12 @@ int SuperStarShooter::Simulate() {
 
     for (int i=0; i<4; i++) {
       if ((rStartIndex + i) != ss->render) {
-        m_AtlasSprites[rStartIndex + i]->m_Position[0] = m_AtlasSprites[ss->render]->m_Position[0];
-        m_AtlasSprites[rStartIndex + i]->m_Position[1] = m_AtlasSprites[ss->render]->m_Position[1];
-        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[ss->render]->m_TargetPosition[0];
-        m_AtlasSprites[rStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[ss->render]->m_TargetPosition[1];
+        m_AtlasSprites[rStartIndex + i]->SetPosition(m_AtlasSprites[ss->render]->m_Position[0], m_AtlasSprites[ss->render]->m_Position[1]);
+        //m_AtlasSprites[rStartIndex + i]->SetTargetPosition(m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
+        //m_AtlasSprites[rStartIndex + i]->m_Position[0] = m_AtlasSprites[ss->render]->m_Position[0];
+        //m_AtlasSprites[rStartIndex + i]->m_Position[1] = m_AtlasSprites[ss->render]->m_Position[1];
+        //m_AtlasSprites[rStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[ss->render]->m_TargetPosition[0];
+        //m_AtlasSprites[rStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[ss->render]->m_TargetPosition[1];
       }
     }
 
@@ -641,13 +644,15 @@ int SuperStarShooter::Simulate() {
       float tx = ((float)step->x * SUBDIVIDE);
       float ty = ((float)step->y * SUBDIVIDE);
 
-      m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
-      m_AtlasSprites[s->render]->m_TargetPosition[1] = ty + PLAYER_OFFSET;
+      //m_AtlasSprites[s->render]->m_TargetPosition[0] = tx;
+      //m_AtlasSprites[s->render]->m_TargetPosition[1] = ty + PLAYER_OFFSET;
+      m_AtlasSprites[s->render]->SetTargetPosition(tx, ty + PLAYER_OFFSET);
 
       for (int i=0; i<4; i++) {
         if ((m_PlayerStartIndex + i) != s->render) {
-          m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[s->render]->m_TargetPosition[0];
-          m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[s->render]->m_TargetPosition[1];
+          //m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[s->render]->m_TargetPosition[0];
+          //m_AtlasSprites[m_PlayerStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[s->render]->m_TargetPosition[1];
+          m_AtlasSprites[m_PlayerStartIndex + i]->SetTargetPosition(m_AtlasSprites[s->render]->m_TargetPosition[0], m_AtlasSprites[s->render]->m_TargetPosition[1]);
         }
       }
     }
