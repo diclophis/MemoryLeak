@@ -6,7 +6,7 @@
 
 #define ZOOM (1.0)
 #define ZOOM2 (1.0 / 1.0)
-#define SUBDIVIDE (32.0)
+#define SUBDIVIDE (16.0)
 #define BLANK 0 //((16 * 3) + 2)
 #define WATER ((16 * 5) + 6)
 //#define TREASURE 10
@@ -22,13 +22,13 @@
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (10)
 #define MAX_WAIT_BEFORE_WARP (0.03)
-#define MAX_SEARCH 32
+#define MAX_SEARCH 64
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 2.0)
-#define LEVEL_LOAD_TIMEOUT 0.666
+#define LEVEL_LOAD_TIMEOUT 0.333
 #define LEVEL_LOAD_STRIDE (1)
 #define MAX_OTHER_PLAYERS 128
 
@@ -101,7 +101,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  float overX = 1.33;
+  float overX = 1.1;
   GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE)));
   GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE)));
 
@@ -232,7 +232,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     //m_AtlasSprites[m_SpriteCount]->SetVelocity(VELOCITY * 1.5, VELOCITY * 1.5); // * (1.0 / ((float)i * 10)), VELOCITY * (1.0 / ((float)i * 2)));
     //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 5;
-    m_AtlasSprites[m_SpriteCount]->SetScale(100, 100);
+    m_AtlasSprites[m_SpriteCount]->SetScale(50, 50);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     //m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
     m_SpriteCount++;
