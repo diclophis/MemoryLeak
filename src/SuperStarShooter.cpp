@@ -28,9 +28,12 @@
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 2.0)
-#define LEVEL_LOAD_TIMEOUT 0.00333333
-#define LEVEL_LOAD_STRIDE (8)
+#define LEVEL_LOAD_TIMEOUT 0.333333
+#define LEVEL_LOAD_STRIDE (64)
 #define MAX_OTHER_PLAYERS 128
+
+#define PLAYER_T 0.2333
+#define TRAIL_T 2.0
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
@@ -110,7 +113,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
   m_GridPositions = (int *)malloc((m_GridCount * 2) * sizeof(int));
   m_GridStartIndex = m_SpriteCount;
 
-  m_TrailCount = 32; //MAX_SEARCH * 2;
+  m_TrailCount = MAX_SEARCH * 2;
 
   m_LoadedLevel = false;
   m_MazeCursor = 0;
@@ -226,7 +229,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     //m_AtlasSprites[m_SpriteCount]->SetPosition((m_CenterOfWorldX * (SUBDIVIDE)), ((m_CenterOfWorldY * (SUBDIVIDE))));
     m_AtlasSprites[m_SpriteCount]->SetPosition(0, 0);
     m_AtlasSprites[m_SpriteCount]->SetTargetPosition(0, 0);
-    m_AtlasSprites[m_SpriteCount]->SetVelocity(VELOCITY * 1.5, VELOCITY * 1.5); // * (1.0 / ((float)i * 10)), VELOCITY * (1.0 / ((float)i * 2)));
+    //m_AtlasSprites[m_SpriteCount]->SetVelocity(VELOCITY * 1.5, VELOCITY * 1.5); // * (1.0 / ((float)i * 10)), VELOCITY * (1.0 / ((float)i * 2)));
     //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 5;
     m_AtlasSprites[m_SpriteCount]->SetScale(100, 100);
@@ -259,7 +262,7 @@ void SuperStarShooter::AddPlayer(float x, float y, float v) {
   for (unsigned int i=0; i<4; i++) {
     int sub_index = m_SpriteCount;
     m_AtlasSprites.push_back(new SpriteGun(m_PlayerFoos.at(i), NULL));
-    m_AtlasSprites[sub_index]->SetVelocity(v, v);
+    //m_AtlasSprites[sub_index]->SetVelocity(v, v);
     m_AtlasSprites[sub_index]->SetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->SetTargetPosition(x, y + PLAYER_OFFSET);
     m_AtlasSprites[sub_index]->m_IsAlive = true;
@@ -405,16 +408,16 @@ void SuperStarShooter::RenderSpritePhase() {
       }
     }
 
+    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
+
+
     glTranslatef(a, b, 0.0);
     //glTranslatef(0.0, 0.0, 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
-
     glTranslatef(-m_LastCenterX, -m_LastCenterY, 0.0);
-    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
-  
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
-    //AtlasSprite::RenderFoo(m_StateFoo, m_Batches[1]);
+    glTranslatef(m_LastCenterX, m_LastCenterY, 0.0);
+    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
   }
 }
 
@@ -462,7 +465,7 @@ int SuperStarShooter::Simulate() {
   bool keepTracking = false;
 
   if (m_HitState == 1) {
-    //keepTracking = true;
+    keepTracking = true;
   }
 
   float dx = (m_xx + m_CameraActualOffsetX) - (SUBDIVIDE / 2.0);
@@ -504,7 +507,7 @@ int SuperStarShooter::Simulate() {
   bool player_at_target = false;
 
   for(ss = users; ss != NULL; ss = (struct my_struct *)ss->hh.next) {
-    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(m_DeltaTime)) {
+    if (m_AtlasSprites[ss->render]->MoveToTargetPosition(PLAYER_T, m_DeltaTime)) {
       if (ss->index == s->index) {
         player_at_target = true;
       }
@@ -584,31 +587,18 @@ int SuperStarShooter::Simulate() {
       if (i == 0) {
         m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
       } else {
+        m_AtlasSprites[m_TrailStartIndex + i]->MoveToTargetPosition(TRAIL_T, m_DeltaTime * j); // * (1.0 / ((float)(j))));
         //LOGV("sdf\n");
         //m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_AtlasSprites[s->render]->m_Position[0], m_AtlasSprites[s->render]->m_Position[1]);
-        //m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(dx, dy);
-        m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[m_TrailStartIndex + (i - 1)]->m_Position[0]; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
-        m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_TrailStartIndex + (i - 1)]->m_Position[1]; //m_yy; //m_TargetY * SUBDIVIDE;
+        //m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[m_TrailStartIndex + (i - 1)]->m_Position[0]; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+        //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[1] = m_AtlasSprites[m_TrailStartIndex + (i - 1)]->m_Position[1]; //m_yy; //m_TargetY * SUBDIVIDE;
         //m_AtlasSprites[m_TrailStartIndex + i]->m_Velocity[0] = 0.01;
-        m_AtlasSprites[m_TrailStartIndex + i]->MoveToTargetPosition(m_DeltaTime); // * (1.0 / ((float)(j))));
       }
     }
 
     if (m_TargetIsDirty) {
 
-    for (unsigned int j=(m_TrailCount); j>0; j--) {
-      unsigned int i = (j - 1);
-      if (i == 0) {
-        m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
-      } else {
-        //LOGV("sdf\n");
-        //m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_AtlasSprites[s->render]->m_Position[0], m_AtlasSprites[s->render]->m_Position[1]);
-        m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
-        //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
-        //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
-        //m_AtlasSprites[m_TrailStartIndex + i]->m_Velocity[0] = 0.01;
-      }
-    }
 
       m_TargetIsDirty = false;
       int startState = -1;
@@ -666,6 +656,38 @@ int SuperStarShooter::Simulate() {
             break;
           default:
             break;
+        }
+
+      }
+    }
+
+    if (m_CurrentStep > 0) {
+      int used_steps = m_CurrentStep;
+      for (unsigned int j=(m_TrailCount); j>0; j--) {
+        unsigned int i = (j - 1);
+        if (i == 0) {
+          //m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+        } else {
+          //LOGV("sdf\n");
+          //m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_AtlasSprites[s->render]->m_Position[0], m_AtlasSprites[s->render]->m_Position[1]);
+          if (used_steps < (m_Steps->size() - 0)) {
+            nodexyz *step2 = m_States[(intptr_t)m_Steps->at(used_steps)];
+            float step_tx = ((float)step2->x * SUBDIVIDE);
+            float step_ty = ((float)step2->y * SUBDIVIDE);
+            m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(step_tx, step_ty);
+            used_steps++;
+          } else {
+            nodexyz *step3 = m_States[(intptr_t)m_Steps->at(used_steps - 1)];
+            float step_tx2 = ((float)step3->x * SUBDIVIDE);
+            float step_ty2 = ((float)step3->y * SUBDIVIDE);
+            m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(step_tx2, step_ty2);
+
+            m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+            m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
+          }
+          //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[0] = dx; // * SUBDIVIDE; //m_TargetX * SUBDIVIDE;
+          //m_AtlasSprites[m_TrailStartIndex + i]->m_TargetPosition[1] = dy; //m_yy; //m_TargetY * SUBDIVIDE;
+          //m_AtlasSprites[m_TrailStartIndex + i]->m_Velocity[0] = 0.01;
         }
       }
     }

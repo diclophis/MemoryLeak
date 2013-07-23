@@ -604,10 +604,10 @@ foofoo *AtlasSprite::GetFoo(GLuint texture_index, int sprites_per_row, int rows,
 }
 
 
-bool AtlasSprite::MoveToTargetPosition(float dt) {
+bool AtlasSprite::MoveToTargetPosition(float t, float dt) {
   m_Life += dt;
 
-  float percent_complete = m_Life / (1.0 / m_Velocity[0]);
+  float percent_complete = m_Life / (t);
 
   float dx = (m_StartPosition[0] - m_TargetPosition[0]);
   float dy = (m_StartPosition[1] - m_TargetPosition[1]);

@@ -38,7 +38,7 @@ public:
   float m_LastRotation;
 
 
-  bool MoveToTargetPosition(float dt);
+  bool MoveToTargetPosition(float t, float dt);
 
 	void SetFrame(int f) {
 		m_Frame = f;
