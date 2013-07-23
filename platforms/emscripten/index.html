@@ -74,13 +74,13 @@
         var manifestFile = new XMLHttpRequest();
         var manifestUrl = "index.appcache";
         manifestFile.open("GET", manifestUrl, true);
-        addRunDependency("manifest");
+        Module.addRunDependency("manifest");
         manifestFile.onload = function(e) {
-          var assets = FS.createFolder("/", "assets", true, true);
-          var sounds = FS.createFolder(assets, "sounds", true, true);
-          var textures = FS.createFolder(assets, "textures", true, true);
-          var levels = FS.createFolder(assets, "levels", true, true);
-          var models = FS.createFolder(assets, "models", true, true);
+          var assets = Module.FS_createFolder("/", "assets", true, true);
+          var sounds = Module.FS_createFolder(assets, "sounds", true, true);
+          var textures = Module.FS_createFolder(assets, "textures", true, true);
+          var levels = Module.FS_createFolder(assets, "levels", true, true);
+          var models = Module.FS_createFolder(assets, "models", true, true);
           var lines = this.response.split("\n");
           for (i in lines) {
             (function() {
@@ -92,19 +92,19 @@
                 var dataFile = new XMLHttpRequest();
                 dataFile.open("GET", line, true);
                 dataFile.responseType = "arraybuffer";
-                addRunDependency(line);
+                Module.addRunDependency(line);
                 dataFile.onload = function(e) {
                   console.log(line, this);
                   var arrayBuffer = this.response;
                   var byteArray = arrayBuffer.byteLength ? new Uint8Array(arrayBuffer) : arrayBuffer;
                   Module.FS_createDataFile(dirName, baseName, byteArray, true, false);
-                  removeRunDependency(line);
+                  Module.removeRunDependency(line);
                 }
                 dataFile.send(null);
               }
             })();
           }
-          removeRunDependency("manifest");
+          Module.removeRunDependency("manifest");
         }
         manifestFile.send(null);
       });
