@@ -32,7 +32,7 @@
 #define LEVEL_LOAD_STRIDE (1)
 #define MAX_OTHER_PLAYERS 128
 
-#define PLAYER_T 0.325 //0.1111 
+#define PLAYER_T 0.111
 #define TRAIL_T 0.175 
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -382,8 +382,8 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = (((int)cdx) + (SUBDIVIDE / 2.0));
-  float b = (((int)cdy) + (SUBDIVIDE / 2.0));
+  float a = floor(((int)cdx) + (SUBDIVIDE / 2.0));
+  float b = floor(((int)cdy) + (SUBDIVIDE / 2.0));
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
@@ -410,13 +410,13 @@ void SuperStarShooter::RenderSpritePhase() {
 
     RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
 
-
     glTranslatef(a, b, 0.0);
-    //glTranslatef(0.0, 0.0, 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
-    glTranslatef(-m_LastCenterX, -m_LastCenterY, 0.0);
+    
+    glTranslatef(-(m_LastCenterX), -(m_LastCenterY), 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
-    glTranslatef(m_LastCenterX, m_LastCenterY, 0.0);
+
+    glTranslatef((m_LastCenterX), (m_LastCenterY), 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
   }
 }
@@ -936,6 +936,9 @@ void SuperStarShooter::AdjacentCost(void *node, std::vector<micropather::StateCo
       if (Passable(colliding_index)) {
         passable = true;
         pass_cost = 1.0;
+        if (i > 3) {
+          pass_cost *= 2.0;
+        }
       }
     }
     
