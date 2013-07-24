@@ -45,7 +45,14 @@ static const char fragment_shader[] =
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
-  if (tx != ltx || ty != lty || tz != ltz) {
+  //if ((unsigned short)(tx * 10.0)/10 != (unsigned short)(ltx * 10.0)/10 || (unsigned short)(ty * 10.0)/10 != (unsigned short)(lty * 10.0)/10 || (unsigned short)(tz * 10.0)/10 != (unsigned short)(ltz * 10.0)/10) {
+
+  //LOGV("+++\n");
+  if(
+    fastAbs((unsigned short)tx) != fastAbs((unsigned short) ltx) ||
+    fastAbs((unsigned short)ty) != fastAbs((unsigned short) lty) ||
+    fastAbs((unsigned short)tz) != fastAbs((unsigned short) ltz)
+  ) {
     ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
     ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
     ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
@@ -53,9 +60,9 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
   }
     
-  ltx = tx;
-  lty = ty;
-  ltz = tz;
+  ltx = (tx);
+  lty = (ty);
+  ltz = (tz);
 }
 
 
@@ -202,9 +209,8 @@ void Engine::DrawScreen(float rotation) {
     float e = 1.0;
     float f = -1.0;
 
+    identity(ProjectionMatrix);
     ortho(ProjectionMatrix, (a), (b), (c), (d), (e), (f));
-
-    //glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
 
     RenderSpritePhase();
 	} else {
@@ -617,12 +623,12 @@ void Engine::ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfl
     return;
   }
   
-  tmp[0] = 2 / deltaX;
-  tmp[12] = -(right + left) / deltaX;
-  tmp[5] = 2 / deltaY;
-  tmp[13] = -(top + bottom) / deltaY;
-  tmp[10] = -2 / deltaZ;
-  tmp[14] = -(nearZ + farZ) / deltaZ;
+  tmp[0] = (2.0 / deltaX);
+  tmp[12] = (-(right + left) / deltaX);
+  tmp[5] = (2.0 / deltaY);
+  tmp[13] = (-(top + bottom) / deltaY);
+  tmp[10] = (-2.0 / deltaZ);
+  tmp[14] = (-(nearZ + farZ) / deltaZ);
   
   memcpy(m, tmp, sizeof(tmp));
 }
