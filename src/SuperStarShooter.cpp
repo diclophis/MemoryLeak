@@ -6,7 +6,7 @@
 
 #define ZOOM (1.0)
 #define ZOOM2 (1.0 / 1.0)
-#define SUBDIVIDE (32.0)
+#define SUBDIVIDE (16.0)
 #define BLANK 0 //((16 * 3) + 2)
 #define WATER ((16 * 5) + 6)
 //#define TREASURE 10
@@ -20,8 +20,8 @@
 
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
-#define VELOCITY (10)
-#define MAX_WAIT_BEFORE_WARP (0.03)
+#define VELOCITY (0.01)
+#define MAX_WAIT_BEFORE_WARP (0.1)
 #define MAX_SEARCH 64
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -29,11 +29,11 @@
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 2.0)
 #define LEVEL_LOAD_TIMEOUT 0.1
-#define LEVEL_LOAD_STRIDE (1024 * 32)
+#define LEVEL_LOAD_STRIDE (1024 * 256)
 #define MAX_OTHER_PLAYERS 128
 
-#define PLAYER_T 0.111
-#define TRAIL_T 0.111
+#define PLAYER_T 0.4
+#define TRAIL_T 0.45
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
@@ -382,8 +382,8 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = floor(((int)cdx) + (SUBDIVIDE / 2.0));
-  float b = floor(((int)cdy) + (SUBDIVIDE / 2.0));
+  float a = (((int)cdx) + (SUBDIVIDE / 2.0));
+  float b = (((int)cdy) + (SUBDIVIDE / 2.0));
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
@@ -399,18 +399,37 @@ void SuperStarShooter::RenderSpritePhase() {
     m_Batches[2]->m_NumBatched = 0;
     m_Batches[3]->m_NumBatched = 0;
 
+/*
+    //LOGV("%f\n", a);
+    if (abs(offX) > (SUBDIVIDE / 4.0)) {
+      if (offX > 0.0) {
+        offX = (SUBDIVIDE / 4.0);
+      } else {
+        offX = -(SUBDIVIDE / 4.0);
+      }
+    }
+    if (abs(offY) > (SUBDIVIDE / 4.0)) {
+      if (offY > 0.0) {
+        offY = (SUBDIVIDE / 4.0);
+      } else {
+        offY = -(SUBDIVIDE / 4.0);
+      }
+    }
+*/
+
     struct my_struct *s;
 
     for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
       if ((m_SimulationTime - s->update) < 30.0) { 
         RenderSpriteRange(s->render, s->render + 1, m_Batches[2], offX, offY);
-        //RenderSpriteRange(s->render, s->render + 1, m_Batches[2], 0, 0);
       }
     }
 
     RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
 
+
     glTranslatef(a, b, 0.0);
+    //glTranslatef(1.0, 1.0, 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     
     glTranslatef(-(m_LastCenterX), -(m_LastCenterY), 0.0);
