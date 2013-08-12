@@ -15,7 +15,7 @@ static bool m_WarnedAboutGameFailure = false;
 
 static const char vertex_shader[] =
 "#ifdef GL_ES\n"
-"precision lowp float;\n"
+"precision mediump float;\n"
 "#endif\n"
 "attribute vec2 Position;\n"
 "attribute vec2 InCoord;\n"
@@ -25,13 +25,13 @@ static const char vertex_shader[] =
 "{\n"
 "OutCoord = InCoord;\n"
 "gl_Position = ModelViewProjectionMatrix * vec4(Position, 1.0, 1.0);\n"
-//"gl_Position.x += 0.5;\n"
+//"gl_Position.x += sin(Position.y * 0.05) * 0.01;\n"
 "}\n";
 
 
 static const char fragment_shader[] = 
 "#ifdef GL_ES\n"
-"precision lowp float;\n"
+"precision mediump float;\n"
 "#endif\n"
 "varying vec2 OutCoord;\n"
 "uniform sampler2D Sampler;\n"
@@ -45,20 +45,17 @@ static const char fragment_shader[] =
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
-  //if ((unsigned short)(tx * 10.0)/10 != (unsigned short)(ltx * 10.0)/10 || (unsigned short)(ty * 10.0)/10 != (unsigned short)(lty * 10.0)/10 || (unsigned short)(tz * 10.0)/10 != (unsigned short)(ltz * 10.0)/10) {
-
-  //LOGV("+++\n");
-  if(
-    fastAbs((unsigned short)tx) != fastAbs((unsigned short) ltx) ||
-    fastAbs((unsigned short)ty) != fastAbs((unsigned short) lty) ||
-    fastAbs((unsigned short)tz) != fastAbs((unsigned short) ltz)
-  ) {
+  //if(true ||
+  //  fastAbs((unsigned short)tx) != fastAbs((unsigned short) ltx) ||
+  //  fastAbs((unsigned short)ty) != fastAbs((unsigned short) lty) ||
+  //  fastAbs((unsigned short)tz) != fastAbs((unsigned short) ltz)
+  //) {
     ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
     ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
     ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
     ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
-  }
+  //}
     
   ltx = (tx);
   lty = (ty);

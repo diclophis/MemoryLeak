@@ -21,7 +21,7 @@
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (0.01)
-#define MAX_WAIT_BEFORE_WARP (0.1)
+#define MAX_WAIT_BEFORE_WARP (0.00)
 #define MAX_SEARCH 64
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -32,8 +32,8 @@
 #define LEVEL_LOAD_STRIDE (1024 * 256)
 #define MAX_OTHER_PLAYERS 128
 
-#define PLAYER_T 0.4
-#define TRAIL_T 0.45
+#define PLAYER_T 0.33
+//#define TRAIL_T 0.01
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
 // passages exist leading AWAY from this cell. Bits in the low byte (corresponding
@@ -232,7 +232,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     //m_AtlasSprites[m_SpriteCount]->SetVelocity(VELOCITY * 1.5, VELOCITY * 1.5); // * (1.0 / ((float)i * 10)), VELOCITY * (1.0 / ((float)i * 2)));
     //m_AtlasSprites[m_SpriteCount]->m_IsAlive = false;
     m_AtlasSprites[m_SpriteCount]->m_Fps = 5;
-    m_AtlasSprites[m_SpriteCount]->SetScale(50, 50);
+    m_AtlasSprites[m_SpriteCount]->SetScale(SUBDIVIDE, SUBDIVIDE);
     m_AtlasSprites[m_SpriteCount]->Build(0);
     //m_AtlasSprites[m_SpriteCount]->m_Rotation = i * 20;
     m_SpriteCount++;
@@ -709,7 +709,7 @@ int SuperStarShooter::Simulate() {
       if (i == 0) {
         m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_TargetX * SUBDIVIDE, m_TargetY * SUBDIVIDE);
       } else if (wang < m_Steps->size()) {
-        if (m_AtlasSprites[m_TrailStartIndex + i]->MoveToTargetPosition(TRAIL_T, m_DeltaTime)) {
+        if (m_AtlasSprites[m_TrailStartIndex + i]->MoveToTargetPosition(m_DeltaTime * 10.0, m_DeltaTime)) {
           if (m_CurrentStep > 0) {
             m_AtlasSprites[m_TrailStartIndex + i]->SetPosition(m_AtlasSprites[m_TrailStartIndex + (i)]->m_StartPosition[0], m_AtlasSprites[m_TrailStartIndex + (i)]->m_StartPosition[1]);
             m_AtlasSprites[m_TrailStartIndex + i]->SetTargetPosition(m_AtlasSprites[m_TrailStartIndex + (i)]->m_TargetPosition[0], m_AtlasSprites[m_TrailStartIndex + (i)]->m_TargetPosition[1]);
