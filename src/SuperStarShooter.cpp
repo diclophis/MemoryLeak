@@ -22,7 +22,7 @@
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (0.01)
 #define MAX_WAIT_BEFORE_WARP (0.00)
-#define MAX_SEARCH 64
+#define MAX_SEARCH 16
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
@@ -32,7 +32,7 @@
 #define LEVEL_LOAD_STRIDE (1024 * 256)
 #define MAX_OTHER_PLAYERS 128
 
-#define PLAYER_T 0.2333
+#define PLAYER_T 0.20
 //#define TRAIL_T 0.01
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -60,7 +60,7 @@
 #define CELL_HEIGHT 16
 #define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) (((a - 1) * CELL_HEIGHT) + (b - 1))
 
-#define SCROLL_SPEED 2.0
+#define SCROLL_SPEED 0.9
 
 
 struct my_struct {
