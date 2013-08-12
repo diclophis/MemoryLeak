@@ -256,7 +256,8 @@ int Engine::Run() {
 
 
 void Engine::PauseSimulation() {
-	m_GameState = 2;
+  m_GameState = 2;
+  DoPause();
 }
 
 
@@ -533,7 +534,6 @@ void Engine::LoadTexture(int i) {
     glGenerateMipmap(GL_TEXTURE_2D);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-
   }// else {
   //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   //}
@@ -637,7 +637,7 @@ void Engine::ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfl
   identity(tmp);
   
   if ((deltaX == 0) || (deltaY == 0) || (deltaZ == 0)) {
-    LOGV("Invalid ortho");
+    LOGV("Invalid ortho\n");
     return;
   }
   

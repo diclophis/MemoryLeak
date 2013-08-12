@@ -12,6 +12,7 @@ public:
 	void RenderSpritePhase();
   void CreateFoos();
   void DestroyFoos();
+  void DoPause();
 
   void BlitIntoSpace(int layer, int bottom_left_start, int width, int height, int offset_x, int offset_y);
 

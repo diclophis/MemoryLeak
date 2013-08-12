@@ -60,6 +60,8 @@
 #define CELL_HEIGHT 16
 #define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) (((a - 1) * CELL_HEIGHT) + (b - 1))
 
+#define SCROLL_SPEED 2.0
+
 
 struct my_struct {
   int id;            // we'll use this field as the key
@@ -101,9 +103,9 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  float overX = 1.3;
-  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE)));
-  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE)));
+  float overX = 1.33;
+  GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))) + 3;
+  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))) + 3;
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
@@ -370,8 +372,8 @@ void SuperStarShooter::RenderModelPhase() {
 
 // render the scene
 void SuperStarShooter::RenderSpritePhase() {
-  float a = (((int)cdx) + (SUBDIVIDE / 2.0));
-  float b = (((int)cdy) + (SUBDIVIDE / 2.0));
+  float a = (((float)cdx) + (SUBDIVIDE / 2.0));
+  float b = (((float)cdy) + (SUBDIVIDE / 2.0));
   float offX = (-m_LastCenterX / (SUBDIVIDE / 2.0));
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
@@ -396,7 +398,6 @@ void SuperStarShooter::RenderSpritePhase() {
     }
 
     RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
-
 
     glTranslatef(a, b, 0.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
@@ -435,6 +436,13 @@ void SuperStarShooter::Hit(float x, float y, int hitState) {
       collide_index_set = true;
     }
   }
+}
+
+
+void SuperStarShooter::DoPause() {
+  LOGV("STOP NETWORK\n");
+  m_GameState = 2;
+  m_Network->StopNetwork();
 }
 
 
@@ -540,8 +548,8 @@ int SuperStarShooter::Simulate() {
     m_SelectTimeout += m_DeltaTime;
     s->update = m_SimulationTime;
     if (m_SelectTimeout > MANUAL_SCROLL_TIMEOUT) {
-      m_DesiredTargetX = m_DeltaTime * 0.5 * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
-      m_DesiredTargetY = m_DeltaTime * 0.5 * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
+      m_DesiredTargetX = m_DeltaTime * SCROLL_SPEED * (m_CameraActualOffsetX - m_AtlasSprites[s->render]->m_Position[0]);
+      m_DesiredTargetY = m_DeltaTime * SCROLL_SPEED * (m_CameraActualOffsetY - m_AtlasSprites[s->render]->m_Position[1]);
       m_CameraActualOffsetX += -m_DesiredTargetX;
       m_CameraActualOffsetY += -m_DesiredTargetY;
     } else if (m_StartedSwipe) {

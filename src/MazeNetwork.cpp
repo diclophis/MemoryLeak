@@ -178,6 +178,15 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
   // attempt to establish connection, check existing connection
   int network_connected_error = ConnectNetwork();
 
+  if (m_InputBuffer == NULL) {
+    LOGV("rebuffer\n");
+    // setup the json stream parser
+    m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
+    hand = yajl_alloc(&callbacks, NULL, (void *)this);
+    yajl_config(hand, yajl_allow_comments, 1); // allow json comments
+    yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
+  }
+
   // if the connection state is invalid, return the invalid state
   if (network_connected_error > 0) {
     return network_connected_error;
@@ -366,6 +375,18 @@ int MazeNetwork::StopNetwork() {
   m_State = 0;
   m_ConnectionState = 0;
   m_ConnectionSelectsAttempted = 0;
+
+  if (m_InputBuffer) {
+    free(m_InputBuffer);
+    yajl_free(hand);
+    m_InputBuffer = NULL;
+    /*
+    m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
+    hand = yajl_alloc(&callbacks, NULL, (void *)this);
+    yajl_config(hand, yajl_allow_comments, 1); // allow json comments
+    yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
+    */
+  }
   return 1;
 }
 
@@ -396,11 +417,7 @@ MazeNetwork::MazeNetwork(MazeNetworkDelegate *theDelegate, size_t theBpt) {
 
   int addressResolution = 0;
 
-  // setup the json stream parser
-  m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
-  hand = yajl_alloc(&callbacks, NULL, (void *)this);
-  yajl_config(hand, yajl_allow_comments, 1); // allow json comments
-  yajl_config(hand, yajl_dont_validate_strings, 1); // dont validate strings
+  m_InputBuffer = NULL;
 
   memset(&stSockAddr, 0, sizeof(stSockAddr));
   stSockAddr.sin_family = AF_INET;
