@@ -40,6 +40,7 @@ public:
   bool Active();
   void StopSimulation();
   void StartSimulation();
+  void DoShader();
   void PauseSimulation();
   void LoadSound(int i);
   void LoadTexture(int i);

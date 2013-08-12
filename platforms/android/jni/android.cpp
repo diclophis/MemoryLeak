@@ -141,6 +141,7 @@ int Java_com_example_SanAngeles_DemoActivity_initNative(
 		jclass fdClassRef = (jclass) env->NewGlobalRef(fdClass); 
 		jfieldID fdClassDescriptorFieldID = env->GetFieldID(fdClassRef, "descriptor", "I");
 		if (fdClassDescriptorFieldID != NULL) {
+    LOGV("PUSHING BACK FH\n");
       for (int i=0; i<model_count; i++) {
         jint fdx = env->GetIntField(env->GetObjectArrayElement(fd_sys1, i), fdClassDescriptorFieldID);
         int myfdx = dup(fdx);
@@ -182,6 +183,7 @@ void Java_com_example_SanAngeles_DemoRenderer_nativeOnSurfaceCreated(JNIEnv* env
 void Java_com_example_SanAngeles_DemoRenderer_nativeResize(JNIEnv* env, jobject thiz, jint width, jint height) {
   sWindowWidth = width;
   sWindowHeight = height;
+  LOGV("DOES THIS GET CALLED\n");
   if (Engine::CurrentGame()) {
     Engine::CurrentGameResizeScreen(width, height);
     Engine::CurrentGameStart();

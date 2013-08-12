@@ -112,7 +112,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public void onPause() {
-    //Log.v(this.toString(), "DemoGLSurfaceView::onPause");
+    Log.v(this.toString(), "DemoGLSurfaceView::onPause");
     super.onPause();
     nativePause();
   }
@@ -120,7 +120,7 @@ class DemoGLSurfaceView extends GLSurfaceView {
 
   @Override
   public void onResume() {
-    //Log.v(this.toString(), "DemoGLSurfaceView::onResume");
+    Log.v(this.toString(), "DemoGLSurfaceView::onResume");
     super.onResume();
     nativeResume();
   }

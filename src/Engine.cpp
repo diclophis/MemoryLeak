@@ -71,10 +71,10 @@ Engine::~Engine() {
   }
   m_Textures.clear();
 
-  for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
-    delete *i;
-  }
-  m_FooFoos.clear();
+  //for (std::vector<foofoo *>::iterator i = m_FooFoos.begin(); i != m_FooFoos.end(); ++i) {
+  //  delete *i;
+  //}
+  //m_FooFoos.clear();
 
   ClearSprites();
 
@@ -84,7 +84,6 @@ Engine::~Engine() {
     ModPlug_Unload(*i);
   }
   m_Sounds.clear();
-
 
   free(m_StateFoo);
 
@@ -128,13 +127,30 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   m_CurrentSound = 0;
 
+  ltx = lty = ltz = INT_MAX;
+
+  program = 0;
+
+  DoShader();
+}
+
+void Engine::DoShader() {
+
+  if (program != 0) {
+    glDetachShader(program, v);
+    glDetachShader(program, f);
+    glDeleteShader(v);
+    glDeleteShader(f);
+    glDeleteProgram(program);
+  }
+
   // Compile the vertex shader
   p = vertex_shader;
   v = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(v, 1, &p, NULL);
   glCompileShader(v);
   glGetShaderInfoLog(v, sizeof msg, NULL, msg);
-  //LOGV("vertex shader info: %s\n", msg);
+  LOGV("vertex shader info: %s\n", msg);
 
   // Compile the fragment shader
   p = fragment_shader;
@@ -142,17 +158,15 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
   glShaderSource(f, 1, &p, NULL);
   glCompileShader(f);
   glGetShaderInfoLog(f, sizeof msg, NULL, msg);
-  //LOGV("fragment shader info: %s\n", msg);
+  LOGV("fragment shader info: %s\n", msg);
 
   // Create and link the shader program
   program = glCreateProgram();
-  //LOGV("engine program ID: %d\n", program);
+  LOGV("engine program ID: %d\n", program);
   glAttachShader(program, v);
   glAttachShader(program, f);
 
   m_StateFoo = new StateFoo(program);
-
-  ltx = lty = ltz = INT_MAX;
 }
 
 
@@ -339,11 +353,13 @@ void Engine::Start(int i, int w, int h) {
   }
 
   if (m_CurrentGame) {
+    LOGV("deleting\n");
     m_CurrentGame->StopSimulation();
     delete m_CurrentGame;
   }
 
   try {
+    LOGV("creating\n");
     m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
     m_CurrentGame->StartSimulation();
   } catch (std::exception& e) {
@@ -355,6 +371,7 @@ void Engine::Start(int i, int w, int h) {
 
 void Engine::CurrentGameDestroyFoos() {
   if (m_CurrentGame != NULL) {
+    LOGV("CurrentGameDestroyFoos\n");
     m_CurrentGame->DestroyFoos();
   } else {
     WarnAboutGameFailure("current game is not set to destroy foos\n\n");
@@ -364,6 +381,7 @@ void Engine::CurrentGameDestroyFoos() {
 
 void Engine::CurrentGameCreateFoos() {
   if (m_CurrentGame != NULL) {
+    LOGV("CurrentGameCreateFoos\n");
     m_CurrentGame->CreateFoos();
   } else {
     WarnAboutGameFailure("current game is not set to create foos\n\n");
@@ -373,6 +391,7 @@ void Engine::CurrentGameCreateFoos() {
 
 void Engine::CurrentGamePause() {
   if (m_CurrentGame != NULL) {
+    LOGV("CurrentGamePause\n");
     m_CurrentGame->PauseSimulation();
   } else {
     WarnAboutGameFailure("current game is not set to pause\n\n");
@@ -390,6 +409,7 @@ void Engine::CurrentGameHit(float x, float y, int hitState) {
 
 
 void Engine::CurrentGameResizeScreen(int width, int height) {
+    LOGV("CurrentGameResizeScreen %d %d\n", width, height);
   if (m_CurrentGame != NULL) {
     m_CurrentGame->ResizeScreen(width, height);
   } else {
@@ -451,7 +471,8 @@ void Engine::LoadTexture(int i) {
   GLuint textureHandle;
 
   png_init(0, 0);
-  //rewind(m_TextureFileHandles->at(i)->fp);
+  rewind(m_TextureFileHandles->at(i)->fp);
+  //LOGV(
   fseek(m_TextureFileHandles->at(i)->fp, m_TextureFileHandles->at(i)->off, 0);
   png_open_read(&tex, 0, m_TextureFileHandles->at(i)->fp);
   data = (unsigned char*)malloc(tex.width * tex.height * tex.bpp);
@@ -641,7 +662,15 @@ void Engine::WarnAboutGameFailure(const char *s) {
 
 void Engine::CurrentGameStart() {
   if (m_CurrentGame != NULL) {
+    LOGV("CurrentGameStart\n");
+
+    //m_CurrentGame = (Engine *)games.at(i)->allocate(w, h, textures, models, levels, sounds);
+    m_CurrentGame->m_TextureFileHandles = &textures;
+    m_CurrentGame->m_ModelFileHandles = &models;
+    m_CurrentGame->m_LevelFileHandles = &levels;
+    m_CurrentGame->m_SoundFileHandles = &sounds;
     m_CurrentGame->StartSimulation();
+    m_CurrentGame->DoShader();
   } else {
     LOGV("current game not set to start\n");
   }

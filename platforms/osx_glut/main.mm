@@ -330,3 +330,37 @@ CGLSetParameter(cgl_context, kCGLCPSwapInterval, &swap_interval);
 
   return 0;
 }
+
+
+/*
+V/com.example.SanAngeles.DemoActivity@41ffc860(21157): DemoActivity::onCreate!!!!!!
+V/com.example.SanAngeles.DemoActivity@41ffc860(21157): levels/0.wav
+V/com.example.SanAngeles.DemoActivity@41ffc860(21157): sounds/0.wav
+V/com.example.SanAngeles.DemoActivity@41ffc860(21157): textures/0.png
+V/com.example.SanAngeles.DemoActivity@41ffc860(21157): DemoActivity::onResume!!!!!!com.example.SanAngeles.DemoGLSurfaceView@41ffdf58
+V/com.example.SanAngeles.DemoGLSurfaceView@41ffdf58(21157): DemoGLSurfaceView::onResume
+V/libnav  (21157): Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume
+I/ActivityManager(  583): Displayed com.example.SanAngeles/.DemoActivity: +1s525ms
+V/com.example.SanAngeles.DemoActivity@41ffc860(21157): DemoActivity::onPause!!!!!!com.example.SanAngeles.DemoGLSurfaceView@41ffdf58
+V/com.example.SanAngeles.DemoGLSurfaceView@41ffdf58(21157): DemoGLSurfaceView::onPause
+I/ActivityManager(  583): START {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.example.SanAngeles/.DemoActivity u=0} from pid 19744
+V/com.example.SanAngeles.DemoActivity@4200b258(21157): DemoActivity::onCreate!!!!!!
+V/com.example.SanAngeles.DemoActivity@4200b258(21157): levels/0.wav
+V/com.example.SanAngeles.DemoActivity@4200b258(21157): sounds/0.wav
+V/com.example.SanAngeles.DemoActivity@4200b258(21157): textures/0.png
+V/com.example.SanAngeles.DemoActivity@4200b258(21157): DemoActivity::onResume!!!!!!com.example.SanAngeles.DemoGLSurfaceView@4200bf60
+V/com.example.SanAngeles.DemoGLSurfaceView@4200bf60(21157): DemoGLSurfaceView::onResume
+V/libnav  (21157): Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume
+I/ActivityManager(  583): Displayed com.example.SanAngeles/.DemoActivity: +1s392ms
+V/ClearActivity(21157): :::::: instancecom.example.SanAngeles.DemoActivity@41ffc860 onDestroy: is called
+V/com.example.SanAngeles.DemoActivity@4200b258(21157): DemoActivity::onPause!!!!!!com.example.SanAngeles.DemoGLSurfaceView@4200bf60
+V/com.example.SanAngeles.DemoGLSurfaceView@4200bf60(21157): DemoGLSurfaceView::onPause
+*/
+
+/*
+
+V/libnav  (22252): Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume
+V/libnav  (22252): SuperStarShooter::DestroyFoos
+V/libnav  (22252): DOES THIS GET CALLED
+
+*/
