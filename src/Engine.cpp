@@ -45,21 +45,21 @@ static const char fragment_shader[] =
 
 
 void Engine::glTranslatef(float tx, float ty, float tz) {
-  //if(true ||
-  //  fastAbs((unsigned short)tx) != fastAbs((unsigned short) ltx) ||
-  //  fastAbs((unsigned short)ty) != fastAbs((unsigned short) lty) ||
-  //  fastAbs((unsigned short)tz) != fastAbs((unsigned short) ltz)
+
+  //if(
+  //  (fastAbs(tx - ltx) > 1000.0) ||
+  //  (fastAbs(ty - lty) > 1000.0)
   //) {
     ProjectionMatrix[12] += (ProjectionMatrix[0] * tx + ProjectionMatrix[4] * ty + ProjectionMatrix[8] * tz);
     ProjectionMatrix[13] += (ProjectionMatrix[1] * tx + ProjectionMatrix[5] * ty + ProjectionMatrix[9] * tz);
     ProjectionMatrix[14] += (ProjectionMatrix[2] * tx + ProjectionMatrix[6] * ty + ProjectionMatrix[10] * tz);
     ProjectionMatrix[15] += (ProjectionMatrix[3] * tx + ProjectionMatrix[7] * ty + ProjectionMatrix[11] * tz);
     glUniformMatrix4fv(m_StateFoo->ModelViewProjectionMatrix_location, 1, GL_FALSE, ProjectionMatrix);
+  //  ltx = (tx);
+  //  lty = (ty);
+  //  ltz = (tz);
   //}
     
-  ltx = (tx);
-  lty = (ty);
-  ltz = (tz);
 }
 
 
@@ -127,7 +127,7 @@ Engine::Engine(int w, int h, std::vector<FileHandle *> &t, std::vector<FileHandl
 
   m_CurrentSound = 0;
 
-  ltx = lty = ltz = INT_MAX;
+  //ltx = lty = ltz = INT_MAX;
 
   program = 0;
 
@@ -211,14 +211,15 @@ void Engine::DrawScreen(float rotation) {
     }
 
     // clear the frame, this is required for optimal performance, which I think is odd
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT);
         
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom2;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom2;
     float c = (-m_ScreenHalfHeight) * m_Zoom2;
     float d = m_ScreenHalfHeight * m_Zoom2;
-    float e = 1.0;
-    float f = -1.0;
+    float e = 10.0;
+    float f = -10.0;
 
     identity(ProjectionMatrix);
     ortho(ProjectionMatrix, (a), (b), (c), (d), (e), (f));
@@ -235,22 +236,24 @@ int Engine::Run() {
   gettimeofday(&tim, NULL);
   t2=tim.tv_sec+(tim.tv_usec/1000000.0);
   float step = t2 - t1;
-  gettimeofday(&tim, NULL);
-  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-  if (m_GameState > 1) {
-    //paused
-  } else {
-    float steps = 1.0; //4 for overdrive
-    m_DeltaTime = step / steps;
-    for (int j=0; j<(int)steps; j++) {
-      if (Active()) {
-        m_SimulationTime += m_DeltaTime;
-        Simulate();
+  if (step > 0.024) {
+    gettimeofday(&tim, NULL);
+    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    if (m_GameState > 1) {
+      //paused
+    } else {
+      float steps = 1.0; //4 for overdrive
+      m_DeltaTime = step / steps;
+      for (int j=0; j<(int)steps; j++) {
+        if (Active()) {
+          m_SimulationTime += m_DeltaTime;
+          Simulate();
+        }
       }
     }
+    m_IsSceneBuilt = true;
   }
 
-  m_IsSceneBuilt = true;
 	return m_GameState;
 }
 
@@ -304,6 +307,7 @@ void Engine::ResizeScreen(int width, int height) {
   glViewport(0, 0, m_ScreenWidth, m_ScreenHeight);
   //glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  //glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES, GL_FASTEST);
   m_IsScreenResized = true;
 }
 

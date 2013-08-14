@@ -6,7 +6,7 @@
 
 #define ZOOM (1.0)
 #define ZOOM2 (1.0 / 1.0)
-#define SUBDIVIDE (32.0)
+#define SUBDIVIDE (16.0)
 #define BLANK 0 //((16 * 3) + 2)
 #define WATER ((16 * 5) + 6)
 //#define TREASURE 10
@@ -21,8 +21,8 @@
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (0.01)
-#define MAX_WAIT_BEFORE_WARP (0.00)
-#define MAX_SEARCH 16
+#define MAX_WAIT_BEFORE_WARP (0.05)
+#define MAX_SEARCH 32
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
@@ -60,7 +60,7 @@
 #define CELL_HEIGHT 16
 #define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) (((a - 1) * CELL_HEIGHT) + (b - 1))
 
-#define SCROLL_SPEED 0.9
+#define SCROLL_SPEED 0.33
 
 
 struct my_struct {
@@ -103,7 +103,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
     }
   }
 
-  float overX = 1.33;
+  float overX = 1.0;
   GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))) + 3;
   GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))) + 3;
 
@@ -378,6 +378,7 @@ void SuperStarShooter::RenderSpritePhase() {
   float offY = (-m_LastCenterY / (((SUBDIVIDE / 2.0) + ((1.0 / 5.0) * SUBDIVIDE))));
 
   if (m_Batches.size() == 4) {
+
     if (m_NeedsTerrainRebatched) {
       m_Batches[0]->m_NumBatched = 0;
       m_Batches[1]->m_NumBatched = 0;
@@ -399,13 +400,17 @@ void SuperStarShooter::RenderSpritePhase() {
 
     RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
 
-    glTranslatef(a, b, 0.0);
+
+
+
+
+    glTranslatef(a, b, fastSinf(m_SimulationTime) - 2.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
     
-    glTranslatef(-(m_LastCenterX), -(m_LastCenterY), 0.0);
+    glTranslatef(-(m_LastCenterX), -(m_LastCenterY), fastSinf(m_SimulationTime) + 3.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
 
-    glTranslatef((m_LastCenterX), (m_LastCenterY), 0.0);
+    glTranslatef((m_LastCenterX), (m_LastCenterY), fastSinf(m_SimulationTime) + 4.0);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
   }
 }
