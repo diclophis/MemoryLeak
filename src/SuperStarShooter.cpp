@@ -28,8 +28,8 @@
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 1.0)
-#define LEVEL_LOAD_TIMEOUT 0.1
-#define LEVEL_LOAD_STRIDE (1024 * 256)
+#define LEVEL_LOAD_TIMEOUT 1.0
+#define LEVEL_LOAD_STRIDE (16)
 #define MAX_OTHER_PLAYERS 128
 #define SCROLL_SPEED 1.0 
 
@@ -385,33 +385,37 @@ void SuperStarShooter::RenderSpritePhase() {
       RenderSpriteRange(m_GridStartIndex, m_GridStopIndex, m_Batches[0], 0.0, 0.0);
       //RenderSpriteRange(m_SecondGridStartIndex, m_SecondGridStopIndex, m_Batches[1], 0, 0);
       m_NeedsTerrainRebatched = false;
-    }
+    } else {
     
-    m_Batches[2]->m_NumBatched = 0;
-    m_Batches[3]->m_NumBatched = 0;
+      m_Batches[2]->m_NumBatched = 0;
+      m_Batches[3]->m_NumBatched = 0;
 
-    struct my_struct *s;
+      struct my_struct *s;
 
-    for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
-      if ((m_SimulationTime - s->update) < 30.0) { 
-        RenderSpriteRange(s->render, s->render + 1, m_Batches[2], offX, offY);
+      for(s = users; s != NULL; s = (struct my_struct *)s->hh.next) {
+        if ((m_SimulationTime - s->update) < 30.0) { 
+          RenderSpriteRange(s->render, s->render + 1, m_Batches[2], offX, offY);
+        }
       }
+
+      RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
+
+
+
+
+      // clear the frame, this is required for optimal performance, which I think is odd
+      glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+      //glClear(GL_COLOR_BUFFER_BIT);
+
+      glTranslatef(a, b, fastSinf(m_SimulationTime) - 2.0);
+      AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
+      
+      glTranslatef(-(m_LastCenterX), -(m_LastCenterY), fastSinf(m_SimulationTime) + 3.0);
+      AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
+
+      glTranslatef((m_LastCenterX), (m_LastCenterY), fastSinf(m_SimulationTime) + 4.0);
+      AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
     }
-
-    RenderSpriteRange(m_TrailStartIndex, m_TrailStopIndex, m_Batches[3], 0.0, 0.0);
-
-
-
-
-
-    glTranslatef(a, b, fastSinf(m_SimulationTime) - 2.0);
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
-    
-    glTranslatef(-(m_LastCenterX), -(m_LastCenterY), fastSinf(m_SimulationTime) + 3.0);
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[3]);
-
-    glTranslatef((m_LastCenterX), (m_LastCenterY), fastSinf(m_SimulationTime) + 4.0);
-    AtlasSprite::RenderFoo(m_StateFoo, m_Batches[2]);
   }
 }
 

@@ -210,9 +210,6 @@ void Engine::DrawScreen(float rotation) {
       m_StateFoo->Link();
     }
 
-    // clear the frame, this is required for optimal performance, which I think is odd
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //glClear(GL_COLOR_BUFFER_BIT);
         
     float a = (-m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom2;
     float b = (m_ScreenHalfHeight * m_ScreenAspect) * m_Zoom2;
