@@ -236,7 +236,7 @@ int Engine::Run() {
   gettimeofday(&tim, NULL);
   t2=tim.tv_sec+(tim.tv_usec/1000000.0);
   float step = t2 - t1;
-  if (step > 0.024) {
+  if (step > 0.001) {
     gettimeofday(&tim, NULL);
     t1=tim.tv_sec+(tim.tv_usec/1000000.0);
     if (m_GameState > 1) {
@@ -507,8 +507,8 @@ void Engine::LoadTexture(int i) {
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

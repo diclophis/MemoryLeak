@@ -179,7 +179,6 @@ int MazeNetwork::Tick(bool write, float x, float y, float a, float b) {
   int network_connected_error = ConnectNetwork();
 
   if (m_InputBuffer == NULL) {
-    LOGV("rebuffer\n");
     // setup the json stream parser
     m_InputBuffer = (unsigned char *) malloc(sizeof(unsigned char) * m_InputBufferSize);
     hand = yajl_alloc(&callbacks, NULL, (void *)this);
