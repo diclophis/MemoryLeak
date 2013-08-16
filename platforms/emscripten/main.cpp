@@ -14,8 +14,8 @@
 //#include "SDL.h"
 //#include "SDL_audio.h"
 
-#define kWindowWidth 1024
-#define kWindowHeight 1024
+//#define kWindowWidth 1024
+//#define kWindowHeight 1024
 
 
 static int game_index = 0;
@@ -24,6 +24,8 @@ static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
 
+int kWindowWidth = 0;
+int kWindowHeight = 0;
 
 extern "C" {
 
@@ -153,6 +155,16 @@ int alphasort(const struct dirent **a, const struct dirent **b) {
 
 
 int main(int argc, char** argv) {
+  char *wh;
+  
+  wh = emscripten_run_script_string("(function(){return document.body.offsetWidth;})()");
+  kWindowWidth = atoi(wh);
+
+  wh = emscripten_run_script_string("(function(){return document.body.offsetHeight;})()");
+  kWindowHeight = atoi(wh);
+
+  LOGV("%s %d %d\n", wh, kWindowWidth, kWindowHeight);
+
 
   glutInit(&argc,argv);
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
@@ -254,6 +266,7 @@ int main(int argc, char** argv) {
   }
 
   //sinkJsInit(sinkJsWriteFunc, 4096, sizeof(short), 2);
+
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight);
 
