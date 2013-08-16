@@ -27,11 +27,11 @@
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
 #define MANUAL_SCROLL_TIMEOUT 0.25
 #define BYTES_AT_A_TIME (1024)
-#define NETWORK_TIMEOUT (1.0 / 1.0)
+#define NETWORK_TIMEOUT (1.0 / 3.0)
 #define LEVEL_LOAD_TIMEOUT 1.0
 #define LEVEL_LOAD_STRIDE (16)
 #define MAX_OTHER_PLAYERS 128
-#define SCROLL_SPEED 1.0 
+#define SCROLL_SPEED 0.99 
 
 #define PLAYER_T 0.333
 //#define TRAIL_T 0.01
@@ -316,7 +316,6 @@ void SuperStarShooter::CreateFoos() {
   
   int p_foo = 0;
   if (m_SimulationTime > 0.0) {
-  LOGV("FOOOO\n");
     for (int i=0; i<m_SpriteCount; i++) {
       if (i >= m_PlayerStartIndex && i < m_PlayerStopIndex) {
         m_AtlasSprites[i]->ResetFoo(m_PlayerFoos.at(p_foo), NULL);
@@ -509,7 +508,7 @@ int SuperStarShooter::Simulate() {
     for (int i=0; i<4; i++) {
       if ((rStartIndex + i) != ss->render) {
         m_AtlasSprites[rStartIndex + i]->SetPosition(m_AtlasSprites[ss->render]->m_Position[0], m_AtlasSprites[ss->render]->m_Position[1]);
-        //m_AtlasSprites[rStartIndex + i]->SetTargetPosition(m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
+        m_AtlasSprites[rStartIndex + i]->SetTargetPosition(m_AtlasSprites[ss->render]->m_TargetPosition[0], m_AtlasSprites[ss->render]->m_TargetPosition[1]);
         //m_AtlasSprites[rStartIndex + i]->m_Position[0] = m_AtlasSprites[ss->render]->m_Position[0];
         //m_AtlasSprites[rStartIndex + i]->m_Position[1] = m_AtlasSprites[ss->render]->m_Position[1];
         //m_AtlasSprites[rStartIndex + i]->m_TargetPosition[0] = m_AtlasSprites[ss->render]->m_TargetPosition[0];
@@ -1259,7 +1258,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
       s->id = i;
       s->index = m_SpriteCount;
       s->render = s->index;
-      AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE, VELOCITY * 0.75);
+      AddPlayer(x * SUBDIVIDE, y * SUBDIVIDE, VELOCITY);
       HASH_ADD_INT(users, id, s);
       m_AtlasSprites[s->render]->SetPosition(x, y);
     } else {
@@ -1268,8 +1267,7 @@ bool SuperStarShooter::UpdatePlayerAtIndex(int i, float x, float y, float a, flo
   }
 
   if (m_AtlasSprites[s->render]->m_TargetPosition[0] != a || m_AtlasSprites[s->render]->m_TargetPosition[1] != b) {
-    m_AtlasSprites[s->render]->m_TargetPosition[0] = (a);
-    m_AtlasSprites[s->render]->m_TargetPosition[1] = (b);
+    m_AtlasSprites[s->render]->SetTargetPosition(a, b);
     s->update = m_SimulationTime;
   }
 
