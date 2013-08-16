@@ -21,7 +21,7 @@
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (0.01)
-#define MAX_WAIT_BEFORE_WARP (0.05)
+#define MAX_WAIT_BEFORE_WARP (0.075)
 #define MAX_SEARCH 32
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -31,8 +31,9 @@
 #define LEVEL_LOAD_TIMEOUT 0.1
 #define LEVEL_LOAD_STRIDE (1024 * 256)
 #define MAX_OTHER_PLAYERS 128
+#define SCROLL_SPEED 1.0 
 
-#define PLAYER_T 0.20
+#define PLAYER_T 0.333
 //#define TRAIL_T 0.01
 
 // Each cell in the maze is a bitfield. The bits that are set indicate which
@@ -60,7 +61,6 @@
 #define CELL_HEIGHT 16
 #define CELL_INDEX_FOR_MAP_SPRITE(i, a, b) (((a - 1) * CELL_HEIGHT) + (b - 1))
 
-#define SCROLL_SPEED 0.33
 
 
 struct my_struct {
@@ -668,7 +668,6 @@ int SuperStarShooter::Simulate() {
       }
     }
     int wang = 0;
-    int chung = 0;
     for (unsigned int j=(m_TrailCount); j>0; j--) {
       unsigned int i = (j - 1);
       if (i == 0) {
