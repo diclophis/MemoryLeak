@@ -122,7 +122,24 @@
  #endif
 
 
-#include "OpenGLCommon.h"
+//#include "OpenGLCommon.h"
+
+static inline float fastAbs(float x) { return (x < 0) ? -x : x; }
+static inline GLfloat fastSinf(GLfloat x)
+{
+	// fast sin function; maximum error is 0.001
+	const float P = 0.225;
+	
+	x = x * M_1_PI;
+	int k = (int) round(x);
+	x = x - k;
+    
+	float y = (4 - 4 * fastAbs(x)) * x;
+    
+	y = P * (y * fastAbs(y) - y) + y;
+    
+	return (k&1) ? -y : y;	
+}
 
 #include "FileHandle.h"
 #include "StateFoo.h"

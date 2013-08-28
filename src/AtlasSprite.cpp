@@ -249,22 +249,6 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
     glBindVertexArrayOES(sf->g_lastVertexArrayObject);
 
-/*
-#ifdef USE_GLES2
-    glActiveTexture(GL_TEXTURE0);
-#else
-    glEnable(GL_TEXTURE_2D);
-#endif
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
-*/
-
-//
-   
     if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
       sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
@@ -290,23 +274,12 @@ void AtlasSprite::RenderFoo(StateFoo *sf, foofoo *foo) {
     glTexCoordPointer(2, GL_FLOAT, foo->m_Stride, (char *)NULL + (2 * sizeof(GLshort)));
     
 #endif
-    
-    
-//
 
   } else {
     if (foo->m_VertexArrayObjects[0] != sf->g_lastVertexArrayObject) {
       sf->g_lastVertexArrayObject = foo->m_VertexArrayObjects[0];
       glBindVertexArrayOES(sf->g_lastVertexArrayObject);
     }
-
-    /*
-    //may
-    if (foo->m_IndexBuffers[0] != sf->g_lastElementBuffer) {
-      sf->g_lastElementBuffer = foo->m_IndexBuffers[0];
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sf->g_lastElementBuffer);
-    }
-    */
     
     if (foo->m_InterleavedBuffers[0] != sf->g_lastInterleavedBuffer) {
       sf->g_lastInterleavedBuffer = foo->m_InterleavedBuffers[0];

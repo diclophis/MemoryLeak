@@ -303,6 +303,7 @@ int main(int argc, char** argv) {
 
 	NSArray *sound_names = [mainBundle pathsForResourcesOfType:nil inDirectory:sounds_path];
 	for (NSString *path in sound_names) {
+    path = @"assets/sounds/0.wav";
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);

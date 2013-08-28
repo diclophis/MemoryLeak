@@ -234,8 +234,9 @@ int Engine::Run() {
   t2=tim.tv_sec+(tim.tv_usec/1000000.0);
   float step = t2 - t1;
   if (step > 0.001) {
-    gettimeofday(&tim, NULL);
-    t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    //gettimeofday(&tim, NULL);
+    //t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    t1 = t2;
     if (m_GameState > 1) {
       //paused
     } else {

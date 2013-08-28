@@ -117,19 +117,4 @@ public:
   float ltx;
   float lty;
   float ltz;
-
-  /*
-  //network stuff
-  int done;
-  int SocketFD;
-  unsigned int get_all_buf(int sock, const unsigned char* output, unsigned int maxsize);
-  void iter(void *arg);
-  int ConnectNetwork(void);
-  void StopNetwork();
-
-  yajl_handle hand;
-
-  unsigned char *out;
-  */
-
 };
