@@ -121,10 +121,10 @@ void AtlasSprite::Render() {
     GLfloat th = (m_Sprites[i].ty2 - m_Sprites[i].ty1);
     if (i != g_lastFrame) {
       GLshort vertices[8] = {
-        (-w / 2.0), (-h / 2.0),
-        (w / 2.0), (-h / 2.0),
-        (w / 2.0), (h / 2.0),
-        (-w / 2.0), (h / 2.0)
+        (short)(-w / 2.0), (short)(-h / 2.0),
+        (short)(w / 2.0), (short)(-h / 2.0),
+        (short)(w / 2.0), (short)(h / 2.0),
+        (short)(-w / 2.0), (short)(h / 2.0)
       };
       glVertexPointer(2, GL_SHORT, 0, vertices);
 
