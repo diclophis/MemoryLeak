@@ -21,7 +21,7 @@
 #define PLAYER_OFFSET (SUBDIVIDE * 0.5) 
 #define PLAYER_OFFSET_X (SUBDIVIDE * 8.0) 
 #define VELOCITY (0.01)
-#define MAX_WAIT_BEFORE_WARP (0.075)
+#define MAX_WAIT_BEFORE_WARP (0.001)
 #define MAX_SEARCH 32
 #define MAX_STATE_POINTERS (MAX_SEARCH * MAX_SEARCH)
 #define MAX_CAMERA_VELOCITY (SUBDIVIDE * 8)
@@ -29,7 +29,7 @@
 #define BYTES_AT_A_TIME (1024)
 #define NETWORK_TIMEOUT (1.0 / 1.0)
 #define LEVEL_LOAD_TIMEOUT 1.0
-#define LEVEL_LOAD_STRIDE (16)
+#define LEVEL_LOAD_STRIDE (12)
 #define MAX_OTHER_PLAYERS 128
 #define SCROLL_SPEED 0.99 
 
@@ -105,7 +105,7 @@ SuperStarShooter::SuperStarShooter(int w, int h, std::vector<FileHandle *> &t, s
 
   float overX = 1.0;
   GRID_X = ((((m_ScreenWidth * overX) / SUBDIVIDE))) + 3;
-  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))) + 3;
+  GRID_Y = ((((m_ScreenHeight * overX) / SUBDIVIDE))) + 4;
 
   m_GridCount = (GRID_X * GRID_Y);
   float sizeOfCell = (SUBDIVIDE / 2.0);
