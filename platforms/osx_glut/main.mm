@@ -8,6 +8,7 @@
 #import <CoreAudio/CoreAudio.h>
 #import <Accelerate/Accelerate.h>
 
+#include <dirent.h>
 
 #include "MemoryLeak.h"
 
@@ -22,8 +23,31 @@ static bool left_down = false;
 static bool right_down = false;
 static bool reset_down = false;
 static bool debug_down = false;
-static int game_index = 1;
+static int game_index = 3;
 static short *outData;
+
+char *path_cat (const char *str1, char *str2) {
+	size_t str1_len = strlen(str1);
+	size_t str2_len = strlen(str2);
+	char *result;
+	result = (char*)malloc((str1_len+str2_len+1)*sizeof *result);
+	strcpy (result,str1);
+	int i,j;
+	for(i=str1_len, j=0; ((i<(str1_len+str2_len)) && (j<str2_len));i++, j++) {
+		result[i]=str2[j];
+	}
+	result[str1_len+str2_len]='\0';
+	return result;
+}
+
+
+int is_not_dot_or_dot_dot(const struct dirent *dp) {
+  if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
 
 
 static void CheckError(OSStatus error, const char *operation) {
@@ -117,7 +141,7 @@ void processNormalKeys(unsigned char key, int x, int y) {
         //  game_index = 2;
         //}
 
-        //game_index++;
+        game_index++;
         if (game_index == 5) {
           game_index = 0;
         }
@@ -261,15 +285,105 @@ int main(int argc, char** argv) {
   glutMotionFunc(processMouseMotion);
   glutReshapeFunc(resize);
 
+  struct dirent *dp;
+  struct dirent **dps;
 
+  const char *dir_path="assets/textures/";
+  DIR *dir;
+  int dir_ents = scandir(dir_path, &dps, is_not_dot_or_dot_dot, alphasort);
+
+  if (dir_ents == -1) {
+    LOGV("wtf\n");
+    exit(1);
+  }
+
+  for (int i=0; i<dir_ents; i++) {
+    char *tmp;
+    tmp = path_cat(dir_path, dps[i]->d_name);
+    FILE *fd = fopen(tmp, "rb");
+    fseek(fd, 0, SEEK_END);
+    unsigned int len = ftell(fd);
+    rewind(fd);
+    Engine::PushBackFileHandle(TEXTURES, fd, 0, len);
+    free(tmp);
+    tmp=NULL;
+  }
+
+  dir_path="assets/models/";
+  dir = opendir(dir_path);
+  if (dir) {
+    while ((dp=readdir(dir)) != NULL) {
+      char *tmp;
+      tmp = path_cat(dir_path, dp->d_name);
+      if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+      } else {
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+        Engine::PushBackFileHandle(MODELS, fd, 0, len);
+      }
+
+      free(tmp);
+      tmp=NULL;
+    }
+    closedir(dir);
+  }
+
+  dir_path="assets/sounds/";
+  dir = opendir(dir_path);
+  if (dir) {
+    while ((dp=readdir(dir)) != NULL) {
+      char *tmp;
+      tmp = path_cat(dir_path, dp->d_name);
+      if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+      } else {
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+        Engine::PushBackFileHandle(SOUNDS, fd, 0, len);
+      }
+    
+      free(tmp);
+      tmp=NULL;
+    }
+    closedir(dir);
+  }
+
+  dir_path="assets/levels/";
+  dir = opendir(dir_path);
+  if (dir) {
+    while ((dp=readdir(dir)) != NULL) {
+      char *tmp;
+      tmp = path_cat(dir_path, dp->d_name);
+      if (strcmp(".", dp->d_name) == 0 || strcmp("..", dp->d_name) == 0) {
+      } else {
+        FILE *fd = fopen(tmp, "rb");
+        fseek(fd, 0, SEEK_END);
+        unsigned int len = ftell(fd);
+        rewind(fd);
+        Engine::PushBackFileHandle(LEVELS, fd, 0, len);
+      }
+
+      free(tmp);
+      tmp=NULL;
+    }
+    closedir(dir);
+  }
+
+/*
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSStringEncoding defaultCStringEncoding = [NSString defaultCStringEncoding];
-  NSString *model_path = [NSString stringWithCString:"../../../assets/models" encoding:NSUTF8StringEncoding];
-  NSString *textures_path = [NSString stringWithCString:"../../../assets/textures" encoding:NSUTF8StringEncoding];
-  NSString *levels_path = [NSString stringWithCString:"../../../assets/levels" encoding:NSUTF8StringEncoding];
-  NSString *sounds_path = [NSString stringWithCString:"../../../assets/sounds" encoding:NSUTF8StringEncoding];
+  NSString *model_path = [NSString stringWithCString:"assets/models" encoding:NSUTF8StringEncoding];
+  NSString *textures_path = [NSString stringWithCString:"assets/textures" encoding:NSUTF8StringEncoding];
+  NSString *levels_path = [NSString stringWithCString:"assets/levels" encoding:NSUTF8StringEncoding];
+  NSString *sounds_path = [NSString stringWithCString:"assets/sounds" encoding:NSUTF8StringEncoding];
+
 	NSArray *model_names = [mainBundle pathsForResourcesOfType:nil inDirectory:model_path];
+  NSLog(model_path);
 	for (NSString *path in model_names) {
+    NSLog(path);
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
@@ -280,7 +394,9 @@ int main(int argc, char** argv) {
   [model_path release];
 
 	NSArray *texture_names = [mainBundle pathsForResourcesOfType:nil inDirectory:textures_path];
+  NSLog(textures_path);
 	for (NSString *path in texture_names) {
+    NSLog(path);
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
@@ -292,6 +408,7 @@ int main(int argc, char** argv) {
 
 	NSArray *level_names = [mainBundle pathsForResourcesOfType:nil inDirectory:levels_path];
 	for (NSString *path in level_names) {
+    NSLog(path);
 		FILE *fd = fopen([path cStringUsingEncoding:defaultCStringEncoding], "rb");
 		fseek(fd, 0, SEEK_END);
 		unsigned int len = ftell(fd);
@@ -313,6 +430,7 @@ int main(int argc, char** argv) {
   [sounds_path release];
 
   [mainBundle release];
+*/
 
   Engine::Start(game_index, kWindowWidth, kWindowHeight);
 

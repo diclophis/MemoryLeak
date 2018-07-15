@@ -38,10 +38,10 @@
   #ifndef __APPLE__
     #define GLU_PERSPECTIVE gluPerspective
     #define glOrthof glOrtho
-    #define GLfixed GLfloat
+    //#define GLfixed GLfloat
     #define glFrustumx glFrustum
   #else
-    #define GLfixed GLfloat
+    //#define GLfixed GLfloat
     #define glFrustumx glFrustum
     #define GLU_PERSPECTIVE gluPerspective
   #endif

@@ -126,7 +126,7 @@ void SpaceShipDown::DestroyFoos() {
 
 void SpaceShipDown::StartLevel(int level_index) {
 
-  LOGV("Start Level\n");
+  LOGV("Start Level %d\n", level_index);
 
   CreateFoos();
 
@@ -899,6 +899,8 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
   limits[2] = 0.0;
   limits[3] = 0.0;
 
+LOGV("WTF LOAD: %d\n", level_index);
+
 	int current[4];
 	current[0] = current[1] = current[2] = current[3] = 0;
 	char *level = (char *)malloc(sizeof(char) * m_LevelFileHandles->at(level_index)->len);
@@ -917,11 +919,13 @@ void SpaceShipDown::LoadLevel(int level_index, int cursor_index) {
   level_at[1] = '\0';
 	for (unsigned int j=0; j<l; j++) {
     level_at[0] = level[j];
+    LOGV("wtf :%s: %s\n", level_at, level);
 		const char *pos = strstr(dictionary, level_at);
 		if (pos != NULL) {
 			idx = pos - dictionary;
 			data[j] = idx;
 		} else {
+      LOGV("adasdasdasd\n");
 			throw 666;
 		}
 	}
