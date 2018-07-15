@@ -115,7 +115,7 @@ public:
   void ortho(GLfloat *m, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat nearZ, GLfloat farZ);
   void identity(GLfloat *m);
       
-#ifdef USE_GLES2
+//#ifdef USE_GLES2
 
   void glTranslatef(float x, float y, float z);
   //GLuint ModelViewProjectionMatrix_location;
@@ -128,6 +128,6 @@ public:
   char msg[512];
 
 
-#endif
+//#endif
 
 };

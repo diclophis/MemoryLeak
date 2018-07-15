@@ -23,7 +23,7 @@ namespace OpenSteer {
 }
 
 
-#ifdef USE_GLES2
+//#ifdef USE_GLES2
 
 static const char vertex_shader[] =
 "attribute vec2 Position;\n"
@@ -58,7 +58,7 @@ void Engine::glTranslatef(float tx, float ty, float tz) {
 }
 
 
-#endif
+//#endif
 
 
 Engine::~Engine() {
@@ -228,17 +228,17 @@ void Engine::DrawScreen(float rotation) {
 #endif
 
     // clear the frame, this is required for optimal performance, which I think is odd
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    //glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 #ifdef USE_GLES2
 #else
-    glLoadIdentity();
+    //glLoadIdentity();
 #endif
     
     // Render 3D
-    //GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
-    //glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
-    //RenderModelPhase();
+    GLU_PERSPECTIVE(m_Fov, (float)m_ScreenWidth / (float)m_ScreenHeight, 1.0, 1000.0);
+    glueLookAt(m_CameraPosition[0], m_CameraPosition[1], m_CameraPosition[2], m_CameraTarget[0], m_CameraTarget[1], m_CameraTarget[2], 0.0, 1.0, 0.0);
+    RenderModelPhase();
 
     // Reset for switch to 2D
     //glLoadIdentity();
@@ -247,10 +247,10 @@ void Engine::DrawScreen(float rotation) {
 
 #ifdef USE_GLES2
 #else
-    glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
+    //glOrthof((-m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (m_ScreenHalfHeight*m_ScreenAspect) * m_Zoom, (-m_ScreenHalfHeight) * m_Zoom, m_ScreenHalfHeight * m_Zoom, 1.0f, -1.0f);
 #endif
 
-    RenderSpritePhase();
+    //RenderSpritePhase();
 	} else {
     ResizeScreen(m_ScreenWidth, m_ScreenHeight);
   }
@@ -344,7 +344,7 @@ void Engine::ResizeScreen(int width, int height) {
   m_IsScreenResized = true;
 }
 
-#ifndef USE_GLES2
+//#ifndef USE_GLES2
 
 // This is a modified version of the function of the same name from 
 // the Mesa3D project ( http://mesa3d.org/ ), which is  licensed
@@ -445,7 +445,7 @@ void Engine::gluePerspective(float fovy, float aspect,
 
 }
 
-#endif
+//#endif
 
 
 void Engine::PushBackFileHandle(int collection, FILE *file, unsigned int offset, unsigned int length) {

@@ -42,13 +42,11 @@ SpaceShipDown::SpaceShipDown(int w, int h, std::vector<FileHandle *> &t, std::ve
   m_LevelLoaded = false;
   LoadSound(0);
   LoadTexture(0);
-  /*
   LoadModel(0, 0, 1);
   LoadModel(1, 0, 1);
   LoadModel(2, 0, 1);
   LoadModel(3, 0, 1);
   LoadModel(4, 0, 1);
-  */
   StartLevel(0);
 }
 
@@ -102,7 +100,7 @@ void SpaceShipDown::CreateFoos() {
     }
   }
 
-  //m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures.at(0), 5000, 10);
+  m_ThirdBatchFoo = Model::GetBatchFoo(m_Textures.at(0), 5000, 10);
 }
 
 
@@ -120,7 +118,7 @@ void SpaceShipDown::DestroyFoos() {
   delete m_EnemyFoo;
   //delete m_BatchFoo;
   //delete m_SecondBatchFoo;
-  //delete m_ThirdBatchFoo;
+  delete m_ThirdBatchFoo;
 }
 
 
@@ -149,7 +147,7 @@ void SpaceShipDown::StartLevel(int level_index) {
   m_ThrustLevel = 0.0;
   m_WorldWidth = 0.0;
   m_WorldHeight = 0.0;
-  m_DebugDrawToggle = false;
+  m_DebugDrawToggle = true;
   m_TouchedLeft = false;
   m_TouchedRight = false;
   m_StackCount = 0;
@@ -186,7 +184,7 @@ void SpaceShipDown::StopLevel() {
   m_PlayerIndex = 0;
   m_PlayerStopIndex = 0;
 
-  //ClearModels();
+  ClearModels();
 
   ClearSprites();
 
@@ -290,7 +288,6 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
 
   m_PlayerStopIndex = m_SpriteCount;
 
-/*
   m_Models.push_back(new Model(m_FooFoos.at(0)));
   m_Models[m_PlayerIndex]->m_Scale[0] = 2.0;
   m_Models[m_PlayerIndex]->m_Scale[1] = 2.0;
@@ -299,7 +296,6 @@ void SpaceShipDown::CreatePlayer(float x, float y) {
   m_Models[m_PlayerIndex]->m_Position[1] = m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO;
   m_Models[m_PlayerIndex]->m_Position[2] = 0.0;
   m_ModelCount++;
-*/
 
   MLPoint startPosition = MLPointMake(m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO, m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO);
   b2BodyDef bd;
@@ -333,20 +329,20 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
 
   int sprite_index = m_SpaceShipPartsStopIndex - m_SpaceShipPartsStartIndex;
   int build_count = 0;
-  //float scale = 1.0;
+  float scale = 1.0;
   if (sprite_index == 0) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartBaseFoo, m_SpaceShipPartAfterburnerFoo));
     build_count = ROCKET_AFTERBURNER_COUNT;
-    //m_Models.push_back(new Model(m_FooFoos.at(4)));
-    //scale = 1.6;
+    m_Models.push_back(new Model(m_FooFoos.at(4)));
+    scale = 1.6;
   } else if (sprite_index == 1) {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartTopFoo, NULL));
-    //m_Models.push_back(new Model(m_FooFoos.at(2)));
-    //scale = 2.2;
+    m_Models.push_back(new Model(m_FooFoos.at(2)));
+    scale = 2.2;
   } else {
     m_AtlasSprites.push_back(new SpriteGun(m_SpaceShipPartMiddleFoo, NULL));
-    //m_Models.push_back(new Model(m_FooFoos.at(3)));
-    //scale = 1.1;
+    m_Models.push_back(new Model(m_FooFoos.at(3)));
+    scale = 1.1;
   }
   m_AtlasSprites[part_index]->SetPosition(x, y);
   m_AtlasSprites[part_index]->SetScale(BLOCK_WIDTH / 2, BLOCK_WIDTH / 2);
@@ -354,7 +350,6 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   m_SpriteCount++;
   m_SpaceShipPartsStopIndex = m_SpriteCount;
 
-  /*
   m_Models[part_index]->m_Scale[0] = scale;
   m_Models[part_index]->m_Scale[1] = scale;
   m_Models[part_index]->m_Scale[2] = scale;
@@ -362,7 +357,6 @@ void SpaceShipDown::CreateSpaceShipPart(float x, float y) {
   m_Models[part_index]->m_Position[1] = m_AtlasSprites[part_index]->m_Position[1] / PTM_RATIO;
   m_Models[part_index]->m_Position[2] = 0.0;
   m_ModelCount++;
-  */
 
   float radius = 23.5;
   MLPoint startPosition = MLPointMake(m_AtlasSprites[part_index]->m_Position[0] / PTM_RATIO, m_AtlasSprites[part_index]->m_Position[1] / PTM_RATIO);
@@ -479,7 +473,6 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   m_SpriteCount++;
   m_PlatformsStopIndex = m_SpriteCount;
 
-/*
   m_Models.push_back(new Model(m_FooFoos.at(0)));
   m_Models[platform_index]->m_Scale[0] = 1.5;
   m_Models[platform_index]->m_Scale[1] = 1.5;
@@ -488,7 +481,6 @@ void SpaceShipDown::CreatePlatform(float x, float y, float w, float h) {
   m_Models[platform_index]->m_Position[1] = m_AtlasSprites[platform_index]->m_Position[1] / PTM_RATIO;
   m_Models[platform_index]->m_Position[2] = 0.0;
   m_ModelCount++;
-*/
 
 }
 
@@ -854,9 +846,9 @@ int SpaceShipDown::Simulate() {
 
   m_Fov = 60;
 
-  //m_Models[m_PlayerIndex]->m_Position[0] = m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO;
-  //m_Models[m_PlayerIndex]->m_Position[1] = m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO;
-  //m_Models[m_PlayerIndex]->m_Position[2] = 0.0;
+  m_Models[m_PlayerIndex]->m_Position[0] = m_AtlasSprites[m_PlayerIndex]->m_Position[0] / PTM_RATIO;
+  m_Models[m_PlayerIndex]->m_Position[1] = m_AtlasSprites[m_PlayerIndex]->m_Position[1] / PTM_RATIO;
+  m_Models[m_PlayerIndex]->m_Position[2] = 0.0;
 
   m_CameraTarget[0] = -m_CameraOffsetX / PTM_RATIO;
   m_CameraTarget[1] = -m_CameraOffsetY / PTM_RATIO;
@@ -1045,17 +1037,15 @@ void SpaceShipDown::CreateDebugDraw() {
 
 
 void SpaceShipDown::RenderModelPhase() {
-  /*
   RenderModelRange(m_PlatformsStartIndex, m_PlatformsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_SpaceShipPartsStartIndex, m_SpaceShipPartsStopIndex, m_ThirdBatchFoo);
   RenderModelRange(m_PlayerIndex, m_PlayerStopIndex, m_ThirdBatchFoo);
   Model::RenderFoo(m_StateFoo, m_ThirdBatchFoo, true);
-  */
 }
 
 
 void SpaceShipDown::RenderSpritePhase() {
-#ifndef USE_GLES2
+//#ifndef USE_GLES2
   glTranslatef(m_CameraOffsetX, m_CameraOffsetY, 0.0);
   if (m_DebugDrawToggle) {
     AtlasSprite::ReleaseBuffers();
@@ -1099,7 +1089,7 @@ void SpaceShipDown::RenderSpritePhase() {
     //AtlasSprite::RenderFoo(m_StateFoo, m_SecondBatchFoo);
     AtlasSprite::RenderFoo(m_StateFoo, m_Batches[0]);
   }
-#endif
+//#endif
 }
 
 
